@@ -1120,6 +1120,8 @@ svg.cta-icon {
   }
 
   .homepage .hero-event .mobile-page-heading-brand {
+    /* Cap against the floating menu lane so enlarged text never grows the logo under it. */
+    max-width: min(var(--mobile-page-logo-size), calc(100vw - 2 * (3rem + max(1rem, env(safe-area-inset-right, 0px)))));
     margin-inline: auto;
   }
 
@@ -1127,6 +1129,11 @@ svg.cta-icon {
   .homepage .hero-when-date,
   .homepage .hero-when-venue {
     display: block;
+  }
+
+  /* The non-breaking pairs stay together until they would overflow; only then may they break. */
+  .homepage .hero-when {
+    overflow-wrap: anywhere;
   }
 }
 

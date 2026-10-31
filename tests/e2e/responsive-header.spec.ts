@@ -118,11 +118,14 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
     const layout = await page.locator(".mobile-page-heading").evaluate((element) => {
       const logo = element.querySelector(".page-logo-home")!.getBoundingClientRect();
       const copy = element.querySelector(".mobile-page-heading-copy")!.getBoundingClientRect();
-      return { logoLeft: logo.left, logoRight: logo.right, copyLeft: copy.left, copyRight: copy.right, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
+      const burger = document.querySelector(".menu-toggle")!.getBoundingClientRect();
+      return { logoLeft: logo.left, logoRight: logo.right, logoTop: logo.top, logoBottom: logo.bottom, burgerLeft: burger.left, burgerBottom: burger.bottom, copyLeft: copy.left, copyRight: copy.right, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
     });
     if (route === "/") {
       // The Fireworks panel centres the logo above the full-width heading at phone width (this spec runs at 320px).
       expect(Math.abs(layout.logoLeft + (layout.logoRight - layout.logoLeft) / 2 - layout.viewport / 2), route).toBeLessThanOrEqual(1);
+      // The centred logo must stay clear of the floating menu even when enlarged text grows both.
+      expect(layout.logoRight <= layout.burgerLeft || layout.logoTop >= layout.burgerBottom, route).toBe(true);
     } else {
       expect(layout.copyLeft, route).toBeGreaterThanOrEqual(layout.logoRight);
     }
