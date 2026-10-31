@@ -46,7 +46,7 @@
   border-color: var(--line);
 }
 
-:root[data-theme="night"] :is(.button--secondary, .category-label, .attraction, .access-item):not(:is(.event-feature--poster, .fw-event, .fw-vol, .xmas-frame) *) {
+:root[data-theme="night"] :is(.button--secondary, .category-label, .attraction, .access-item):not(:is(.hero-event, .event-feature--poster, .fw-event, .fw-vol, .xmas-frame) *) {
   background: var(--surface);
 }
 
@@ -74,7 +74,7 @@
 }
 
 /* Themed artwork (parchment scroll, fireworks and Christmas stages) keeps the Day palette, like the newsletter paper below. */
-:root[data-theme="night"] :is(.event-feature--poster, .fw-event, .fw-vol, .xmas-frame) {
+:root[data-theme="night"] :is(.hero-event, .event-feature--poster, .fw-event, .fw-vol, .xmas-frame) {
   color-scheme: light;
   --ink: #193127;
   --ink-soft: #4f6358;

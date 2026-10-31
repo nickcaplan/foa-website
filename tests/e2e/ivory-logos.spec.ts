@@ -23,6 +23,7 @@ for (const width of [390, 1440]) {
       expect(day).not.toBeNull();
       if (artwork === "foa-logo-ivory.svg") {
         await expect(logo).not.toHaveClass(/brand-logo--festive/);
+        // Every page's mobile heading logo is the shared 128px; the homepage stacks it above the heading, others place it beside.
         expect(day!.width).toBeCloseTo(width < 1024 ? 128 : 112, 0);
       }
       await page.evaluate(() => document.documentElement.setAttribute("data-theme", "night"));

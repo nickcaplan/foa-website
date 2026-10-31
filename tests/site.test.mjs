@@ -269,8 +269,26 @@ test("the footer and mobile menu share social links without adding them to prima
 test("the homepage shows Fireworks in the initial HTML without Welcome Tea or date switching", async () => {
   const homepage = await readFile(path.join(dist, "index.html"), "utf8");
   assert.match(homepage, /<article class="event-feature event-feature--poster">/);
-  assert.match(homepage, /<h2>Fireworks on the Field<\/h2>/);
+  // One parchment panel unites the hero copy and the event card; the h1 names the event once.
+  assert.match(homepage, /<div class="hero-event">/);
+  assert.match(homepage, /<h1[^>]*>Fireworks on the <em>Field\.<\/em><\/h1>/);
+  assert.doesNotMatch(homepage, /<h2>Fireworks on the Field<\/h2>/);
+  // Date and venue are separate blocks so the venue never strands a word on mobile;
+  // the times keep their number bound to its label with a non-breaking space.
+  assert.match(homepage, /<strong class="hero-when-date">Thursday 5th November,<\/strong> <strong class="hero-when-venue">Ashley School\u00a0field\.<\/strong> Gates open\u00a016:30, event closes\u00a018:30\./);
+  // Nick's call: no FOA introduction on the homepage hero; the panel is entirely about the event.
+  assert.doesNotMatch(homepage, /hero-tagline/);
+  assert.doesNotMatch(homepage, /class="site-width home-intro"/);
   assert.match(homepage, new RegExp(`rel="preload" as="image" href="${basePath}/events/fireworks-960.webp"`));
+  const heroActions = homepage.match(/<div class="hero-actions">([\s\S]*?)<\/div>/)?.[1];
+  assert.ok(heroActions, "homepage hero actions are present");
+  assert.match(heroActions, new RegExp(`href="${basePath}/events/fireworks-2026-event-guide\\.pdf" download="Fireworks 2026 Event Guide\\.pdf"`));
+  assert.match(heroActions, /Download the event/);
+  assert.match(heroActions, /\(PDF, 9\.9 MB\)/);
+  const actions = homepage.match(/<div class="event-feature-actions">([\s\S]*?)<\/div>/)?.[1];
+  assert.ok(actions, "homepage event feature actions are present");
+  assert.doesNotMatch(actions, /event-guide|Download the event/);
+  assert.equal(homepage.match(/fireworks-2026-event-guide\.pdf/g)?.length, 1, "guide link appears once");
   assert.doesNotMatch(homepage, /Welcome Tea|welcome-tea|data-show-before|data-show-from/);
 });
 

@@ -1,67 +1,69 @@
 import { expect, test } from "@playwright/test";
 
 for (const width of [320, 390, 768, 1023]) {
-  test(`${width}px: homepage heading grows as far as possible without changing Option C wrapping`, async ({ page }) => {
+  test(`${width}px: homepage heading keeps every word inside the panel at its CSS size`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
-    await expect(page.locator("[data-fit-heading]")).toHaveAttribute("data-heading-fit", "ready");
-    const leading = await page.locator("[data-fit-heading]").evaluate((heading) => {
+    const title = page.locator(".hero-copy h1");
+    await expect(title).toBeVisible();
+    // The title is pure CSS (clamp with viewport-capped chrome), so it always scales with the visitor's text size.
+    expect(await title.evaluate((heading) => heading.style.fontSize)).toBe("");
+    const leading = await title.evaluate((heading) => {
       const style = getComputedStyle(heading);
       return parseFloat(style.lineHeight) / parseFloat(style.fontSize);
     });
     expect(leading).toBeCloseTo(1.2, 2);
-    const result = await page.locator("[data-fit-heading]").evaluate((heading) => {
-      const ranges: Range[] = [];
+    const fits = await title.evaluate((heading) => {
+      const bounds = heading.getBoundingClientRect();
       const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) {
         for (const word of walker.currentNode.textContent!.matchAll(/\S+/g)) {
           const range = document.createRange();
           range.setStart(walker.currentNode, word.index);
           range.setEnd(walker.currentNode, word.index + word[0].length);
-          ranges.push(range);
+          const rects = range.getClientRects();
+          if (rects.length !== 1) return false;
+          if (rects[0].left < bounds.left - 0.5 || rects[0].right > bounds.right + 0.5) return false;
         }
       }
-      const lines = () => {
-        const top = heading.getBoundingClientRect().top;
-        const lineHeight = parseFloat(getComputedStyle(heading).lineHeight);
-        return ranges.map((range) => [...range.getClientRects()].map((rect) => Math.round((rect.top - top) / lineHeight)).join(",")).join("|");
-      };
-      const fittedStyle = heading.style.fontSize;
-      const fitted = parseFloat(getComputedStyle(heading).fontSize);
-      const fittedLines = lines();
-      heading.style.fontSize = "";
-      const baseline = parseFloat(getComputedStyle(heading).fontSize);
-      const baselineLines = lines();
-      heading.style.fontSize = "var(--home-heading-fit-max)";
-      const maximum = parseFloat(getComputedStyle(heading).fontSize);
-      heading.style.fontSize = `${fitted + 0.2}px`;
-      const bounds = heading.getBoundingClientRect();
-      const nextFits = lines() === baselineLines && ranges.every((range) => [...range.getClientRects()].every((rect) => rect.left >= bounds.left - 0.5 && rect.right <= bounds.right + 0.5));
-      heading.style.fontSize = fittedStyle;
-      return { fitted, baseline, fittedLines, baselineLines, atLimit: fitted + 0.2 > maximum, nextFits };
+      return true;
     });
-    expect(result.fitted).toBeGreaterThanOrEqual(result.baseline);
-    expect(result.fittedLines).toBe(result.baselineLines);
-    expect(result.atLimit || !result.nextFits, "Another 0.2px would change the wrapping or overflow").toBe(true);
+    expect(fits, "no word breaks out of the panel").toBe(true);
   });
 }
 
-test("heading fitting resets to desktop styling when the viewport crosses 64rem", async ({ page }) => {
+test("homepage heading scales with enlarged text and stays whole", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto("/");
-  const title = page.locator("[data-fit-heading]");
-  await expect(title).toHaveAttribute("data-heading-fit", "ready");
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await expect.poll(() => title.evaluate((heading) => heading.style.fontSize)).toBe("");
-  await page.setViewportSize({ width: 320, height: 900 });
-  await expect(title).toHaveAttribute("data-heading-fit", "ready");
+  const title = page.locator(".hero-copy h1");
+  const normal = await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize));
+  await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
+  const enlarged = await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize));
+  expect(enlarged / normal, "the title grows with the visitor's text size").toBeGreaterThan(1.8);
+  const fits = await title.evaluate((heading) => {
+    const bounds = heading.getBoundingClientRect();
+    const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      for (const word of walker.currentNode.textContent!.matchAll(/\S+/g)) {
+        const range = document.createRange();
+        range.setStart(walker.currentNode, word.index);
+        range.setEnd(walker.currentNode, word.index + word[0].length);
+        const rects = range.getClientRects();
+        if (rects.length !== 1) return false;
+        if (rects[0].left < bounds.left - 0.5 || rects[0].right > bounds.right + 0.5) return false;
+      }
+    }
+    return true;
+  });
+  expect(fits, "words stay whole inside the panel at 200%").toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
 });
 
 test.describe("homepage heading without JavaScript", () => {
   test.use({ javaScriptEnabled: false, viewport: { width: 390, height: 900 } });
-  test("retains Option C's readable fallback", async ({ page }) => {
+  test("retains its readable CSS size", async ({ page }) => {
     await page.goto("/");
-    const title = page.locator("[data-fit-heading]");
+    const title = page.locator(".hero-copy h1");
     await expect(title).toBeVisible();
     expect(await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize))).toBeGreaterThanOrEqual(24);
     expect(await title.evaluate((heading) => heading.style.fontSize)).toBe("");
@@ -116,9 +118,17 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
     const layout = await page.locator(".mobile-page-heading").evaluate((element) => {
       const logo = element.querySelector(".page-logo-home")!.getBoundingClientRect();
       const copy = element.querySelector(".mobile-page-heading-copy")!.getBoundingClientRect();
-      return { logoRight: logo.right, copyLeft: copy.left, copyRight: copy.right, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
+      const burger = document.querySelector(".menu-toggle")!.getBoundingClientRect();
+      return { logoLeft: logo.left, logoRight: logo.right, logoTop: logo.top, logoBottom: logo.bottom, burgerLeft: burger.left, burgerBottom: burger.bottom, copyLeft: copy.left, copyRight: copy.right, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
     });
-    expect(layout.copyLeft, route).toBeGreaterThanOrEqual(layout.logoRight);
+    if (route === "/") {
+      // The Fireworks panel centres the logo above the full-width heading at phone width (this spec runs at 320px).
+      expect(Math.abs(layout.logoLeft + (layout.logoRight - layout.logoLeft) / 2 - layout.viewport / 2), route).toBeLessThanOrEqual(1);
+      // The centred logo must stay clear of the floating menu even when enlarged text grows both.
+      expect(layout.logoRight <= layout.burgerLeft || layout.logoTop >= layout.burgerBottom, route).toBe(true);
+    } else {
+      expect(layout.copyLeft, route).toBeGreaterThanOrEqual(layout.logoRight);
+    }
     expect(layout.copyRight, route).toBeLessThanOrEqual(layout.viewport);
     expect(layout.overflow, route).toBeLessThanOrEqual(0);
   });

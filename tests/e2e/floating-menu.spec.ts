@@ -23,13 +23,25 @@ for (const width of [320, 390, 768, 1023]) {
         await expect(logo, route).toBeVisible();
         await expect(logo).toHaveAttribute("href", "/");
         const logoBox = (await logo.boundingBox())!;
-        expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
-        expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
-        expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
         expect(logoBox.x + logoBox.width, route).toBeLessThan(before!.x);
         await expect(logo.locator("p, strong, span")).toHaveCount(0);
         const heading = (await page.locator(".mobile-page-heading-copy").boundingBox())!;
-        expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
+        if (route === "/") {
+          // The combined Fireworks panel stacks the shared page-heading logo above a full-width heading.
+          expect(logoBox.width, "/: logo matches the shared 128px page-heading size").toBe(128);
+          if (width < 768) {
+            // Phones: the logo is centred; the empty side margin beside a left-aligned logo read as a mistake beside the floating control.
+            expect(Math.abs(logoBox.x + logoBox.width / 2 - (heading.x + heading.width / 2)), "/: the logo is centred above the heading").toBeLessThanOrEqual(1);
+          } else {
+            expect(heading.x, "/: the heading spans the panel under the logo").toBe(logoBox.x);
+          }
+          expect(heading.y, "/: the heading sits below the logo").toBeGreaterThanOrEqual(logoBox.y + logoBox.height);
+        } else {
+          expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
+          expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
+          expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
+          expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
+        }
       }
       const logoBottom = await page.locator(".mobile-page-logo").evaluate((element) => element.getBoundingClientRect().bottom);
       if (route === "/") {
@@ -37,11 +49,11 @@ for (const width of [320, 390, 768, 1023]) {
         await expect(copy.locator(".page-logo-home")).toBeVisible();
         await expect(copy.locator(".eyebrow")).toHaveCount(0);
         const title = (await copy.locator("h1").boundingBox())!;
-        expect(title.y, "Homepage heading moves up without covering the controls").toBe(72);
+        expect(title.y, "Homepage heading sits below the logo, clear of the controls").toBeGreaterThanOrEqual(logoBottom);
         expect(await copy.locator("h1").evaluate((element) => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(24);
         const intro = (await copy.locator(":scope > p").boundingBox())!;
         const logo = (await copy.locator(".page-logo-home").boundingBox())!;
-        expect(intro.x, "Homepage introduction uses the full panel width").toBe(logo.x);
+        expect(intro.x, "Homepage introduction uses the full panel width").toBe(title.x);
         expect(intro.y, "Homepage introduction follows the logo/title row").toBeGreaterThanOrEqual(logoBottom);
       }
       const panel = page.locator(".view-hero");

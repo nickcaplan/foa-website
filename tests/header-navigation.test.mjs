@@ -53,7 +53,7 @@ test("the homepage retains desktop branding and uses the shared inline mobile lo
   assert.ok(html.indexOf(introduction) < html.indexOf("<h1"));
   const main = html.match(/<main\b[\s\S]*?<\/main>/)?.[0];
   assert.ok(main);
-  assert.match(main, /class="hero-copy">\s*<div class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1[^>]*data-fit-heading[^>]*>Helping Ashley children <em>flourish\.<\/em><\/h1>/);
+  assert.match(main, /class="hero-copy">\s*<div class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1>Fireworks on the <em>Field\.<\/em><\/h1>/);
   assert.doesNotMatch(main, /mobile-home-introduction|class="home-introduction"|Ashley C of E Primary School PTA/);
   assert.doesNotMatch(main, /Parent-led\. Child-focused\. All welcome\.|class="eyebrow">Parent-led/);
 });
