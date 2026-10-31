@@ -273,7 +273,9 @@ test("the homepage shows Fireworks in the initial HTML without Welcome Tea or da
   assert.match(homepage, /<div class="hero-event">/);
   assert.match(homepage, /<h1[^>]*>Fireworks on the <em>Field\.<\/em><\/h1>/);
   assert.doesNotMatch(homepage, /<h2>Fireworks on the Field<\/h2>/);
-  assert.match(homepage, /<strong>Thursday 5th November, Ashley School field\.<\/strong> Gates open 16:30, event closes 18:30\./);
+  // Date and venue are separate blocks so the venue never strands a word on mobile;
+  // the times keep their number bound to its label with a non-breaking space.
+  assert.match(homepage, /<strong class="hero-when-date">Thursday 5th November,<\/strong> <strong class="hero-when-venue">Ashley School\u00a0field\.<\/strong> Gates open\u00a016:30, event closes\u00a018:30\./);
   // Nick's call: no FOA introduction on the homepage hero; the panel is entirely about the event.
   assert.doesNotMatch(homepage, /hero-tagline/);
   assert.doesNotMatch(homepage, /class="site-width home-intro"/);

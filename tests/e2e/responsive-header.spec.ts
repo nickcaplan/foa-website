@@ -121,8 +121,8 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
       return { logoLeft: logo.left, logoRight: logo.right, copyLeft: copy.left, copyRight: copy.right, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
     });
     if (route === "/") {
-      // The combined Fireworks panel stacks the heading below the logo at the same left edge.
-      expect(layout.copyLeft, route).toBe(layout.logoLeft);
+      // The Fireworks panel centres the logo above the full-width heading at phone width (this spec runs at 320px).
+      expect(Math.abs(layout.logoLeft + (layout.logoRight - layout.logoLeft) / 2 - layout.viewport / 2), route).toBeLessThanOrEqual(1);
     } else {
       expect(layout.copyLeft, route).toBeGreaterThanOrEqual(layout.logoRight);
     }

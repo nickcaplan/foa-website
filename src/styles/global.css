@@ -1108,6 +1108,26 @@ svg.cta-icon {
     gap: 1.75rem;
     padding: 1.4rem min(1.25rem, 5vw) 1.75rem;
   }
+
+  /* Phones: tighten the panel head and centre the brand mark so the header row
+     reads deliberate beside the floating control. */
+  .homepage .hero-event {
+    padding-top: 1.25rem;
+  }
+
+  .homepage .hero-event .mobile-page-heading {
+    row-gap: 0.45rem;
+  }
+
+  .homepage .hero-event .mobile-page-heading-brand {
+    margin-inline: auto;
+  }
+
+  /* Date and venue get their own lines so the venue never strands a word. */
+  .homepage .hero-when-date,
+  .homepage .hero-when-venue {
+    display: block;
+  }
 }
 
 .event-feature--poster :focus-visible,
