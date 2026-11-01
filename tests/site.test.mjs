@@ -298,6 +298,7 @@ test("the homepage shows Fireworks in the initial HTML without Welcome Tea or da
   assert.match(heroActions, /Download the event/);
   assert.match(heroActions, /\(PDF, 9\.9 MB\)/);
   assert.doesNotMatch(homepage, /event-feature-actions/, "poster carries no separate Event details action");
+  assert.match(homepage, /<a class="event-poster-link[^"]*" href="[^"]*" aria-label="Fireworks on the Field event details">/, "poster link names its event-details destination");
   assert.equal(homepage.match(/fireworks-2026-event-guide\.pdf/g)?.length, 1, "guide link appears once");
   assert.doesNotMatch(homepage, /Welcome Tea|welcome-tea|data-show-before|data-show-from/);
 });

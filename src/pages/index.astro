@@ -36,7 +36,7 @@ const fireworksSizes = "(min-width: 80rem) 30rem, (min-width: 48rem) 40vw, calc(
        </div>
         <article class="event-feature event-feature--poster">
           <p class="event-feature-kicker">Remember Remember the 5th of November</p>
-          <a class="event-poster-link event-poster-link--wide event-poster-link--sponsored" href={withBase(fireworks.path!)}>
+          <a class="event-poster-link event-poster-link--wide event-poster-link--sponsored" href={withBase(fireworks.path!)} aria-label={`${fireworks.title} event details`}>
             <img src={withBase("/events/fireworks-960.webp")} srcset={fireworksSrcset} sizes={fireworksSizes} alt="Fireworks lighting up the sky over the school field." width="1600" height="1066" fetchpriority="high" decoding="async">
             <SponsorRibbon />
           </a>
