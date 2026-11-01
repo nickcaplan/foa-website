@@ -316,7 +316,10 @@ test("hero panel keeps dark focus outlines and heading accent in both modes", as
       if (await reject.count()) await reject.click();
       for (const sel of heroLinks) {
         await tabTo(sel);
-        await expect(page.locator(sel)).toHaveCSS("outline-color", "rgb(38, 54, 26)");
+        const link = page.locator(sel);
+        await expect(link).toHaveCSS("outline-color", "rgb(38, 54, 26)");
+        await expect(link).toHaveCSS("outline-style", "solid");
+        await expect(link).toHaveCSS("outline-width", "3px");
       }
       let toggle = await openThemeToggle(page);
       await toggle.click();
@@ -324,7 +327,10 @@ test("hero panel keeps dark focus outlines and heading accent in both modes", as
       await closeMenu(page);
       for (const sel of heroLinks) {
         await tabTo(sel);
-        await expect(page.locator(sel)).toHaveCSS("outline-color", "rgb(138, 74, 5)");
+        const link = page.locator(sel);
+        await expect(link).toHaveCSS("outline-color", "rgb(138, 74, 5)");
+        await expect(link).toHaveCSS("outline-style", "solid");
+        await expect(link).toHaveCSS("outline-width", "3px");
       }
       await expect(page.locator(".hero-copy h1 em")).toHaveCSS("color", "rgb(38, 54, 26)");
       toggle = await openThemeToggle(page);
