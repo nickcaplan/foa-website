@@ -1229,16 +1229,6 @@ svg.cta-icon {
   text-align: center;
 }
 
-.event-feature.event-feature--poster > .event-feature-when {
-  display: flex;
-  width: min(100%, 26rem);
-  margin: 1.25rem 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.7rem;
-}
-
 .event-feature.event-feature--poster > .button {
   width: min(100%, 26rem);
   justify-content: center;
@@ -2909,22 +2899,23 @@ body.menu-open .cookie-banner {
   gap: 0.75rem;
 }
 
-.event-feature--poster .event-timeline {
+.hero-copy .event-timeline {
   --timeline-inset: 2rem;
-  width: calc(100% + 2 * (var(--scroll-pad) - 0.5rem));
-  max-width: none;
+  width: 100%;
+  max-width: 30rem;
+  margin: 1.5rem 0 0;
 }
 
-.event-feature--poster .event-timeline li {
+.hero-copy .event-timeline li {
   width: 4.5rem;
 }
 
 /* Pull the inner stops toward the centre so neighbours keep clear of the end stops. */
-.event-feature--poster .event-timeline li:not(:first-child, :last-child) {
+.hero-copy .event-timeline li:not(:first-child, :last-child) {
   left: calc(var(--timeline-inset) + (100% - 2 * var(--timeline-inset)) * (0.5 + (var(--at) - 0.5) * 0.8));
 }
 
-.event-feature--poster .event-timeline time {
+.hero-copy .event-timeline time {
   font-size: clamp(1rem, calc((100cqw - 2 * var(--timeline-inset)) / 11.5), 1.6rem);
 }
 
@@ -5310,25 +5301,6 @@ body.menu-open .cookie-banner {
   .hero-grid .event-poster-link > img {
     height: clamp(8.5rem, 24vh, 14.5rem);
     object-fit: cover;
-  }
-
-  .event-feature.event-feature--poster > .event-feature-when {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.1rem;
-    margin: 0.9rem 0 0.75rem;
-  }
-
-  .hero-grid .date-tile {
-    padding: 0.3rem 1.1rem;
-  }
-
-  .hero-grid .event-feature-where {
-    font-size: 0.9rem;
-  }
-
-  .hero-grid .date-tile__day {
-    font-size: 1.9rem;
   }
 
   .hero-grid .event-timeline {
