@@ -1060,7 +1060,9 @@ svg.cta-icon {
   max-width: 100%;
   margin: 0 2px 0.5rem auto;
   padding: 0.26rem 0.7rem;
-  background: var(--amber-light, #f8e4b7);
+  /* Day amber, not var(--amber-light): Night Mode redefines that token dark
+     for page chrome, while this parchment panel keeps the Day palette. */
+  background: #f8e4b7;
   border: 1.5px dashed var(--scroll-edge, #9e7b35);
   border-radius: 6px;
   color: var(--scroll-ink, #2a1d0c);
