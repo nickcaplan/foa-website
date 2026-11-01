@@ -2899,11 +2899,17 @@ body.menu-open .cookie-banner {
   gap: 0.75rem;
 }
 
-.hero-copy .event-timeline {
-  --timeline-inset: 2rem;
+.hero-copy .event-timeline-wrap {
   width: 100%;
   max-width: 30rem;
   margin: 1.5rem 0 0;
+  container-type: inline-size;
+}
+
+.hero-copy .event-timeline {
+  --timeline-inset: 2rem;
+  width: 100%;
+  margin: 0;
 }
 
 .hero-copy .event-timeline li {
@@ -2917,6 +2923,53 @@ body.menu-open .cookie-banner {
 
 .hero-copy .event-timeline time {
   font-size: clamp(1rem, calc((100cqw - 2 * var(--timeline-inset)) / 11.5), 1.6rem);
+}
+
+/* Enlarged text grows the stop labels while the track stays the same pixel
+   width, so once the wrapper is narrow relative to the font size, switch to
+   a vertical list. The em threshold tracks the root font size. */
+@container (max-width: 18em) {
+  .hero-grid .hero-copy .event-timeline {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .hero-grid .hero-copy .event-timeline::before {
+    top: 0.55rem;
+    right: auto;
+    bottom: 0.55rem;
+    left: calc(0.55rem - 1px);
+    width: 2px;
+    height: auto;
+  }
+
+  .hero-grid .hero-copy .event-timeline li {
+    position: relative;
+    left: auto;
+    width: auto;
+    padding: 0 0 0 1.6rem;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.55rem;
+    text-align: left;
+    transform: none;
+  }
+
+  .hero-grid .hero-copy .event-timeline li:not(:first-child, :last-child) {
+    left: auto;
+  }
+
+  .hero-grid .hero-copy .event-timeline li::before {
+    top: 50%;
+    left: 0.2rem;
+    transform: translateY(-50%);
+  }
+
+  .hero-grid .hero-copy .event-timeline span {
+    width: auto;
+  }
 }
 
 .event-feature--poster .button--amber {
