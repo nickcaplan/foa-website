@@ -294,20 +294,45 @@ test("pages with their own parchment or night-sky theme look the same in both mo
 });
 
 test("hero panel keeps dark focus outlines and heading accent in both modes", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
-  await page.goto("/");
-  await freezeTransitions(page);
-  const heroButton = page.locator(".hero-actions .button--amber");
-  await heroButton.focus();
-  await expect(heroButton).toHaveCSS("outline-color", "rgb(38, 54, 26)");
-  const toggle = await openThemeToggle(page);
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-pressed", "true");
-  await closeMenu(page);
-  await heroButton.focus();
-  await expect(heroButton).toHaveCSS("outline-color", "rgb(138, 74, 5)");
-  await expect(page.locator(".hero-copy h1 em")).toHaveCSS("color", "rgb(38, 54, 26)");
+  // Keyboard focus, not programmatic .focus(): :focus-visible only applies
+  // after keyboard interaction, which is the state this rule exists for.
+  const tabTo = async (selector: string) => {
+    await page.evaluate(() => document.body.focus());
+    for (let i = 0; i < 80; i++) {
+      await page.keyboard.press("Tab");
+      if (await page.evaluate((sel) => document.activeElement?.matches(sel), selector)) return;
+    }
+    throw new Error(`could not tab to ${selector}`);
+  };
+  const heroLinks = [".hero-actions .button--amber", ".hero-actions .button--primary", ".hero-actions .button--secondary", ".hero-event .event-poster-link"];
+  for (const width of [390, 1280]) {
+    for (const zoom of [false, true]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
+      await page.goto("/");
+      await freezeTransitions(page);
+      if (zoom) await page.addStyleTag({ content: "html { font-size: 200% !important; }" });
+      const reject = page.getByRole("button", { name: "Reject analytics cookies" });
+      if (await reject.count()) await reject.click();
+      for (const sel of heroLinks) {
+        await tabTo(sel);
+        await expect(page.locator(sel)).toHaveCSS("outline-color", "rgb(38, 54, 26)");
+      }
+      let toggle = await openThemeToggle(page);
+      await toggle.click();
+      await expect(toggle).toHaveAttribute("aria-pressed", "true");
+      await closeMenu(page);
+      for (const sel of heroLinks) {
+        await tabTo(sel);
+        await expect(page.locator(sel)).toHaveCSS("outline-color", "rgb(138, 74, 5)");
+      }
+      await expect(page.locator(".hero-copy h1 em")).toHaveCSS("color", "rgb(38, 54, 26)");
+      toggle = await openThemeToggle(page);
+      await toggle.click();
+      await expect(toggle).toHaveAttribute("aria-pressed", "false");
+      await closeMenu(page);
+    }
+  }
 });
 
 test("mobile menu keeps visible dividers and readable links in Night Mode", async ({ page }) => {
