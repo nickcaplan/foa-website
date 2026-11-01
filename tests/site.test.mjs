@@ -273,12 +273,20 @@ test("the homepage shows Fireworks in the initial HTML without Welcome Tea or da
   assert.match(homepage, /<div class="hero-event">/);
   assert.match(homepage, /<h1[^>]*>Fireworks on the <em>Field\.<\/em><\/h1>/);
   assert.doesNotMatch(homepage, /<h2>Fireworks on the Field<\/h2>/);
-  // The hero facts lead with matched calendar/pin/clock icons, each fact on its
-  // own row with the date and venue bold. The times use Nick's chosen short
-  // range for this row ("16:30 - 18:30"); the venue keeps its last two words together.
-  assert.match(homepage, /<span class="hero-fact">.*?<strong>Thursday 5th November<\/strong><\/span>/);
-  assert.match(homepage, /<span class="hero-fact">.*?<strong>Ashley School\u00a0field<\/strong><\/span>/);
-  assert.match(homepage, /16:30 - 18:30<\/span><\/p>/);
+  // The hero facts lead with matched calendar/pin icons, each fact on its own
+  // row with the date and venue bold; the venue keeps its last two words
+  // together. Nick's call: the short time-range row repeated the hours the
+  // schedule timeline below already carries, so the facts stop at date+venue.
+  const heroWhen = homepage.match(/<p class="hero-when">([\s\S]*?)<\/p>/)?.[1];
+  assert.ok(heroWhen, "homepage hero facts are present");
+  assert.match(heroWhen, /<span class="hero-fact">.*?<strong>Thursday 5th November<\/strong><\/span>/);
+  assert.match(heroWhen, /<span class="hero-fact">.*?<strong>Ashley School\u00a0field<\/strong><\/span>/);
+  assert.equal(heroWhen.match(/hero-fact-icon/g)?.length, 2, "hero facts are date and venue only");
+  assert.doesNotMatch(heroWhen, /16:30|18:30/, "the timeline below carries the hours");
+  const timeline = homepage.match(/<ol class="event-timeline">([\s\S]*?)<\/ol>/)?.[1];
+  assert.ok(timeline, "hero schedule timeline is present");
+  for (const t of ["16:30", "17:00", "18:00", "18:30"]) assert.match(timeline, new RegExp(`>${t}<`));
+  for (const l of ["Gates open", "Quiet display", "Main display", "Event closes"]) assert.match(timeline, new RegExp(l));
   assert.doesNotMatch(homepage, /hero-when-date|hero-when-venue|hero-fact--date/);
   // Nick's call: no FOA introduction on the homepage hero; the panel is entirely about the event.
   assert.doesNotMatch(homepage, /hero-tagline/);
@@ -289,9 +297,7 @@ test("the homepage shows Fireworks in the initial HTML without Welcome Tea or da
   assert.match(heroActions, new RegExp(`href="${basePath}/events/fireworks-2026-event-guide\\.pdf" download="Fireworks 2026 Event Guide\\.pdf"`));
   assert.match(heroActions, /Download the event/);
   assert.match(heroActions, /\(PDF, 9\.9 MB\)/);
-  const actions = homepage.match(/<div class="event-feature-actions">([\s\S]*?)<\/div>/)?.[1];
-  assert.ok(actions, "homepage event feature actions are present");
-  assert.doesNotMatch(actions, /event-guide|Download the event/);
+  assert.doesNotMatch(homepage, /event-feature-actions/, "poster carries no separate Event details action");
   assert.equal(homepage.match(/fireworks-2026-event-guide\.pdf/g)?.length, 1, "guide link appears once");
   assert.doesNotMatch(homepage, /Welcome Tea|welcome-tea|data-show-before|data-show-from/);
 });
