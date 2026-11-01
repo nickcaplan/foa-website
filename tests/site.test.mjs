@@ -273,13 +273,13 @@ test("the homepage shows Fireworks in the initial HTML without Welcome Tea or da
   assert.match(homepage, /<div class="hero-event">/);
   assert.match(homepage, /<h1[^>]*>Fireworks on the <em>Field\.<\/em><\/h1>/);
   assert.doesNotMatch(homepage, /<h2>Fireworks on the Field<\/h2>/);
-  // The hero facts lead with matched calendar/pin/clock icons; the date gets the
-  // display-serif emphasis and each fact is its own row. The venue keeps its last
-  // two words together and each time stays bound to its label (non-breaking space).
-  assert.match(homepage, /<span class="hero-fact hero-fact--date">.*?<strong>Thursday 5th November<\/strong><\/span>/);
+  // The hero facts lead with matched calendar/pin/clock icons, each fact on its
+  // own row with the date and venue bold. The times use the shared short range
+  // format ("16:30-18:30"), and the venue keeps its last two words together.
+  assert.match(homepage, /<span class="hero-fact">.*?<strong>Thursday 5th November<\/strong><\/span>/);
   assert.match(homepage, /<span class="hero-fact">.*?<strong>Ashley School\u00a0field<\/strong><\/span>/);
-  assert.match(homepage, /Gates open\u00a016:30, event closes\u00a018:30\.<\/span><\/p>/);
-  assert.doesNotMatch(homepage, /hero-when-date|hero-when-venue/);
+  assert.match(homepage, /16:30-18:30<\/span><\/p>/);
+  assert.doesNotMatch(homepage, /hero-when-date|hero-when-venue|hero-fact--date/);
   // Nick's call: no FOA introduction on the homepage hero; the panel is entirely about the event.
   assert.doesNotMatch(homepage, /hero-tagline/);
   assert.doesNotMatch(homepage, /class="site-width home-intro"/);

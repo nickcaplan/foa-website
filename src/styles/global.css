@@ -771,11 +771,6 @@ a {
 }
 
 @media (max-width: 23rem) {
-  /* The smallest phones: the serif date shrinks a step so it stays on one line. */
-  .homepage .hero-fact--date {
-    font-size: 1.2em;
-  }
-
   .hero-copy .hero-actions {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1049,7 +1044,7 @@ svg.cta-icon {
 }
 
 /* The event facts sit under the heading as icon-led rows so the date, venue
-   and times read at a glance; the date leads in the display serif. */
+   and times read at a glance; the date and venue stay bold. */
 .homepage .hero-when {
   display: grid;
   gap: 0.4rem;
@@ -1067,13 +1062,6 @@ svg.cta-icon {
   margin-top: 0.15em;
   flex: none;
   color: var(--scroll-forest, var(--green));
-}
-
-.hero-fact--date {
-  color: var(--scroll-forest);
-  font-family: var(--font-display);
-  font-size: 1.45em;
-  font-weight: 600;
 }
 
 .hero-event .hero-copy .hero-actions {
