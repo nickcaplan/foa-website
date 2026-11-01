@@ -1193,17 +1193,6 @@ svg.cta-icon {
   background: var(--sponsor-green);
 }
 
-.event-feature.event-feature--poster > .event-feature-kicker {
-  max-width: none;
-  margin: 0 0 0.75rem;
-  color: #7a4a00;
-  font-family: "UnifrakturCook", "Old English Text MT", Georgia, "Times New Roman", serif;
-  font-size: clamp(1.4rem, 5vw, 1.6rem);
-  font-weight: 700;
-  line-height: 1.1;
-  text-align: center;
-}
-
 .event-feature.event-feature--poster h2 {
   max-width: none;
   margin: 0 0 1.5rem;
@@ -5320,12 +5309,7 @@ body.menu-open .cookie-banner {
     padding: 2.1rem var(--scroll-pad) 1.4rem;
   }
 
-  .event-feature.event-feature--poster > .event-feature-kicker {
-    margin-bottom: 0.4rem;
-    font-size: 1.4rem;
-  }
-
-  .event-feature.event-feature--poster h2 {
+    .event-feature.event-feature--poster h2 {
     margin-bottom: 0.9rem;
     font-size: clamp(1.7rem, 3.4vh, 2.2rem);
   }

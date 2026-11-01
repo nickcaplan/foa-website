@@ -278,11 +278,10 @@ test("pages with their own parchment or night-sky theme look the same in both mo
     await closeMenu(page);
     const day = await snapshot();
     // Sanity floor that the snapshot captured real content: the homepage
-    // poster is intentionally lean (kicker plus the standalone sponsor
-    // ribbon) and yields 5 entries; the other themed pages keep the
-    // original floor of 10. The exact day/night equality below is the
-    // real check.
-    expect(day.length, route).toBeGreaterThan(route === "/" ? 4 : 10);
+    // poster is intentionally lean (just the standalone sponsor ribbon)
+    // and yields 4 entries; the other themed pages keep the original
+    // floor of 10. The exact day/night equality below is the real check.
+    expect(day.length, route).toBeGreaterThan(route === "/" ? 3 : 10);
     toggle = await openThemeToggle(page);
     await toggle.click();
     await expect(toggle).toHaveAttribute("aria-pressed", "true");

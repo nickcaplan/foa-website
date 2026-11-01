@@ -303,7 +303,7 @@ test("the homepage shows Fireworks in the initial HTML without Welcome Tea or da
   assert.doesNotMatch(homepage, /event-poster-link/, "the poster photo's event-details link went with it");
   const heroPoster = homepage.match(/<article class="event-feature event-feature--poster">([\s\S]*?)<\/article>/)?.[1];
   assert.ok(heroPoster, "hero poster panel is present");
-  assert.match(heroPoster, /event-feature-kicker">Remember Remember the 5th of November/);
+  assert.doesNotMatch(heroPoster, /Remember Remember|event-feature-kicker/, "Nick's call: the poster kicker is removed too");
   assert.match(heroPoster, /class="sponsor-ribbon"/, "the poster keeps the sponsor credit");
   assert.equal(homepage.match(/fireworks-2026-event-guide\.pdf/g)?.length, 1, "guide link appears once");
   assert.doesNotMatch(homepage, /Welcome Tea|welcome-tea|data-show-before|data-show-from/);
