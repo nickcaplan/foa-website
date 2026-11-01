@@ -291,14 +291,20 @@ test("the homepage shows Fireworks in the initial HTML without Welcome Tea or da
   // Nick's call: no FOA introduction on the homepage hero; the panel is entirely about the event.
   assert.doesNotMatch(homepage, /hero-tagline/);
   assert.doesNotMatch(homepage, /class="site-width home-intro"/);
-  assert.match(homepage, new RegExp(`rel="preload" as="image" href="${basePath}/events/fireworks-960.webp"`));
+  // Nick's call: the poster photo is removed; the sponsor credit stays.
+  assert.doesNotMatch(homepage, /rel="preload" as="image"/, "no image preload without the poster photo");
+  assert.doesNotMatch(homepage, /fireworks-\d+\.webp/, "the poster photo is gone");
   const heroActions = homepage.match(/<div class="hero-actions">([\s\S]*?)<\/div>/)?.[1];
   assert.ok(heroActions, "homepage hero actions are present");
   assert.match(heroActions, new RegExp(`href="${basePath}/events/fireworks-2026-event-guide\\.pdf" download="Fireworks 2026 Event Guide\\.pdf"`));
   assert.match(heroActions, /Download the event/);
   assert.match(heroActions, /\(PDF, 9\.9 MB\)/);
   assert.doesNotMatch(homepage, /event-feature-actions/, "poster carries no separate Event details action");
-  assert.match(homepage, new RegExp(`<a class="event-poster-link[^"]*" href="${basePath}/events/fireworks-2026/" aria-label="Fireworks on the Field event details">`), "poster link names and points at the event details page");
+  assert.doesNotMatch(homepage, /event-poster-link/, "the poster photo's event-details link went with it");
+  const heroPoster = homepage.match(/<article class="event-feature event-feature--poster">([\s\S]*?)<\/article>/)?.[1];
+  assert.ok(heroPoster, "hero poster panel is present");
+  assert.match(heroPoster, /event-feature-kicker">Remember Remember the 5th of November/);
+  assert.match(heroPoster, /class="sponsor-ribbon"/, "the poster keeps the sponsor credit");
   assert.equal(homepage.match(/fireworks-2026-event-guide\.pdf/g)?.length, 1, "guide link appears once");
   assert.doesNotMatch(homepage, /Welcome Tea|welcome-tea|data-show-before|data-show-from/);
 });

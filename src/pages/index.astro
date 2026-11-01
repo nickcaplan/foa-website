@@ -20,11 +20,9 @@ const fireworksSchedule = fireworks.schedule ?? [];
 const scheduleStart = fireworksSchedule[0]?.time.getTime() ?? 0;
 const scheduleSpan = (fireworksSchedule.at(-1)?.time.getTime() ?? 0) - scheduleStart;
 const scheduleFraction = (time: Date) => (scheduleSpan > 0 ? (time.getTime() - scheduleStart) / scheduleSpan : 0.5);
-const fireworksSrcset = [640, 960, 1600].map((width) => `${withBase(`/events/fireworks-${width}.webp`)} ${width}w`).join(", ");
 // Conservative rendered-width estimates, shared by the image and its preload.
-const fireworksSizes = "(min-width: 80rem) 30rem, (min-width: 48rem) 40vw, calc(100vw - 5rem)";
 ---
-   <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." preloadImage="/events/fireworks-960.webp" preloadImageSrcset={fireworksSrcset} preloadImageSizes={fireworksSizes} bodyClass="homepage">
+   <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage">
   <section class="hero">
     <div class="site-width hero-grid">
       <div class="hero-event">
@@ -36,10 +34,7 @@ const fireworksSizes = "(min-width: 80rem) 30rem, (min-width: 48rem) 40vw, calc(
        </div>
         <article class="event-feature event-feature--poster">
           <p class="event-feature-kicker">Remember Remember the 5th of November</p>
-          <a class="event-poster-link event-poster-link--wide event-poster-link--sponsored" href={withBase(fireworks.path!)} aria-label={`${fireworks.title} event details`}>
-            <img src={withBase("/events/fireworks-960.webp")} srcset={fireworksSrcset} sizes={fireworksSizes} alt="Fireworks lighting up the sky over the school field." width="1600" height="1066" fetchpriority="high" decoding="async">
-            <SponsorRibbon />
-          </a>
+          <SponsorRibbon />
         </article>
       </div>
      <div class="quick-list hero-links">
