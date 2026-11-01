@@ -33,6 +33,12 @@
   outline-color: var(--night-focus);
 }
 
+/* The parchment hero panel stays light in Night Mode, so focus inside it keeps
+   the same dark amber used by the other paper zones. */
+:root[data-theme="night"] .hero-event :focus-visible {
+  outline-color: #8a4a05;
+}
+
 :root[data-theme="night"] .site-header {
   background: var(--night-header);
   border-bottom-color: var(--line);

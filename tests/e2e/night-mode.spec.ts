@@ -293,6 +293,23 @@ test("pages with their own parchment or night-sky theme look the same in both mo
   }
 });
 
+test("hero panel keeps dark focus outlines and heading accent in both modes", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
+  await page.goto("/");
+  await freezeTransitions(page);
+  const heroButton = page.locator(".hero-actions .button--amber");
+  await heroButton.focus();
+  await expect(heroButton).toHaveCSS("outline-color", "rgb(38, 54, 26)");
+  const toggle = await openThemeToggle(page);
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await closeMenu(page);
+  await heroButton.focus();
+  await expect(heroButton).toHaveCSS("outline-color", "rgb(138, 74, 5)");
+  await expect(page.locator(".hero-copy h1 em")).toHaveCSS("color", "rgb(38, 54, 26)");
+});
+
 test("mobile menu keeps visible dividers and readable links in Night Mode", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "dark" });
