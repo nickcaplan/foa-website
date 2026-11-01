@@ -748,6 +748,24 @@ a {
   margin-top: 2rem;
 }
 
+/* Enlarged text leaves hero CTAs little room beside the pinned icon, so the
+   inline padding is trimmed to keep words whole; the global reserved icon
+   lane stays as it is. */
+.hero-copy .hero-actions .button {
+  padding-inline: 1rem;
+}
+
+/* Middle words stay whole under enlarged text instead of breaking anywhere
+   ("Firework/s"); the final word keeps its .cta-word escape hatch. The extra
+   .button class outranks the global pill label rule. Below 22.5rem the
+   anywhere fallback still applies so a long word can never clip. */
+@media (min-width: 22.5rem) {
+  .hero-copy .hero-actions .button .cta-label {
+    overflow-wrap: normal;
+    hyphens: auto;
+  }
+}
+
 .hero-copy .hero-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
