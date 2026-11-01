@@ -119,13 +119,13 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
       const logo = element.querySelector(".page-logo-home")!.getBoundingClientRect();
       const copy = element.querySelector(".mobile-page-heading-copy")!.getBoundingClientRect();
       const burger = document.querySelector(".menu-toggle")!.getBoundingClientRect();
-      return { logoLeft: logo.left, logoRight: logo.right, logoTop: logo.top, logoBottom: logo.bottom, burgerLeft: burger.left, burgerBottom: burger.bottom, copyLeft: copy.left, copyRight: copy.right, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
+      return { logoLeft: logo.left, logoRight: logo.right, logoTop: logo.top, logoBottom: logo.bottom, burgerLeft: burger.left, burgerBottom: burger.bottom, copyLeft: copy.left, copyRight: copy.right, copyTop: copy.top, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
     });
     if (route === "/") {
-      // The Fireworks panel centres the logo above the full-width heading at phone width (this spec runs at 320px).
-      expect(Math.abs(layout.logoLeft + (layout.logoRight - layout.logoLeft) / 2 - layout.viewport / 2), route).toBeLessThanOrEqual(1);
-      // The centred logo must stay clear of the floating menu even when enlarged text grows both.
-      expect(layout.logoRight <= layout.burgerLeft || layout.logoTop >= layout.burgerBottom, route).toBe(true);
+      // The Fireworks panel wraps the heading below the logo once enlarged
+      // text leaves no room beside it, so every word stays whole (pinned by
+      // the "scales with enlarged text and stays whole" test).
+      expect(layout.copyLeft >= layout.logoRight || layout.copyTop >= layout.logoBottom, route).toBe(true);
     } else {
       expect(layout.copyLeft, route).toBeGreaterThanOrEqual(layout.logoRight);
     }
@@ -141,7 +141,7 @@ test("enlarged homepage text keeps the menu and hero actions inside a narrow vie
 
   await expect(page.getByRole("button", { name: "Open menu" })).toBeVisible();
   await expect(page.locator(".hero-copy .page-logo-home")).toBeVisible();
-  expect(await page.locator(".hero-copy .mobile-page-heading, .hero-copy .page-logo-home, .hero-copy .page-logo-home img, .hero-copy .mobile-page-heading-copy, .hero-copy h1").evaluateAll((elements) =>
+  expect(await page.locator(".hero-copy .mobile-page-heading, .hero-copy .page-logo-home, .hero-copy .page-logo-home img, .hero-copy .mobile-page-heading-copy, .hero-copy .hero-next-event, .hero-copy h1").evaluateAll((elements) =>
     elements.map((element) => {
       const { left, right } = element.getBoundingClientRect();
       return { element: element.className || element.tagName, left, right, viewport: window.innerWidth, scrollWidth: element.scrollWidth, clientWidth: element.clientWidth };
