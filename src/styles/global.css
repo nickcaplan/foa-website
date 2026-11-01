@@ -751,7 +751,7 @@ a {
 /* Enlarged text leaves hero CTAs little room beside the pinned icon, so the
    inline padding is trimmed to keep words whole; the global reserved icon
    lane stays as it is. */
-.hero-copy .hero-actions .button {
+.hero-event .hero-actions .button {
   padding-inline: 1rem;
 }
 
@@ -760,40 +760,40 @@ a {
    .button class outranks the global pill label rule. Below 22.5rem the
    anywhere fallback still applies so a long word can never clip. */
 @media (min-width: 22.5rem) {
-  .hero-copy .hero-actions .button .cta-label {
+  .hero-event .hero-actions .button .cta-label {
     overflow-wrap: normal;
     hyphens: auto;
   }
 }
 
-.hero-copy .hero-actions {
+.hero-event .hero-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
   max-width: 30rem;
 }
 
-.hero-copy .hero-actions .button--amber,
-.hero-copy .hero-actions .button--wide {
+.hero-event .hero-actions .button--amber,
+.hero-event .hero-actions .button--wide {
   grid-column: 1 / -1;
 }
 
-.hero-copy .hero-actions .button--secondary {
+.hero-event .hero-actions .button--secondary {
   padding-inline: 0.75rem;
 }
 
-.hero-copy .hero-actions .button {
+.hero-event .hero-actions .button {
   min-width: 0;
   flex-wrap: wrap;
   overflow-wrap: anywhere;
 }
 
 @media (max-width: 23rem) {
-  .hero-copy .hero-actions {
+  .hero-event .hero-actions {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .hero-copy .hero-actions .button--secondary {
+  .hero-event .hero-actions .button--secondary {
     font-size: 0.92rem;
     padding-inline: 0.5rem;
   }
@@ -1035,7 +1035,7 @@ svg.cta-icon {
 }
 
 /* Inside the panel the card contributes its contents, not its own parchment. */
-.hero-event > .event-feature--poster {
+.hero-event .event-feature--poster {
   gap: 0.9rem;
   margin: 0;
   padding: 0;
@@ -1051,6 +1051,10 @@ svg.cta-icon {
 
 .hero-event .hero-copy {
   min-width: 0;
+}
+
+.hero-event > .hero-side {
+  display: contents;
 }
 
 .hero-next-event {
@@ -1083,6 +1087,12 @@ svg.cta-icon {
     top: 1.4rem;
     right: 2.6rem;
     margin: 0;
+  }
+
+  /* The absolute Next event tag sits in the panel's top-right corner, so the
+     action rail starts below it. */
+  .hero-event > .hero-side {
+    padding-top: 3rem;
   }
 }
 
@@ -1130,7 +1140,7 @@ svg.cta-icon {
   color: var(--scroll-forest, var(--green));
 }
 
-.hero-event .hero-copy .hero-actions {
+.hero-event .hero-actions {
   margin-top: 1.5rem;
 }
 
@@ -1146,8 +1156,25 @@ svg.cta-icon {
     padding: 2.4rem 2.6rem;
   }
 
+
   .hero-grid > .hero-event {
     grid-column: 1 / -1;
+  }
+
+  /* Desktop pairs the event copy with an action rail: the CTAs and the
+     sponsor credit stack in the second column so no tall empty column opens
+     up beside the heading. On phones the rail is plain flow, preserving the
+     approved single-column order (copy, actions, sponsor). */
+  .hero-event > .hero-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    min-width: 0;
+  }
+
+  .hero-event > .hero-side .hero-actions {
+    margin-top: 0;
   }
 
   .hero-event .hero-copy {
