@@ -1058,11 +1058,13 @@ svg.cta-icon {
   box-sizing: border-box;
   width: fit-content;
   max-width: 100%;
-  margin: 0 0 0.5rem auto;
+  margin: 0 2px 0.5rem auto;
   padding: 0.26rem 0.7rem;
-  border: 1.5px solid var(--scroll-edge, #9e7b35);
-  border-radius: 999px;
-  color: var(--scroll-forest, #26361a);
+  background: var(--amber-light, #f8e4b7);
+  border: 1.5px dashed var(--scroll-edge, #9e7b35);
+  border-radius: 6px;
+  color: var(--scroll-ink, #2a1d0c);
+  transform: rotate(-1.5deg);
   font-size: 0.68rem;
   font-weight: 750;
   letter-spacing: 0.12em;
@@ -1084,11 +1086,15 @@ svg.cta-icon {
 
 /* Where enlarged text shrinks the copy column (the heading grid's container),
    the tag spans the column as a banner instead of overflowing it. */
+/* In the narrow banner fallback the tag spans the column, so it stays
+   square: a tilted full-width band would clip at the edges. */
 @container (max-width: 8rem) {
   .hero-next-event {
     width: 100%;
     margin-left: 0;
+    margin-inline-end: 0;
     padding-inline: 0.5rem;
+    transform: none;
   }
 }
 
