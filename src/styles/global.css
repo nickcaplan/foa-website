@@ -771,6 +771,11 @@ a {
 }
 
 @media (max-width: 23rem) {
+  /* The smallest phones: the serif date shrinks a step so it stays on one line. */
+  .homepage .hero-fact--date {
+    font-size: 1.2em;
+  }
+
   .hero-copy .hero-actions {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1043,6 +1048,34 @@ svg.cta-icon {
   color: var(--scroll-forest);
 }
 
+/* The event facts sit under the heading as icon-led rows so the date, venue
+   and times read at a glance; the date leads in the display serif. */
+.homepage .hero-when {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.hero-fact {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.hero-fact-icon {
+  width: 1.1em;
+  height: 1.1em;
+  margin-top: 0.15em;
+  flex: none;
+  color: var(--scroll-forest, var(--green));
+}
+
+.hero-fact--date {
+  color: var(--scroll-forest);
+  font-family: var(--font-display);
+  font-size: 1.45em;
+  font-weight: 600;
+}
+
 .hero-event .hero-copy .hero-actions {
   margin-top: 1.5rem;
 }
@@ -1123,12 +1156,6 @@ svg.cta-icon {
     /* Cap against the floating menu lane so enlarged text never grows the logo under it. */
     max-width: min(var(--mobile-page-logo-size), calc(100vw - 2 * (3rem + max(1rem, env(safe-area-inset-right, 0px)))));
     margin-inline: auto;
-  }
-
-  /* Date and venue get their own lines so the venue never strands a word. */
-  .homepage .hero-when-date,
-  .homepage .hero-when-venue {
-    display: block;
   }
 
   /* The non-breaking pairs stay together until they would overflow; only then may they break. */
