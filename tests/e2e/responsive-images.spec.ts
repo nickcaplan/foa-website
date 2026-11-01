@@ -1,27 +1,19 @@
 import { expect, test } from "@playwright/test";
 
 for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
-  test(`homepage selects one appropriately sized image at ${viewport.width}px`, async ({ page }) => {
+  test(`homepage loads no fireworks photo at ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport);
     const requests: string[] = [];
     page.on("request", (request) => {
       if (/\/events\/fireworks-\d+\.(jpg|webp)$/.test(request.url())) requests.push(request.url());
     });
     await page.goto("/");
-    const photo = page.getByRole("img", { name: "Fireworks lighting up the sky over the school field." });
-    await expect(photo).toBeVisible();
-    const dimensions = await photo.evaluate((element) => {
-      const image = element as HTMLImageElement;
-      const box = image.getBoundingClientRect();
-      return { src: image.currentSrc, complete: image.complete && image.naturalWidth > 0,
-        width: box.width, height: box.height, viewport: innerWidth };
-    });
-    expect(dimensions.complete).toBe(true);
-    expect(dimensions.src).toMatch(/\/events\/fireworks-640\.webp$/);
-    expect(new Set(requests).size, "preload and image must not request different variants").toBe(1);
-    expect(requests.some((url) => url.endsWith(".jpg"))).toBe(false);
-    expect(dimensions.width).toBeLessThanOrEqual(viewport.width === 390 ? 390 : 600);
-    expect(dimensions.height).toBeGreaterThan(0);
+    // Nick's call: the hero poster photo is removed; the sponsor credit stays.
+    const ribbon = page.locator(".hero-event .sponsor-ribbon");
+    await expect(ribbon).toHaveCount(1);
+    await expect(ribbon).toBeVisible();
+    await expect(page.getByRole("img", { name: "Fireworks lighting up the sky over the school field." })).toHaveCount(0);
+    expect(requests, "the homepage must not fetch a fireworks photo").toEqual([]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
 

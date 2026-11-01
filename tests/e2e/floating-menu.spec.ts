@@ -23,24 +23,41 @@ for (const width of [320, 390, 768, 1023]) {
         await expect(logo, route).toBeVisible();
         await expect(logo).toHaveAttribute("href", "/");
         const logoBox = (await logo.boundingBox())!;
-        expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
-        expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
-        expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
         expect(logoBox.x + logoBox.width, route).toBeLessThan(before!.x);
         await expect(logo.locator("p, strong, span")).toHaveCount(0);
         const heading = (await page.locator(".mobile-page-heading-copy").boundingBox())!;
-        expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
+        if (route === "/") {
+          // Nick's call: the Fireworks panel uses the shared page-heading
+          // layout too - logo on the left, heading beside it. At 320px the
+          // 128px logo plus the display-size heading leave no room, so flex
+          // stacks the heading below the logo instead of breaking a word;
+          // the same stacking protects enlarged text at every width.
+          expect(logoBox.width, "/: logo matches the shared page-heading size").toBe(128);
+          const headingBeside = heading.x >= logoBox.x + logoBox.width - 0.5;
+          const headingStacked = heading.y >= logoBox.y + logoBox.height - 0.5;
+          expect(headingBeside || headingStacked, "/: the heading sits beside the logo, or stacked below it when narrow").toBe(true);
+        } else {
+          expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
+          expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
+          expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
+          expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
+        }
       }
       const logoBottom = await page.locator(".mobile-page-logo").evaluate((element) => element.getBoundingClientRect().bottom);
       if (route === "/") {
         const copy = page.locator(".hero-copy");
         await expect(copy.locator(".page-logo-home")).toBeVisible();
         await expect(copy.locator(".eyebrow")).toHaveCount(0);
+        await expect(copy.locator(".hero-next-event")).toHaveText("Next event");
         const title = (await copy.locator("h1").boundingBox())!;
-        expect(title.y, "Homepage heading moves up without covering the controls").toBe(72);
+        const logo = (await copy.locator(".page-logo-home").boundingBox())!;
+        // Beside the logo in the shared layout, or stacked below it at 320px
+        // and under enlarged text so no word breaks.
+        const titleBeside = title.x >= logo.x + logo.width - 0.5;
+        const titleStacked = title.y >= logo.y + logo.height - 0.5;
+        expect(titleBeside || titleStacked, "Homepage heading sits beside the logo, or stacked below it when narrow").toBe(true);
         expect(await copy.locator("h1").evaluate((element) => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(24);
         const intro = (await copy.locator(":scope > p").boundingBox())!;
-        const logo = (await copy.locator(".page-logo-home").boundingBox())!;
         expect(intro.x, "Homepage introduction uses the full panel width").toBe(logo.x);
         expect(intro.y, "Homepage introduction follows the logo/title row").toBeGreaterThanOrEqual(logoBottom);
       }

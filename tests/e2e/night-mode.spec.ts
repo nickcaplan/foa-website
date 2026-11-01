@@ -277,7 +277,11 @@ test("pages with their own parchment or night-sky theme look the same in both mo
     let toggle = await openThemeToggle(page);
     await closeMenu(page);
     const day = await snapshot();
-    expect(day.length, route).toBeGreaterThan(10);
+    // Sanity floor that the snapshot captured real content: the homepage
+    // poster is intentionally lean (just the standalone sponsor ribbon)
+    // and yields 4 entries; the other themed pages keep the original
+    // floor of 10. The exact day/night equality below is the real check.
+    expect(day.length, route).toBeGreaterThan(route === "/" ? 3 : 10);
     toggle = await openThemeToggle(page);
     await toggle.click();
     await expect(toggle).toHaveAttribute("aria-pressed", "true");
@@ -286,6 +290,54 @@ test("pages with their own parchment or night-sky theme look the same in both mo
     toggle = await openThemeToggle(page);
     await toggle.click();
     await closeMenu(page);
+  }
+});
+
+test("hero panel keeps dark focus outlines and heading accent in both modes", async ({ page }) => {
+  // Keyboard focus, not programmatic .focus(): :focus-visible only applies
+  // after keyboard interaction, which is the state this rule exists for.
+  const tabTo = async (selector: string) => {
+    await page.evaluate(() => document.body.focus());
+    for (let i = 0; i < 80; i++) {
+      await page.keyboard.press("Tab");
+      if (await page.evaluate((sel) => document.activeElement?.matches(sel), selector)) return;
+    }
+    throw new Error(`could not tab to ${selector}`);
+  };
+  const heroLinks = [".hero-actions .button--amber", ".hero-actions .button--primary", ".hero-actions .button--secondary"];
+  for (const width of [390, 1280]) {
+    for (const zoom of [false, true]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
+      await page.goto("/");
+      await freezeTransitions(page);
+      if (zoom) await page.addStyleTag({ content: "html { font-size: 200% !important; }" });
+      const reject = page.getByRole("button", { name: "Reject analytics cookies" });
+      if (await reject.count()) await reject.click();
+      for (const sel of heroLinks) {
+        await tabTo(sel);
+        const link = page.locator(sel);
+        await expect(link).toHaveCSS("outline-color", "rgb(38, 54, 26)");
+        await expect(link).toHaveCSS("outline-style", "solid");
+        await expect(link).toHaveCSS("outline-width", "3px");
+      }
+      let toggle = await openThemeToggle(page);
+      await toggle.click();
+      await expect(toggle).toHaveAttribute("aria-pressed", "true");
+      await closeMenu(page);
+      for (const sel of heroLinks) {
+        await tabTo(sel);
+        const link = page.locator(sel);
+        await expect(link).toHaveCSS("outline-color", "rgb(138, 74, 5)");
+        await expect(link).toHaveCSS("outline-style", "solid");
+        await expect(link).toHaveCSS("outline-width", "3px");
+      }
+      await expect(page.locator(".hero-copy h1 em")).toHaveCSS("color", "rgb(38, 54, 26)");
+      toggle = await openThemeToggle(page);
+      await toggle.click();
+      await expect(toggle).toHaveAttribute("aria-pressed", "false");
+      await closeMenu(page);
+    }
   }
 });
 

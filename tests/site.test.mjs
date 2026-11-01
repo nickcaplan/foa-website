@@ -269,16 +269,45 @@ test("the footer and mobile menu share social links without adding them to prima
 test("the homepage shows Fireworks in the initial HTML without Welcome Tea or date switching", async () => {
   const homepage = await readFile(path.join(dist, "index.html"), "utf8");
   assert.match(homepage, /<article class="event-feature event-feature--poster">/);
-  assert.match(homepage, /<h2>Fireworks on the Field<\/h2>/);
-  assert.match(homepage, new RegExp(`rel="preload" as="image" href="${basePath}/events/fireworks-960.webp"`));
+  // One parchment panel unites the hero copy and the event card; the h1 names the event once.
+  assert.match(homepage, /<div class="hero-event">/);
+  assert.match(homepage, /<h1[^>]*>Fireworks on the <em>Field\.<\/em><\/h1>/);
+  assert.doesNotMatch(homepage, /<h2>Fireworks on the Field<\/h2>/);
+  // The hero facts lead with matched calendar/pin icons, each fact on its own
+  // row with the date and venue bold; the venue keeps its last two words
+  // together. Nick's call: the short time-range row repeated the hours the
+  // schedule timeline below already carries, so the facts stop at date+venue.
+  const heroWhen = homepage.match(/<p class="hero-when">([\s\S]*?)<\/p>/)?.[1];
+  assert.ok(heroWhen, "homepage hero facts are present");
+  assert.match(heroWhen, /<span class="hero-fact">.*?<strong>Thursday 5th November<\/strong><\/span>/);
+  assert.match(heroWhen, /<span class="hero-fact">.*?<strong>Ashley School\u00a0field<\/strong><\/span>/);
+  assert.equal(heroWhen.match(/hero-fact-icon/g)?.length, 2, "hero facts are date and venue only");
+  assert.doesNotMatch(heroWhen, /16:30|18:30/, "the timeline below carries the hours");
+  const timeline = homepage.match(/<ol class="event-timeline">([\s\S]*?)<\/ol>/)?.[1];
+  assert.ok(timeline, "hero schedule timeline is present");
+  for (const t of ["16:30", "17:00", "18:00", "18:30"]) assert.match(timeline, new RegExp(`>${t}<`));
+  for (const l of ["Gates open", "Quiet display", "Main display", "Event closes"]) assert.match(timeline, new RegExp(l));
+  assert.doesNotMatch(homepage, /hero-when-date|hero-when-venue|hero-fact--date/);
+  // Nick's call: no FOA introduction on the homepage hero; the panel is entirely about the event.
+  assert.doesNotMatch(homepage, /hero-tagline/);
+  assert.doesNotMatch(homepage, /class="site-width home-intro"/);
+  // Nick's call: the poster photo is removed; the sponsor credit stays.
+  assert.doesNotMatch(homepage, /rel="preload" as="image"/, "no image preload without the poster photo");
+  assert.doesNotMatch(homepage, /fireworks-\d+\.webp/, "the poster photo is gone");
   const heroActions = homepage.match(/<div class="hero-actions">([\s\S]*?)<\/div>/)?.[1];
   assert.ok(heroActions, "homepage hero actions are present");
   assert.match(heroActions, new RegExp(`href="${basePath}/events/fireworks-2026-event-guide\\.pdf" download="Fireworks 2026 Event Guide\\.pdf"`));
   assert.match(heroActions, /Download the event/);
   assert.match(heroActions, /\(PDF, 9\.9 MB\)/);
-  const actions = homepage.match(/<div class="event-feature-actions">([\s\S]*?)<\/div>/)?.[1];
-  assert.ok(actions, "homepage event feature actions are present");
-  assert.doesNotMatch(actions, /event-guide|Download the event/);
+  assert.doesNotMatch(homepage, /event-feature-actions/, "poster carries no separate Event details action");
+  assert.doesNotMatch(homepage, /event-poster-link/, "the poster photo's event-details link went with it");
+  const heroPoster = homepage.match(/<article class="event-feature event-feature--poster">([\s\S]*?)<\/article>/)?.[1];
+  assert.ok(heroPoster, "hero poster panel is present");
+  assert.doesNotMatch(heroPoster, /Remember Remember|event-feature-kicker/, "Nick's call: the poster kicker is removed too");
+  // Nick's call: the hero carries a "Next event" tag above the heading.
+  assert.match(homepage, /class="hero-next-event">Next event</);
+  assert.ok(homepage.indexOf('class="hero-next-event"') < homepage.indexOf("<h1"), "the tag sits above the hero heading");
+  assert.match(heroPoster, /class="sponsor-ribbon"/, "the poster keeps the sponsor credit");
   assert.equal(homepage.match(/fireworks-2026-event-guide\.pdf/g)?.length, 1, "guide link appears once");
   assert.doesNotMatch(homepage, /Welcome Tea|welcome-tea|data-show-before|data-show-from/);
 });
