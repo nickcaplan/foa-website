@@ -83,6 +83,7 @@ const messageList: {
     linkLabel: "See how to get involved and contact the Fayre team",
   },
 ];
+const builtAt = Date.now();
 const messages = messageList.map((message) => ({
   ...message,
   reviewed: message.reviewed ?? "2026-10-11",
@@ -94,13 +95,13 @@ const messages = messageList.map((message) => ({
     ...(message.guide ? [`Download the event guide: ${publicUrl(message.guide.path)}`] : []),
     `${message.linkLabel}: ${publicUrl(message.href)}`,
   ].join("\n\n"),
-})).filter(({ expires }) => Date.now() < Date.parse(expires));
+})).filter(({ expires }) => builtAt < Date.parse(expires));
 ---
 <BaseLayout title="Reps Hub" description="Messages from The Friends of Ashley for class representatives to share.">
   <PageHero eyebrow="For class representatives" title="Reps Hub" intro="Copy a message below, paste it into your class group, and share the latest updates from The FOA." />
   <section class="content-section content-section--compact content-section--snug" aria-label="Messages to copy and share">
     <div class="site-width">
-      <div class="message-grid">
+      <div class="message-grid" data-built-at={new Date(builtAt).toISOString()}>
         {messages.map((message) => (
           <article class="message-card" data-reviewed={message.reviewed} data-expires-at={message.expires}>
             <div class="message-when">
