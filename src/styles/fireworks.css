@@ -945,7 +945,6 @@ body.fw-theme::before {
 }
 
 .fw-theme .vol-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: calc(1.75rem + 2 * var(--fw-roll-overhang));
   margin-top: calc(1.75rem + var(--fw-roll-overhang));
 }
@@ -1109,8 +1108,10 @@ body.fw-theme::before {
   display: inline-block;
 }
 
-@media (max-width: 47.999rem) {
-  .fw-theme .vol-grid { grid-template-columns: minmax(0, 1fr); }
-}
 
 .fw-theme .vol-card .vol-availability { font-size: 0.9rem; line-height: 1.5; font-weight: 700; margin-top: auto; padding-top: 1rem; }
+
+/* Keep four activities balanced without defeating text-size-aware stacking. */
+@container volunteer-cards (min-width: 56em) {
+  .fw-theme .vol-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
