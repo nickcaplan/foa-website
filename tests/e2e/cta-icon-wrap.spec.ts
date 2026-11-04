@@ -139,7 +139,7 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
               // wait until the enlargement has actually taken effect before measuring.
               if (textSize !== "normal") await expect(page.locator(".fw-vol .content-section").first()).toHaveCSS("font-size", "32px");
               const columns = await page.locator(".vol-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length);
-              if (textSize === "normal") expect(columns).toBe(width === 1440 ? 3 : width === 768 ? 2 : 1);
+              if (textSize === "normal") expect(columns).toBe(width >= 768 ? 2 : 1);
               else if (width <= 768) expect(columns, "enlarged narrow columns must stack").toBe(1);
             }
             if (path === "/newsletter/") {

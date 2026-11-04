@@ -1107,3 +1107,9 @@ body.fw-theme::before {
 .fw-event .fw-map-link .cta-tail {
   display: inline-block;
 }
+
+
+/* Keep four activities balanced without defeating text-size-aware stacking. */
+@container volunteer-cards (min-width: 56em) {
+  .fw-theme .vol-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
