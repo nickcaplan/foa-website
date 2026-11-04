@@ -469,15 +469,17 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   assert.doesNotMatch(html, /With thanks to/);
 });
 
-test("the Fireworks volunteering page shows every role, shift and sign-up link from the event record", async () => {
+test("the Fireworks volunteering page shows remaining event-night roles, shifts and sign-up links", async () => {
   const html = await readFile(path.join(dist, "fireworks-volunteering/index.html"), "utf8");
   assert.match(html, /<h1>Fireworks <span>Volunteering<\/span><\/h1>/);
-  assert.doesNotMatch(html, /class="fw-kicker"|class="fw-vol-date"|vol-card__dates/);
+  assert.doesNotMatch(html, /class="fw-kicker"|vol-card__dates/);
+  assert.doesNotMatch(html, /Token presales|JRDXD/);
+  assert.match(html, /class="fw-vol-date">Thursday 5th November 2026/);
   assert.match(html, /Help make Fireworks on the Field awesome\./);
   assert.match(html, /All activities are open to every year group\./);
   assert.doesNotMatch(html, /find your child|Each year group is looking after|Y1 and Y2/);
-  assert.equal([...html.matchAll(/<li class="vol-card">/g)].length, fireworks.volunteerRoles.length);
-  for (const role of fireworks.volunteerRoles) {
+  assert.equal([...html.matchAll(/<li class="vol-card">/g)].length, fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").length);
+  for (const role of fireworks.volunteerRoles.filter((role) => role.name !== "Token presales")) {
     const card = html.split('<li class="vol-card">').find((part) => part.includes(`<h3>${escapeHtml(role.name)}</h3>`));
     assert.ok(card, `no card for ${role.name}`);
     assert.doesNotMatch(card, /vol-card__group/);
@@ -495,14 +497,14 @@ test("the Fireworks volunteering page shows every role, shift and sign-up link f
 test("Fireworks volunteering sign-ups go to Volunteer Sign Up, open safely in a new tab and say so", async () => {
   const html = await readFile(path.join(dist, "fireworks-volunteering/index.html"), "utf8");
   const links = [...html.matchAll(/<a class="button button--amber vol-card__action"[^>]*>[\s\S]*?<\/a>/g)].map((match) => match[0]);
-  assert.equal(links.length, fireworks.volunteerRoles.length);
+  assert.equal(links.length, fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").length);
   for (const link of links) {
     assert.match(link, /href="https:\/\/volunteersignup\.org\/[A-Za-z0-9]+"/);
     assert.match(link, /target="_blank"/);
     assert.match(link, /rel="noopener noreferrer"/);
     assert.match(link, /\(opens Volunteer Sign Up in a new tab\)/);
   }
-  const urls = fireworks.volunteerRoles.map((role) => role.url);
+  const urls = fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").map((role) => role.url);
   assert.equal(new Set(urls).size, urls.length, "each role has its own sign-up link");
 });
 
