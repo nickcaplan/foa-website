@@ -85,7 +85,7 @@ def fetch(now=None):
     return data
 def validate_snapshot(data):
     """Reject unknown fields, personal data, invalid dates and malformed published counts."""
-    if not isinstance(data,dict) or set(data)-{'schema','checkedAt','eventEndsAt','activities','ended'} or data.get('schema')!=1: raise ValueError('Invalid snapshot')
+    if not isinstance(data,dict) or set(data)-{'schema','checkedAt','eventEndsAt','activities','ended','preview'} or data.get('schema')!=1: raise ValueError('Invalid snapshot')
     if data.get('eventEndsAt')!=END.isoformat(): raise ValueError('Wrong event')
     if not isinstance(data.get('activities'),dict): raise ValueError('Invalid activities')
     for code,activity in data['activities'].items():
