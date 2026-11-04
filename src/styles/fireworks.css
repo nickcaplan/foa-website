@@ -1121,3 +1121,10 @@ body.fw-theme::before {
   .fw-theme .vol-card > p:first-of-type { min-height: 3em; }
   .fw-theme .vol-card__action { min-height: 3rem; }
 }
+
+/* Align the desktop introduction with the parchment row without long text lines. */
+@media (min-width: 64rem) {
+  .fw-theme .fw-vol .fw-title-copy { max-width: none; }
+  .fw-theme .fw-vol .event-hero-intro { max-width: 75ch; }
+  .fw-theme .fw-vol .vol-tip { max-width: none; }
+}
