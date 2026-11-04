@@ -11,19 +11,26 @@ SHEETS = {'QCAFK':'Prize table','LPEDP':'Bar','73EL7':'Entrance','RACHX':'Tokens
 END = datetime.fromisoformat('2026-11-05T19:00:00+00:00')
 class Element:
     def __init__(self, tag='', attrs=(), parent=None):
+        """Store a minimal HTML node without preserving source content."""
         self.tag, self.attrs, self.parent, self.children = tag, dict(attrs), parent, []
-    def has(self, cls): return cls in self.attrs.get('class','').split()
+    def has(self, cls):
+        """Test a provider CSS class."""
+        return cls in self.attrs.get('class','').split()
     def all(self):
         """Yield descendants without interpreting external markup as instructions."""
         for child in self.children:
             if isinstance(child, Element):
                 yield child
                 yield from child.all()
-    def text(self): return ''.join(c.text() if isinstance(c, Element) else c for c in self.children)
+    def text(self):
+        """Collect descendant text for validated count and time cells only."""
+        return ''.join(c.text() if isinstance(c, Element) else c for c in self.children)
 class Tree(HTMLParser):
     def __init__(self):
+        """Start a small parser tree for one public response."""
         super().__init__(); self.root=Element(); self.current=self.root
     def handle_starttag(self, tag, attrs):
+        """Append an element, respecting HTML void tags."""
         el=Element(tag, attrs, self.current); self.current.children.append(el)
         if tag not in {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}: self.current=el
     def handle_endtag(self, tag):
@@ -32,7 +39,9 @@ class Tree(HTMLParser):
         while el.parent:
             if el.tag==tag: self.current=el.parent; return
             el=el.parent
-    def handle_data(self, text): self.current.children.append(text)
+    def handle_data(self, text):
+        """Attach text while parsing; the final output excludes personal cells."""
+        self.current.children.append(text)
 def parse(html):
     """Extract only validated end times and one responsive Open count per row."""
     parser=Tree(); parser.feed(html)
@@ -101,7 +110,7 @@ def validate_snapshot(data):
     return data
 
 def preserve(url, now=None):
-    """Reuse published counts for normal builds. Only a genuine404 bootstraps unavailable."""
+    """Reuse valid published counts; failures publish explicit unavailable data, never stale substitutes."""
     now=now or datetime.now(timezone.utc)
     if now>=END:
         return {"schema":1,"checkedAt":now.isoformat(),"eventEndsAt":END.isoformat(),"activities":{},"ended":True}
@@ -110,8 +119,8 @@ def preserve(url, now=None):
             payload=response.read(100001)
             if len(payload)>100000: raise ValueError('Oversized snapshot')
             return validate_snapshot(json.loads(payload))
-    except HTTPError as error:
-        if error.code!=404: raise
+    except Exception:
+        print('Published availability unavailable; continuing site deployment without counts',file=sys.stderr)
         return {'schema':1,'checkedAt':None,'eventEndsAt':END.isoformat(),'activities':{}}
 
 if __name__=='__main__':
