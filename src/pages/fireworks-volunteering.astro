@@ -86,7 +86,15 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       }
     }
     // Reorder actual DOM so visual, keyboard and screen-reader order agree.
-    if (!ended()) cards.sort((a, b) => compareRemaining(totals.get(a) ?? null, totals.get(b) ?? null)).forEach(card => card.parentElement?.append(card));
+    if (!ended()) {
+      const sorted = [...cards].sort((a, b) => compareRemaining(totals.get(a) ?? null, totals.get(b) ?? null));
+      if (sorted.some((card, index) => card !== cards[index])) {
+        const focused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        const restoreFocus = focused && cards.some(card => card.contains(focused));
+        sorted.forEach(card => card.parentElement?.append(card));
+        if (restoreFocus) focused.focus({ preventScroll: true });
+      }
+    }
     const summary = document.querySelector<HTMLElement>("[data-most-help]");
     if (!summary) return;
     if (ended()) summary.textContent = "Volunteering has finished. Thank you to everyone who helped.";
