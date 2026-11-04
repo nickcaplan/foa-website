@@ -30,13 +30,13 @@ class PreservationTests(unittest.TestCase):
     def test_bootstrap_404_only(self):
         with patch.object(m,'urlopen',side_effect=HTTPError('url',404,'missing',{},None)):
             self.assertEqual(m.preserve('https://example.test/counts.json')['activities'],{})
-    def test_invalid_or_network_fails_without_overwrite(self):
+    def test_invalid_or_network_publishes_explicit_unavailable(self):
         for effect in [URLError('offline'),HTTPError('url',500,'error',{},None)]:
             with patch.object(m,'urlopen',side_effect=effect):
-                with self.assertRaises(Exception): m.preserve('https://example.test/counts.json')
+                self.assertEqual(m.preserve('https://example.test/counts.json')['activities'],{})
         for payload in [b'not json',b'{}',b'x'*100001]:
             with patch.object(m,'urlopen',return_value=Response(payload)):
-                with self.assertRaises(Exception): m.preserve('https://example.test/counts.json')
+                self.assertEqual(m.preserve('https://example.test/counts.json')['activities'],{})
     def test_fresh_and_stale_preserved_without_new_timestamps(self):
         for checked in ['2026-11-04T16:40:33+00:00','2026-11-01T16:40:33+00:00']:
             data={'schema':1,'checkedAt':checked,'eventEndsAt':m.END.isoformat(),'activities':{'QCAFK':{'name':'Prize table','checkedAt':checked,'rows':[{'endsAt':m.END.isoformat(),'open':3}]}}}
