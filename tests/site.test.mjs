@@ -537,3 +537,12 @@ test("published newsletter retains its original time-range prose", async () => {
   const html = await readFile(path.join(dist, "newsletter/index.html"), "utf8");
   assert.match(html, /16:30 to 18:30/);
 });
+
+
+test("Fireworks recruitment copy invites every year group on the event page and reps hub", async () => {
+  for (const page of ["events/fireworks-2026/index.html", "reps/index.html"]) {
+    const html = await readFile(path.join(dist, page), "utf8");
+    assert.match(html, /All activities are open to every year group/);
+    assert.doesNotMatch(html, /Each year group (?:looks after|is looking after)|Find your team/);
+  }
+});
