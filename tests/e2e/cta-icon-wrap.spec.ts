@@ -153,6 +153,20 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
               if (textSize === "normal") {
                 const container = await page.locator(".fw-vol .content-section").evaluate(el => ({ width: el.getBoundingClientRect().width, em: parseFloat(getComputedStyle(el).fontSize) }));
                 expect(columns).toBe(container.width >= 72 * container.em ? 4 : width >= 768 ? 2 : 1);
+                if (columns > 1) {
+                  const actions = await page.locator(".vol-card__action").evaluateAll(links => links.map(link => {
+                    const button = link.getBoundingClientRect();
+                    const card = link.closest(".vol-card")!.getBoundingClientRect();
+                    return { row: Math.round(card.top), top: button.top, height: button.height, bottom: button.bottom };
+                  }));
+                  for (const action of actions) {
+                    for (const neighbour of actions.filter(other => other.row === action.row)) {
+                      expect(Math.abs(action.height - neighbour.height), "signup actions in one row must have equal heights").toBeLessThanOrEqual(1);
+                      expect(Math.abs(action.top - neighbour.top), "signup actions in one row must share their top edge").toBeLessThanOrEqual(1);
+                      expect(Math.abs(action.bottom - neighbour.bottom), "signup actions in one row must share their bottom edge").toBeLessThanOrEqual(1);
+                    }
+                  }
+                }
               }
               else if (width <= 768) expect(columns, "enlarged narrow columns must stack").toBe(1);
             }
