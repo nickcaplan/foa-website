@@ -28,7 +28,8 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       <section class="content-section content-section--compact" aria-labelledby="volunteer-teams-title">
         <div class="site-width">
           <p class="vol-tip"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 21h4"></path><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg><span><strong>Tip:</strong> the sign-up buttons take you to the Volunteer Sign Up site, where you choose your slot.</span></p>
-          <p class="vol-tip" data-most-help data-availability-url={withBase("/fireworks-availability.json")}>Check the sign-up sheets for the latest availability. Hourly figures are not available right now.</p>
+          <p class="vol-tip vol-priority" data-most-help data-availability-url={withBase("/fireworks-availability.json")}>Check the sign-up sheets for available places.</p>
+          <p class="vol-preview-note" data-preview-note hidden>Preview snapshot - not updating yet.</p>
           <h2 id="volunteer-teams-title" class="visually-hidden">Volunteer activities</h2>
           <ul class="vol-grid">
             {event.volunteerRoles.filter((role) => role.name !== "Token presales").map((role) => {
@@ -36,12 +37,12 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
               const split = label.lastIndexOf(" ") + 1;
               return (
               <li class="vol-card" data-availability-code={role.url.split("/").pop()} data-activity-name={role.name}>
+                <p class="vol-availability" aria-live="polite">Check sheet</p>
                 <h3>{role.name}</h3>
                 <p>{role.description}</p>
                 <dl class="vol-shifts">
                   {role.shifts.map((shift) => <div><dt>{shift.label}</dt><dd>{formatTimeRangeText(shift.when)}<span>{shift.helpers} {shift.helpers === 1 ? "helper" : "helpers"} {role.shifts.length > 1 && shift.label !== "Setup" && shift.label !== "Clear up" ? "per shift" : "per slot"}</span></dd></div>)}
                 </dl>
-                <p class="vol-availability" aria-live="polite">Latest availability unavailable - check the sign-up sheet.</p>
                 <a class="button button--amber vol-card__action" href={role.url} target="_blank" rel="noopener noreferrer"><span class="cta-label">Sign up for {label.slice(0, split)}<span class="cta-word">{label.slice(split, -1)}<span class="cta-tail">{label.slice(-1)}<span class="external-link-icon cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span></span></span><span class="visually-hidden"> (opens Volunteer Sign Up in a new tab)</span></span></a>
               </li>
               );
@@ -59,6 +60,8 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
   const ended = () => Date.now() >= Date.parse("2026-11-05T19:00:00+00:00");
   function render() {
     const now = Date.now();
+    const previewNote = document.querySelector<HTMLElement>("[data-preview-note]");
+    if (previewNote) previewNote.hidden = snapshot.preview !== true;
     const ranked: { name: string; count: number }[] = [];
     const totals = new Map<HTMLElement, number | null>();
     const cards = [...document.querySelectorAll<HTMLElement>("[data-availability-code]")];
@@ -69,20 +72,16 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       totals.set(card, count);
       const output = card.querySelector<HTMLElement>(".vol-availability");
       if (!output) continue;
-      if (ended()) output.textContent = "Volunteering has finished. Thank you!";
-      else if (count === null) { output.textContent = "Latest availability unavailable - check the sign-up sheet."; allFresh = false; }
+      if (ended()) output.textContent = "Finished";
+      else if (count === null) { output.textContent = "Check sheet"; allFresh = false; }
       else {
-        const checked = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" }).format(new Date(activity!.checkedAt!));
         const number = document.createElement("strong");
         number.className = count > 0 ? "vol-count" : "vol-count vol-count--zero";
         number.textContent = String(count);
         const label = document.createElement("span");
         label.className = "vol-count-label";
-        label.textContent = `unfilled shift ${count === 1 ? "place" : "places"} in total`;
-        const meta = document.createElement("span");
-        meta.className = "vol-count-meta";
-        meta.textContent = `Checked ${checked} UK time. ${snapshot.preview ? "Preview snapshot - not updating yet." : "Updated hourly."}`;
-        output.replaceChildren(number, label, meta);
+        label.textContent = `shift ${count === 1 ? "place" : "places"} left`;
+        output.replaceChildren(number, label);
         ranked.push({ name: card.dataset.activityName!, count });
       }
     }
@@ -91,12 +90,17 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
     const summary = document.querySelector<HTMLElement>("[data-most-help]");
     if (!summary) return;
     if (ended()) summary.textContent = "Volunteering has finished. Thank you to everyone who helped.";
-    else if (!allFresh) summary.textContent = "Check the sign-up sheets for the latest availability. Hourly figures are not available right now.";
+    else if (!allFresh) summary.textContent = "Check the sign-up sheets for available places.";
     else {
       ranked.sort((a, b) => b.count - a.count);
       const highest = ranked[0]?.count || 0;
-      const leaders = ranked.filter(a => a.count === highest).map(a => `${a.name} (${a.count} shift places)`).join(", ");
-      summary.textContent = highest ? `Most help needed: ${leaders}. Totals include setup, activity and clear-up places across ongoing and upcoming shifts. One person can fill more than one shift. ${snapshot.preview ? "Preview snapshot - not updating yet." : "Places can change between hourly updates."}` : "No helper places remaining in the latest hourly check. Thank you!";
+      const leaders = ranked.filter(a => a.count === highest).map(a => a.name).join(" & ");
+      if (highest) {
+        const title = document.createElement("strong"); title.textContent = "Most help needed";
+        const detail = document.createElement("span"); detail.textContent = `${leaders} - ${highest} shift places left`;
+        summary.replaceChildren(title, detail);
+      } else summary.textContent = "All shifts filled. Thank you!";
+
     }
   }
   async function load() {
@@ -112,11 +116,18 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
   load();
   // Only recalculate time boundaries locally. Never poll VolunteerSignup from visitors' browsers.
   window.setInterval(render, 30000);
+  // Refresh only our published file hourly, not the provider. Stop after the event.
+  window.setInterval(() => { if (!ended()) load(); }, 60 * 60000);
 </script>
 
 <style is:global>
-  .vol-availability .vol-count { display: block; color: #9e201f; font-size: 3rem; line-height: 1.05; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .fw-theme .vol-card .vol-availability { position: absolute; inset: 2rem 1.25rem auto auto; margin: 0; padding: 0; width: 5rem; text-align: right; font-size: .85rem; line-height: 1.25; }
+  .vol-availability .vol-count { display: block; color: #9e201f; font-size: 2.5rem; line-height: 1; font-weight: 800; font-variant-numeric: tabular-nums; }
   .vol-availability .vol-count--zero { color: #345039; }
-  .vol-count-label { display: block; font-size: 1rem; line-height: 1.35; margin-top: .25rem; }
-  .vol-count-meta { display: block; font-size: .8rem; line-height: 1.45; font-weight: 400; margin-top: .5rem; }
+  .vol-count-label { display: block; font-size: .75rem; line-height: 1.25; margin-top: .2rem; }
+  .fw-theme .vol-card h3 { padding-right: 5.25rem; min-height: 3.5rem; }
+  .fw-theme .vol-priority { display: block; background: #f8df9b; border: 2px solid #c99b35; border-left: .5rem solid #9e201f; padding: 1rem 1.25rem; }
+  .vol-priority strong { display: block; color: #8c1c1b; font-size: .85rem; text-transform: uppercase; letter-spacing: .08em; }
+  .vol-priority span { display: block; color: #362b15; font-size: 1.3rem; line-height: 1.3; font-weight: 800; margin-top: .3rem; }
+  .vol-preview-note { font-size: .8rem; margin: -.25rem 0 1rem; color: #f3dfae; }
 </style>
