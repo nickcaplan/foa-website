@@ -109,7 +109,10 @@ test("Reps Hub shareable messages follow build-time expiry and preserve active l
       assert.ok(card.includes("Download the event guide"));
       assert.ok(card.includes("now on sale to the wider public"));
     }
-    if (index === 1) for (const role of fireworks.volunteerRoles) assert.ok(card.includes(role.name.toLowerCase()));
+    if (index === 1) {
+      for (const role of fireworks.volunteerRoles.filter((role) => role.name !== "Token presales")) assert.ok(card.includes(role.name.toLowerCase()));
+      assert.doesNotMatch(card, /[Pp]resales|JRDXD/);
+    }
     if (index === 2) { assert.ok(card.includes("weather permitting")); for (const date of [uniform.start, uniform.end]) assert.ok(card.includes(`datetime="${new Date(date).toISOString()}"`)); }
     if (index === 3) {
       assert.ok(card.includes("rather than stalls being assigned to year groups"));
@@ -532,9 +535,9 @@ test("Fireworks recruitment copy invites every year group on the event page and 
   for (const page of ["events/fireworks-2026/index.html", "reps/index.html"]) {
     const html = await readFile(path.join(dist, page), "utf8");
     const expired = page === "reps/index.html" && Date.parse(html.match(/data-built-at="([^"]+)"/)?.[1] || "") >= Date.parse(fireworks.end);
-    if (expired) { assert.doesNotMatch(html, /All activities are open to every year group|Presales run from 2nd-5th November/); continue; }
+    if (expired) { assert.doesNotMatch(html, /All activities are open to every year group|Event-day roles are on Thursday 5th November/); continue; }
     assert.match(html, /All activities are open to every year group/);
     assert.doesNotMatch(html, /Each year group (?:looks after|is looking after)|Find your team/);
-    if (page === "reps/index.html") assert.match(html, /Presales run from 2nd-5th November/);
+    if (page === "reps/index.html") assert.match(html, /Event-day roles are on Thursday 5th November/);
   }
 });
