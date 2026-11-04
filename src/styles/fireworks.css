@@ -1119,4 +1119,5 @@ body.fw-theme::before {
   .fw-theme .vol-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; }
   .fw-theme .vol-card { padding: 2rem 1rem 1.5rem; }
   .fw-theme .vol-card > p:first-of-type { min-height: 3em; }
+  .fw-theme .vol-card__action { min-height: 3rem; }
 }
