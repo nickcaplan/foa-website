@@ -474,11 +474,13 @@ test("the Fireworks volunteering page shows every role, shift and sign-up link f
   assert.match(html, /<h1>Fireworks <span>Volunteering<\/span><\/h1>/);
   assert.doesNotMatch(html, /class="fw-kicker"/);
   assert.match(html, /Help make Fireworks on the Field awesome\./);
+  assert.match(html, /All activities are open to every year group\./);
+  assert.doesNotMatch(html, /find your child|Each year group is looking after|Y1 and Y2/);
   assert.equal([...html.matchAll(/<li class="vol-card">/g)].length, fireworks.volunteerRoles.length);
   for (const role of fireworks.volunteerRoles) {
     const card = html.split('<li class="vol-card">').find((part) => part.includes(`<h3>${escapeHtml(role.name)}</h3>`));
     assert.ok(card, `no card for ${role.name}`);
-    assert.match(card, new RegExp(`vol-card__group">${escapeHtml(role.group)}<`));
+    assert.doesNotMatch(card, /vol-card__group/);
     assert.ok(card.includes(escapeHtml(role.dates)), `${role.name}: dates`);
     assert.ok(card.includes(escapeHtml(role.description)), `${role.name}: description`);
     for (const shift of role.shifts) {
