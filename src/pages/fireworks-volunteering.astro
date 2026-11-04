@@ -71,7 +71,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       else if (count === null) { output.textContent = "Latest availability unavailable - check the sign-up sheet."; allFresh = false; }
       else {
         const checked = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" }).format(new Date(activity!.checkedAt!));
-        output.textContent = `${count} helper ${count === 1 ? "place" : "places"} remaining. Checked ${checked} UK time. Updated hourly.`;
+        output.textContent = `${count} helper ${count === 1 ? "place" : "places"} remaining. Checked ${checked} UK time. ${snapshot.preview ? "Preview snapshot - not updating yet." : "Updated hourly."}`;
         ranked.push({ name: card.dataset.activityName!, count });
       }
     }
@@ -83,7 +83,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       ranked.sort((a, b) => b.count - a.count);
       const highest = ranked[0]?.count || 0;
       const leaders = ranked.filter(a => a.count === highest).map(a => `${a.name} (${a.count} helper places)`).join(", ");
-      summary.textContent = highest ? `Most help needed: ${leaders}. Counts include ongoing and upcoming shifts. Places can change between hourly updates.` : "No helper places remaining in the latest hourly check. Thank you!";
+      summary.textContent = highest ? `Most help needed: ${leaders}. Counts include ongoing and upcoming shifts. ${snapshot.preview ? "Preview snapshot - not updating yet." : "Places can change between hourly updates."}` : "No helper places remaining in the latest hourly check. Thank you!";
     }
   }
   async function load() {
