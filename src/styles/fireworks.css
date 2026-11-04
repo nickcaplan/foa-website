@@ -945,7 +945,6 @@ body.fw-theme::before {
 }
 
 .fw-theme .vol-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: calc(1.75rem + 2 * var(--fw-roll-overhang));
   margin-top: calc(1.75rem + var(--fw-roll-overhang));
 }
@@ -1107,8 +1106,4 @@ body.fw-theme::before {
    character/icon pair when the rest of the word cannot fit. */
 .fw-event .fw-map-link .cta-tail {
   display: inline-block;
-}
-
-@media (max-width: 47.999rem) {
-  .fw-theme .vol-grid { grid-template-columns: minmax(0, 1fr); }
 }
