@@ -13,3 +13,10 @@ export function remaining(activity: Activity | undefined, now: number): number |
   }
   return total;
 }
+
+/** Rank validated totals descending; unknown totals follow known totals, ties stay stable. */
+export function compareRemaining(a: number | null, b: number | null): number {
+  if (a === null) return b === null ? 0 : 1;
+  if (b === null) return -1;
+  return b - a;
+}
