@@ -58,6 +58,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
   import { remaining, compareRemaining, type Snapshot } from "../lib/fireworks-availability";
   let snapshot: Snapshot = {};
   const ended = () => Date.now() >= Date.parse("2026-11-05T19:00:00+00:00");
+  /** Render validated counts without repeated announcements or needless focus changes. */
   function render() {
     const now = Date.now();
     const previewNote = document.querySelector<HTMLElement>("[data-preview-note]");
@@ -116,6 +117,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
 
     }
   }
+  /** Reload our published file while retaining any still-fresh prior snapshot on failure. */
   async function load() {
     try {
       const url = document.querySelector<HTMLElement>("[data-availability-url]")?.dataset.availabilityUrl;
