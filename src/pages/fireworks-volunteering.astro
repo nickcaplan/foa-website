@@ -54,27 +54,40 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
   </div>
 </BaseLayout>
 <script>
-  import { remaining, type Snapshot } from "../lib/fireworks-availability";
+  import { remaining, compareRemaining, type Snapshot } from "../lib/fireworks-availability";
   let snapshot: Snapshot = {};
   const ended = () => Date.now() >= Date.parse("2026-11-05T19:00:00+00:00");
   function render() {
     const now = Date.now();
     const ranked: { name: string; count: number }[] = [];
+    const totals = new Map<HTMLElement, number | null>();
     const cards = [...document.querySelectorAll<HTMLElement>("[data-availability-code]")];
     let allFresh = cards.length > 0;
     for (const card of cards) {
       const activity = snapshot.schema === 1 ? snapshot.activities?.[card.dataset.availabilityCode!] : undefined;
       const count = ended() ? 0 : remaining(activity, now);
+      totals.set(card, count);
       const output = card.querySelector<HTMLElement>(".vol-availability");
       if (!output) continue;
       if (ended()) output.textContent = "Volunteering has finished. Thank you!";
       else if (count === null) { output.textContent = "Latest availability unavailable - check the sign-up sheet."; allFresh = false; }
       else {
         const checked = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" }).format(new Date(activity!.checkedAt!));
-        output.textContent = `${count} helper ${count === 1 ? "place" : "places"} remaining. Checked ${checked} UK time. ${snapshot.preview ? "Preview snapshot - not updating yet." : "Updated hourly."}`;
+        const number = document.createElement("strong");
+        number.className = count > 0 ? "vol-count" : "vol-count vol-count--zero";
+        number.textContent = String(count);
+        const label = document.createElement("span");
+        label.className = "vol-count-label";
+        label.textContent = `unfilled shift ${count === 1 ? "place" : "places"} in total`;
+        const meta = document.createElement("span");
+        meta.className = "vol-count-meta";
+        meta.textContent = `Checked ${checked} UK time. ${snapshot.preview ? "Preview snapshot - not updating yet." : "Updated hourly."}`;
+        output.replaceChildren(number, label, meta);
         ranked.push({ name: card.dataset.activityName!, count });
       }
     }
+    // Reorder actual DOM so visual, keyboard and screen-reader order agree.
+    if (!ended()) cards.sort((a, b) => compareRemaining(totals.get(a) ?? null, totals.get(b) ?? null)).forEach(card => card.parentElement?.append(card));
     const summary = document.querySelector<HTMLElement>("[data-most-help]");
     if (!summary) return;
     if (ended()) summary.textContent = "Volunteering has finished. Thank you to everyone who helped.";
@@ -82,8 +95,8 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
     else {
       ranked.sort((a, b) => b.count - a.count);
       const highest = ranked[0]?.count || 0;
-      const leaders = ranked.filter(a => a.count === highest).map(a => `${a.name} (${a.count} helper places)`).join(", ");
-      summary.textContent = highest ? `Most help needed: ${leaders}. Counts include ongoing and upcoming shifts. ${snapshot.preview ? "Preview snapshot - not updating yet." : "Places can change between hourly updates."}` : "No helper places remaining in the latest hourly check. Thank you!";
+      const leaders = ranked.filter(a => a.count === highest).map(a => `${a.name} (${a.count} shift places)`).join(", ");
+      summary.textContent = highest ? `Most help needed: ${leaders}. Totals include setup, activity and clear-up places across ongoing and upcoming shifts. One person can fill more than one shift. ${snapshot.preview ? "Preview snapshot - not updating yet." : "Places can change between hourly updates."}` : "No helper places remaining in the latest hourly check. Thank you!";
     }
   }
   async function load() {
@@ -100,3 +113,10 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
   // Only recalculate time boundaries locally. Never poll VolunteerSignup from visitors' browsers.
   window.setInterval(render, 30000);
 </script>
+
+<style is:global>
+  .vol-availability .vol-count { display: block; color: #9e201f; font-size: 3rem; line-height: 1.05; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .vol-availability .vol-count--zero { color: #345039; }
+  .vol-count-label { display: block; font-size: 1rem; line-height: 1.35; margin-top: .25rem; }
+  .vol-count-meta { display: block; font-size: .8rem; line-height: 1.45; font-weight: 400; margin-top: .5rem; }
+</style>
