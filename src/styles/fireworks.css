@@ -1119,7 +1119,7 @@ body.fw-theme::before {
   .fw-theme .vol-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; }
   .fw-theme .vol-card { padding: 2rem 1rem 1.5rem; }
   .fw-theme .vol-card > p:first-of-type { min-height: 3em; }
-  .fw-theme .vol-card__action { min-height: 3rem; }
+
 }
 
 /* Align the desktop introduction with the parchment row without long text lines. */
@@ -1127,4 +1127,9 @@ body.fw-theme::before {
   .fw-theme .fw-vol .fw-title-copy { max-width: none; }
   .fw-theme .fw-vol .event-hero-intro { max-width: 75ch; }
   .fw-theme .fw-vol .vol-tip { max-width: none; }
+}
+
+/* Give neighbouring signup actions the same two-line space, not just a shared baseline. */
+@container volunteer-cards (min-width: 40em) {
+  .fw-theme .vol-card__action { min-height: 4.25rem; }
 }
