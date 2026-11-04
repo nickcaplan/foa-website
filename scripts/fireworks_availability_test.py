@@ -27,21 +27,21 @@ class PreservationTests(unittest.TestCase):
             data=m.preserve('https://example.test/counts.json',m.END)
             self.assertTrue(data['ended']);self.assertEqual(data['activities'],{});request.assert_not_called()
 
-    def test_bootstrap_404_only(self):
+    def test_bootstrap_404_publishes_explicit_unavailable(self):
         with patch.object(m,'urlopen',side_effect=HTTPError('url',404,'missing',{},None)):
-            self.assertEqual(m.preserve('https://example.test/counts.json')['activities'],{})
+            self.assertEqual(m.preserve('https://example.test/counts.json',datetime(2026,11,4,17,0,tzinfo=timezone.utc)),{'schema':1,'checkedAt':None,'eventEndsAt':m.END.isoformat(),'activities':{}})
     def test_invalid_or_network_publishes_explicit_unavailable(self):
         for effect in [URLError('offline'),HTTPError('url',500,'error',{},None)]:
             with patch.object(m,'urlopen',side_effect=effect):
-                self.assertEqual(m.preserve('https://example.test/counts.json')['activities'],{})
-        for payload in [b'not json',b'{}',b'x'*100001]:
+                self.assertEqual(m.preserve('https://example.test/counts.json',datetime(2026,11,4,17,0,tzinfo=timezone.utc)),{'schema':1,'checkedAt':None,'eventEndsAt':m.END.isoformat(),'activities':{}})
+        for payload in [b'not json',b'{}',b'x'*100001,json.dumps({'schema':1,'checkedAt':None,'eventEndsAt':m.END.isoformat(),'activities':{'QCAFK':{'name':'Prize table','rows':[]}}}).encode()]:
             with patch.object(m,'urlopen',return_value=Response(payload)):
-                self.assertEqual(m.preserve('https://example.test/counts.json')['activities'],{})
+                self.assertEqual(m.preserve('https://example.test/counts.json',datetime(2026,11,4,17,0,tzinfo=timezone.utc)),{'schema':1,'checkedAt':None,'eventEndsAt':m.END.isoformat(),'activities':{}})
     def test_fresh_and_stale_preserved_without_new_timestamps(self):
         for checked in ['2026-11-04T16:40:33+00:00','2026-11-01T16:40:33+00:00']:
             data={'schema':1,'checkedAt':checked,'eventEndsAt':m.END.isoformat(),'activities':{'QCAFK':{'name':'Prize table','checkedAt':checked,'rows':[{'endsAt':m.END.isoformat(),'open':3}]}}}
             for _ in range(2):
-                with patch.object(m,'urlopen',return_value=Response(json.dumps(data).encode())): self.assertEqual(m.preserve('https://example.test/counts.json'),data)
+                with patch.object(m,'urlopen',return_value=Response(json.dumps(data).encode())): self.assertEqual(m.preserve('https://example.test/counts.json',datetime(2026,11,4,17,0,tzinfo=timezone.utc)),data)
     def test_conflicting_time_cells(self):
         with self.assertRaises(ValueError): m.parse(page().replace('</div><div class="vcenter col-sm-2">','<div class="ellipsis indent">17:00 - 18:00</div></div><div class="vcenter col-sm-2">'))
 class RequestSafetyTests(unittest.TestCase):
