@@ -119,7 +119,7 @@ test.describe("CTA trailing icons stay with the label", () => {
 });
 
 test.describe("Wrapping stays inside the neighbouring content column", () => {
-  for (const width of [320, 768, 1440]) {
+  for (const width of [320, 768, 1280, 1366, 1440]) {
     for (const night of [false, true]) {
       for (const textSize of ["normal", "200% per-element", "200% root"]) {
         for (const path of ["/newsletter/", "/fireworks-volunteering/", "/uniform/"]) {
@@ -139,7 +139,10 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
               // wait until the enlargement has actually taken effect before measuring.
               if (textSize !== "normal") await expect(page.locator(".fw-vol .content-section").first()).toHaveCSS("font-size", "32px");
               const columns = await page.locator(".vol-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length);
-              if (textSize === "normal") expect(columns).toBe(width >= 1440 ? 4 : width >= 768 ? 2 : 1);
+              if (textSize === "normal") {
+                const container = await page.locator(".fw-vol .content-section").evaluate(el => ({ width: el.getBoundingClientRect().width, em: parseFloat(getComputedStyle(el).fontSize) }));
+                expect(columns).toBe(container.width >= 72 * container.em ? 4 : width >= 768 ? 2 : 1);
+              }
               else if (width <= 768) expect(columns, "enlarged narrow columns must stack").toBe(1);
             }
             if (path === "/newsletter/") {
