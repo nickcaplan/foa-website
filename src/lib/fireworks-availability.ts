@@ -1,6 +1,6 @@
 export type Shift = { endsAt: string; open: number };
 export type Activity = { name?: string; rows?: Shift[]; checkedAt?: string; unavailable?: boolean };
-export type Snapshot = { schema?: number; activities?: Record<string, Activity> };
+export type Snapshot = { schema?: number; preview?: boolean; activities?: Record<string, Activity> };
 /** Return open helper places for ongoing/upcoming shifts, or null for untrusted/stale data. */
 export function remaining(activity: Activity | undefined, now: number): number | null {
   const checked = Date.parse(activity?.checkedAt || "");
