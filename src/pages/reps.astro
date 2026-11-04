@@ -54,8 +54,8 @@ const messageList: {
   {
     title: "Fireworks volunteering",
     paragraphs: [
-      `Can you help at ${fireworks.title}? All activities are open to every year group: ${fireworks.volunteerRoles.map((role) => role.name.toLowerCase()).join("; ")}.`,
-      `Presales run from ${fireworks.volunteerRoles[0].dates.replace(/[–—]/g, "-")}, with event-day roles on ${dateFormatter(fireworks.start)}. Choose any activity, see the slots and sign up here:`,
+      `Can you help at ${fireworks.title}? All activities are open to every year group: ${fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").map((role) => role.name.toLowerCase()).join("; ")}.`,
+      `Event-day roles are on ${dateFormatter(fireworks.start)}. Choose any activity, see the slots and sign up here:`,
     ],
     timing: fireworks,
     href: "/fireworks-volunteering/",
