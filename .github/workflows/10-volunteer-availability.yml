@@ -1,0 +1,52 @@
+name: Hourly volunteer availability
+on:
+  schedule:
+    # Once per hour, away from the busy top of the hour. Runs only on default branch.
+    - cron: '17 * * * *'
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  update:
+    # One event only. No provider requests after the final teardown ends.
+    if: github.repository == 'nickcaplan/foa-website'
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check event window
+        id: window
+        run: |
+          if [ "$(date -u +%s)" -le "$(date -u -d '2026-11-05 20:17:00' +%s)" ]; then
+            echo 'active=true' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@v5
+        if: steps.window.outputs.active == 'true'
+        with:
+          node-version: '>=22.18.0 <23'
+          cache: npm
+      - name: Test counts reader
+        if: steps.window.outputs.active == 'true'
+        run: python scripts/fireworks_availability_test.py
+      - name: Read counts once from each public sheet
+        if: steps.window.outputs.active == 'true'
+        run: python scripts/fireworks_availability.py assets/fireworks-availability.json
+      - name: Build and check current site with counts-only snapshot
+        if: steps.window.outputs.active == 'true'
+        run: npm ci && npm run check && npm run build && npm run test:site
+        env:
+          SITE_URL: https://www.thefriendsofashley.org
+          BASE_PATH: /
+      - uses: actions/upload-pages-artifact@v5
+        if: steps.window.outputs.active == 'true'
+        with:
+          path: dist
+      - uses: actions/deploy-pages@v5
+        if: steps.window.outputs.active == 'true'
+        id: deploy
