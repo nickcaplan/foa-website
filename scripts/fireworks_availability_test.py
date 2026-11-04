@@ -22,6 +22,11 @@ import io, json
 class Response(io.BytesIO):
     status=200
 class PreservationTests(unittest.TestCase):
+    def test_postevent_preservation_never_fetches(self):
+        with patch.object(m,'urlopen',side_effect=URLError('offline')) as request:
+            data=m.preserve('https://example.test/counts.json',m.END)
+            self.assertTrue(data['ended']);self.assertEqual(data['activities'],{});request.assert_not_called()
+
     def test_bootstrap_404_only(self):
         with patch.object(m,'urlopen',side_effect=HTTPError('url',404,'missing',{},None)):
             self.assertEqual(m.preserve('https://example.test/counts.json')['activities'],{})
