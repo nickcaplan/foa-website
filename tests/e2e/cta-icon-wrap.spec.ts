@@ -139,6 +139,17 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
               // wait until the enlargement has actually taken effect before measuring.
               if (textSize !== "normal") await expect(page.locator(".fw-vol .content-section").first()).toHaveCSS("font-size", "32px");
               const columns = await page.locator(".vol-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length);
+              if (textSize === "normal" && width >= 1024) {
+                const intro = await page.locator(".fw-vol").evaluate(el => {
+                  const tip = el.querySelector(".vol-tip")!.getBoundingClientRect();
+                  const grid = el.querySelector(".vol-grid")!.getBoundingClientRect();
+                  const paragraph = el.querySelector(".event-hero-intro")!;
+                  return { left: Math.abs(tip.left - grid.left), right: Math.abs(tip.right - grid.right), measure: getComputedStyle(paragraph).maxWidth };
+                });
+                expect(intro.left).toBeLessThanOrEqual(1);
+                expect(intro.right).toBeLessThanOrEqual(1);
+                expect(intro.measure).not.toBe("none");
+              }
               if (textSize === "normal") {
                 const container = await page.locator(".fw-vol .content-section").evaluate(el => ({ width: el.getBoundingClientRect().width, em: parseFloat(getComputedStyle(el).fontSize) }));
                 expect(columns).toBe(container.width >= 72 * container.em ? 4 : width >= 768 ? 2 : 1);
