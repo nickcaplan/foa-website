@@ -1,6 +1,7 @@
 export type Shift = { endsAt: string; open: number };
 export type Activity = { name?: string; rows?: Shift[]; checkedAt?: string; unavailable?: boolean };
 export type Snapshot = { schema?: number; activities?: Record<string, Activity> };
+/** Return open helper places for ongoing/upcoming shifts, or null for untrusted/stale data. */
 export function remaining(activity: Activity | undefined, now: number): number | null {
   const checked = Date.parse(activity?.checkedAt || "");
   if (!activity || activity.unavailable || !Number.isFinite(checked) || checked > now + 60000 || now - checked > 90 * 60000 || !activity.rows?.length) return null;
