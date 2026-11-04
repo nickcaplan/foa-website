@@ -5,11 +5,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import FireworksTorch from "../components/FireworksTorch.astro";
 import "../styles/fireworks.css";
 import { withBase } from "../lib/urls";
-import { ordinalDateFormatter, formatTimeRangeText } from "../lib/dates";
+import { formatTimeRangeText } from "../lib/dates";
 const entry = await getEntry("events", "fireworks-2026");
 const event = entry?.data;
 if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is missing");
-const eventDate = ordinalDateFormatter({ timeZone: "Europe/London" })(event.start);
 ---
 <BaseLayout title="Fireworks Volunteering" description="Sign up to help at Fireworks on the Field. All Ashley families are welcome. Choose any activity and sign up on Volunteer Sign Up." image="/brand/foa-logo-fireworks-og.png" headerLogo="/brand/foa-logo-fireworks-ivory.svg" bodyClass="fw-theme">
   <div class="fw-vol fw-stage" data-fw-paused>
@@ -22,7 +21,6 @@ const eventDate = ordinalDateFormatter({ timeZone: "Europe/London" })(event.star
               <h1>Fireworks <span>Volunteering</span></h1>
             </MobilePageHeading>
             <p class="event-hero-intro">Help make Fireworks on the Field awesome. Every Ashley family can play a part. All activities are open to every year group. Choose any activity, pick a slot and sign up in moments.</p>
-            <p class="fw-vol-date"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>{eventDate}</p>
           </div>
         </div>
       </section>
@@ -36,9 +34,6 @@ const eventDate = ordinalDateFormatter({ timeZone: "Europe/London" })(event.star
               const split = label.lastIndexOf(" ") + 1;
               return (
               <li class="vol-card">
-                <div class="vol-card__head">
-                  <p class="vol-card__dates"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>{role.dates}</p>
-                </div>
                 <h3>{role.name}</h3>
                 <p>{role.description}</p>
                 <dl class="vol-shifts">
