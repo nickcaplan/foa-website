@@ -100,8 +100,11 @@ def validate_snapshot(data):
             if end.tzinfo is None or end>END: raise ValueError('Invalid end')
     return data
 
-def preserve(url):
+def preserve(url, now=None):
     """Reuse published counts for normal builds. Only a genuine404 bootstraps unavailable."""
+    now=now or datetime.now(timezone.utc)
+    if now>=END:
+        return {"schema":1,"checkedAt":now.isoformat(),"eventEndsAt":END.isoformat(),"activities":{},"ended":True}
     try:
         with urlopen(Request(url,headers={'User-Agent':'FriendsOfAshley-count-preservation/1.0'}),timeout=20) as response:
             payload=response.read(100001)
