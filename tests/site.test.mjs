@@ -544,5 +544,6 @@ test("Fireworks recruitment copy invites every year group on the event page and 
     const html = await readFile(path.join(dist, page), "utf8");
     assert.match(html, /All activities are open to every year group/);
     assert.doesNotMatch(html, /Each year group (?:looks after|is looking after)|Find your team/);
+    if (page === "reps/index.html") assert.match(html, /Presales run from 2nd-5th November/);
   }
 });
