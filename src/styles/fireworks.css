@@ -1112,3 +1112,5 @@ body.fw-theme::before {
 @media (max-width: 47.999rem) {
   .fw-theme .vol-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+.fw-theme .vol-card .vol-availability { font-size: 0.9rem; line-height: 1.5; font-weight: 700; margin-top: auto; padding-top: 1rem; }
