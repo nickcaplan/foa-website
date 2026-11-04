@@ -20,6 +20,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
             <MobilePageHeading logo="/brand/foa-logo-fireworks-ivory.svg">
               <h1>Fireworks <span>Volunteering</span></h1>
             </MobilePageHeading>
+            <p class="fw-vol-date">Thursday 5th November 2026</p>
             <p class="event-hero-intro">Help make Fireworks on the Field awesome. Every Ashley family can play a part. All activities are open to every year group. Choose any activity, pick a slot and sign up in moments.</p>
           </div>
         </div>
@@ -29,7 +30,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
           <p class="vol-tip"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 21h4"></path><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg><span><strong>Tip:</strong> the sign-up buttons take you to the Volunteer Sign Up site, where you choose your slot.</span></p>
           <h2 id="volunteer-teams-title" class="visually-hidden">Volunteer activities</h2>
           <ul class="vol-grid">
-            {event.volunteerRoles.map((role) => {
+            {event.volunteerRoles.filter((role) => role.name !== "Token presales").map((role) => {
               const label = role.name.toLowerCase();
               const split = label.lastIndexOf(" ") + 1;
               return (
