@@ -3,6 +3,7 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { runInNewContext } from "node:vm";
+import { ordinalDateFormatter } from "../src/lib/dates.ts";
 import { isHidden } from "../src/lib/event-visibility.ts";
 
 const dist = path.resolve("dist");
@@ -259,11 +260,12 @@ test("the homepage features the chosen Christmas Fayre design without reviving t
   const homepage = await readFile(path.join(dist, "index.html"), "utf8");
   assert.match(homepage, /<div class="hero-event">/);
   assert.match(homepage, /<h1[^>]*>Christmas <em>Fayre\.<\/em><\/h1>/);
-  assert.match(homepage, /Saturday 5th December/);
+  const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
+  assert.ok(homepage.includes(ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(fayre.start)));
   assert.match(homepage, /Ashley School/);
   assert.match(homepage, /12:00-15:00/);
   assert.match(homepage, /£2, under 12s go free/);
-  assert.match(homepage, /class="hero-next-event">Next event</);
+  assert.match(homepage, /class="hero-next-event">Featured event</);
   assert.match(homepage, /class="christmas-home-wreath"/);
   assert.match(homepage, new RegExp(`src="${basePath}/brand/foa-logo-christmas-home\\.webp"`));
   assert.match(homepage, /mailto:ashleyschoolchristmasfair2026@gmail.com\?subject=Helping%20at%20the%20Christmas%20Fayre/);
