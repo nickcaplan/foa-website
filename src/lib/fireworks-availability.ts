@@ -20,3 +20,14 @@ export function compareRemaining(a: number | null, b: number | null): number {
   if (b === null) return -1;
   return b - a;
 }
+
+/** Validate nested published data before replacing the last usable snapshot. */
+export function isSnapshot(value: unknown): value is Snapshot {
+  const record = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
+  if (!record(value) || value.schema !== 1 || !record(value.activities)) return false;
+  return Object.values(value.activities).every(activity => {
+    if (!record(activity)) return false;
+    if (activity.unavailable === true) return true;
+    return typeof activity.checkedAt === "string" && Number.isFinite(Date.parse(activity.checkedAt)) && Array.isArray(activity.rows) && activity.rows.length > 0 && activity.rows.every(row => record(row) && typeof row.endsAt === "string" && Number.isFinite(Date.parse(row.endsAt)) && typeof row.open === "number" && Number.isInteger(row.open) && row.open >= 0 && row.open <= 20);
+  });
+}
