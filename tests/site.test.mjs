@@ -265,7 +265,7 @@ test("the homepage features the chosen Christmas Fayre design without reviving t
   assert.match(homepage, /Ashley School/);
   assert.match(homepage, /12:00-15:00/);
   assert.match(homepage, /£2, under 12s go free/);
-  assert.match(homepage, /class="hero-next-event">Featured event</);
+  assert.doesNotMatch(homepage, /Featured event|hero-next-event/);
   assert.match(homepage, /class="christmas-home-wreath"/);
   assert.match(homepage, new RegExp(`src="${basePath}/brand/foa-logo-christmas-home\\.webp"`));
   assert.match(homepage, /mailto:ashleyschoolchristmasfair2026@gmail.com\?subject=Helping%20at%20the%20Christmas%20Fayre/);
@@ -445,9 +445,9 @@ test("the Fireworks volunteering page shows remaining event-night roles, shifts 
   assert.match(html, /Help make Fireworks on the Field awesome\./);
   assert.match(html, /All activities are open to every year group\./);
   assert.doesNotMatch(html, /find your child|Each year group is looking after|Y1 and Y2/);
-  assert.equal([...html.matchAll(/<li class="vol-card"/g)].length, fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").length);
+  assert.equal([...html.matchAll(/<li class="vol-card">/g)].length, fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").length);
   for (const role of fireworks.volunteerRoles.filter((role) => role.name !== "Token presales")) {
-    const card = html.split('<li class="vol-card"').find((part) => part.includes(`<h3>${escapeHtml(role.name)}</h3>`));
+    const card = html.split('<li class="vol-card">').find((part) => part.includes(`<h3>${escapeHtml(role.name)}</h3>`));
     assert.ok(card, `no card for ${role.name}`);
     assert.doesNotMatch(card, /vol-card__group/);
     assert.ok(!card.includes(escapeHtml(role.group)), `${role.name}: rendered year-group label removed`);
