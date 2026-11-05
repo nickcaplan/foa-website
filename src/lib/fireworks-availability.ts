@@ -37,7 +37,7 @@ export function retainValid(previous: Snapshot, next: Snapshot): Snapshot {
   const activities = { ...previous.activities };
   for (const [code, activity] of Object.entries(next.activities || {})) {
     const old = activities[code];
-    if (!activity.unavailable && (!old || Date.parse(activity.checkedAt || "") >= Date.parse(old.checkedAt || ""))) activities[code] = activity;
+    if (!activity.unavailable && (!old || old.unavailable || Date.parse(activity.checkedAt || "") >= Date.parse(old.checkedAt || ""))) activities[code] = activity;
   }
   return { ...next, activities };
 }
