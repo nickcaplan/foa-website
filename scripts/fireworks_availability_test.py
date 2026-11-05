@@ -12,6 +12,7 @@ class ParserTests(unittest.TestCase):
         html='<div id="rows">'+header+'<a href="#">'+row+'</a></div>'
         self.assertEqual(m.parse(html),[{'endsAt':'2026-11-05T16:30:00+00:00','open':3}])
         with self.assertRaises(ValueError): m.parse(html.replace('col-sm-2 col-xs-3 header','col-sm-2 col-xs-3'))
+        with self.assertRaises(ValueError): m.parse(html.replace('>Open<','>Filled<'))
 
     def test_open_count_once_and_no_personal_data(self):
         """Verify open count once and no personal data."""
