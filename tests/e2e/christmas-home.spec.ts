@@ -25,3 +25,5 @@ for (const width of [320,390,768,1024,1440]) test(`Christmas homepage root text 
  const layout=await page.locator('.hero-event').evaluate(hero=>{const h=hero.querySelector('h1')!.getBoundingClientRect(),panel=hero.getBoundingClientRect(),action=hero.querySelector('.hero-actions')!.getBoundingClientRect();return {title:h.left>=panel.left&&h.right<=panel.right,action:action.left>=panel.left&&action.right<=panel.right,separate:h.bottom<=action.top||h.right<=action.left}});
  expect(layout).toEqual({title:true,action:true,separate:true});
 });
+
+for(const [date,label] of [['2026-12-04T12:00:00Z','Tomorrow'],['2026-12-05T12:00:00Z','Today']]) test(`Christmas relative date ${label}`,async({page})=>{await page.clock.install({time:new Date(date)});await page.goto('/');await expect(page.locator('.hero-when [data-event-date]')).toHaveText(label);await expect(page.locator('.hero-when [data-event-date]')).toBeVisible();});
