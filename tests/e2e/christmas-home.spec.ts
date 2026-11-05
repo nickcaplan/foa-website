@@ -35,3 +35,9 @@ for (const width of [320,390,768,1024,1440]) test(`Christmas homepage root text 
 });
 
 for(const [date,label] of [[new Date(Date.parse(fayre.start)-86400000).toISOString(),'Tomorrow'],[fayre.start,'Today']]) test(`Christmas relative date ${label}`,async({page})=>{await page.clock.install({time:new Date(date)});await page.goto('/');await expect(page.locator('.hero-when [data-event-date]')).toHaveText(label);await expect(page.locator('.hero-when [data-event-date]')).toBeVisible();});
+
+for(const width of [390,1023,1024,1440])for(const size of [100,200])test(`extra holly clears content ${width} ${size}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.goto('/');if(size===200)await page.evaluate(()=>document.documentElement.style.fontSize='200%');
+ const status=await page.locator('.christmas-home-extra-holly').evaluate(el=>{const style=getComputedStyle(el),r=el.getBoundingClientRect(),hero=el.closest('.hero-event')!.getBoundingClientRect();const overlap=[...document.querySelectorAll('.hero-copy h1,.hero-copy p,.christmas-home-art,.menu-toggle')].some(e=>{const b=e.getBoundingClientRect();return r.left<b.right&&r.right>b.left&&r.top<b.bottom&&r.bottom>b.top});return{visible:style.display!=='none',overlap,inside:r.left>=hero.left&&r.right<=hero.right&&r.top>=hero.top&&r.bottom<=hero.bottom}});
+ expect(status.visible).toBe(width>=1024);if(status.visible){expect(status.overlap).toBe(false);expect(status.inside).toBe(true)}
+});
