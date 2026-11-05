@@ -66,7 +66,7 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
        <div class="hero-side">
 
         <article class="event-feature event-feature--poster christmas-home-art" aria-label="Christmas Fayre artwork and details">
-          <img class="christmas-home-wreath" src={withBase("/brand/foa-logo-christmas-home.webp")} alt="The Friends of Ashley Christmas wreath" width="1200" height="630" fetchpriority="high" />
+          <img class="christmas-home-wreath" src={withBase("/brand/foa-logo-christmas-home.webp")} alt="The Friends of Ashley Christmas wreath" width="1200" height="630" loading={christmasIsLive ? "eager" : "lazy"} fetchpriority={christmasIsLive ? "high" : "auto"} />
           <span class="sponsor-ribbon"><img src={withBase("/sponsors/martin-flashman.jpeg")} alt="Martin Flashman and Co" width="225" height="33" loading="lazy" /></span>
         <div class="hero-actions"><a class="button button--primary button--large christmas-home-details" href={withBase(event.path!)}><span class="cta-label">Event <span class="cta-word">detail<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
         <a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the <span class="cta-word">organiser<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
@@ -80,7 +80,7 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
      </div>
     </div>
   </section>
-  <noscript><div class="site-width"><p>Homepage event shown as of the last site update. Christmas Fayre takes over at 9pm on 5 November. <a href={withBase(event.path!)}>Christmas Fayre details</a> are always available.</p></div></noscript>
+  <noscript><div class="site-width"><p>Homepage event shown as of the last site update. Christmas Fayre takes over at 9pm on 5th November. <a href={withBase(event.path!)}>Christmas Fayre details</a> are always available.</p></div></noscript>
   <section class="fundraising-update" aria-labelledby="fundraising-update-title">
     <div class="site-width">
       <FundraisingSummary appeal={appeal} />
