@@ -1,34 +1,51 @@
 ---
+import christmasHomeStyles from "../styles/christmas-home.css?inline";
+import HomepageMobileIdentity from "../components/HomepageMobileIdentity.astro";
+import SponsorRibbon from "../components/SponsorRibbon.astro";
+import EventVisibilityInit from "../components/EventVisibilityInit.astro";
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import SponsorRibbon from "../components/SponsorRibbon.astro";
 import FundraisingSummary from "../components/FundraisingSummary.astro";
 import MobilePageHeading from "../components/MobilePageHeading.astro";
 import { withBase } from "../lib/urls";
-import { ordinalDateFormatter } from "../lib/dates";
+import { ukDateKey } from "../lib/event-visibility";
+import { ordinalDateFormatter, formatEventTimeRange } from "../lib/dates";
 const events = await getCollection("events");
 const fireworks = events.find(({ id }) => id === "fireworks-2026")?.data;
 if (!fireworks) throw new Error("Homepage event content is missing");
-const latestNewsletter = (await getCollection("newsletters"))
-  .filter(({ data }) => data.published)
-  .sort((a, b) => b.data.published!.getTime() - a.data.published!.getTime())[0]?.data;
-const appeal = (await getCollection("fundraising")).find(({ id }) => id === "current-appeal")?.data;
-if (!appeal) throw new Error("Homepage fundraising content is missing");
 const fireworksDate = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(fireworks.start);
 const timeFormatter = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Europe/London" });
 const fireworksSchedule = fireworks.schedule ?? [];
 const scheduleStart = fireworksSchedule[0]?.time.getTime() ?? 0;
 const scheduleSpan = (fireworksSchedule.at(-1)?.time.getTime() ?? 0) - scheduleStart;
 const scheduleFraction = (time: Date) => (scheduleSpan > 0 ? (time.getTime() - scheduleStart) / scheduleSpan : 0.5);
-// Conservative rendered-width estimates, shared by the image and its preload.
+const homepageSwitchAt = "2026-11-05T21:00:00+00:00";
+const christmasPreview = Astro.props.christmasPreview === true;
+const christmasIsLive = christmasPreview || Date.now() >= Date.parse(homepageSwitchAt);
+const event = events.find(({ id }) => id === "christmas-fayre-2026")?.data;
+if (!event?.contactEmail) throw new Error("Homepage Christmas Fayre content is missing");
+const latestNewsletter = (await getCollection("newsletters"))
+  .filter(({ data }) => data.published)
+  .sort((a, b) => b.data.published!.getTime() - a.data.published!.getTime())[0]?.data;
+const appeal = (await getCollection("fundraising")).find(({ id }) => id === "current-appeal")?.data;
+if (!appeal) throw new Error("Homepage fundraising content is missing");
+const eventDate = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(event.start);
+const titleParts = event.title.trim().split(/\s+/);
+const titleEnd = titleParts.pop()!;
+const titleLead = titleParts.join(" ");
+const baseAwareChristmasStyles = christmasHomeStyles.replaceAll('url("/brand/', `url("${withBase("/brand/")}`);
+const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helping at the ${event.title}`)}`;
 ---
-   <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage">
+   <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview} homepage={christmasPreview}>
+
+  <style is:inline set:html={baseAwareChristmasStyles} />
+  <HomepageMobileIdentity />
   <section class="hero">
     <div class="site-width hero-grid">
-      <div class="hero-event">
+      <div class="hero-event" data-homepage-fireworks data-show-before={christmasPreview ? undefined : homepageSwitchAt} hidden={christmasIsLive}>
        <div class="hero-copy">
           <MobilePageHeading>
-            <p class="hero-next-event">Next event</p>
+            
             <h1>Fireworks on the <em>Field.</em></h1>
           </MobilePageHeading>
           <p class="hero-when"><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path></svg><strong>{fireworksDate}</strong></span><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg><strong>{fireworks.location!.replace(/ (\S+)$/, "\u00A0$1")}</strong></span></p><div class="event-timeline-wrap"><ol class="event-timeline">{fireworksSchedule.map((item) => <li style={`--at: ${scheduleFraction(item.time)}`}><time datetime={item.time.toISOString()}>{timeFormatter.format(item.time)}</time><span>{item.label}</span></li>)}</ol></div></div>
@@ -39,16 +56,49 @@ const scheduleFraction = (time: Date) => (scheduleSpan > 0 ? (time.getTime() - s
         </article>
        </div>
       </div>
+      <div class="hero-event" data-homepage-christmas data-show-from={christmasPreview ? undefined : homepageSwitchAt} hidden={!christmasIsLive}>
+        <span class="christmas-home-tree" aria-hidden="true"></span>
+       <div class="hero-copy">
+          <MobilePageHeading>
+            <h1><span class="christmas-home-kicker">The Ashley</span> {titleLead} <em>{titleEnd}</em></h1>
+          </MobilePageHeading>
+          <p class="hero-when"><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path></svg><strong>{eventDate}<span class="relative-date relative-date--inline" data-event-date={ukDateKey(event.start)} hidden></span></strong></span><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg><strong>{event.location}</strong></span></p><p class="christmas-home-admission"><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><strong>{formatEventTimeRange(event.start, event.end)}</strong></span><span class="christmas-home-price hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4V5z"></path><path d="M14 5v2m0 3v4m0 3v2"></path></svg><span>{event.entry}</span></span></p></div>
+       <div class="hero-side">
+
+        <article class="event-feature event-feature--poster christmas-home-art" aria-label="Christmas Fayre artwork and details">
+          <img class="christmas-home-wreath" src={withBase("/brand/foa-logo-christmas-home.webp")} alt="The Friends of Ashley Christmas wreath" width="1200" height="630" loading={christmasIsLive ? "eager" : "lazy"} fetchpriority={christmasIsLive ? "high" : "auto"} />
+          <span class="sponsor-ribbon"><img src={withBase("/sponsors/martin-flashman.jpeg")} alt="Martin Flashman and Co" width="225" height="33" loading="lazy" /></span>
+        <div class="hero-actions"><a class="button button--primary button--large christmas-home-details" href={withBase(event.path!)}><span class="cta-label">Event <span class="cta-word">detail<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
+        <a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the <span class="cta-word">organiser<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
+          </div>
+        </article>
+       </div>
+      </div>
      <div class="quick-list hero-links">
      {latestNewsletter && <a class="quick-row" href={withBase("/newsletter/")}><span><h3>Read the latest newsletter</h3><p>{latestNewsletter.title}</p></span><span class="quick-arrow" aria-hidden="true">&rarr;</span></a>}
      <a class="quick-row" href={withBase("/get-involved/")}><span><h3>Get involved</h3><p>Roles, meetings, class reps and ways to help.</p></span><span class="quick-arrow" aria-hidden="true">&rarr;</span></a>
      </div>
     </div>
   </section>
+  <noscript><div class="site-width"><p>Homepage event shown as of the last site update. Christmas Fayre takes over at 9pm on 5th November. <a href={withBase(event.path!)}>Christmas Fayre details</a> are always available.</p></div></noscript>
   <section class="fundraising-update" aria-labelledby="fundraising-update-title">
     <div class="site-width">
       <FundraisingSummary appeal={appeal} />
     </div>
   </section>
+  {christmasPreview && <div class="site-width"><p><strong>Christmas homepage preview only.</strong> The live homepage remains unchanged pending approval and deployment.</p></div>}
+  <EventVisibilityInit />
 </BaseLayout>
 
+
+<script>
+  import { syncEventVisibility, syncRelativeDates } from "../lib/event-visibility";
+  const switchAt = Date.parse("2026-11-05T21:00:00+00:00");
+  const update = () => { syncEventVisibility(); syncRelativeDates(); };
+  update();
+  const delay = switchAt - Date.now();
+  if (delay > 0 && delay <= 2147483647) window.setTimeout(update, delay);
+  window.setInterval(update, 60000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) update(); });
+  window.addEventListener("pageshow", update);
+</script>

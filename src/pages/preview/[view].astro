@@ -1,0 +1,7 @@
+---
+import Homepage from "../index.astro";
+export function getStaticPaths() {
+  return process.env.CONTEXT === "deploy-preview" ? [{ params: { view: "christmas" } }] : [];
+}
+---
+<Homepage christmasPreview={true} />

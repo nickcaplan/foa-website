@@ -304,7 +304,8 @@ test("hero panel keeps dark focus outlines and heading accent in both modes", as
     }
     throw new Error(`could not tab to ${selector}`);
   };
-  const heroLinks = [".hero-actions .button--amber", ".hero-actions .button--primary", ".hero-actions .button--secondary"];
+  await page.clock.setFixedTime(new Date("2026-11-05T21:00:00Z"));
+  const heroLinks = ["[data-homepage-christmas] .hero-actions .button--amber", ".christmas-home-details"];
   for (const width of [390, 1280]) {
     for (const zoom of [false, true]) {
       await page.setViewportSize({ width, height: 844 });
@@ -332,7 +333,7 @@ test("hero panel keeps dark focus outlines and heading accent in both modes", as
         await expect(link).toHaveCSS("outline-style", "solid");
         await expect(link).toHaveCSS("outline-width", "3px");
       }
-      await expect(page.locator(".hero-copy h1 em")).toHaveCSS("color", "rgb(38, 54, 26)");
+      await expect(page.locator(".hero-copy:visible h1 em")).toHaveCSS("color", "rgb(167, 43, 57)");
       toggle = await openThemeToggle(page);
       await toggle.click();
       await expect(toggle).toHaveAttribute("aria-pressed", "false");

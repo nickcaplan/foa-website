@@ -9,8 +9,8 @@ import { withBase } from "../lib/urls";
 import "../styles/global.css";
 import "../styles/night-mode.css";
 
-interface Props { title: string; description: string; image?: string; headerLogo?: string; footerLogo?: string; preloadImage?: string; preloadImageSrcset?: string; preloadImageSizes?: string; noindex?: boolean; bodyClass?: string; }
-const { title, description, image = "/brand/foa-logo-og.png", headerLogo, footerLogo, preloadImage, preloadImageSrcset, preloadImageSizes, noindex = false, bodyClass } = Astro.props;
+interface Props { title: string; description: string; image?: string; headerLogo?: string; footerLogo?: string; preloadImage?: string; preloadImageSrcset?: string; preloadImageSizes?: string; noindex?: boolean; bodyClass?: string; homepage?: boolean; }
+const { title, description, image = "/brand/foa-logo-og.png", headerLogo, footerLogo, preloadImage, preloadImageSrcset, preloadImageSizes, noindex = false, bodyClass, homepage = false } = Astro.props;
 const pageTitle = title === "The Friends of Ashley" ? "The Friends of Ashley | Ashley C of E Primary School PTA" : `${title} | The Friends of Ashley`;
 // Only dedicated event routes get a date; shared listings such as Uniform do not.
 const event = (await getCollection("events", ({ data }) =>
@@ -48,7 +48,7 @@ const fireworksImage = `url("${withBase("/events/fireworks-1600.jpg")}")`;
   </head>
   <body class={bodyClass} style={`--fireworks-image: ${fireworksImage}`}>
     <a class="skip-link" href="#main-content">Skip to main content</a>
-    <Header logo={headerLogo} />
+    <Header logo={headerLogo} homepage={homepage} />
     <main id="main-content"><slot /></main>
     <Footer logo={footerLogo} />
     <CookieBanner />

@@ -9,7 +9,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 
     });
     await page.goto("/");
     // Nick's call: the hero poster photo is removed; the sponsor credit stays.
-    const ribbon = page.locator(".hero-event .sponsor-ribbon");
+    const ribbon = page.locator(".hero-event:not([hidden]) .sponsor-ribbon");
     await expect(ribbon).toHaveCount(1);
     await expect(ribbon).toBeVisible();
     await expect(page.getByRole("img", { name: "Fireworks lighting up the sky over the school field." })).toHaveCount(0);

@@ -60,7 +60,7 @@ test.describe("mobile menu touch journeys", () => {
       ]);
       expect(response.status(), destination.name).toBe(200);
       await expect(page).toHaveURL((url) => url.pathname === destination.path);
-      await expect(page.locator("main h1")).toBeVisible();
+      await expect(page.locator("main h1:visible")).toBeVisible();
       await expect(page.locator("[data-mobile-menu]")).toHaveAttribute("aria-hidden", "true");
     }
     expect(errors).toEqual([]);

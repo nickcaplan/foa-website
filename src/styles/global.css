@@ -5556,3 +5556,13 @@ body.menu-open .cookie-banner {
     inset-inline-end: 0.5rem;
   }
 }
+
+/* Christmas homepage feature, scoped to the new artwork and actions. */
+
+  .christmas-home-admission { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 1rem; font-size: 1.1rem; }
+  .christmas-home-admission span { max-width: 100%; }
+  .christmas-home-art { width: min(100%, 26rem); justify-self: center; }
+  .christmas-home-wreath { display: block; width: 100%; height: auto; border-radius: 3px 3px 0 0; }
+  .hero-event .christmas-home-art { gap: 0; }
+  .hero-event .christmas-home-art .sponsor-ribbon { width: 100%; padding: 0.6rem 1rem; border-radius: 0 0 3px 3px; box-shadow: none; }
+  .hero-event .christmas-home-art .christmas-home-details { margin-top: 1.25rem; min-height: 3.5rem; padding: 0.9rem 1.5rem; line-height: 1.5; width: 100%; }
