@@ -19,6 +19,10 @@ class ParserTests(unittest.TestCase):
         """Verify wrong structure."""
         for html in ['',page(time='Tomorrow'),page(opened='3').replace('visible-lg">3','visible-lg">4'),page(time='19:00 - 20:00')]:
             with self.assertRaises(ValueError): m.parse(html)
+    def test_partial_malformed_sheet_rejected(self):
+        valid = page().replace('<div id="rows">','',1)[:-6]
+        malformed = valid.replace('row vertical-align','row')
+        with self.assertRaises(ValueError): m.parse('<div id="rows">'+valid+malformed+'</div>')
     def test_after_teardown_no_fetch(self):
         """Verify after teardown no fetch."""
         data=m.fetch(datetime(2026,11,5,19,0,tzinfo=timezone.utc));self.assertTrue(data['ended']);self.assertEqual(data['activities'],{})
