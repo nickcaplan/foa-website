@@ -332,7 +332,7 @@ test("hero panel keeps dark focus outlines and heading accent in both modes", as
         await expect(link).toHaveCSS("outline-style", "solid");
         await expect(link).toHaveCSS("outline-width", "3px");
       }
-      await expect(page.locator(".hero-copy h1 em")).toHaveCSS("color", "rgb(139, 38, 50)");
+      await expect(page.locator(".hero-copy h1 em")).toHaveCSS("color", "rgb(167, 43, 57)");
       toggle = await openThemeToggle(page);
       await toggle.click();
       await expect(toggle).toHaveAttribute("aria-pressed", "false");
