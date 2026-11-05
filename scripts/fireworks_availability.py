@@ -84,7 +84,7 @@ def parse(html):
     if not rows: raise ValueError('No shifts parsed')
     return rows
 
-def fetch(now=None):
+def fetch(now=None, previous=None):
     """Read each public sheet once, fail closed, and never start a post-cutoff request."""
     now=now or datetime.now(timezone.utc)
     data={'schema':1,'checkedAt':now.isoformat(),'eventEndsAt':END.isoformat(),'activities':{}}
@@ -102,7 +102,8 @@ def fetch(now=None):
                 html=payload.decode('utf-8')
             data['activities'][code]={'name':name,'rows':parse(html),'checkedAt':now.isoformat()}
         except Exception:
-            data['activities'][code]={'name':name,'unavailable':True}
+            old = (previous or {}).get('activities', {}).get(code)
+            data['activities'][code] = old if old and not old.get('unavailable') else {'name':name,'unavailable':True}
             print('Availability unavailable for '+code, file=sys.stderr)
     return data
 def validate_snapshot(data):
@@ -122,39 +123,62 @@ def validate_snapshot(data):
             if end.tzinfo is None or end>END: raise ValueError('Invalid end')
     return data
 
+def fresh_seed(seed, now, allow_stale=False):
+    """Accept only complete, validated, fresh counts, without preview metadata."""
+    try:
+        candidate = validate_snapshot(seed)
+        for code in SHEETS:
+            activity = candidate['activities'][code]
+            checked = datetime.fromisoformat(activity['checkedAt'])
+            if activity.get('unavailable') or checked > now or (not allow_stale and (now-checked).total_seconds() > 5400):
+                raise ValueError('Seed is not fresh')
+        candidate = dict(candidate)
+        candidate.pop('preview', None)
+        return candidate
+    except Exception:
+        return None
+
 def preserve(url, now=None, seed=None):
-    """Reuse valid published counts; failures publish explicit unavailable data, never stale substitutes."""
+    """Preserve published counts unless a complete fresh committed seed is newer."""
     now=now or datetime.now(timezone.utc)
     if now>=END:
         return {"schema":1,"checkedAt":now.isoformat(),"eventEndsAt":END.isoformat(),"activities":{},"ended":True}
+    candidate = fresh_seed(seed, now)
     try:
         with urlopen(Request(url,headers={'User-Agent':'FriendsOfAshley-count-preservation/1.0'}),timeout=20) as response:
             payload=response.read(100001)
             if len(payload)>100000: raise ValueError('Oversized snapshot')
-            return validate_snapshot(json.loads(payload))
-    except Exception:
-        if seed is not None:
-            try:
-                candidate = validate_snapshot(seed)
-                for code in SHEETS:
-                    activity = candidate['activities'][code]
-                    checked = datetime.fromisoformat(activity['checkedAt'])
-                    if activity.get('unavailable') or checked > now or (now-checked).total_seconds() > 5400:
-                        raise ValueError('Seed is not fresh')
-                candidate = dict(candidate)
-                candidate.pop('preview', None)
+            published = validate_snapshot(json.loads(payload))
+        if candidate is not None:
+            # Never replace a newer activity with an older seed. Missing/unavailable
+            # published activities are recoverable only from a complete fresh seed.
+            newer = False
+            for code in SHEETS:
+                previous = published['activities'].get(code)
+                if previous is None or previous.get('unavailable'):
+                    newer = True
+                    continue
+                seed_time = datetime.fromisoformat(candidate['activities'][code]['checkedAt'])
+                published_time = datetime.fromisoformat(previous['checkedAt'])
+                if seed_time < published_time:
+                    return published
+                newer = newer or seed_time > published_time
+            if newer:
                 return candidate
-            except Exception:
-                pass
+        return published
+    except Exception:
+        fallback = candidate or fresh_seed(seed, now, allow_stale=True)
+        if fallback is not None:
+            return fallback
         print('Published availability unavailable; continuing site deployment without counts',file=sys.stderr)
         return {'schema':1,'checkedAt':None,'eventEndsAt':END.isoformat(),'activities':{}}
 
 if __name__=='__main__':
     output=sys.argv[1] if len(sys.argv)>1 else 'assets/fireworks-availability.json'
     seed = None
-    if '--preserve' in sys.argv:
-        try:
-            with open(output) as f: seed = json.load(f)
-        except (OSError, ValueError): pass
-    data=preserve('https://www.thefriendsofashley.org/fireworks-availability.json', seed=seed) if '--preserve' in sys.argv else fetch()
+    try:
+        with open(output) as f: seed = json.load(f)
+    except (OSError, ValueError): pass
+    previous = preserve('https://www.thefriendsofashley.org/fireworks-availability.json', seed=seed)
+    data = previous if '--preserve' in sys.argv else fetch(previous=previous)
     with open(output,'w') as f: json.dump(data,f,separators=(',',':'))
