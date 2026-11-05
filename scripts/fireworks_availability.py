@@ -49,8 +49,8 @@ def parse(html):
     if len(roots)!=1: raise ValueError('Expected one public sheet rows container')
     rows=[]
     for row in roots[0].all():
-        if not row.has('row'): continue
-        if not row.has('vertical-align'): raise ValueError('Malformed shift row')
+        if row.parent is not roots[0] or row.tag != 'div': continue
+        if not row.has('row') or not row.has('vertical-align'): raise ValueError('Malformed shift row')
         cols=[el for el in row.children if isinstance(el,Element) and el.tag=='div']
         if len(cols)!=3 or not cols[1].has('col-sm-2'): raise ValueError('Unexpected row columns')
         times=[el.text().strip() for el in cols[0].all() if el.has('ellipsis') and el.has('indent') and not el.has('userstruncated')]
