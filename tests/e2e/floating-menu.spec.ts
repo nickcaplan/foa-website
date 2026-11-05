@@ -48,7 +48,7 @@ for (const width of [320, 390, 768, 1023]) {
         const copy = page.locator(".hero-copy");
         await expect(copy.locator(".page-logo-home")).toBeVisible();
         await expect(copy.locator(".eyebrow")).toHaveCount(0);
-        await expect(copy.locator(".hero-next-event")).toHaveText("Featured event");
+        await expect(copy.locator(".hero-next-event")).toHaveCount(0);
         const title = (await copy.locator("h1").boundingBox())!;
         const logo = (await copy.locator(".page-logo-home").boundingBox())!;
         // Beside the logo in the shared layout, or stacked below it at 320px
@@ -181,5 +181,23 @@ for (const route of ["/", "/newsletter/", "/uniform/"]) {
     await expect(page.locator(".desktop-nav"), route).toBeHidden();
     await expect(page.getByRole("button", { name: "Open menu" }), route).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), route).toBeLessThanOrEqual(0);
+  });
+}
+
+for (const width of [320, 390, 768, 1023]) {
+  test(`${width}px: Christmas decoration clears the menu and the menu opens and closes`, async ({ page }) => {
+    await page.setViewportSize({width, height: 900});
+    await page.emulateMedia({reducedMotion: "reduce"});
+    await page.goto("/");
+    await expect(page.locator(".hero-next-event")).toHaveCount(0);
+    const bounds = await page.locator(".hero-event").evaluate(el => {
+      const r=el.getBoundingClientRect(),s=getComputedStyle(el,"::after"),m=document.querySelector(".menu-toggle").getBoundingClientRect();
+      return {decorationTop:r.top+parseFloat(s.top),menuBottom:m.bottom};
+    });
+    expect(bounds.decorationTop).toBeGreaterThan(bounds.menuBottom+16);
+    await page.getByRole("button",{name:"Open menu",exact:true}).click();
+    await expect(page.getByRole("dialog",{name:"Site menu"})).toBeVisible();
+    await page.getByRole("button",{name:"Close menu",exact:true}).click();
+    await expect(page.getByRole("dialog",{name:"Site menu"})).toBeHidden();
   });
 }
