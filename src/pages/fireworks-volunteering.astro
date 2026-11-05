@@ -37,8 +37,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
               const split = label.lastIndexOf(" ") + 1;
               return (
               <li class="vol-card" data-availability-code={role.url.split("/").pop()} data-activity-name={role.name}>
-                <p class="vol-availability" aria-live="polite">Check sheet</p>
-                <h3>{role.name}</h3>
+                <div class="vol-card__heading"><h3>{role.name}</h3><p class="vol-availability" aria-live="polite">Check sheet</p></div>
                 <p>{role.description}</p>
                 <dl class="vol-shifts">
                   {role.shifts.map((shift) => <div><dt>{shift.label}</dt><dd>{formatTimeRangeText(shift.when)}<span>{shift.helpers} {shift.helpers === 1 ? "helper" : "helpers"} {role.shifts.length > 1 && shift.label !== "Setup" && shift.label !== "Clear up" ? "per shift" : "per slot"}</span></dd></div>)}
@@ -63,7 +62,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
   function render() {
     const now = Date.now();
     const previewNote = document.querySelector<HTMLElement>("[data-preview-note]");
-    if (previewNote) previewNote.hidden = snapshot.preview !== true;
+    if (previewNote) previewNote.hidden = !location.hostname.startsWith("deploy-preview-");
     const ranked: { name: string; count: number }[] = [];
     const totals = new Map<HTMLElement, number | null>();
     const cards = [...document.querySelectorAll<HTMLElement>("[data-availability-code]")];
@@ -137,11 +136,14 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
 </script>
 
 <style is:global>
-  .fw-theme .vol-card .vol-availability { position: static; margin: 0 0 1rem; padding: 0; max-width: 100%; text-align: right; font-size: .85rem; line-height: 1.25; }
+  .fw-theme .vol-card .vol-availability { position: static; margin: 0; min-height: 0; padding: 0; max-width: 100%; text-align: left; font-size: .85rem; line-height: 1.25; }
   .vol-availability .vol-count { display: inline; color: #9e201f; font-size: 1.25rem; line-height: 1.25; font-weight: 800; font-variant-numeric: tabular-nums; }
   .vol-availability .vol-count--zero { color: #345039; }
   .vol-count-label { display: inline; font-size: 1rem; line-height: 1.25; }
-  .fw-theme .vol-card h3 { padding-right: 0; min-height: 0; }
+  .fw-theme .vol-card h3 { padding-right: 0; min-height: 0; margin: 0; }
+  .vol-card__heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .35rem .8rem; margin-bottom: .75rem; }
+  .vol-card__heading .vol-availability { white-space: nowrap; }
+
   .fw-theme .vol-priority { display: block; background: #f8df9b; border: 2px solid #c99b35; border-left: .5rem solid #9e201f; padding: 1rem 1.25rem; }
   .vol-priority strong { display: block; color: #8c1c1b; font-size: .85rem; text-transform: uppercase; letter-spacing: .08em; }
   .vol-priority span { display: block; color: #362b15; font-size: 1.3rem; line-height: 1.3; font-weight: 800; margin-top: .3rem; }
