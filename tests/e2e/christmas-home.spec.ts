@@ -16,8 +16,12 @@ for (const width of [320,390,768,1024,1440]) for (const theme of ['day','night']
    return {whole:word?.length===1,contained:word?.every(r=>r.left>=hero.left&&r.right<=hero.right),separate:title.bottom<=side.top||title.right<=side.left};
   });
   expect(titleLayout).toEqual({whole:true,contained:true,separate:true});
+  const actions=page.locator('.christmas-home-art .hero-actions');
+  await expect(actions.getByRole('link')).toHaveCount(2);
+  const positions=await actions.evaluate(el=>{const links=[...el.querySelectorAll('a')],sponsor=el.closest('article')!.querySelector('.sponsor-ribbon')!.getBoundingClientRect();return {below:el.getBoundingClientRect().top>=sponsor.bottom,ordered:links[0].getBoundingClientRect().bottom<=links[1].getBoundingClientRect().top,red:getComputedStyle(links[1]).backgroundColor}});
+  expect(positions).toEqual({below:true,ordered:true,red:'rgb(167, 43, 57)'});
   const image=page.locator('.christmas-home-wreath');expect(await image.evaluate((e:HTMLImageElement)=>e.complete&&e.naturalWidth>0)).toBe(true);
-  await expect(page.getByRole('link',{name:'Help at the Fayre'})).toHaveAttribute('href',/^mailto:ashleyschoolchristmasfair2026@gmail.com\?subject=/);
+  await expect(page.getByRole('link',{name:'Email the organisers'})).toHaveAttribute('href',/^mailto:ashleyschoolchristmasfair2026@gmail.com\?subject=/);
   await details.focus();await page.keyboard.press('Enter');await expect(page).toHaveURL(/\/events\/christmas-fayre-2026\/$/);await expect(page.getByRole('heading',{level:1,name:'Christmas Fayre'})).toBeVisible();
  });
 }
