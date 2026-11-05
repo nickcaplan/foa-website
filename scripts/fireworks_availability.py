@@ -143,7 +143,7 @@ def preserve(url, now=None, seed=None):
     now=now or datetime.now(timezone.utc)
     if now>=END:
         return {"schema":1,"checkedAt":now.isoformat(),"eventEndsAt":END.isoformat(),"activities":{},"ended":True}
-    candidate = fresh_seed(seed, now)
+    candidate = fresh_seed(seed, now, allow_stale=True)
     try:
         with urlopen(Request(url,headers={'User-Agent':'FriendsOfAshley-count-preservation/1.0'}),timeout=20) as response:
             payload=response.read(100001)
