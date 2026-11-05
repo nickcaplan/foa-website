@@ -47,6 +47,7 @@ test("the Fireworks page offers the event guide PDF as a download", async ({ pag
 });
 
 test("clicking through from What's On does not show a return breadcrumb", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-11-04T12:00:00Z"));
   await page.goto("/whats-on/");
   await page.getByRole("link", { name: /Fireworks on the Field/ }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Fireworks on the Field" })).toBeVisible();
@@ -249,6 +250,7 @@ test("Fireworks uses the immersive design by default without a mode control", as
   const header = await headerStyles();
   expect(await page.locator(".event-summary").evaluate((element) => getComputedStyle(element, "::before").height)).toBe("24px");
   await expect(page.locator(".event-summary .fw-date")).toHaveText("Thursday 5th November");
+  await page.clock.setFixedTime(new Date("2026-11-04T12:00:00Z"));
   await page.goto("/whats-on/");
   expect(await headerStyles()).toEqual(header);
 });
