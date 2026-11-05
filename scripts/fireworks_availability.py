@@ -122,7 +122,7 @@ def validate_snapshot(data):
             if end.tzinfo is None or end>END: raise ValueError('Invalid end')
     return data
 
-def preserve(url, now=None):
+def preserve(url, now=None, seed=None):
     """Reuse valid published counts; failures publish explicit unavailable data, never stale substitutes."""
     now=now or datetime.now(timezone.utc)
     if now>=END:
@@ -133,10 +133,28 @@ def preserve(url, now=None):
             if len(payload)>100000: raise ValueError('Oversized snapshot')
             return validate_snapshot(json.loads(payload))
     except Exception:
+        if seed is not None:
+            try:
+                candidate = validate_snapshot(seed)
+                for code in SHEETS:
+                    activity = candidate['activities'][code]
+                    checked = datetime.fromisoformat(activity['checkedAt'])
+                    if activity.get('unavailable') or checked > now or (now-checked).total_seconds() > 5400:
+                        raise ValueError('Seed is not fresh')
+                candidate = dict(candidate)
+                candidate.pop('preview', None)
+                return candidate
+            except Exception:
+                pass
         print('Published availability unavailable; continuing site deployment without counts',file=sys.stderr)
         return {'schema':1,'checkedAt':None,'eventEndsAt':END.isoformat(),'activities':{}}
 
 if __name__=='__main__':
     output=sys.argv[1] if len(sys.argv)>1 else 'assets/fireworks-availability.json'
-    data=preserve('https://www.thefriendsofashley.org/fireworks-availability.json') if '--preserve' in sys.argv else fetch()
+    seed = None
+    if '--preserve' in sys.argv:
+        try:
+            with open(output) as f: seed = json.load(f)
+        except (OSError, ValueError): pass
+    data=preserve('https://www.thefriendsofashley.org/fireworks-availability.json', seed=seed) if '--preserve' in sys.argv else fetch()
     with open(output,'w') as f: json.dump(data,f,separators=(',',':'))
