@@ -40,5 +40,5 @@ for(const [date,label] of [[new Date(Date.parse(fayre.start)-86400000).toISOStri
 for(const width of [390,1023,1024,1440])for(const size of [100,200])test(`small tree clears content ${width} ${size}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto('/');if(size===200)await page.evaluate(()=>document.documentElement.style.fontSize='200%');
  const status=await page.locator('.christmas-home-tree').evaluate(el=>{const style=getComputedStyle(el),r=el.getBoundingClientRect(),hero=el.closest('.hero-event')!.getBoundingClientRect();const overlap=[...document.querySelectorAll('[data-homepage-christmas] .hero-copy h1,[data-homepage-christmas] .hero-copy p,.christmas-home-art,.menu-toggle')].some(e=>{const b=e.getBoundingClientRect();return r.left<b.right&&r.right>b.left&&r.top<b.bottom&&r.bottom>b.top});return{visible:style.display!=='none',overlap,inside:r.left>=hero.left&&r.right<=hero.right&&r.top>=hero.top&&r.bottom<=hero.bottom}});
- expect(status.visible).toBe(width>=1024);if(status.visible){expect(status.overlap).toBe(false);expect(status.inside).toBe(true)}
+ expect(status.visible).toBe(true);if(status.visible){expect(status.overlap).toBe(false);expect(status.inside).toBe(true)}
 });
