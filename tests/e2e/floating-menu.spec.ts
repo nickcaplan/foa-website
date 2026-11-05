@@ -191,7 +191,7 @@ for (const width of [320, 390, 768, 1023]) {
     await page.goto("/");
     await expect(page.locator(".hero-next-event")).toHaveCount(0);
     const bounds = await page.locator(".hero-event").evaluate(el => {
-      const r=el.getBoundingClientRect(),s=getComputedStyle(el,"::after"),m=document.querySelector(".menu-toggle").getBoundingClientRect();
+      const r=el.getBoundingClientRect(),s=getComputedStyle(el,"::after"),m=document.querySelector(".menu-toggle")!.getBoundingClientRect();
       return {decorationTop:r.top+parseFloat(s.top),menuBottom:m.bottom};
     });
     expect(bounds.decorationTop).toBeGreaterThan(bounds.menuBottom+16);
