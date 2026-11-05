@@ -7,7 +7,7 @@ for (const width of [320, 390, 768, 1023]) {
     test.setTimeout(60_000);
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    for (const route of routes) {
+    for (const route of routes.filter(route => route !== "/preview/christmas/")) {
       await page.goto(route);
       const header = page.locator(".site-header");
       const trigger = page.getByRole("button", { name: "Open menu" });
@@ -202,3 +202,9 @@ for (const width of [320, 390, 768, 1023]) {
     await expect(page.getByRole("dialog",{name:"Site menu"})).toBeHidden();
   });
 }
+
+for(const width of [320,390,768,1023]) test(`Christmas preview one wreath and clear tree ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.goto('/preview/christmas/');await expect(page.locator('.page-logo-home:visible')).toHaveCount(0);await expect(page.locator('.christmas-home-wreath')).toBeVisible();await expect(page.locator('.christmas-home-art .sponsor-ribbon img')).toBeVisible();await expect(page.locator('.desktop-nav [aria-current="page"]')).toHaveText('Home');
+ const bounds=await page.locator('.christmas-home-tree').evaluate(el=>{const r=el.getBoundingClientRect(),m=document.querySelector('.menu-toggle')!.getBoundingClientRect();return{top:r.top,bottom:m.bottom}});expect(bounds.top).toBeGreaterThanOrEqual(bounds.bottom+16);
+ await page.getByRole('button',{name:'Open menu',exact:true}).click();await expect(page.getByRole('dialog',{name:'Site menu'})).toBeVisible();await page.getByRole('button',{name:'Close menu',exact:true}).click();await expect(page.getByRole('dialog',{name:'Site menu'})).toBeHidden();
+});
