@@ -467,9 +467,9 @@ test("the Fireworks volunteering page shows remaining event-night roles, shifts 
   assert.match(html, /Help make Fireworks on the Field awesome\./);
   assert.match(html, /All activities are open to every year group\./);
   assert.doesNotMatch(html, /find your child|Each year group is looking after|Y1 and Y2/);
-  assert.equal([...html.matchAll(/<li class="vol-card">/g)].length, fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").length);
+  assert.equal([...html.matchAll(/<li class="vol-card"/g)].length, fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").length);
   for (const role of fireworks.volunteerRoles.filter((role) => role.name !== "Token presales")) {
-    const card = html.split('<li class="vol-card">').find((part) => part.includes(`<h3>${escapeHtml(role.name)}</h3>`));
+    const card = html.split('<li class="vol-card"').find((part) => part.includes(`<h3>${escapeHtml(role.name)}</h3>`));
     assert.ok(card, `no card for ${role.name}`);
     assert.doesNotMatch(card, /vol-card__group/);
     assert.ok(!card.includes(escapeHtml(role.group)), `${role.name}: rendered year-group label removed`);
