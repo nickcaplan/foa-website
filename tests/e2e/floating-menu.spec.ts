@@ -5,6 +5,7 @@ for (const width of [320, 390, 768, 1023]) {
   test(`${width}px: every page has no header and a clear, fixed mobile burger`, async ({ page }) => {
     // A healthy sweep of every route takes ~20s per width; 60s caps a genuinely missing element without failing slow-but-healthy runs.
     test.setTimeout(60_000);
+    await page.clock.setFixedTime(new Date("2026-11-05T20:00:00Z"));
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     for (const route of routes.filter(route => route !== "/preview/christmas/")) {
