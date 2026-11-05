@@ -37,7 +37,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `npm run preview -- --ignore-lock --host 127.0.0.1 --port ${process.env.PLAYWRIGHT_PORT}`,
+    command: `node scripts/test/build-browser-fixture.mjs && npm run preview -- --outDir .browser-fixture --ignore-lock --host 127.0.0.1 --port ${process.env.PLAYWRIGHT_PORT}`,
     url: origin,
     reuseExistingServer: false,
   },
