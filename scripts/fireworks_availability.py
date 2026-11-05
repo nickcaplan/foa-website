@@ -48,9 +48,16 @@ def parse(html):
     roots=[el for el in parser.root.all() if el.attrs.get('id')=='rows']
     if len(roots)!=1: raise ValueError('Expected one public sheet rows container')
     rows=[]
-    for row in roots[0].all():
-        if row.parent is not roots[0] or row.tag != 'div': continue
-        if not row.has('row') or not row.has('vertical-align'): raise ValueError('Malformed shift row')
+    children = [el for el in roots[0].children if isinstance(el, Element)]
+    for container in children:
+        if container.tag == 'a':
+            wrapped = [el for el in container.children if isinstance(el, Element)]
+            if len(wrapped) != 1: raise ValueError('Unsupported shift wrapper')
+            row = wrapped[0]
+        else:
+            row = container
+        if row.tag != 'div' or not row.has('row') or not row.has('vertical-align'):
+            raise ValueError('Malformed shift row')
         cols=[el for el in row.children if isinstance(el,Element) and el.tag=='div']
         if len(cols)!=3 or not cols[1].has('col-sm-2'): raise ValueError('Unexpected row columns')
         times=[el.text().strip() for el in cols[0].all() if el.has('ellipsis') and el.has('indent') and not el.has('userstruncated')]
