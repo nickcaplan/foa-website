@@ -37,3 +37,5 @@
 @container christmas-home (min-width:55em){.hero-event:has(.christmas-home-art){gap:9rem}.christmas-home-tree{left:calc(50% - 132px);top:auto;bottom:.25rem;width:156px;height:180px;background:url("/brand/christmas-tree.svg") center bottom 10px/104px 176px no-repeat,url("/brand/christmas-tree.svg") left bottom 10px/72px 140px no-repeat,url("/brand/christmas-tree.svg") right bottom 10px/76px 150px no-repeat,radial-gradient(ellipse at center,#fffdf3 0 65%,transparent 70%) center bottom 24px/100% 20px no-repeat}}
 
 @container christmas-home (min-width:55em){.homepage [data-homepage-christmas] .hero-copy>p{width:fit-content;max-width:100%}.homepage [data-homepage-christmas] h1{width:fit-content;max-width:100%}}
+
+@container christmas-home (min-width:55em){.homepage [data-homepage-christmas] .mobile-page-heading{padding-top:0}}
