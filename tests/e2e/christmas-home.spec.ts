@@ -8,7 +8,7 @@ for (const width of [320,390,768,1440]) for (const theme of ['day','night']) for
   const dimensions=await details.evaluate(e=>({h:e.getBoundingClientRect().height,line:parseFloat(getComputedStyle(e).lineHeight),padding:parseFloat(getComputedStyle(e).paddingTop)}));expect(dimensions.h).toBeGreaterThanOrEqual(56);expect(dimensions.padding).toBeGreaterThanOrEqual(14);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   const titleLayout = await page.locator('h1').evaluate(h => {
-   const walker=document.createTreeWalker(h,NodeFilter.SHOW_TEXT);let node;let word;
+   const walker=document.createTreeWalker(h,NodeFilter.SHOW_TEXT);let node;let word: DOMRect[] = [];
    while(node=walker.nextNode()) { const at=node.textContent?.indexOf('Christmas') ?? -1;if(at>=0){const range=document.createRange();range.setStart(node,at);range.setEnd(node,at+9);word=[...range.getClientRects()];break;} }
    const hero=h.closest('.hero-event')!.getBoundingClientRect();const side=h.closest('.hero-event')!.querySelector('.hero-actions')!.getBoundingClientRect();const title=h.getBoundingClientRect();
    return {whole:word?.length===1,contained:word?.every(r=>r.left>=hero.left&&r.right<=hero.right),separate:title.bottom<=side.top||title.right<=side.left};
