@@ -3,7 +3,7 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { runInNewContext } from "node:vm";
-import { ordinalDateFormatter } from "../src/lib/dates.ts";
+import { formatEventTimeRange, ordinalDateFormatter } from "../src/lib/dates.ts";
 import { isHidden } from "../src/lib/event-visibility.ts";
 
 const dist = path.resolve("dist");
@@ -262,13 +262,13 @@ test("the homepage features the chosen Christmas Fayre design without reviving t
   assert.match(homepage, /<h1[^>]*>Christmas <em>Fayre\.<\/em><\/h1>/);
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
   assert.ok(homepage.includes(ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(fayre.start)));
-  assert.match(homepage, /Ashley School/);
-  assert.match(homepage, /12:00-15:00/);
-  assert.match(homepage, /£2, under 12s go free/);
+  assert.ok(homepage.includes(fayre.location));
+  assert.ok(homepage.includes(formatEventTimeRange(new Date(fayre.start), new Date(fayre.end))));
+  assert.ok(homepage.includes(fayre.entry));
   assert.doesNotMatch(homepage, /Featured event|hero-next-event/);
   assert.match(homepage, /class="christmas-home-wreath"/);
   assert.match(homepage, new RegExp(`src="${basePath}/brand/foa-logo-christmas-home\\.webp"`));
-  assert.match(homepage, /mailto:ashleyschoolchristmasfair2026@gmail.com\?subject=Helping%20at%20the%20Christmas%20Fayre/);
+  assert.ok(homepage.includes(`mailto:${fayre.contactEmail}?subject=${encodeURIComponent(`Helping at the ${fayre.title}`)}`));
   assert.match(homepage, new RegExp(`href="${basePath}/events/christmas-fayre-2026/"`));
   assert.doesNotMatch(homepage, /hero-tagline|class="site-width home-intro"|Helping Ashley children/);
   assert.doesNotMatch(homepage, /Buy Fireworks|Volunteer at|Download the event|event-timeline/);
