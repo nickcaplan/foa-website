@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+// Shared-logo layout tests explicitly cover the Fireworks homepage.
+// The Christmas variant has separate one-wreath/tree and inactive-panel coverage.
+test.beforeEach(async ({page}) => { await page.clock.setFixedTime(new Date("2026-11-05T20:59:00Z")); });
+
 for (const width of [320, 390, 768, 1023]) {
   test(`${width}px: homepage heading keeps every word inside the panel at its CSS size`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
