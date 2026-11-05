@@ -53,9 +53,60 @@ class PreservationTests(unittest.TestCase):
         with patch.object(m,'urlopen',side_effect=HTTPError('url',404,'missing',{},None)):
             result=m.preserve('https://example.test/counts.json',now,seed)
             self.assertNotIn('preview',result);self.assertEqual(len(result['activities']),4)
-            self.assertEqual(m.preserve('https://example.test/counts.json',datetime(2026,11,5,11,0,tzinfo=timezone.utc),seed)['activities'],{})
+            self.assertEqual(len(m.preserve('https://example.test/counts.json',datetime(2026,11,5,11,0,tzinfo=timezone.utc),seed)['activities']),4)
             seed['activities'].pop('QCAFK')
             self.assertEqual(m.preserve('https://example.test/counts.json',now,seed)['activities'],{})
+
+    def test_newer_fresh_seed_wins_over_old_published(self):
+        now=datetime(2026,11,5,10,0,tzinfo=timezone.utc)
+        def snapshot(checked):
+            return {'schema':1,'checkedAt':checked,'eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':checked,'rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
+        old=snapshot('2026-11-05T08:37:50+00:00')
+        fresh=snapshot('2026-11-05T09:58:31+00:00')
+        with patch.object(m,'urlopen',return_value=Response(json.dumps(old).encode())):
+            self.assertEqual(m.preserve('https://example.test/counts.json',now,fresh)['activities'],fresh['activities'])
+        with patch.object(m,'urlopen',return_value=Response(json.dumps(fresh).encode())):
+            self.assertEqual(m.preserve('https://example.test/counts.json',now,old),fresh)
+        future=snapshot('2026-11-05T10:01:00+00:00')
+        with patch.object(m,'urlopen',return_value=Response(json.dumps(old).encode())):
+            self.assertEqual(m.preserve('https://example.test/counts.json',now,future),old)
+        partial=snapshot('2026-11-05T09:58:31+00:00');partial['activities'].pop('QCAFK')
+        with patch.object(m,'urlopen',return_value=Response(json.dumps(old).encode())):
+            self.assertEqual(m.preserve('https://example.test/counts.json',now,partial),old)
+        mixed=snapshot('2026-11-05T08:37:50+00:00');mixed['activities']['QCAFK']['checkedAt']='2026-11-05T09:59:00+00:00'
+        with patch.object(m,'urlopen',return_value=Response(json.dumps(mixed).encode())):
+            result=m.preserve('https://example.test/counts.json',now,fresh)
+            self.assertEqual(result['activities']['QCAFK'],mixed['activities']['QCAFK'])
+            self.assertEqual(result['activities']['LPEDP'],fresh['activities']['LPEDP'])
+
+    def test_stale_seed_fills_missing_history_and_survives_failed_fetch(self):
+        """Keep each last valid count even when seed is stale and source fails."""
+        now=datetime(2026,11,5,11,0,tzinfo=timezone.utc)
+        seed={'schema':1,'eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':'2026-11-05T08:37:50+00:00','rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
+        published=json.loads(json.dumps(seed));published['activities'].pop('QCAFK');published['activities']['LPEDP']['checkedAt']='2026-11-05T10:58:00+00:00'
+        with patch.object(m,'urlopen',return_value=Response(json.dumps(published).encode())):
+            previous=m.preserve('https://example.test/counts.json',now,seed)
+        self.assertEqual(previous['activities']['QCAFK'],seed['activities']['QCAFK'])
+        self.assertEqual(previous['activities']['LPEDP'],published['activities']['LPEDP'])
+        class Clock(datetime):
+            @classmethod
+            def now(cls,tz): return now
+        with patch.object(m,'datetime',Clock),patch.object(m,'urlopen',side_effect=URLError('offline')):
+            result=m.fetch(now,previous)
+        self.assertEqual(result['activities'],previous['activities'])
+
+    def test_bad_published_activity_does_not_discard_newer_other_history(self):
+        now=datetime(2026,11,5,11,0,tzinfo=timezone.utc)
+        seed={'schema':1,'checkedAt':'2026-11-05T09:58:00+00:00','eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':'2026-11-05T09:58:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
+        for broken in ['2026-11-05T10:30:00','not-a-date','2026-11-05T12:00:00+00:00',None]:
+            published=json.loads(json.dumps(seed))
+            published['activities']['QCAFK']['checkedAt']=broken
+            published['activities']['LPEDP']['checkedAt']='2026-11-05T10:59:00+00:00'
+            published['activities']['LPEDP']['rows'][0]['open']=7
+            with patch.object(m,'urlopen',return_value=Response(json.dumps(published).encode())):
+                result=m.preserve('https://example.test/counts.json',now,seed)
+            self.assertEqual(result['activities']['QCAFK'],seed['activities']['QCAFK'])
+            self.assertEqual(result['activities']['LPEDP'],published['activities']['LPEDP'])
 
     def test_postevent_preservation_never_fetches(self):
         """Verify postevent preservation never fetches."""
@@ -85,6 +136,16 @@ class PreservationTests(unittest.TestCase):
         """Verify conflicting time cells."""
         with self.assertRaises(ValueError): m.parse(page().replace('</div><div class="vcenter col-sm-2">','<div class="ellipsis indent">17:00 - 18:00</div></div><div class="vcenter col-sm-2">'))
 class RequestSafetyTests(unittest.TestCase):
+    def test_failed_fetch_keeps_prior_valid_count_and_original_time(self):
+        checked='2026-11-05T08:37:50+00:00'
+        previous={'activities':{code:{'name':name,'checkedAt':checked,'rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
+        class Clock(datetime):
+            @classmethod
+            def now(cls,tz): return datetime(2026,11,5,10,0,tzinfo=timezone.utc)
+        with patch.object(m,'datetime',Clock), patch.object(m,'urlopen',side_effect=URLError('offline')):
+            data=m.fetch(datetime(2026,11,5,10,0,tzinfo=timezone.utc),previous)
+        self.assertEqual(data['activities'],previous['activities'])
+
     def test_oversized_response_never_publishes_partial_rows(self):
         """Verify oversized response never publishes partial rows."""
         class Clock(datetime):
