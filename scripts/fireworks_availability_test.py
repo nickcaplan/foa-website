@@ -46,6 +46,16 @@ import io, json
 class Response(io.BytesIO):
     status=200
 class PreservationTests(unittest.TestCase):
+    def test_bootstrap_uses_only_fresh_validated_seed(self):
+        now=datetime(2026,11,5,9,0,tzinfo=timezone.utc)
+        seed={'schema':1,'preview':True,'eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':'2026-11-05T08:37:50+00:00','rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
+        with patch.object(m,'urlopen',side_effect=HTTPError('url',404,'missing',{},None)):
+            result=m.preserve('https://example.test/counts.json',now,seed)
+            self.assertNotIn('preview',result);self.assertEqual(len(result['activities']),4)
+            self.assertEqual(m.preserve('https://example.test/counts.json',datetime(2026,11,5,11,0,tzinfo=timezone.utc),seed)['activities'],{})
+            seed['activities'].pop('QCAFK')
+            self.assertEqual(m.preserve('https://example.test/counts.json',now,seed)['activities'],{})
+
     def test_postevent_preservation_never_fetches(self):
         """Verify postevent preservation never fetches."""
         with patch.object(m,'urlopen',side_effect=URLError('offline')) as request:
