@@ -258,7 +258,7 @@ test("the footer and mobile menu share social links without adding them to prima
 
 test("the homepage features the chosen Christmas Fayre design without reviving the old introduction", async () => {
   const homepage = await readFile(path.join(dist, "index.html"), "utf8");
-  assert.match(homepage, /<div class="hero-event">/);
+  assert.match(homepage, /<div class="hero-event"[^>]*data-homepage-christmas/);
   assert.match(homepage, /<h1[^>]*>Christmas <em>Fayre\.<\/em><\/h1>/);
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
   assert.ok(homepage.includes(ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(fayre.start)));
@@ -271,12 +271,13 @@ test("the homepage features the chosen Christmas Fayre design without reviving t
   assert.ok(homepage.includes(`mailto:${fayre.contactEmail}?subject=${encodeURIComponent(`Helping at the ${fayre.title}`)}`));
   assert.match(homepage, new RegExp(`href="${basePath}/events/christmas-fayre-2026/"`));
   assert.doesNotMatch(homepage, /hero-tagline|class="site-width home-intro"|Helping Ashley children/);
-  assert.doesNotMatch(homepage, /Buy Fireworks|Volunteer at|Download the event|event-timeline/);
-  const hero = homepage.match(/<div class="hero-event">([\s\S]*?)<div class="quick-list/)?.[1];
+  assert.match(homepage, /data-show-before="2026-11-05T21:00:00\+00:00"/);
+  assert.match(homepage, /data-show-from="2026-11-05T21:00:00\+00:00"/);
+  const hero = homepage.match(/<div class="hero-event"[^>]*data-homepage-christmas([\s\S]*?)<div class="quick-list/)?.[1];
   assert.ok(hero);
   assert.doesNotMatch(hero, /With thanks to/);
   assert.match(hero, /alt="Martin Flashman and Co"/);
-  assert.doesNotMatch(homepage, /Welcome Tea|welcome-tea|data-show-before|data-show-from/);
+  assert.doesNotMatch(homepage, /Welcome Tea|welcome-tea/);
 });
 
 test("What's On switches Welcome Tea from upcoming to past at the content archive time", async () => {
