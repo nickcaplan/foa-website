@@ -1,10 +1,10 @@
 export type Shift = { endsAt: string; open: number };
 export type Activity = { name?: string; rows?: Shift[]; checkedAt?: string; unavailable?: boolean };
 export type Snapshot = { schema?: number; preview?: boolean; activities?: Record<string, Activity> };
-/** Return open helper places for ongoing/upcoming shifts, or null for untrusted/stale data. */
+/** Return open helper places for ongoing/upcoming shifts, or null for untrusted data; retain last validated counts when stale. */
 export function remaining(activity: Activity | undefined, now: number): number | null {
   const checked = Date.parse(activity?.checkedAt || "");
-  if (!activity || activity.unavailable || !Number.isFinite(checked) || checked > now + 60000 || now - checked > 90 * 60000 || !activity.rows?.length) return null;
+  if (!activity || activity.unavailable || !Number.isFinite(checked) || checked > now + 60000 || !activity.rows?.length) return null;
   let total = 0;
   for (const row of activity.rows) {
     const end = Date.parse(row.endsAt);
@@ -30,4 +30,14 @@ export function isSnapshot(value: unknown): value is Snapshot {
     if (activity.unavailable === true) return true;
     return typeof activity.checkedAt === "string" && Number.isFinite(Date.parse(activity.checkedAt)) && Array.isArray(activity.rows) && activity.rows.length > 0 && activity.rows.every(row => record(row) && typeof row.endsAt === "string" && Number.isFinite(Date.parse(row.endsAt)) && typeof row.open === "number" && Number.isInteger(row.open) && row.open >= 0 && row.open <= 20);
   });
+}
+
+/** Keep each last validated activity if a later response is partial or unavailable. */
+export function retainValid(previous: Snapshot, next: Snapshot): Snapshot {
+  const activities = { ...previous.activities };
+  for (const [code, activity] of Object.entries(next.activities || {})) {
+    const old = activities[code];
+    if (!activity.unavailable && (!old || Date.parse(activity.checkedAt || "") >= Date.parse(old.checkedAt || ""))) activities[code] = activity;
+  }
+  return { ...next, activities };
 }
