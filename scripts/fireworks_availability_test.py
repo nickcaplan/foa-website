@@ -24,6 +24,10 @@ class ParserTests(unittest.TestCase):
         for classes in ['row','vertical-align','']:
             malformed = valid.replace('row vertical-align',classes)
             with self.assertRaises(ValueError): m.parse('<div id="rows">'+valid+malformed+'</div>')
+    def test_anchor_wrapped_shift_is_not_omitted(self):
+        row=page().replace('<div id="rows">','',1)[:-6]
+        self.assertEqual(len(m.parse('<div id="rows">'+row+'<a href="#">'+row+'</a></div>')),2)
+        with self.assertRaises(ValueError): m.parse('<div id="rows">'+row+'<section>'+row+'</section></div>')
     def test_after_teardown_no_fetch(self):
         """Verify after teardown no fetch."""
         data=m.fetch(datetime(2026,11,5,19,0,tzinfo=timezone.utc));self.assertTrue(data['ended']);self.assertEqual(data['activities'],{})
@@ -65,13 +69,21 @@ class PreservationTests(unittest.TestCase):
 class RequestSafetyTests(unittest.TestCase):
     def test_oversized_response_never_publishes_partial_rows(self):
         """Verify oversized response never publishes partial rows."""
-        class Clock:
+        class Clock(datetime):
             @classmethod
             def now(cls,tz): return datetime(2026,11,4,17,0,tzinfo=timezone.utc)
-        with patch.object(m,'datetime',Clock), patch.object(m,'urlopen',return_value=Response(page().encode()+b' '*2000001)) as request:
+        with patch.object(m,'datetime',Clock), patch.object(m,'urlopen',side_effect=lambda *a,**kw: Response(page().encode()+b' '*2000001)) as request:
             data=m.fetch(datetime(2026,11,4,17,0,tzinfo=timezone.utc))
             self.assertEqual(request.call_count,len(m.SHEETS))
             self.assertTrue(all(a.get('unavailable') for a in data['activities'].values()))
+    def test_valid_size_with_frozen_clock_publishes_every_sheet(self):
+        class Clock(datetime):
+            @classmethod
+            def now(cls,tz): return datetime(2026,11,4,17,0,tzinfo=timezone.utc)
+        with patch.object(m,'datetime',Clock), patch.object(m,'urlopen',side_effect=lambda *a,**kw: Response(page().encode())) as request:
+            data=m.fetch(Clock.now(timezone.utc))
+            self.assertEqual(request.call_count,len(m.SHEETS))
+            self.assertTrue(all(a.get('rows',[{}])[0].get('open')==3 for a in data['activities'].values()))
     def test_cutoff_checked_between_requests(self):
         """Verify cutoff checked between requests."""
         class Clock:
