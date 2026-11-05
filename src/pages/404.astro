@@ -2,10 +2,7 @@
 import MobilePageHeading from "../components/MobilePageHeading.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CryingLogo from "../components/CryingLogo.astro";
-import { getCollection } from "astro:content";
 import { withBase } from "../lib/urls";
-const events = await getCollection("events");
-const fireworks = events.find(({ id }) => id === "fireworks-2026")?.data;
 ---
 <BaseLayout title="Page not found" description="The requested page from The Friends of Ashley could not be found." noindex>
   <section class="content-section not-found-page">
@@ -17,10 +14,7 @@ const fireworks = events.find(({ id }) => id === "fireworks-2026")?.data;
           <h1 class="editorial-heading">Oh no, we can't find that page.</h1>
         </MobilePageHeading>
         <p>It may have been moved or handed in to lost property. Here are some places that will help.</p>
-        <div class="hero-actions">
-          {fireworks?.ticketUrl && <a class="button button--amber button--large" href={fireworks.ticketUrl} target="_blank" rel="noopener noreferrer"><span class="cta-label">Buy Fireworks <span class="cta-word">ticket<span class="cta-tail">s<span class="external-link-icon cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span></span></span><span class="visually-hidden"> (opens in a new tab)</span></span></a>}
-          <a class="button button--primary button--large" href={withBase("/fireworks-volunteering/")}><span class="cta-label">Volunteer at <span class="cta-word">Firework<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
-        </div>
+        <div class="hero-actions"><a class="button button--primary button--large" href={withBase("/events/christmas-fayre-2026/")}>Christmas Fayre details</a></div>
         <nav class="not-found-links" aria-label="Explore The Friends of Ashley">
           <a class="quick-row" href={withBase("/whats-on/")}><h2>What's On</h2><span class="quick-arrow" aria-hidden="true">&rarr;</span></a>
           <a class="quick-row" href={withBase("/fundraising/")}><h2>Fundraising</h2><span class="quick-arrow" aria-hidden="true">&rarr;</span></a>
