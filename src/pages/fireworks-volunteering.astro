@@ -29,6 +29,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
         <div class="site-width">
           <p class="vol-tip"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 21h4"></path><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg><span><strong>Tip:</strong> the sign-up buttons take you to the Volunteer Sign Up site, where you choose your slot.</span></p>
           <p class="vol-tip vol-priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fireworks-availability.json")}>Check the sign-up sheets for available places.</p>
+          <p class="vol-preview-note" data-availability-updated role="status" aria-live="polite"></p>
           <p class="vol-preview-note" data-preview-note hidden>Preview snapshot - not updating yet.</p>
           <h2 id="volunteer-teams-title" class="visually-hidden">Volunteer activities</h2>
           <ul class="vol-grid">
@@ -54,7 +55,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
   </div>
 </BaseLayout>
 <script>
-  import { remaining, compareRemaining, isSnapshot, type Snapshot } from "../lib/fireworks-availability";
+  import { remaining, compareRemaining, isSnapshot, retainValid, type Snapshot } from "../lib/fireworks-availability";
   let snapshot: Snapshot = {};
   const originalOrder = new Map([...document.querySelectorAll<HTMLElement>("[data-availability-code]")].map((card,index)=>[card,index]));
   const ended = () => Date.now() >= Date.parse("2026-11-05T19:00:00+00:00");
@@ -101,6 +102,13 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
         if (restoreFocus) focused.focus({ preventScroll: true });
       }
     }
+    const updated = document.querySelector<HTMLElement>("[data-availability-updated]");
+    const times = cards.map(card => snapshot.activities?.[card.dataset.availabilityCode!]?.checkedAt).filter((time): time is string => !!time).map(Date.parse).filter(Number.isFinite);
+    if (updated) {
+      const oldest = times.length ? Math.min(...times) : null;
+      const text = ended() || oldest === null ? "" : `Last updated ${new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit" }).format(oldest)} GMT${now - oldest > 90 * 60000 ? " - showing last known numbers; refresh delayed." : "."}`;
+      if (updated.textContent !== text) updated.textContent = text;
+    }
     const summary = document.querySelector<HTMLElement>("[data-most-help]");
     if (!summary) return;
     if (ended()) { const text = "Volunteering has finished. Thank you to everyone who helped."; if(summary.textContent !== text) summary.textContent = text; }
@@ -117,7 +125,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
 
     }
   }
-  /** Reload our published file while retaining any still-fresh prior snapshot on failure. */
+  /** Reload our published file while retaining the last validated counts on failure. */
   async function load() {
     try {
       const url = document.querySelector<HTMLElement>("[data-availability-url]")?.dataset.availabilityUrl;
@@ -126,8 +134,8 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       if (!response.ok) throw new Error("Unavailable");
       const candidate: unknown = await response.json();
       if (!isSnapshot(candidate)) throw new Error("Invalid snapshot");
-      snapshot = candidate;
-    } catch { /* Retain the last snapshot; remaining() still enforces freshness. */ }
+      snapshot = retainValid(snapshot, candidate);
+    } catch { /* Retain the last validated snapshot, with its original timestamps. */ }
     render();
   }
   load();
