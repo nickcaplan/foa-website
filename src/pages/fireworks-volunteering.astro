@@ -54,7 +54,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
   </div>
 </BaseLayout>
 <script>
-  import { remaining, compareRemaining, type Snapshot } from "../lib/fireworks-availability";
+  import { remaining, compareRemaining, isSnapshot, type Snapshot } from "../lib/fireworks-availability";
   let snapshot: Snapshot = {};
   const originalOrder = new Map([...document.querySelectorAll<HTMLElement>("[data-availability-code]")].map((card,index)=>[card,index]));
   const ended = () => Date.now() >= Date.parse("2026-11-05T19:00:00+00:00");
@@ -124,7 +124,9 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       if (!url) return;
       const response = await fetch(url, { cache: "no-cache" });
       if (!response.ok) throw new Error("Unavailable");
-      snapshot = await response.json();
+      const candidate: unknown = await response.json();
+      if (!isSnapshot(candidate)) throw new Error("Invalid snapshot");
+      snapshot = candidate;
     } catch { /* Retain the last snapshot; remaining() still enforces freshness. */ }
     render();
   }
