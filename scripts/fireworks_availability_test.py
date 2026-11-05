@@ -7,6 +7,7 @@ def page(opened='3',time='15:30 - 16:30'):
     return f'<div id="rows"><div class="row vertical-align"><div class="col-sm-9"><div class="ellipsis">Setup</div><div class="ellipsis indent">{time}</div><div class="usersall indent">PRIVATE NAME</div></div><div class="vcenter col-sm-2">{value}</div><div>Sign up</div></div></div>'
 class ParserTests(unittest.TestCase):
     def test_provider_header_is_not_a_shift(self):
+        """Verify provider header is not a shift."""
         header='<div class="row persist-header"><div class="col-sm-9 col-xs-8 header">Activity</div><div class="col-sm-2 col-xs-3 header">Open</div><div class="col-sm-1 col-xs-1 header"></div></div>'
         row=page().replace('<div id="rows">','',1)[:-6]
         html='<div id="rows">'+header+'<a href="#">'+row+'</a></div>'
@@ -28,11 +29,13 @@ class ParserTests(unittest.TestCase):
         for html in ['',page(time='Tomorrow'),page(opened='3').replace('visible-lg">3','visible-lg">4'),page(time='19:00 - 20:00')]:
             with self.assertRaises(ValueError): m.parse(html)
     def test_partial_malformed_sheet_rejected(self):
+        """Verify partial malformed sheet rejected."""
         valid = page().replace('<div id="rows">','',1)[:-6]
         for classes in ['row','vertical-align','']:
             malformed = valid.replace('row vertical-align',classes)
             with self.assertRaises(ValueError): m.parse('<div id="rows">'+valid+malformed+'</div>')
     def test_anchor_wrapped_shift_is_not_omitted(self):
+        """Verify anchor wrapped shift is not omitted."""
         row=page().replace('<div id="rows">','',1)[:-6]
         self.assertEqual(len(m.parse('<div id="rows">'+row+'<a href="#">'+row+'</a></div>')),2)
         with self.assertRaises(ValueError): m.parse('<div id="rows">'+row+'<section>'+row+'</section></div>')
@@ -48,6 +51,7 @@ class Response(io.BytesIO):
     status=200
 class PreservationTests(unittest.TestCase):
     def test_bootstrap_uses_only_fresh_validated_seed(self):
+        """Verify bootstrap uses only fresh validated seed."""
         now=datetime(2026,11,5,9,0,tzinfo=timezone.utc)
         seed={'schema':1,'preview':True,'eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':'2026-11-05T08:37:50+00:00','rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
         with patch.object(m,'urlopen',side_effect=HTTPError('url',404,'missing',{},None)):
@@ -58,8 +62,10 @@ class PreservationTests(unittest.TestCase):
             self.assertEqual(m.preserve('https://example.test/counts.json',now,seed)['activities'],{})
 
     def test_newer_fresh_seed_wins_over_old_published(self):
+        """Verify newer fresh seed wins over old published."""
         now=datetime(2026,11,5,10,0,tzinfo=timezone.utc)
         def snapshot(checked):
+            """Snapshot."""
             return {'schema':1,'checkedAt':checked,'eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':checked,'rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
         old=snapshot('2026-11-05T08:37:50+00:00')
         fresh=snapshot('2026-11-05T09:58:31+00:00')
@@ -96,6 +102,7 @@ class PreservationTests(unittest.TestCase):
         self.assertEqual(result['activities'],previous['activities'])
 
     def test_bad_published_activity_does_not_discard_newer_other_history(self):
+        """Verify bad published activity does not discard newer other history."""
         now=datetime(2026,11,5,11,0,tzinfo=timezone.utc)
         seed={'schema':1,'checkedAt':'2026-11-05T09:58:00+00:00','eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':'2026-11-05T09:58:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
         for broken in ['2026-11-05T10:30:00','not-a-date','2026-11-05T12:00:00+00:00',None]:
@@ -137,6 +144,7 @@ class PreservationTests(unittest.TestCase):
         with self.assertRaises(ValueError): m.parse(page().replace('</div><div class="vcenter col-sm-2">','<div class="ellipsis indent">17:00 - 18:00</div></div><div class="vcenter col-sm-2">'))
 class RequestSafetyTests(unittest.TestCase):
     def test_failed_fetch_keeps_prior_valid_count_and_original_time(self):
+        """Verify failed fetch keeps prior valid count and original time."""
         checked='2026-11-05T08:37:50+00:00'
         previous={'activities':{code:{'name':name,'checkedAt':checked,'rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
         class Clock(datetime):
@@ -156,6 +164,7 @@ class RequestSafetyTests(unittest.TestCase):
             self.assertEqual(request.call_count,len(m.SHEETS))
             self.assertTrue(all(a.get('unavailable') for a in data['activities'].values()))
     def test_valid_size_with_frozen_clock_publishes_every_sheet(self):
+        """Verify valid size with frozen clock publishes every sheet."""
         class Clock(datetime):
             @classmethod
             def now(cls,tz): return datetime(2026,11,4,17,0,tzinfo=timezone.utc)
@@ -169,6 +178,7 @@ class RequestSafetyTests(unittest.TestCase):
             calls=0
             @classmethod
             def now(cls,tz):
+                """Now."""
                 cls.calls+=1
                 return datetime(2026,11,5,18,59,tzinfo=timezone.utc) if cls.calls==1 else m.END
         with patch.object(m,'datetime',Clock), patch.object(m,'urlopen',return_value=Response(page().encode())) as request:
