@@ -19,13 +19,13 @@ for (const width of [320, 390, 768, 1023]) {
       expect(before!.height).toBe(48);
       expect(before!.x + before!.width).toBeLessThanOrEqual(width);
       {
-        const logo = page.locator(".page-logo-home");
+        const logo = page.locator(".page-logo-home:visible");
         await expect(logo, route).toBeVisible();
         await expect(logo).toHaveAttribute("href", "/");
         const logoBox = (await logo.boundingBox())!;
         expect(logoBox.x + logoBox.width, route).toBeLessThan(before!.x);
         await expect(logo.locator("p, strong, span")).toHaveCount(0);
-        const heading = (await page.locator(".mobile-page-heading-copy").boundingBox())!;
+        const heading = (await page.locator(".mobile-page-heading-copy:visible").boundingBox())!;
         if (route === "/") {
           // Nick's call: the Fireworks panel uses the shared page-heading
           // layout too - logo on the left, heading beside it. At 320px the
@@ -43,9 +43,9 @@ for (const width of [320, 390, 768, 1023]) {
           expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
         }
       }
-      const logoBottom = await page.locator(".mobile-page-logo").evaluate((element) => element.getBoundingClientRect().bottom);
+      const logoBottom = await page.locator(".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
       if (route === "/") {
-        const copy = page.locator(".hero-copy");
+        const copy = page.locator(".hero-copy:visible");
         await expect(copy.locator(".page-logo-home")).toBeVisible();
         await expect(copy.locator(".eyebrow")).toHaveCount(0);
         await expect(copy.locator(".hero-next-event")).toHaveCount(0);
@@ -115,7 +115,7 @@ for (const width of [320, 390, 768, 1023]) {
       await expect(trigger).toBeInViewport();
       expect((await trigger.boundingBox())!.y, route).toBe(before!.y);
       if (await page.evaluate((bottom) => scrollY > bottom, logoBottom)) {
-        await expect(page.locator(".page-logo-home"), route).not.toBeInViewport();
+        await expect(page.locator(".page-logo-home:visible"), route).not.toBeInViewport();
       }
       const scroll = await page.evaluate(() => scrollY);
       await trigger.click();
@@ -136,7 +136,7 @@ for (const width of [320, 390, 768, 1023]) {
       await expect(page.locator("body")).toHaveClass("homepage");
       if (route !== "/") {
         await page.goto(route);
-        await page.locator(".page-logo-home").click();
+        await page.locator(".page-logo-home:visible").click();
         await expect(page).toHaveURL(/\/$/);
         await expect(page.locator("body")).toHaveClass("homepage");
       }
@@ -154,7 +154,7 @@ for (const width of [1280, 1440]) {
     for (const route of routes) {
       await page.goto(route);
       await expect(page.locator(".site-header"), route).toBeVisible();
-      await expect(page.locator(".mobile-page-logo"), route).toBeHidden();
+      await expect(page.locator(".mobile-page-logo:visible"), route).toHaveCount(0);
       if (route === "/events/christmas-fayre-2026/") {
         await expect(page.locator(".xmas-baubles--desktop")).toBeVisible();
         await expect(page.locator(".xmas-baubles--mobile")).toBeHidden();
@@ -188,9 +188,10 @@ for (const width of [320, 390, 768, 1023]) {
   test(`${width}px: Christmas decoration clears the menu and the menu opens and closes`, async ({ page }) => {
     await page.setViewportSize({width, height: 900});
     await page.emulateMedia({reducedMotion: "reduce"});
+    await page.clock.setFixedTime(new Date("2026-11-05T21:00:00Z"));
     await page.goto("/");
     await expect(page.locator(".hero-next-event")).toHaveCount(0);
-    const bounds = await page.locator(".hero-event").evaluate(el => {
+    const bounds = await page.locator("[data-homepage-christmas]").evaluate(el => {
       const r=el.getBoundingClientRect(),s=getComputedStyle(el,"::after"),m=document.querySelector(".menu-toggle")!.getBoundingClientRect();
       return {decorationTop:r.top+parseFloat(s.top),menuBottom:m.bottom};
     });
