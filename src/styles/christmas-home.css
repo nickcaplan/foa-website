@@ -1,3 +1,4 @@
+.homepage { --christmas-holly: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'%3E%3Cpath d='M53 43Q14 44 9 12Q40 5 53 43ZM53 43Q55 6 88 5Q94 34 53 43Z' fill='%23174f36'/%3E%3Cpath d='M53 43L17 17M53 43L82 12' stroke='%23b99d52' stroke-width='2'/%3E%3Ccircle cx='47' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='64' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='55' cy='61' r='9' fill='%23a72b39'/%3E%3C/svg%3E") center / contain no-repeat; }
 @media (max-width: 47.99rem) {
   .homepage .hero-event .mobile-page-heading-copy:has(h1) { flex-basis: 100%; min-width: 0; max-width: 100%; }
   .homepage .hero-event .mobile-page-heading h1 { overflow-wrap: normal; word-break: normal; }
@@ -8,9 +9,6 @@
 @media (min-width: 48rem) {
   .hero-event:has(.christmas-home-art) { grid-template-columns: minmax(0, 1fr); }
   .hero-event:has(.christmas-home-art) .mobile-page-heading-copy { min-width: 0; }
-}
-@container christmas-home (min-width: 55em) {
-  .hero-event:has(.christmas-home-art) { grid-template-columns: minmax(min-content, 7fr) minmax(0, 5fr); }
 }
 
 /* A fuller festive composition: artwork starts beside the title, not below a floating tag. */
@@ -24,8 +22,8 @@
 .homepage .hero-event .christmas-home-details { background: #a72b39; }
 .homepage .hero-event .christmas-home-details:hover { background: #8b2632; }
 .homepage .hero-event .christmas-home-wreath { border: 1px solid #b28b40; }
-.homepage .hero-event .hero-actions .button { background: #174f36; color: #fff8e5; }
-.homepage .hero-event .hero-actions .button:hover { background: #103d29; }
+.homepage .hero-event:has(.christmas-home-art) .hero-actions .button { background: #174f36; color: #fff8e5; }
+.homepage .hero-event:has(.christmas-home-art) .hero-actions .button:hover { background: #103d29; }
 @container christmas-home (min-width: 55em) {
   .hero-event:has(.christmas-home-art) { grid-template-columns: minmax(min-content, 6fr) minmax(0, 6fr); gap: 2rem; }
 }
@@ -38,7 +36,7 @@
   width: 5rem;
   height: 4rem;
   pointer-events: none;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'%3E%3Cpath d='M53 43Q14 44 9 12Q40 5 53 43ZM53 43Q55 6 88 5Q94 34 53 43Z' fill='%23174f36'/%3E%3Cpath d='M53 43L17 17M53 43L82 12' stroke='%23b99d52' stroke-width='2'/%3E%3Ccircle cx='47' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='64' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='55' cy='61' r='9' fill='%23a72b39'/%3E%3C/svg%3E") center / contain no-repeat;
+  background: var(--christmas-holly);
 }
 
 /* Below the fixed mobile menu trigger, away from the school mark. */
@@ -53,11 +51,11 @@
 .homepage .hero-event .christmas-home-art .hero-actions .christmas-home-details:hover { background: #8b2632; }
 @media (min-width: 64rem) {
   .homepage .hero-event:has(.christmas-home-art)::before { content: ""; position: absolute; top: -1rem; left: -1rem; width: 4rem; height: 3.2rem; pointer-events: none; }
-  .homepage .hero-event:has(.christmas-home-art)::before { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'%3E%3Cpath d='M53 43Q14 44 9 12Q40 5 53 43ZM53 43Q55 6 88 5Q94 34 53 43Z' fill='%23174f36'/%3E%3Cpath d='M53 43L17 17M53 43L82 12' stroke='%23b99d52' stroke-width='2'/%3E%3Ccircle cx='47' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='64' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='55' cy='61' r='9' fill='%23a72b39'/%3E%3C/svg%3E") center / contain no-repeat; transform: rotate(-35deg); }
+  .homepage .hero-event:has(.christmas-home-art)::before { background: var(--christmas-holly); transform: rotate(-35deg); }
 }
 
 /* A small tree in the desktop panel's free lower-left corner. */
 .homepage .christmas-home-tree { display: none; }
 @media (min-width: 64rem) {
-  .homepage .christmas-home-tree { display: block; position: absolute; bottom: 8px; left: 12px; width: 64px; height: 80px; pointer-events: none; background: url("data:image/svg+xml,%3Csvg%20xmlns=%22http%3A//www.w3.org/2000/svg%22%20viewBox=%220%200%2080%20100%22%3E%3Cpath%20d=%22M34%2079h12v17H34z%22%20fill=%22%238a623e%22/%3E%3Cpath%20d=%22M40%209%2018%2039h11L11%2063h14L4%2085h72L55%2063h14L51%2039h11Z%22%20fill=%22%23174f36%22/%3E%3Cpath%20d=%22m40%204%202.8%206.2%206.7.7-5%204.5%201.4%206.6-5.9-3.3-5.9%203.3%201.4-6.6-5-4.5%206.7-.7Z%22%20fill=%22%23b99d52%22/%3E%3Cpath%20d=%22M25%2041q15%2012%2030%200M18%2065q22%2013%2044%200%22%20fill=%22none%22%20stroke=%22%23b99d52%22%20stroke-width=%222%22/%3E%3Cg%20fill=%22%23a72b39%22%3E%3Ccircle%20cx=%2235%22%20cy=%2233%22%20r=%223%22/%3E%3Ccircle%20cx=%2247%22%20cy=%2254%22%20r=%223%22/%3E%3Ccircle%20cx=%2230%22%20cy=%2272%22%20r=%223%22/%3E%3Ccircle%20cx=%2255%22%20cy=%2278%22%20r=%223%22/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat; }
+  .homepage .christmas-home-tree { display: block; position: absolute; bottom: 8px; left: 12px; width: 64px; height: 80px; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 100'%3E%3Cpath d='M34 79h12v17H34z' fill='%238a623e'/%3E%3Cpath d='M40 9 18 39h11L11 63h14L4 85h72L55 63h14L51 39h11Z' fill='%23174f36'/%3E%3Cpath d='m40 4 2.8 6.2 6.7.7-5 4.5 1.4 6.6-5.9-3.3-5.9 3.3 1.4-6.6-5-4.5 6.7-.7Z' fill='%23b99d52'/%3E%3Cpath d='M25 41q15 12 30 0M18 65q22 13 44 0' fill='none' stroke='%23b99d52' stroke-width='2'/%3E%3Cg fill='%23a72b39'%3E%3Ccircle cx='35' cy='33' r='3'/%3E%3Ccircle cx='47' cy='54' r='3'/%3E%3Ccircle cx='30' cy='72' r='3'/%3E%3Ccircle cx='55' cy='78' r='3'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat; }
 }
