@@ -67,3 +67,16 @@
 }
 
 @media (min-width: 48rem) and (max-width: 63.99rem) { .homepage .christmas-home-tree { right: calc(50% + 22px); } }
+@media (max-width: 47.99rem) {
+ .homepage [data-homepage-christmas] .mobile-page-heading { padding-top: 0; }
+ .homepage [data-homepage-christmas] .mobile-page-heading-copy { padding-top: 2rem; }
+ .homepage [data-homepage-christmas] .mobile-page-heading h1 { max-width: calc(100% - 100px); min-width: min-content; margin-bottom: 4rem; }
+}
+@media (max-width: 47.99rem) {
+ .homepage [data-homepage-christmas] .mobile-page-heading h1 { width: calc(100% - 86px); max-width: none; min-width: 0; font-size: clamp(1.7rem, 7vw, 2rem); line-height: 1.2; margin-bottom: 5rem; }
+ .homepage .christmas-home-tree { width: 64px; }
+}
+@container christmas-home (max-width: 13em) {
+ [data-homepage-christmas] .mobile-page-heading { padding-top: 142px !important; }
+ [data-homepage-christmas] .mobile-page-heading h1 { width: 100% !important; margin-bottom: 0 !important; }
+}
