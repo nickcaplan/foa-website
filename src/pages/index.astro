@@ -19,7 +19,8 @@ const scheduleStart = fireworksSchedule[0]?.time.getTime() ?? 0;
 const scheduleSpan = (fireworksSchedule.at(-1)?.time.getTime() ?? 0) - scheduleStart;
 const scheduleFraction = (time: Date) => (scheduleSpan > 0 ? (time.getTime() - scheduleStart) / scheduleSpan : 0.5);
 const homepageSwitchAt = "2026-11-05T21:00:00+00:00";
-const christmasIsLive = Date.now() >= Date.parse(homepageSwitchAt);
+const christmasPreview = Astro.props.christmasPreview === true;
+const christmasIsLive = christmasPreview || Date.now() >= Date.parse(homepageSwitchAt);
 const event = events.find(({ id }) => id === "christmas-fayre-2026")?.data;
 if (!event?.contactEmail) throw new Error("Homepage Christmas Fayre content is missing");
 const latestNewsletter = (await getCollection("newsletters"))
@@ -33,10 +34,11 @@ const titleEnd = titleParts.pop()!;
 const titleLead = titleParts.join(" ");
 const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helping at the ${event.title}`)}`;
 ---
-   <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage">
+   <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview}>
+  {christmasPreview && <div class="site-width"><p><strong>Christmas homepage preview only.</strong> The live homepage stays on Fireworks until 9pm on 5 November 2026.</p></div>}
   <section class="hero">
     <div class="site-width hero-grid">
-      <div class="hero-event" data-homepage-fireworks data-show-before={homepageSwitchAt} hidden={christmasIsLive}>
+      <div class="hero-event" data-homepage-fireworks data-show-before={christmasPreview ? undefined : homepageSwitchAt} hidden={christmasIsLive}>
        <div class="hero-copy">
           <MobilePageHeading>
             
@@ -50,7 +52,7 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
         </article>
        </div>
       </div>
-      <div class="hero-event" data-homepage-christmas data-show-from={homepageSwitchAt} hidden={!christmasIsLive}>
+      <div class="hero-event" data-homepage-christmas data-show-from={christmasPreview ? undefined : homepageSwitchAt} hidden={!christmasIsLive}>
         <span class="christmas-home-tree" aria-hidden="true"></span>
        <div class="hero-copy">
           <MobilePageHeading>
