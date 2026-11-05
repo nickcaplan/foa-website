@@ -35,7 +35,7 @@ for (const width of [320,390,768,1024,1440]) test(`Christmas homepage root text 
 
 });
 
-for(const [date,label] of [[new Date(Date.parse(fayre.start)-86400000).toISOString(),'Tomorrow'],[fayre.start,'Today']]) test(`Christmas relative date ${label}`,async({page})=>{await page.clock.install({time:new Date(date)});await page.goto('/');await expect(page.locator('.hero-when [data-event-date]')).toHaveText(label);await expect(page.locator('.hero-when [data-event-date]')).toBeVisible();});
+for(const [date,label] of [[new Date(Date.parse(fayre.start)-86400000).toISOString(),'Tomorrow'],[fayre.start,'Today']]) test(`Christmas relative date ${label}`,async({page})=>{await page.clock.setFixedTime(new Date(date));await page.goto('/');await expect(page.locator('.hero-when [data-event-date]')).toHaveText(label);await expect(page.locator('.hero-when [data-event-date]')).toBeVisible();});
 
 for(const width of [390,1023,1024,1440])for(const size of [100,200])test(`small tree clears content ${width} ${size}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto('/');if(size===200)await page.evaluate(()=>document.documentElement.style.fontSize='200%');
