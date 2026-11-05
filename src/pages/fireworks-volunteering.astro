@@ -57,6 +57,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
 <script>
   import { remaining, compareRemaining, type Snapshot } from "../lib/fireworks-availability";
   let snapshot: Snapshot = {};
+  const originalOrder = new Map([...document.querySelectorAll<HTMLElement>("[data-availability-code]")].map((card,index)=>[card,index]));
   const ended = () => Date.now() >= Date.parse("2026-11-05T19:00:00+00:00");
   /** Render validated counts without repeated announcements or needless focus changes. */
   function render() {
@@ -93,7 +94,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
     }
     // Reorder actual DOM so visual, keyboard and screen-reader order agree.
     if (!ended()) {
-      const sorted = [...cards].sort((a, b) => compareRemaining(totals.get(a) ?? null, totals.get(b) ?? null));
+      const sorted = [...cards].sort((a, b) => allFresh ? compareRemaining(totals.get(a) ?? null, totals.get(b) ?? null) : (originalOrder.get(a)! - originalOrder.get(b)!));
       if (sorted.some((card, index) => card !== cards[index])) {
         const focused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
         const restoreFocus = focused && cards.some(card => card.contains(focused));
