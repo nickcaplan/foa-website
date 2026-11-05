@@ -74,3 +74,9 @@ test('homepage identity honours night colours and stays homepage-only',async({pa
 for(const width of [1024,1440]) test(`desktop Christmas actions side by side, details first ${width}`,async({page})=>{await page.setViewportSize({width,height:1000});await page.goto("/");const actions=page.locator(".christmas-home-art .hero-actions a");await expect(actions.first()).toHaveText(/Event details/);const a=await actions.nth(0).boundingBox(),b=await actions.nth(1).boundingBox();expect(Math.abs(a!.y-b!.y)).toBeLessThan(2);expect(a!.x).toBeLessThan(b!.x);});
 
 for(const width of [1024,1440]) test(`desktop Christmas fact rows and lower links ${width}`,async({page})=>{await page.setViewportSize({width,height:1000});await page.goto('/');const time=page.locator('.christmas-home-admission > .hero-fact').first();await expect(page.locator('.christmas-home-price svg')).toBeVisible();await expect(time.locator('svg')).toBeVisible();await expect(time).toContainText('12:00-15:00');const t=await time.boundingBox(),price=await page.locator('.christmas-home-price').boundingBox();expect(price!.y).toBeGreaterThanOrEqual(t!.y+t!.height);const links=page.locator('.hero-links .quick-row'),a=await links.nth(0).boundingBox(),b=await links.nth(1).boundingBox();expect(Math.abs(a!.y-b!.y)).toBeLessThan(2);expect(a!.x+a!.width).toBeLessThanOrEqual(b!.x);});
+
+test('tablet desktop forest clears obsolete mobile heading spacer',async({page})=>{
+ await page.setViewportSize({width:1023,height:1000});await page.goto('/');
+ const padding=await page.locator('[data-homepage-christmas] .mobile-page-heading').evaluate(el=>parseFloat(getComputedStyle(el).paddingTop));
+ expect(padding).toBe(0);
+});
