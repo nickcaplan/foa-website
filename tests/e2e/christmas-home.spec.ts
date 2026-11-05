@@ -42,3 +42,9 @@ for(const width of [390,1023,1024,1440])for(const size of [100,200])test(`small 
  const status=await page.locator('.christmas-home-tree').evaluate(el=>{const style=getComputedStyle(el),r=el.getBoundingClientRect(),hero=el.closest('.hero-event')!.getBoundingClientRect();const overlap=[...document.querySelectorAll('[data-homepage-christmas] .hero-copy h1,[data-homepage-christmas] .hero-copy p,.christmas-home-art,.menu-toggle')].some(e=>{const b=e.getBoundingClientRect();return r.left<b.right&&r.right>b.left&&r.top<b.bottom&&r.bottom>b.top});return{visible:style.display!=='none',overlap,inside:r.left>=hero.left&&r.right<=hero.right&&r.top>=hero.top&&r.bottom<=hero.bottom}});
  expect(status.visible).toBe(true);if(status.visible){expect(status.overlap).toBe(false);expect(status.inside).toBe(true)}
 });
+
+for (const width of [320,390]) test(`mobile Christmas title composition ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.goto('/');
+ const composition=await page.locator('[data-homepage-christmas]').evaluate(hero=>{const title=hero.querySelector('h1')!,em=title.querySelector('em')!,tree=hero.querySelector('.christmas-home-tree')!,details=hero.querySelector('.hero-when')!;const t=title.getBoundingClientRect(),e=em.getBoundingClientRect(),r=tree.getBoundingClientRect(),d=details.getBoundingClientRect();return{size:parseFloat(getComputedStyle(title).fontSize),twoLines:e.top>t.top+20,treeAlongside:r.left>=t.right,detailsGap:d.top-t.bottom};});
+ expect(composition.size).toBeGreaterThanOrEqual(36);expect(composition.twoLines).toBe(true);expect(composition.treeAlongside).toBe(true);expect(composition.detailsGap).toBeLessThan(50);
+});
