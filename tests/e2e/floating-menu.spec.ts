@@ -192,8 +192,8 @@ for (const width of [320, 390, 768, 1023]) {
     await page.goto("/");
     await expect(page.locator(".hero-next-event")).toHaveCount(0);
     const bounds = await page.locator("[data-homepage-christmas]").evaluate(el => {
-      const r=el.getBoundingClientRect(),s=getComputedStyle(el,"::after"),m=document.querySelector(".menu-toggle")!.getBoundingClientRect();
-      return {decorationTop:r.top+parseFloat(s.top),menuBottom:m.bottom};
+      const tree=el.querySelector(".christmas-home-tree")!.getBoundingClientRect(),m=document.querySelector(".menu-toggle")!.getBoundingClientRect();
+      return {decorationTop:tree.top,menuBottom:m.bottom};
     });
     expect(bounds.decorationTop).toBeGreaterThan(bounds.menuBottom+16);
     await page.getByRole("button",{name:"Open menu",exact:true}).click();
