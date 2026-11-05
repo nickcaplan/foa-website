@@ -116,7 +116,7 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
     await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
     await expect(page.locator(".page-logo-home:visible"), route).toBeVisible();
     const layout = await page.locator(".mobile-page-heading:visible").evaluate((element) => {
-      const logo = element.querySelector(".page-logo-home:visible")!.getBoundingClientRect();
+      const logo = element.querySelector(".page-logo-home")!.getBoundingClientRect();
       const copy = element.querySelector(".mobile-page-heading-copy")!.getBoundingClientRect();
       const burger = document.querySelector(".menu-toggle")!.getBoundingClientRect();
       return { logoLeft: logo.left, logoRight: logo.right, logoTop: logo.top, logoBottom: logo.bottom, burgerLeft: burger.left, burgerBottom: burger.bottom, copyLeft: copy.left, copyRight: copy.right, copyTop: copy.top, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
