@@ -26,7 +26,14 @@ test('validates nested published snapshots before assignment',()=>{
 test('stale validated counts remain visible without rewriting their timestamp',()=>assert.equal(remaining({...activity,checkedAt:'2026-11-05T09:00:00Z'},now),3));
 test('partial/unavailable or older updates cannot erase last valid counts',()=>{
  const previous={schema:1,activities:{QCAFK:activity}};
- for(const next of [{schema:1,activities:{}},{schema:1,activities:{QCAFK:{unavailable:true}}},{schema:1,activities:{QCAFK:{...activity,checkedAt:'2026-11-05T09:00:00Z'}}}]) assert.deepEqual(retainValid(previous,next).activities.QCAFK,activity);
+ for(const next of [{schema:1,activities:{}},{schema:1,activities:{QCAFK:{unavailable:true}}},{schema:1,activities:{QCAFK:{...activity,checkedAt:'2026-11-05T09:00:00Z'}}}]) assert.deepEqual(retainValid(previous,next,now).activities.QCAFK,activity);
 });
 
-test('valid response recovers a previously unavailable activity',()=>assert.deepEqual(retainValid({schema:1,activities:{QCAFK:{unavailable:true}}},{schema:1,activities:{QCAFK:activity}}).activities.QCAFK,activity));
+test('valid response recovers a previously unavailable activity',()=>assert.deepEqual(retainValid({schema:1,activities:{QCAFK:{unavailable:true}}},{schema:1,activities:{QCAFK:activity}},now).activities.QCAFK,activity));
+
+test('future response cannot poison valid history or prevent recovery',()=>{
+ const previous={schema:1,activities:{QCAFK:activity}};
+ const future={schema:1,activities:{QCAFK:{...activity,checkedAt:'2026-11-05T19:00:00Z'}}};
+ assert.deepEqual(retainValid(previous,future,now).activities.QCAFK,activity);
+ assert.deepEqual(retainValid(previous,{schema:1,activities:{QCAFK:{...activity,checkedAt:'2026-11-05T16:45:00Z'}}},now).activities.QCAFK.checkedAt,'2026-11-05T16:45:00Z');
+});
