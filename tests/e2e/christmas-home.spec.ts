@@ -58,3 +58,15 @@ for(const width of [320,390]) test(`enlarged Christmas action words stay whole $
  });expect(whole).toBe(true);
  }
 });
+for(const width of [320,390,768])for(const enlarged of [false,true])test(`mobile homepage identity ${width} enlarged=${enlarged}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.goto('/');if(enlarged)await page.evaluate(()=>document.documentElement.style.fontSize='200%');
+ const identity=page.locator('.homepage-mobile-identity');await expect(identity).toBeVisible();await expect(identity).toContainText('The Friends of Ashley');
+ const layout=await identity.evaluate(el=>{const r=el.getBoundingClientRect(),hero=document.querySelector('.hero-grid')!.getBoundingClientRect(),menu=document.querySelector('.menu-toggle')!.getBoundingClientRect(),p=el.querySelector('p')!.getBoundingClientRect();return{above:r.bottom<=hero.top,textClear:p.right<=menu.left||p.top>=menu.bottom,contained:el.scrollWidth<=el.clientWidth};});expect(layout).toEqual({above:true,textClear:true,contained:true});
+ await page.getByRole('button',{name:'Open menu',exact:true}).click();await expect(page.getByRole('dialog',{name:'Site menu'})).toBeVisible();await page.getByRole('button',{name:'Close menu',exact:true}).click();await expect(page.getByRole('dialog',{name:'Site menu'})).toBeHidden();
+});
+test('homepage identity honours night colours and stays homepage-only',async({page})=>{
+ await page.setViewportSize({width:390,height:900});await page.addInitScript(()=>localStorage.setItem('foa-theme','night'));await page.goto('/');
+ await expect(page.locator('.homepage-mobile-identity')).toBeVisible();expect(await page.locator('.homepage-mobile-identity').evaluate(el=>getComputedStyle(el).color)).toBe('rgb(208, 227, 199)');
+ await page.setViewportSize({width:1440,height:900});await expect(page.locator('.homepage-mobile-identity')).toBeHidden();
+ await page.goto('/newsletter/');await expect(page.locator('.homepage-mobile-identity')).toHaveCount(0);
+});
