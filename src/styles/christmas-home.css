@@ -56,9 +56,8 @@
   .homepage .hero-event:has(.christmas-home-art)::before { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'%3E%3Cpath d='M53 43Q14 44 9 12Q40 5 53 43ZM53 43Q55 6 88 5Q94 34 53 43Z' fill='%23174f36'/%3E%3Cpath d='M53 43L17 17M53 43L82 12' stroke='%23b99d52' stroke-width='2'/%3E%3Ccircle cx='47' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='64' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='55' cy='61' r='9' fill='%23a72b39'/%3E%3C/svg%3E") center / contain no-repeat; transform: rotate(-35deg); }
 }
 
-/* A third small sprig in the desktop panel's empty lower-left corner. */
-.homepage .christmas-home-extra-holly { display: none; }
+/* A small tree in the desktop panel's free lower-left corner. */
+.homepage .christmas-home-tree { display: none; }
 @media (min-width: 64rem) {
-  .homepage .christmas-home-extra-holly { display: block; position: absolute; bottom: 8px; left: 8px; width: 64px; height: 48px; pointer-events: none; transform: rotate(155deg); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'%3E%3Cpath d='M53 43Q14 44 9 12Q40 5 53 43ZM53 43Q55 6 88 5Q94 34 53 43Z' fill='%23174f36'/%3E%3Cpath d='M53 43L17 17M53 43L82 12' stroke='%23b99d52' stroke-width='2'/%3E%3Ccircle cx='47' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='64' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='55' cy='61' r='9' fill='%23a72b39'/%3E%3C/svg%3E") center / contain no-repeat;
-  }
+  .homepage .christmas-home-tree { display: block; position: absolute; bottom: 8px; left: 12px; width: 64px; height: 80px; pointer-events: none; background: url("data:image/svg+xml,%3Csvg%20xmlns=%22http%3A//www.w3.org/2000/svg%22%20viewBox=%220%200%2080%20100%22%3E%3Cpath%20d=%22M34%2079h12v17H34z%22%20fill=%22%238a623e%22/%3E%3Cpath%20d=%22M40%209%2018%2039h11L11%2063h14L4%2085h72L55%2063h14L51%2039h11Z%22%20fill=%22%23174f36%22/%3E%3Cpath%20d=%22m40%204%202.8%206.2%206.7.7-5%204.5%201.4%206.6-5.9-3.3-5.9%203.3%201.4-6.6-5-4.5%206.7-.7Z%22%20fill=%22%23b99d52%22/%3E%3Cpath%20d=%22M25%2041q15%2012%2030%200M18%2065q22%2013%2044%200%22%20fill=%22none%22%20stroke=%22%23b99d52%22%20stroke-width=%222%22/%3E%3Cg%20fill=%22%23a72b39%22%3E%3Ccircle%20cx=%2235%22%20cy=%2233%22%20r=%223%22/%3E%3Ccircle%20cx=%2247%22%20cy=%2254%22%20r=%223%22/%3E%3Ccircle%20cx=%2230%22%20cy=%2272%22%20r=%223%22/%3E%3Ccircle%20cx=%2255%22%20cy=%2278%22%20r=%223%22/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat; }
 }
