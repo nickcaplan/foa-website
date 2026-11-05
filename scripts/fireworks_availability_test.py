@@ -67,9 +67,9 @@ class PreservationTests(unittest.TestCase):
             self.assertEqual(m.preserve('https://example.test/counts.json',now,fresh)['activities'],fresh['activities'])
         with patch.object(m,'urlopen',return_value=Response(json.dumps(fresh).encode())):
             self.assertEqual(m.preserve('https://example.test/counts.json',now,old),fresh)
-        for broken in [snapshot('2026-11-05T07:00:00+00:00'),snapshot('2026-11-05T10:01:00+00:00')]:
-            with patch.object(m,'urlopen',return_value=Response(json.dumps(old).encode())):
-                self.assertEqual(m.preserve('https://example.test/counts.json',now,broken),old)
+        future=snapshot('2026-11-05T10:01:00+00:00')
+        with patch.object(m,'urlopen',return_value=Response(json.dumps(old).encode())):
+            self.assertEqual(m.preserve('https://example.test/counts.json',now,future),old)
         partial=snapshot('2026-11-05T09:58:31+00:00');partial['activities'].pop('QCAFK')
         with patch.object(m,'urlopen',return_value=Response(json.dumps(old).encode())):
             self.assertEqual(m.preserve('https://example.test/counts.json',now,partial),old)
@@ -78,6 +78,22 @@ class PreservationTests(unittest.TestCase):
             result=m.preserve('https://example.test/counts.json',now,fresh)
             self.assertEqual(result['activities']['QCAFK'],mixed['activities']['QCAFK'])
             self.assertEqual(result['activities']['LPEDP'],fresh['activities']['LPEDP'])
+
+    def test_stale_seed_fills_missing_history_and_survives_failed_fetch(self):
+        """Keep each last valid count even when seed is stale and source fails."""
+        now=datetime(2026,11,5,11,0,tzinfo=timezone.utc)
+        seed={'schema':1,'eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':'2026-11-05T08:37:50+00:00','rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
+        published=json.loads(json.dumps(seed));published['activities'].pop('QCAFK');published['activities']['LPEDP']['checkedAt']='2026-11-05T10:58:00+00:00'
+        with patch.object(m,'urlopen',return_value=Response(json.dumps(published).encode())):
+            previous=m.preserve('https://example.test/counts.json',now,seed)
+        self.assertEqual(previous['activities']['QCAFK'],seed['activities']['QCAFK'])
+        self.assertEqual(previous['activities']['LPEDP'],published['activities']['LPEDP'])
+        class Clock(datetime):
+            @classmethod
+            def now(cls,tz): return now
+        with patch.object(m,'datetime',Clock),patch.object(m,'urlopen',side_effect=URLError('offline')):
+            result=m.fetch(now,previous)
+        self.assertEqual(result['activities'],previous['activities'])
 
     def test_postevent_preservation_never_fetches(self):
         """Verify postevent preservation never fetches."""
