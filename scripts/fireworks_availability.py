@@ -50,6 +50,11 @@ def parse(html):
     rows=[]
     children = [el for el in roots[0].children if isinstance(el, Element)]
     for container in children:
+        if container.tag == 'div' and container.has('row') and container.has('persist-header'):
+            headers = [el for el in container.children if isinstance(el, Element)]
+            if len(headers) != 3 or not all(el.tag == 'div' and el.has('header') for el in headers):
+                raise ValueError('Malformed sheet header')
+            continue
         if container.tag == 'a':
             wrapped = [el for el in container.children if isinstance(el, Element)]
             if len(wrapped) != 1: raise ValueError('Unsupported shift wrapper')
