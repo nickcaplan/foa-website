@@ -150,21 +150,14 @@ def preserve(url, now=None, seed=None):
             if len(payload)>100000: raise ValueError('Oversized snapshot')
             published = validate_snapshot(json.loads(payload))
         if candidate is not None:
-            # Never replace a newer activity with an older seed. Missing/unavailable
-            # published activities are recoverable only from a complete fresh seed.
-            newer = False
+            # Keep the newest validated history independently for each activity.
+            activities = dict(published['activities'])
             for code in SHEETS:
-                previous = published['activities'].get(code)
-                if previous is None or previous.get('unavailable'):
-                    newer = True
-                    continue
-                seed_time = datetime.fromisoformat(candidate['activities'][code]['checkedAt'])
-                published_time = datetime.fromisoformat(previous['checkedAt'])
-                if seed_time < published_time:
-                    return published
-                newer = newer or seed_time > published_time
-            if newer:
-                return candidate
+                previous = activities.get(code)
+                incoming = candidate['activities'][code]
+                if previous is None or previous.get('unavailable') or datetime.fromisoformat(incoming['checkedAt']) > datetime.fromisoformat(previous['checkedAt']):
+                    activities[code] = incoming
+            published = dict(published, activities=activities)
         return published
     except Exception:
         fallback = candidate or fresh_seed(seed, now, allow_stale=True)
