@@ -4,10 +4,11 @@
 }
 /* Keep the long Christmas title whole, including with enlarged text. */
 .homepage .hero-event .hero-copy:has(+ .hero-side .christmas-home-art) h1 { overflow-wrap: normal; word-break: normal; }
-@media (min-width: 48rem) and (max-width: 63.99rem) {
+.homepage .hero-grid { container: christmas-home / inline-size; }
+@media (min-width: 48rem) {
   .hero-event:has(.christmas-home-art) { grid-template-columns: minmax(0, 1fr); }
   .hero-event:has(.christmas-home-art) .mobile-page-heading-copy { min-width: 0; }
 }
-@media (min-width: 64rem) {
-  .hero-event:has(.christmas-home-art) { grid-template-columns: minmax(min-content, 7fr) minmax(16rem, 5fr); }
+@container christmas-home (min-width: 55em) {
+  .hero-event:has(.christmas-home-art) { grid-template-columns: minmax(min-content, 7fr) minmax(0, 5fr); }
 }
