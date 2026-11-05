@@ -304,7 +304,7 @@ test("hero panel keeps dark focus outlines and heading accent in both modes", as
     }
     throw new Error(`could not tab to ${selector}`);
   };
-  const heroLinks = [".hero-actions .button--amber", ".hero-actions .button--primary", ".hero-actions .button--secondary"];
+  const heroLinks = [".hero-actions .button--amber", ".christmas-home-details"];
   for (const width of [390, 1280]) {
     for (const zoom of [false, true]) {
       await page.setViewportSize({ width, height: 844 });
