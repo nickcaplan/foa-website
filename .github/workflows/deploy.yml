@@ -7,7 +7,7 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: '17 * * * *'
+    - cron: '2,17,32,47 * * * *'
     - cron: '0 8 * * *'
       timezone: Europe/London
 
@@ -27,10 +27,10 @@ jobs:
     outputs:
       publish: ${{ steps.window.outputs.publish }}
     steps:
-      - name: Bound hourly work to this event
+      - name: Bound availability refresh work to this event
         id: window
         run: |
-          if [ "${{ github.event.schedule }}" != '17 * * * *' ] || [ "$(date -u +%s)" -le "$(date -u -d '2026-11-05 20:17:00' +%s)" ]; then
+          if [ "${{ github.event.schedule }}" != '2,17,32,47 * * * *' ] || [ "$(date -u +%s)" -le "$(date -u -d '2026-11-05 20:17:00' +%s)" ]; then
             echo 'publish=true' >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/checkout@v5
@@ -38,11 +38,11 @@ jobs:
       - name: Validate reader and snapshot preservation
         if: steps.window.outputs.publish == 'true'
         run: python scripts/fireworks_availability_test.py
-      - name: Refresh counts once on the hourly schedule
-        if: steps.window.outputs.publish == 'true' && github.event.schedule == '17 * * * *'
+      - name: Refresh counts once on the 15-minute schedule
+        if: steps.window.outputs.publish == 'true' && github.event.schedule == '2,17,32,47 * * * *'
         run: python scripts/fireworks_availability.py assets/fireworks-availability.json
       - name: Preserve published counts for other production builds
-        if: steps.window.outputs.publish == 'true' && github.event.schedule != '17 * * * *' && github.event_name != 'pull_request'
+        if: steps.window.outputs.publish == 'true' && github.event.schedule != '2,17,32,47 * * * *' && github.event_name != 'pull_request'
         run: python scripts/fireworks_availability.py assets/fireworks-availability.json --preserve
       - uses: actions/upload-artifact@v7
         if: steps.window.outputs.publish == 'true'
