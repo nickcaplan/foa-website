@@ -52,7 +52,7 @@ def parse(html):
     for container in children:
         if container.tag == 'div' and container.has('row') and container.has('persist-header'):
             headers = [el for el in container.children if isinstance(el, Element)]
-            if len(headers) != 3 or not all(el.tag == 'div' and el.has('header') for el in headers):
+            if len(headers) != 3 or not all(el.tag == 'div' and el.has('header') for el in headers) or headers[1].text().strip() != 'Open':
                 raise ValueError('Malformed sheet header')
             continue
         if container.tag == 'a':
