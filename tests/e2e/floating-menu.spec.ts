@@ -57,7 +57,7 @@ for (const width of [320, 390, 768, 1023]) {
         const titleStacked = title.y >= logo.y + logo.height - 0.5;
         expect(titleBeside || titleStacked, "Homepage heading sits beside the logo, or stacked below it when narrow").toBe(true);
         expect(await copy.locator("h1").evaluate((element) => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(24);
-        const intro = (await copy.locator(":scope > p").boundingBox())!;
+        const intro = (await copy.locator(".hero-when").boundingBox())!;
         expect(intro.x, "Homepage introduction uses the full panel width").toBe(logo.x);
         expect(intro.y, "Homepage introduction follows the logo/title row").toBeGreaterThanOrEqual(logoBottom);
       }
