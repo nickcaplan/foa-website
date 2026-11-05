@@ -8,7 +8,8 @@ import { withBase } from "../lib/urls";
 <style is:inline>
   .homepage-mobile-identity { display: none; }
   @media (max-width: 63.99rem) {
-    .homepage-mobile-identity { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; padding: 1rem calc(3rem + 16px) 1rem 0; border-bottom: 1px solid var(--line); position: relative; margin-inline: auto; width: calc(100% - 2rem); color: var(--heading); }
+    .homepage-mobile-identity { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; padding: 1rem calc(3rem + 16px) .65rem 0; border-bottom: 1px solid var(--line); position: relative; margin-inline: auto; width: calc(100% - 2rem); color: var(--heading); }
+    .homepage-mobile-identity + .hero { padding-top: .35rem; }
     .homepage-mobile-identity img { width: 3rem; height: 3rem; flex: none; }
     .homepage-mobile-identity p { margin: 0; font-family: Georgia, serif; font-size: 1.5rem; font-weight: 700; line-height: 1.15; overflow-wrap: normal; word-break: normal; flex: 1; min-width: min(5.5em, 100%); }
   }
