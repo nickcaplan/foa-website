@@ -38,7 +38,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
               const split = label.lastIndexOf(" ") + 1;
               return (
               <li class="vol-card" data-availability-code={role.url.split("/").pop()} data-activity-name={role.name}>
-                <div class="vol-card__heading"><h3>{role.name}</h3><p class="vol-availability" aria-live="polite">Check sheet</p></div>
+                <div class="vol-card__heading"><h3>{role.name}</h3><p class="vol-availability" aria-live="polite"></p></div>
                 <p>{role.description}</p>
                 <dl class="vol-shifts">
                   {role.shifts.map((shift) => <div><dt>{shift.label}</dt><dd>{formatTimeRangeText(shift.when)}<span>{shift.helpers} {shift.helpers === 1 ? "helper" : "helpers"} {role.shifts.length > 1 && shift.label !== "Setup" && shift.label !== "Clear up" ? "per shift" : "per slot"}</span></dd></div>)}
@@ -78,7 +78,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       const changed = output.dataset.state !== state;
       output.dataset.state = state;
       if (ended() && changed) output.textContent = "Finished";
-      else if (count === null) { if (changed) output.textContent = "Check sheet"; allFresh = false; }
+      else if (count === null) { if (changed) output.textContent = ""; allFresh = false; }
       else if (!ended()) {
         if (changed) {
         const number = document.createElement("strong");
