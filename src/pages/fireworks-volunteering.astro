@@ -131,8 +131,8 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
   load();
   // Only recalculate time boundaries locally. Never poll VolunteerSignup from visitors' browsers.
   window.setInterval(render, 30000);
-  // Refresh only our published file hourly, not the provider. Stop after the event.
-  window.setInterval(() => { if (!ended()) load(); }, 60 * 60000);
+  // Refresh only our published file every 15 minutes, not the provider. Stop after the event.
+  window.setInterval(() => { if (!ended()) load(); }, 15 * 60000);
 </script>
 
 <style is:global>
