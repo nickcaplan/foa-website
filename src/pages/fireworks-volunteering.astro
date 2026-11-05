@@ -106,7 +106,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
     const times = cards.map(card => snapshot.activities?.[card.dataset.availabilityCode!]?.checkedAt).filter((time): time is string => !!time).map(Date.parse).filter(Number.isFinite);
     if (updated) {
       const oldest = times.length ? Math.min(...times) : null;
-      const text = ended() || oldest === null ? "" : `Last updated ${new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit" }).format(oldest)} GMT${now - oldest > 90 * 60000 ? " - showing last known numbers; refresh delayed." : "."}`;
+      const text = ended() || oldest === null ? "" : `Last updated ${new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", hour: "2-digit", minute: "2-digit" }).format(oldest)} GMT${now - oldest > 90 * 60000 ? " - showing last known numbers; refresh delayed." : "."}`;
       if (updated.textContent !== text) updated.textContent = text;
     }
     const summary = document.querySelector<HTMLElement>("[data-most-help]");
