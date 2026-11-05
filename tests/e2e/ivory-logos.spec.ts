@@ -14,7 +14,7 @@ for (const width of [390, 1440]) {
     for (const [route, artwork] of routes) {
       await page.goto(route);
       await page.evaluate(() => document.documentElement.removeAttribute("data-theme"));
-      const logo = page.locator(width < 1024 ? ".mobile-page-logo img" : ".site-header .home-introduction img");
+      const logo = page.locator(width < 1024 ? ".mobile-page-logo:visible img" : ".site-header .home-introduction img");
       await expect(logo).toBeVisible();
       expect(await logo.getAttribute("src")).toContain(`/brand/${artwork}`);
       await expect(logo).toHaveJSProperty("complete", true);
