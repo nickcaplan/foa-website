@@ -4,11 +4,17 @@ import { readFileSync } from "node:fs";
 const fireworks = JSON.parse(readFileSync(new URL("../../src/content/events/fireworks-2026.json", import.meta.url), "utf8"));
 const beforeFireworks = new Date(Date.parse(fireworks.start) - 86400000);
 
+// Layout/copy cases describe the campaign while it is live. Individual lifecycle
+// cases can move the browser clock forward without changing deployed builds.
+test.beforeEach(async ({ page }) => {
+  await page.clock.install({ time: beforeFireworks });
+});
+
 for (const width of [320, 390, 768, 1440]) {
   for (const theme of ["day", "night"]) {
     for (const enlarged of [false, true]) {
       test(`message headings and timings fit their columns at ${width}px, ${theme}, ${enlarged ? "200% text with wider timings" : "normal text"}`, async ({ page }) => {
-        await page.clock.setFixedTime(beforeFireworks);
+        await page.clock.setSystemTime(beforeFireworks);
         await page.setViewportSize({ width, height: 900 });
         await page.addInitScript((theme) => {
           localStorage.setItem("foa-theme", theme);
@@ -69,6 +75,7 @@ for (const width of [320, 390, 768, 1440]) {
 }
 
 test("Reps Hub actions align across desktop cards", async ({ page }) => {
+  await page.clock.setSystemTime(beforeFireworks);
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/reps/");
   const tops = await page.locator(".message-actions").evaluateAll((rows) =>
@@ -81,6 +88,7 @@ test("Reps Hub actions align across desktop cards", async ({ page }) => {
 });
 
 test("Fireworks uses a readable ticket link and keeps its URL in copied text", async ({ page }) => {
+  await page.clock.setSystemTime(beforeFireworks);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/reps/");
   const card = page.locator(".message-card").first();
@@ -104,7 +112,7 @@ test("all messages keep their visible website URLs when copied", async ({ page }
 });
 
 test("expired messages disappear and the empty state becomes visible", async ({ page }) => {
-  await page.clock.install({ time: new Date("2026-10-11T12:00:00Z") });
+  await page.clock.setSystemTime(new Date("2026-10-11T12:00:00Z"));
   await page.goto("/reps/");
   await expect(page.locator(".message-card:visible")).toHaveCount(4);
   await page.clock.setSystemTime(new Date("2026-11-07T12:00:00Z"));
@@ -129,7 +137,6 @@ test.describe("Reps Hub copy actions", () => {
         value: { writeText: async (text: string) => { (window as any).__copied.push(text); } },
       });
     });
-    await page.clock.install();
     await page.goto("/reps/");
 
     const card = page.locator(".message-card").first();
