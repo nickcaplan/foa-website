@@ -42,6 +42,6 @@
 }
 
 /* Below the fixed mobile menu trigger, away from the school mark. */
-@media (max-width: 47.99rem) {
+@media (max-width: 63.99rem) {
   .homepage .hero-event:has(.christmas-home-art)::after { top: 6.5rem; right: 1rem; width: 3.5rem; height: 3rem; }
 }
