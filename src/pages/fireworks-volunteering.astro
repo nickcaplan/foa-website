@@ -85,7 +85,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
         number.textContent = String(count);
         const label = document.createElement("span");
         label.className = "vol-count-label";
-        label.textContent = ` ${count === 1 ? "shift" : "shifts"} left`;
+        label.textContent = ` ${count === 1 ? "place" : "places"} left`;
         output.replaceChildren(number, label);
         }
         ranked.push({ name: card.dataset.activityName!, count });
@@ -111,7 +111,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       const leaders = ranked.filter(a => a.count === highest).map(a => a.name).join(" & ");
       if (highest) {
         const title = document.createElement("strong"); title.textContent = "Most help needed";
-        const detail = document.createElement("span"); detail.textContent = `${leaders} - ${highest} ${highest === 1 ? "shift" : "shifts"} left`;
+        const detail = document.createElement("span"); detail.textContent = `${leaders} - ${highest} ${highest === 1 ? "place" : "places"} left`;
         if (summary.textContent !== title.textContent + detail.textContent) summary.replaceChildren(title, detail);
       } else { const text = "All shifts filled. Thank you!"; if(summary.textContent !== text) summary.textContent = text; }
 
