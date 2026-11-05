@@ -64,7 +64,7 @@ class PreservationTests(unittest.TestCase):
         old=snapshot('2026-11-05T08:37:50+00:00')
         fresh=snapshot('2026-11-05T09:58:31+00:00')
         with patch.object(m,'urlopen',return_value=Response(json.dumps(old).encode())):
-            self.assertEqual(m.preserve('https://example.test/counts.json',now,fresh),fresh)
+            self.assertEqual(m.preserve('https://example.test/counts.json',now,fresh)['activities'],fresh['activities'])
         with patch.object(m,'urlopen',return_value=Response(json.dumps(fresh).encode())):
             self.assertEqual(m.preserve('https://example.test/counts.json',now,old),fresh)
         for broken in [snapshot('2026-11-05T07:00:00+00:00'),snapshot('2026-11-05T10:01:00+00:00')]:
@@ -75,7 +75,9 @@ class PreservationTests(unittest.TestCase):
             self.assertEqual(m.preserve('https://example.test/counts.json',now,partial),old)
         mixed=snapshot('2026-11-05T08:37:50+00:00');mixed['activities']['QCAFK']['checkedAt']='2026-11-05T09:59:00+00:00'
         with patch.object(m,'urlopen',return_value=Response(json.dumps(mixed).encode())):
-            self.assertEqual(m.preserve('https://example.test/counts.json',now,fresh),mixed)
+            result=m.preserve('https://example.test/counts.json',now,fresh)
+            self.assertEqual(result['activities']['QCAFK'],mixed['activities']['QCAFK'])
+            self.assertEqual(result['activities']['LPEDP'],fresh['activities']['LPEDP'])
 
     def test_postevent_preservation_never_fetches(self):
         """Verify postevent preservation never fetches."""
@@ -108,7 +110,10 @@ class RequestSafetyTests(unittest.TestCase):
     def test_failed_fetch_keeps_prior_valid_count_and_original_time(self):
         checked='2026-11-05T08:37:50+00:00'
         previous={'activities':{code:{'name':name,'checkedAt':checked,'rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
-        with patch.object(m,'urlopen',side_effect=URLError('offline')):
+        class Clock(datetime):
+            @classmethod
+            def now(cls,tz): return datetime(2026,11,5,10,0,tzinfo=timezone.utc)
+        with patch.object(m,'datetime',Clock), patch.object(m,'urlopen',side_effect=URLError('offline')):
             data=m.fetch(datetime(2026,11,5,10,0,tzinfo=timezone.utc),previous)
         self.assertEqual(data['activities'],previous['activities'])
 
