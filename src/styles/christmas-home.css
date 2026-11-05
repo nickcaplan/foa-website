@@ -12,3 +12,38 @@
 @container christmas-home (min-width: 55em) {
   .hero-event:has(.christmas-home-art) { grid-template-columns: minmax(min-content, 7fr) minmax(0, 5fr); }
 }
+
+/* A fuller festive composition: artwork starts beside the title, not below a floating tag. */
+.homepage .hero-event:has(.christmas-home-art) {
+  border-top: 6px solid #174f36;
+  background-image: radial-gradient(ellipse at 30% 0%, #f2e5bd, #e0cc96 90%);
+}
+.homepage .hero-event:has(.christmas-home-art) .hero-next-event {
+  position: static;
+  margin: 0 0 1rem;
+  color: #7f202a;
+  background: #fff3d4;
+  border-color: #9c2633;
+}
+.homepage .hero-event:has(.christmas-home-art) .hero-copy h1 em { color: #8b2632; }
+.homepage .hero-event:has(.christmas-home-art) > .hero-side { padding-top: 0; }
+.homepage .hero-event .christmas-home-art { width: 100%; }
+.homepage .hero-event .christmas-home-details { background: #8b2632; }
+.homepage .hero-event .christmas-home-details:hover { background: #701c28; }
+.homepage .hero-event .christmas-home-wreath { border: 1px solid #b28b40; }
+.homepage .hero-event .hero-actions .button { background: #174f36; color: #fff8e5; }
+.homepage .hero-event .hero-actions .button:hover { background: #103d29; }
+@container christmas-home (min-width: 55em) {
+  .hero-event:has(.christmas-home-art) { grid-template-columns: minmax(min-content, 6fr) minmax(0, 6fr); gap: 2rem; }
+}
+
+.homepage .hero-event:has(.christmas-home-art)::after {
+  content: "";
+  position: absolute;
+  top: 0.65rem;
+  right: 0.55rem;
+  width: 5rem;
+  height: 4rem;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'%3E%3Cpath d='M53 43Q14 44 9 12Q40 5 53 43ZM53 43Q55 6 88 5Q94 34 53 43Z' fill='%23174f36'/%3E%3Cpath d='M53 43L17 17M53 43L82 12' stroke='%23b99d52' stroke-width='2'/%3E%3Ccircle cx='47' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='64' cy='47' r='9' fill='%238b2632'/%3E%3Ccircle cx='55' cy='61' r='9' fill='%23b63340'/%3E%3C/svg%3E") center / contain no-repeat;
+}
