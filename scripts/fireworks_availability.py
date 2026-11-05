@@ -1,4 +1,4 @@
-"""Counts-only public sheet reader. One request per sheet per hourly workflow.
+"""Counts-only public sheet reader. One request per sheet per scheduled workflow.
 No sign-ins, signup writes, names, contact fields, retries or raw HTML storage.
 """
 from html.parser import HTMLParser
@@ -81,7 +81,7 @@ def fetch(now=None):
     for code,name in SHEETS.items():
         try:
             if datetime.now(timezone.utc)>=END: break
-            request=Request('https://volunteersignup.org/'+code,headers={'User-Agent':'FriendsOfAshley-availability/1.0 (hourly public counts)'})
+            request=Request('https://volunteersignup.org/'+code,headers={'User-Agent':'FriendsOfAshley-availability/1.0 (15-minute public counts)'})
             with urlopen(request,timeout=20) as response:
                 if response.status!=200: raise ValueError('Source unavailable')
                 payload=response.read(2000001)
