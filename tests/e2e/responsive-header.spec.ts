@@ -4,7 +4,7 @@ for (const width of [320, 390, 768, 1023]) {
   test(`${width}px: homepage heading keeps every word inside the panel at its CSS size`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
-    const title = page.locator(".hero-copy h1");
+    const title = page.locator(".hero-copy:visible h1");
     await expect(title).toBeVisible();
     // The title is pure CSS (clamp with viewport-capped chrome), so it always scales with the visitor's text size.
     expect(await title.evaluate((heading) => heading.style.fontSize)).toBe("");
@@ -35,7 +35,7 @@ for (const width of [320, 390, 768, 1023]) {
 test("homepage heading scales with enlarged text and stays whole", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto("/");
-  const title = page.locator(".hero-copy h1");
+  const title = page.locator(".hero-copy:visible h1");
   const normal = await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize));
   await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
   const enlarged = await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize));
@@ -63,7 +63,7 @@ test.describe("homepage heading without JavaScript", () => {
   test.use({ javaScriptEnabled: false, viewport: { width: 390, height: 900 } });
   test("retains its readable CSS size", async ({ page }) => {
     await page.goto("/");
-    const title = page.locator(".hero-copy h1");
+    const title = page.locator(".hero-copy:visible h1");
     await expect(title).toBeVisible();
     expect(await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize))).toBeGreaterThanOrEqual(24);
     expect(await title.evaluate((heading) => heading.style.fontSize)).toBe("");
@@ -114,9 +114,9 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
     await page.setViewportSize({ width: 320, height: 900 });
     await page.goto(route);
     await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
-    await expect(page.locator(".page-logo-home"), route).toBeVisible();
-    const layout = await page.locator(".mobile-page-heading").evaluate((element) => {
-      const logo = element.querySelector(".page-logo-home")!.getBoundingClientRect();
+    await expect(page.locator(".page-logo-home:visible"), route).toBeVisible();
+    const layout = await page.locator(".mobile-page-heading:visible").evaluate((element) => {
+      const logo = element.querySelector(".page-logo-home:visible")!.getBoundingClientRect();
       const copy = element.querySelector(".mobile-page-heading-copy")!.getBoundingClientRect();
       const burger = document.querySelector(".menu-toggle")!.getBoundingClientRect();
       return { logoLeft: logo.left, logoRight: logo.right, logoTop: logo.top, logoBottom: logo.bottom, burgerLeft: burger.left, burgerBottom: burger.bottom, copyLeft: copy.left, copyRight: copy.right, copyTop: copy.top, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
@@ -140,8 +140,8 @@ test("enlarged homepage text keeps the menu and hero actions inside a narrow vie
   await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
 
   await expect(page.getByRole("button", { name: "Open menu" })).toBeVisible();
-  await expect(page.locator(".hero-copy .page-logo-home")).toBeVisible();
-  expect(await page.locator(".hero-copy .mobile-page-heading, .hero-copy .page-logo-home, .hero-copy .page-logo-home img, .hero-copy .mobile-page-heading-copy, .hero-copy .hero-next-event, .hero-copy h1").evaluateAll((elements) =>
+  await expect(page.locator(".hero-copy:visible .page-logo-home")).toBeVisible();
+  expect(await page.locator(".hero-copy:visible .mobile-page-heading, .hero-copy:visible .page-logo-home, .hero-copy:visible .page-logo-home img, .hero-copy:visible .mobile-page-heading-copy, .hero-copy:visible .hero-next-event, .hero-copy:visible h1").evaluateAll((elements) =>
     elements.map((element) => {
       const { left, right } = element.getBoundingClientRect();
       return { element: element.className || element.tagName, left, right, viewport: window.innerWidth, scrollWidth: element.scrollWidth, clientWidth: element.clientWidth };
@@ -173,7 +173,7 @@ test("enlarged homepage text keeps the menu and hero actions inside a narrow vie
   });
   expect(layout.overflow, `Out-of-viewport content: ${JSON.stringify(layout.elements, null, 2)}`).toBeLessThanOrEqual(0);
   // The hero clips overflow, so document width alone cannot catch spilling actions.
-  expect(await page.locator(".menu-toggle, .hero-actions .button").evaluateAll((elements) =>
+  expect(await page.locator(".menu-toggle, .hero-event:not([hidden]) .hero-actions .button").evaluateAll((elements) =>
     elements.every((element) => {
       const { left, right, width, height } = element.getBoundingClientRect();
       return left >= 0 && right <= window.innerWidth && width >= 44 && height >= 44;
