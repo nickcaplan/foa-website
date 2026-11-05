@@ -1,5 +1,6 @@
 ---
 import "../styles/christmas-home.css";
+import HomepageMobileIdentity from "../components/HomepageMobileIdentity.astro";
 import SponsorRibbon from "../components/SponsorRibbon.astro";
 import EventVisibilityInit from "../components/EventVisibilityInit.astro";
 import { getCollection } from "astro:content";
@@ -36,6 +37,7 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
 ---
    <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview} homepage={christmasPreview}>
 
+  <HomepageMobileIdentity />
   <section class="hero">
     <div class="site-width hero-grid">
       <div class="hero-event" data-homepage-fireworks data-show-before={christmasPreview ? undefined : homepageSwitchAt} hidden={christmasIsLive}>
