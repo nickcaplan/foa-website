@@ -1133,3 +1133,5 @@ body.fw-theme::before {
 @container volunteer-cards (min-width: 40em) {
   .fw-theme .vol-card__action { min-height: 4.25rem; }
 }
+
+.fw-theme .vol-card .vol-availability { font-size: 0.9rem; line-height: 1.5; font-weight: 700; margin-top: auto; padding-top: 1rem; }
