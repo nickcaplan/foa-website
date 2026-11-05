@@ -35,7 +35,7 @@ const titleLead = titleParts.join(" ");
 const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helping at the ${event.title}`)}`;
 ---
    <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview}>
-  {christmasPreview && <div class="site-width"><p><strong>Christmas homepage preview only.</strong> The live homepage stays on Fireworks until 9pm on 5 November 2026.</p></div>}
+  {christmasPreview && <div class="site-width"><p style="padding-right: 5rem"><strong>Christmas homepage preview only.</strong> The live homepage stays on Fireworks until 9pm on 5 November 2026.</p></div>}
   <section class="hero">
     <div class="site-width hero-grid">
       <div class="hero-event" data-homepage-fireworks data-show-before={christmasPreview ? undefined : homepageSwitchAt} hidden={christmasIsLive}>
