@@ -235,7 +235,7 @@ See [`ACTIONS.md`](ACTIONS.md) → Later.
 - Mobile navigation is a real menu. Back, forward, refresh, bookmarks and shared links work through real URLs. The current page is identifiable.
 
 **Homepage**
-- Show the most important current event prominently; direct routes to the Christmas Fayre, help at the Fayre, Get Involved (which covers class reps) and the latest newsletter (title generated from the newsletters collection); contact and charity information in the footer.
+- Show the most important current event prominently; direct routes to the Christmas Fayre, Email the organisers, Get Involved (which covers class reps) and the latest newsletter (title generated from the newsletters collection); contact and charity information in the footer.
 
 **What's On**
 - Upcoming events in chronological term/month order, each with date, name, time and location where available, plus existing detail/helper actions and expandable information. Do not add event-status pills.
