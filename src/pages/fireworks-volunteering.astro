@@ -28,7 +28,7 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       <section class="content-section content-section--compact" aria-labelledby="volunteer-teams-title">
         <div class="site-width">
           <p class="vol-tip"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 21h4"></path><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg><span><strong>Tip:</strong> the sign-up buttons take you to the Volunteer Sign Up site, where you choose your slot.</span></p>
-          <p class="vol-tip vol-priority" data-most-help data-availability-url={withBase("/fireworks-availability.json")}>Check the sign-up sheets for available places.</p>
+          <p class="vol-tip vol-priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fireworks-availability.json")}>Check the sign-up sheets for available places.</p>
           <p class="vol-preview-note" data-preview-note hidden>Preview snapshot - not updating yet.</p>
           <h2 id="volunteer-teams-title" class="visually-hidden">Volunteer activities</h2>
           <ul class="vol-grid">
@@ -103,8 +103,8 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
     }
     const summary = document.querySelector<HTMLElement>("[data-most-help]");
     if (!summary) return;
-    if (ended()) summary.textContent = "Volunteering has finished. Thank you to everyone who helped.";
-    else if (!allFresh) summary.textContent = "Check the sign-up sheets for available places.";
+    if (ended()) { const text = "Volunteering has finished. Thank you to everyone who helped."; if(summary.textContent !== text) summary.textContent = text; }
+    else if (!allFresh) { const text = "Check the sign-up sheets for available places."; if(summary.textContent !== text) summary.textContent = text; }
     else {
       ranked.sort((a, b) => b.count - a.count);
       const highest = ranked[0]?.count || 0;
@@ -112,8 +112,8 @@ if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is m
       if (highest) {
         const title = document.createElement("strong"); title.textContent = "Most help needed";
         const detail = document.createElement("span"); detail.textContent = `${leaders} - ${highest} ${highest === 1 ? "shift" : "shifts"} left`;
-        summary.replaceChildren(title, detail);
-      } else summary.textContent = "All shifts filled. Thank you!";
+        if (summary.textContent !== title.textContent + detail.textContent) summary.replaceChildren(title, detail);
+      } else { const text = "All shifts filled. Thank you!"; if(summary.textContent !== text) summary.textContent = text; }
 
     }
   }
