@@ -28,3 +28,5 @@ test('partial/unavailable or older updates cannot erase last valid counts',()=>{
  const previous={schema:1,activities:{QCAFK:activity}};
  for(const next of [{schema:1,activities:{}},{schema:1,activities:{QCAFK:{unavailable:true}}},{schema:1,activities:{QCAFK:{...activity,checkedAt:'2026-11-05T09:00:00Z'}}}]) assert.deepEqual(retainValid(previous,next).activities.QCAFK,activity);
 });
+
+test('valid response recovers a previously unavailable activity',()=>assert.deepEqual(retainValid({schema:1,activities:{QCAFK:{unavailable:true}}},{schema:1,activities:{QCAFK:activity}}).activities.QCAFK,activity));
