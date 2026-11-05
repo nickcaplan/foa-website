@@ -33,7 +33,8 @@ test.describe("without JavaScript", () => {
     const main = page.getByRole("main");
     await expect(main.getByRole("heading", { level: 1, name: "Christmas Fayre" })).toBeVisible();
     await expect(main.getByRole("heading", { name: "Welcome Tea" })).toHaveCount(0);
-    await expect(main.getByRole("link", { name: "Help at the Fayre" })).toBeVisible();
+    await expect(main.getByRole("link", { name: "Email the organisers" })).toBeVisible();
+    await expect(main.getByRole("link", { name: "Event details" })).toHaveAttribute("href", "/events/christmas-fayre-2026/");
     await expect(main.getByRole("link", { name: "Get involved Roles, meetings" })).toBeVisible();
   });
 
