@@ -24,7 +24,7 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent("Helpi
       <div class="hero-event">
        <div class="hero-copy">
           <MobilePageHeading>
-            <p class="hero-next-event">Next event</p>
+            <p class="hero-next-event">Featured event</p>
             <h1>Christmas <em>Fayre.</em></h1>
           </MobilePageHeading>
           <p class="hero-when"><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path></svg><strong>{eventDate}<span class="relative-date relative-date--inline" data-event-date={ukDateKey(event.start)} hidden></span></strong></span><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg><strong>{event.location}</strong></span></p><p class="christmas-home-admission"><strong>{formatEventTimeRange(event.start, event.end)}</strong><span>{event.entry}</span></p></div>
@@ -53,5 +53,8 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent("Helpi
 
 <script>
   import { syncRelativeDates } from "../lib/event-visibility";
-  syncRelativeDates();
+  const update = () => syncRelativeDates();
+  update();
+  window.setInterval(update, 60000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) update(); });
 </script>
