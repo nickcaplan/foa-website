@@ -38,11 +38,11 @@ jobs:
       - name: Validate reader and snapshot preservation
         if: steps.window.outputs.publish == 'true'
         run: python scripts/fireworks_availability_test.py
-      - name: Refresh counts once on schedule or manual fallback
-        if: steps.window.outputs.publish == 'true' && (github.event.schedule == '2,17,32,47 * * * *' || github.event_name == 'workflow_dispatch')
+      - name: Refresh counts once on the 15-minute schedule
+        if: steps.window.outputs.publish == 'true' && github.event.schedule == '2,17,32,47 * * * *'
         run: python scripts/fireworks_availability.py assets/fireworks-availability.json
       - name: Preserve published counts for other production builds
-        if: steps.window.outputs.publish == 'true' && github.event.schedule != '2,17,32,47 * * * *' && github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch'
+        if: steps.window.outputs.publish == 'true' && github.event.schedule != '2,17,32,47 * * * *' && github.event_name != 'pull_request'
         run: python scripts/fireworks_availability.py assets/fireworks-availability.json --preserve
       - uses: actions/upload-artifact@v7
         if: steps.window.outputs.publish == 'true'
