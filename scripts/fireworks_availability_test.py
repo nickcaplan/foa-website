@@ -6,6 +6,13 @@ def page(opened='3',time='15:30 - 16:30'):
     value='<div>FULL</div>' if opened=='FULL' else f'<div class="visible-xs visible-sm">{opened}</div><div class="visible-md visible-lg">{opened}</div>'
     return f'<div id="rows"><div class="row vertical-align"><div class="col-sm-9"><div class="ellipsis">Setup</div><div class="ellipsis indent">{time}</div><div class="usersall indent">PRIVATE NAME</div></div><div class="vcenter col-sm-2">{value}</div><div>Sign up</div></div></div>'
 class ParserTests(unittest.TestCase):
+    def test_provider_header_is_not_a_shift(self):
+        header='<div class="row persist-header"><div class="col-sm-9 col-xs-8 header">Activity</div><div class="col-sm-2 col-xs-3 header">Open</div><div class="col-sm-1 col-xs-1 header"></div></div>'
+        row=page().replace('<div id="rows">','',1)[:-6]
+        html='<div id="rows">'+header+'<a href="#">'+row+'</a></div>'
+        self.assertEqual(m.parse(html),[{'endsAt':'2026-11-05T16:30:00+00:00','open':3}])
+        with self.assertRaises(ValueError): m.parse(html.replace('col-sm-2 col-xs-3 header','col-sm-2 col-xs-3'))
+
     def test_open_count_once_and_no_personal_data(self):
         """Verify open count once and no personal data."""
         rows=m.parse(page());self.assertEqual(rows,[{'endsAt':'2026-11-05T16:30:00+00:00','open':3}]);self.assertNotIn('PRIVATE',str(rows))
