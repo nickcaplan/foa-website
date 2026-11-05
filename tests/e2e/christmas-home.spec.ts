@@ -19,7 +19,7 @@ for (const width of [320,390,768,1024,1440]) for (const theme of ['day','night']
   expect(titleLayout).toEqual({whole:true,contained:true,separate:true});
   const actions=page.locator('.christmas-home-art .hero-actions');
   await expect(actions.getByRole('link')).toHaveCount(2);
-  const positions=await actions.evaluate(el=>{const links=[...el.querySelectorAll('a')],sponsor=el.closest('article')!.querySelector('.sponsor-ribbon')!.getBoundingClientRect();return {below:el.getBoundingClientRect().top>=sponsor.bottom,ordered:links[0].getBoundingClientRect().bottom<=links[1].getBoundingClientRect().top,red:getComputedStyle(links[1]).backgroundColor}});
+  const positions=await actions.evaluate(el=>{const links=[...el.querySelectorAll('a')],sponsor=el.closest('article')!.querySelector('.sponsor-ribbon')!.getBoundingClientRect();return {below:el.getBoundingClientRect().top>=sponsor.bottom,ordered:getComputedStyle(el).flexDirection==="row"?Math.abs(links[0].getBoundingClientRect().top-links[1].getBoundingClientRect().top)<2&&links[0].getBoundingClientRect().right<=links[1].getBoundingClientRect().left:links[0].getBoundingClientRect().bottom<=links[1].getBoundingClientRect().top,red:getComputedStyle(el.querySelector(".christmas-home-details")!).backgroundColor}});
   expect(positions).toEqual({below:true,ordered:true,red:'rgb(167, 43, 57)'});
   const image=page.locator('.christmas-home-wreath');expect(await image.evaluate((e:HTMLImageElement)=>e.complete&&e.naturalWidth>0)).toBe(true);
   await expect(page.getByRole('link',{name:'Email the organisers'})).toHaveAttribute('href',/^mailto:ashleyschoolchristmasfair2026@gmail.com\?subject=/);
@@ -40,7 +40,7 @@ for(const [date,label] of [[new Date(Date.parse(fayre.start)-86400000).toISOStri
 for(const width of [390,1023,1024,1440])for(const size of [100,200])test(`small tree clears content ${width} ${size}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto('/');if(size===200)await page.evaluate(()=>document.documentElement.style.fontSize='200%');
  const status=await page.locator('.christmas-home-tree').evaluate(el=>{const style=getComputedStyle(el),r=el.getBoundingClientRect(),hero=el.closest('.hero-event')!.getBoundingClientRect();const overlap=[...document.querySelectorAll('[data-homepage-christmas] .hero-copy h1,[data-homepage-christmas] .hero-copy p,.christmas-home-art,.menu-toggle')].some(e=>{const b=e.getBoundingClientRect();return r.left<b.right&&r.right>b.left&&r.top<b.bottom&&r.bottom>b.top});return{visible:style.display!=='none',overlap,inside:r.left>=hero.left&&r.right<=hero.right&&r.top>=hero.top&&r.bottom<=hero.bottom}});
- expect(status.visible).toBe(true);if(status.visible){expect(status.overlap).toBe(false);expect(status.inside).toBe(true)}
+ expect(status.visible).toBe(width<1024);if(status.visible){expect(status.overlap).toBe(false);expect(status.inside).toBe(true)}
 });
 
 for (const width of [320,390]) test(`mobile Christmas title composition ${width}`,async({page})=>{
@@ -70,3 +70,5 @@ test('homepage identity honours night colours and stays homepage-only',async({pa
  await page.setViewportSize({width:1440,height:900});await expect(page.locator('.homepage-mobile-identity')).toBeHidden();
  await page.goto('/newsletter/');await expect(page.locator('.homepage-mobile-identity')).toHaveCount(0);
 });
+
+for(const width of [1024,1440]) test(`desktop Christmas actions side by side, details first ${width}`,async({page})=>{await page.setViewportSize({width,height:1000});await page.goto("/");const actions=page.locator(".christmas-home-art .hero-actions a");await expect(actions.first()).toHaveText(/Event details/);const a=await actions.nth(0).boundingBox(),b=await actions.nth(1).boundingBox();expect(Math.abs(a!.y-b!.y)).toBeLessThan(2);expect(a!.x).toBeLessThan(b!.x);});
