@@ -1,107 +1,13 @@
 ---
-import MobilePageHeading from "../../components/MobilePageHeading.astro";
-import { getEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import SponsorRibbon from "../../components/SponsorRibbon.astro";
-import FireworksTorch from "../../components/FireworksTorch.astro";
-import FireworksMapLink from "../../components/FireworksMapLink.astro";
-import AddToCalendar from "../../components/AddToCalendar.astro";
-import "../../styles/fireworks.css";
+import PageHero from "../../components/PageHero.astro";
 import { withBase } from "../../lib/urls";
-import { ordinalDateFormatter, formatEventTimeRange } from "../../lib/dates";
-const entry = await getEntry("events", "fireworks-2026");
-if (!entry) throw new Error("Fireworks event content is missing");
-const event = entry.data;
-const mapUrl = event.gettingThere?.find((item) => item.label === "Map")?.url;
-const dateFormatter = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" });
-const timeFormatter = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Europe/London" });
-const eventJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Event",
-  name: event.title,
-  description: event.summary,
-  startDate: event.start.toISOString(),
-  endDate: event.end?.toISOString(),
-  eventStatus: "https://schema.org/EventScheduled",
-  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-  location: { "@type": "Place", name: event.location, address: { "@type": "PostalAddress", addressLocality: "Walton-on-Thames", addressCountry: "GB" } },
-  organizer: { "@type": "Organization", name: "The Friends of Ashley", url: new URL(withBase("/"), Astro.site).href },
-  image: new URL(withBase("/events/fireworks-1600.jpg"), Astro.site).href,
-};
 ---
-<BaseLayout title={event.title} description={event.summary} image="/brand/foa-logo-fireworks-og.png" headerLogo="/brand/foa-logo-fireworks-ivory.svg" bodyClass="fw-theme">
-  <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
-  <div class="fw-event fw-stage" data-fw-stage data-fw-paused>
-    <div class="fw-content">
-      <section class="event-hero">
-        <div class="fw-torches" aria-hidden="true"><FireworksTorch /><FireworksTorch /></div>
-        <div class="site-width">
-          <div class="event-hero-grid">
-            <div class="fw-title-copy">
-              <MobilePageHeading logo="/brand/foa-logo-fireworks-ivory.svg">
-                <p class="fw-kicker">Remember Remember the 5th of November</p>
-                <h1>{event.title}</h1>
-              </MobilePageHeading>
-              <p class="event-hero-intro">{event.summary}</p>
-            </div>
-            <div class="fw-overview">
-            <aside class="event-summary">
-              <p class="fw-date">{dateFormatter(event.start)}</p>
-              <dl>
-                <div><dt>When</dt><dd>{formatEventTimeRange(event.start, event.end)}</dd></div>
-                <div><dt>Where</dt><dd>{mapUrl ? <FireworksMapLink href={mapUrl} label={event.location} /> : event.location}</dd></div>
-                <div><dt>Tickets</dt><dd>{event.ticketPrice?.split(/(under-2s)/g).map((part) => part === "under-2s" ? <span class="fw-ticket-price__unbreakable">{part}</span> : part)}</dd></div>
-              </dl>
-              {event.ticketUrl && <div class="ticket-cta">
-                <a class="button button--amber button--large" href={event.ticketUrl} target="_blank" rel="noopener noreferrer"><span class="cta-label">Buy <span class="cta-word">ticket<span class="cta-tail">s<span class="external-link-icon cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span></span></span><span class="visually-hidden"> (opens in a new tab)</span></span></a>
-                {!event.ticketNote && <p>Tickets are sold through our ticket provider and open in a new tab.</p>}
-              </div>}
-              {event.volunteerRoles && <a class="button button--primary summary-volunteer" href={withBase("/fireworks-volunteering/")}><span class="cta-label">Volunteer at <span class="cta-word">Firework<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>}
-              {event.guide && <p class="summary-guide"><a class="button button--secondary" href={withBase(event.guide.path)} download={event.guide.fileName}><span class="cta-label">Download the event <span class="cta-word">guid<span class="cta-tail">e<svg class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></span></span><span class="visually-hidden"> (PDF{event.guide.size ? `, ${event.guide.size}` : ""})</span></span></a></p>}
-              <p class="summary-calendar"><AddToCalendar eventId={entry.id} /></p>
-              {event.ticketUrl && event.ticketNote && <p class="ticket-tip"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 21h4"></path><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg><span><strong>Tip:</strong> {event.ticketNote}</span></p>}
-            </aside>
-            </div>
-            <div class="event-hero-sponsor"><SponsorRibbon /></div>
-          </div>
-        </div>
-      </section>
-      <section class="content-section content-section--compact">
-        <div class="site-width event-body">
-          <div class="event-main">
-            <section class="event-block">
-              <p class="eyebrow">Plan your evening</p>
-              <h2>Two displays, one family night out.</h2>
-              <ol class="schedule">{event.schedule?.map((item) => <li data-fw-burst={item.burst}><time datetime={item.time.toISOString()}>{timeFormatter.format(item.time)}</time><span><strong>{item.label}</strong>{item.detail && <small>{item.detail}</small>}</span></li>)}</ol>
-            </section>
-            {event.goodToKnow && <section class="event-block">
-              <p class="eyebrow">Good to know</p>
-              <h2>Before you come.</h2>
-              <dl class="good-to-know">{event.goodToKnow.map((item) => <div><dt>{item.label}</dt><dd>{item.text}</dd></div>)}</dl>
-            </section>}
-            {event.gettingThere && <section class="event-block">
-              <p class="eyebrow">Getting there</p>
-              <h2>Find your way.</h2>
-              <dl class="good-to-know">{event.gettingThere.map((item) => {
-                const linkLabel = item.urlLabel ?? "Open map";
-                const link = item.url && <FireworksMapLink href={item.url} label={linkLabel} />;
-                const at = item.url && item.urlLabel ? item.text.indexOf(item.urlLabel) : -1;
-                return <div><dt>{item.label}</dt><dd>{at >= 0 ? <>{item.text.slice(0, at)}{link}{item.text.slice(at + linkLabel.length)}</> : <>{item.text}{link && <> {link}</>}</>}</dd></div>;
-              })}</dl>
-            </section>}
-            {event.volunteerRoles && <section class="event-block">
-              <p class="eyebrow">Volunteer</p>
-              <h2>To make this event awesome, we need your help!</h2>
-              <p>All activities are open to every year group. Choose any activity, pick a slot and sign up on Volunteer Sign Up.</p>
-              <p><a class="button button--amber" href={withBase("/fireworks-volunteering/")}><span class="cta-label">Help at <span class="cta-word">Firework<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a></p>
-            </section>}
-          </div>
-        </div>
-      </section>
-    </div>
-    <div class="fw-sky" aria-hidden="true"><canvas data-fw-sky width="0" height="0"></canvas></div>
-  </div>
-  <script>
-    import "../../scripts/fireworks-experience";
-  </script>
+<BaseLayout title="Fireworks on the Field has finished" description="The 2026 Fireworks on the Field event has finished. Find current Friends of Ashley events.">
+  <PageHero eyebrow="Past event" title="Fireworks on the Field has finished" intro="Thank you to everyone who came along and helped make the evening possible." />
+  <section class="content-section"><div class="site-width">
+    <p>The 2026 event information, ticket sales and volunteer sign-ups have been retired.</p>
+    <p><a class="button button--primary" href={withBase("/events/christmas-fayre-2026/")}>Christmas Fayre details</a></p>
+    <p><a href={withBase("/whats-on/")}>See what's on at Ashley</a></p>
+  </div></section>
 </BaseLayout>
