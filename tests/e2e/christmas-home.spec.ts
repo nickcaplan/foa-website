@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-for (const width of [320,390,768,1440]) for (const theme of ['day','night']) for (const large of [false,true]) {
+for (const width of [320,390,768,1024,1440]) for (const theme of ['day','night']) for (const large of [false,true]) {
  test(`Christmas homepage ${width} ${theme} enlarged=${large}`, async({page})=>{
   await page.setViewportSize({width,height:900});await page.addInitScript(mode=>{localStorage.setItem('foa-theme',mode);localStorage.setItem('foa-cookie-preferences','essential')},theme);await page.goto('/');
   if(large) await page.evaluate(()=>{const all=[...document.querySelectorAll<HTMLElement>('body *')];const sizes=all.map(e=>parseFloat(getComputedStyle(e).fontSize));all.forEach((e,i)=>e.style.setProperty('font-size',`${sizes[i]*2}px`,'important'))});
@@ -19,3 +19,9 @@ for (const width of [320,390,768,1440]) for (const theme of ['day','night']) for
   await details.focus();await page.keyboard.press('Enter');await expect(page).toHaveURL(/\/events\/christmas-fayre-2026\/$/);await expect(page.getByRole('heading',{level:1,name:'Christmas Fayre'})).toBeVisible();
  });
 }
+
+for (const width of [320,390,768,1024,1440]) test(`Christmas homepage root text 200% ${width}`, async({page})=>{
+ await page.setViewportSize({width,height:900});await page.goto('/');await page.evaluate(()=>document.documentElement.style.fontSize='200%');
+ const layout=await page.locator('.hero-event').evaluate(hero=>{const h=hero.querySelector('h1')!.getBoundingClientRect(),panel=hero.getBoundingClientRect(),action=hero.querySelector('.hero-actions')!.getBoundingClientRect();return {title:h.left>=panel.left&&h.right<=panel.right,action:action.left>=panel.left&&action.right<=panel.right,separate:h.bottom<=action.top||h.right<=action.left}});
+ expect(layout).toEqual({title:true,action:true,separate:true});
+});
