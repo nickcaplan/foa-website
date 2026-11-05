@@ -55,3 +55,10 @@
   .homepage .hero-event:has(.christmas-home-art)::before { content: ""; position: absolute; top: -1rem; left: -1rem; width: 4rem; height: 3.2rem; pointer-events: none; }
   .homepage .hero-event:has(.christmas-home-art)::before { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'%3E%3Cpath d='M53 43Q14 44 9 12Q40 5 53 43ZM53 43Q55 6 88 5Q94 34 53 43Z' fill='%23174f36'/%3E%3Cpath d='M53 43L17 17M53 43L82 12' stroke='%23b99d52' stroke-width='2'/%3E%3Ccircle cx='47' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='64' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='55' cy='61' r='9' fill='%23a72b39'/%3E%3C/svg%3E") center / contain no-repeat; transform: rotate(-35deg); }
 }
+
+/* A third small sprig in the desktop panel's empty lower-left corner. */
+.homepage .christmas-home-extra-holly { display: none; }
+@media (min-width: 64rem) {
+  .homepage .christmas-home-extra-holly { display: block; position: absolute; bottom: 8px; left: 8px; width: 64px; height: 48px; pointer-events: none; transform: rotate(155deg); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'%3E%3Cpath d='M53 43Q14 44 9 12Q40 5 53 43ZM53 43Q55 6 88 5Q94 34 53 43Z' fill='%23174f36'/%3E%3Cpath d='M53 43L17 17M53 43L82 12' stroke='%23b99d52' stroke-width='2'/%3E%3Ccircle cx='47' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='64' cy='47' r='9' fill='%23a72b39'/%3E%3Ccircle cx='55' cy='61' r='9' fill='%23a72b39'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+}
