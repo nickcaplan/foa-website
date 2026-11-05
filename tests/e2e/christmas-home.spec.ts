@@ -6,7 +6,7 @@ for (const width of [320,390,768,1024,1440]) for (const theme of ['day','night']
  test(`Christmas homepage ${width} ${theme} enlarged=${large}`, async({page})=>{
   await page.setViewportSize({width,height:900});await page.addInitScript(mode=>{localStorage.setItem('foa-theme',mode);localStorage.setItem('foa-cookie-preferences','essential')},theme);await page.goto('/');
   if(large) await page.evaluate(()=>{const all=[...document.querySelectorAll<HTMLElement>('body *')];const sizes=all.map(e=>parseFloat(getComputedStyle(e).fontSize));all.forEach((e,i)=>e.style.setProperty('font-size',`${sizes[i]*2}px`,'important'))});
-  await expect(page.getByRole('heading',{level:1,name:'Christmas Fayre'})).toBeVisible();
+  await expect(page.getByRole('heading',{level:1,name:'The Ashley Christmas Fayre',exact:true})).toBeVisible();
   const details=page.getByRole('link',{name:'Event details',exact:true});await expect(details).toBeVisible();
   const dimensions=await details.evaluate(e=>({h:e.getBoundingClientRect().height,line:parseFloat(getComputedStyle(e).lineHeight),padding:parseFloat(getComputedStyle(e).paddingTop)}));expect(dimensions.h).toBeGreaterThanOrEqual(56);expect(dimensions.padding).toBeGreaterThanOrEqual(14);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -47,4 +47,14 @@ for (const width of [320,390]) test(`mobile Christmas title composition ${width}
  await page.setViewportSize({width,height:900});await page.goto('/');
  const composition=await page.locator('[data-homepage-christmas]').evaluate(hero=>{const title=hero.querySelector('h1')!,em=title.querySelector('em')!,tree=hero.querySelector('.christmas-home-tree')!,details=hero.querySelector('.hero-when')!;const t=title.getBoundingClientRect(),e=em.getBoundingClientRect(),r=tree.getBoundingClientRect(),d=details.getBoundingClientRect();return{size:parseFloat(getComputedStyle(title).fontSize),twoLines:e.top>t.top+20,treeAlongside:r.left>=t.right,detailsGap:d.top-t.bottom};});
  expect(composition.size).toBeGreaterThanOrEqual(36);expect(composition.twoLines).toBe(true);expect(composition.treeAlongside).toBe(true);expect(composition.detailsGap).toBeLessThan(50);
+});
+
+for(const width of [320,390]) test(`enlarged Christmas action words stay whole ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.goto('/');await page.evaluate(()=>document.documentElement.style.fontSize='200%');
+ for(const text of ['organisers','details']) {
+ const whole=await page.locator('.christmas-home-art .cta-word').filter({hasText:text}).evaluate(el=>{
+ const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n;const boxes=[];while(n=walker.nextNode()){if(n.textContent?.trim()){const r=document.createRange();r.selectNodeContents(n);boxes.push(...[...r.getClientRects()].filter(x=>x.width));}}
+ return new Set(boxes.map(x=>Math.round(x.top))).size===1;
+ });expect(whole).toBe(true);
+ }
 });
