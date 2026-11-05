@@ -1,5 +1,5 @@
 ---
-import "../styles/christmas-home.css";
+import christmasHomeStyles from "../styles/christmas-home.css?inline";
 import HomepageMobileIdentity from "../components/HomepageMobileIdentity.astro";
 import SponsorRibbon from "../components/SponsorRibbon.astro";
 import EventVisibilityInit from "../components/EventVisibilityInit.astro";
@@ -37,6 +37,7 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
 ---
    <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview} homepage={christmasPreview}>
 
+  <style is:inline set:html={christmasHomeStyles} />
   <HomepageMobileIdentity />
   <section class="hero">
     <div class="site-width hero-grid">
@@ -60,7 +61,7 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
           <MobilePageHeading>
             <h1><span class="christmas-home-kicker">The Ashley</span> Christmas <em>Fayre</em></h1>
           </MobilePageHeading>
-          <p class="hero-when"><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path></svg><strong>{eventDate}<span class="relative-date relative-date--inline" data-event-date={ukDateKey(event.start)} hidden></span></strong></span><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg><strong>{event.location}</strong></span></p><p class="christmas-home-admission"><strong>{formatEventTimeRange(event.start, event.end)}</strong><span>{event.entry}</span></p></div>
+          <p class="hero-when"><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path></svg><strong>{eventDate}<span class="relative-date relative-date--inline" data-event-date={ukDateKey(event.start)} hidden></span></strong></span><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg><strong>{event.location}</strong></span></p><p class="christmas-home-admission"><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><strong>{formatEventTimeRange(event.start, event.end)}</strong></span><span class="christmas-home-price">{event.entry}</span></p></div>
        <div class="hero-side">
 
         <article class="event-feature event-feature--poster christmas-home-art" aria-label="Christmas Fayre artwork and details">
