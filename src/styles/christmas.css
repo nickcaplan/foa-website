@@ -253,15 +253,6 @@ body.xmas-theme::before {
   text-align: center;
 }
 
-.xmas-kicker {
-  margin: 0 0 0.5rem;
-  color: var(--xm-gold-light);
-  font-family: var(--font-display);
-  font-size: clamp(1rem, 3.6vw, 1.35rem);
-  font-style: italic;
-  letter-spacing: 0.04em;
-}
-
 .xmas-theme h1,
 .xmas-theme h2 {
   margin: 0;
@@ -291,8 +282,28 @@ body.xmas-theme::before {
   }
 
   .xmas-baubles--mobile {
+    --bauble-scale: 0.65;
     display: flex;
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Use the spare title-column space rather than a separate full-width row. */
+  .xmas-baubles--mobile li {
+    height: 4rem;
+  }
+
+  .xmas-baubles--mobile .xmas-baubles__string {
+    height: calc(var(--len) * var(--bauble-scale));
+  }
+
+  .xmas-baubles--mobile .xmas-baubles__item {
+    top: calc(var(--len) * var(--bauble-scale));
+  }
+
+  .xmas-baubles--mobile .xmas-baubles__ball {
+    width: calc(var(--d) * var(--bauble-scale));
+    height: calc(var(--d) * var(--bauble-scale));
+    margin-left: calc(var(--d) * var(--bauble-scale) / -2);
   }
 
   .xmas-hero .site-width {
@@ -308,9 +319,6 @@ body.xmas-theme::before {
     font-size: clamp(1rem, 14cqi, 3rem);
   }
 
-  .xmas-theme .mobile-page-heading .xmas-kicker {
-    font-size: clamp(1rem, 7cqi, 1.35rem);
-  }
 }
 
 .xmas-facts {
@@ -328,9 +336,15 @@ body.xmas-theme::before {
   align-items: center;
 }
 
-@media (min-width: 40rem) {
+/* Labels sit on the left and values on the right to save height. The choice follows the
+   frame's width in em, so enlarged text (or a very narrow phone) stacks them again. */
+.xmas-hero__frame {
+  container: xmas-hero / inline-size;
+}
+
+@container xmas-hero (min-width: 18em) {
   .xmas-facts {
-    grid-template-columns: auto auto;
+    grid-template-columns: auto 1fr;
     justify-content: center;
     column-gap: 1.2rem;
     row-gap: 0.4rem;
@@ -340,6 +354,27 @@ body.xmas-theme::before {
 
   .xmas-facts div {
     display: contents;
+  }
+}
+
+/* Keep the original single list, with a little more desktop room for the
+   date and leads. Phone/tablet composition stays unchanged. */
+@media (min-width: 64rem) {
+  .xmas-hero__frame { max-width: 60rem; }
+  @container xmas-hero (min-width: 42em) {
+    .xmas-facts {
+      grid-template-columns: max-content max-content;
+      justify-content: center;
+      column-gap: 2.5rem;
+    }
+  }
+}
+
+/* A little more air on phones while retaining label/value alignment. */
+@media (max-width: 47.99rem) {
+  .xmas-facts { margin-top: 1.25rem; padding-top: 1.15rem; }
+  @container xmas-hero (min-width: 18em) {
+    .xmas-facts { row-gap: 0.75rem; }
   }
 }
 
@@ -371,7 +406,7 @@ body.xmas-theme::before {
 }
 
 /* The wide-screen logo is hidden and the heading wrappers use display: contents, so the
-   mark would otherwise come before the kicker. Order it after the title. */
+   mark would otherwise come before the title. Order it after the title. */
 @media (min-width: 64rem) {
   .xmas-theme .mobile-page-heading {
     display: flex;
@@ -705,5 +740,11 @@ body.xmas-theme::before {
 
   .xmas-baubles__item {
     animation: none;
+  }
+}
+
+@media (max-width: 24rem) {
+  .xmas-baubles--mobile {
+    --bauble-scale: 0.48;
   }
 }

@@ -54,17 +54,59 @@ test.describe("Christmas Fayre decoration", () => {
 
       const mark = (await page.locator(".xmas-credit img").boundingBox())!;
       const title = (await page.locator("#xmas-title").boundingBox())!;
-      const kicker = (await page.locator(".xmas-kicker").boundingBox())!;
+      await expect(page.getByText("Something magical is coming", { exact: false })).toHaveCount(0);
       if (width < 1024) {
         const logo = (await page.locator(".mobile-page-logo").boundingBox())!;
         expect(mark.y, "mark sits below the Christmas logo").toBeGreaterThanOrEqual(logo.y + logo.height);
         expect(mark.x, "mark is in the logo column, not under the title").toBeLessThan(title.x);
       } else {
         expect(mark.y, "mark sits below the title").toBeGreaterThanOrEqual(title.y + title.height);
-        expect(mark.y, "mark is not above the kicker").toBeGreaterThan(kicker.y);
       }
     });
   }
+
+  for (const width of [320, 390, 820]) {
+    test(`fits the baubles below the title beside the logo at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      const title = (await page.locator("#xmas-title").boundingBox())!;
+      const copy = (await page.locator(".mobile-page-heading-copy").boundingBox())!;
+      const baubles = (await page.locator(".xmas-baubles--mobile").boundingBox())!;
+      const facts = (await page.locator(".xmas-facts").boundingBox())!;
+      expect(baubles.y).toBeGreaterThanOrEqual(title.y + title.height);
+      expect(baubles.x).toBeGreaterThanOrEqual(copy.x);
+      expect(baubles.x + baubles.width).toBeLessThanOrEqual(copy.x + copy.width + 1);
+      expect(facts.y).toBeGreaterThanOrEqual(baubles.y + baubles.height);
+      expect(await page.locator(".xmas-hero__frame > .xmas-baubles--mobile").count()).toBe(0);
+    });
+  }
+
+  test("puts the fact labels beside their values on a phone", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(route);
+
+    for (const row of await page.locator(".xmas-facts > div").all()) {
+      const label = (await row.locator("dt").boundingBox())!;
+      const value = (await row.locator("dd").boundingBox())!;
+      expect(value.x, "value sits to the right of its label").toBeGreaterThanOrEqual(label.x + label.width);
+      expect(Math.abs(value.y - label.y), "label and value share a row").toBeLessThan(30);
+      expect(value.x + value.width, "value fits in the viewport").toBeLessThanOrEqual(390);
+    }
+  });
+
+  test("stacks the fact labels above their values when text is enlarged", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(route);
+    await page.addStyleTag({ content: "html { font-size: 160%; }" });
+
+    for (const row of await page.locator(".xmas-facts > div").all()) {
+      const label = (await row.locator("dt").boundingBox())!;
+      const value = (await row.locator("dd").boundingBox())!;
+      expect(value.y, "value sits below its label").toBeGreaterThanOrEqual(label.y + label.height);
+      expect(value.x + value.width, "value fits in the viewport").toBeLessThanOrEqual(390);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+  });
 
   test("is hidden from assistive technology and never takes focus", async ({ page }) => {
     await page.goto(route);
@@ -146,4 +188,29 @@ test.describe("Christmas Fayre without JavaScript", () => {
     await expect(page.getByRole("link", { name: /Email the Fayre team/ }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: /Email the Fayre team/ }).last()).toBeVisible();
   });
+});
+
+for (const width of [1024, 1200, 1440, 1920]) test(`desktop single fact list at ${width}`, async ({ page }) => {
+  await page.setViewportSize({width, height:1000});
+  await page.goto(route);
+  const frame = (await page.locator('.xmas-hero__frame').boundingBox())!;
+  const labels = await page.locator('.xmas-facts dt').all();
+  const first = (await labels[0].boundingBox())!;
+  let lastY = first.y - 1;
+  for (const label of labels) {
+    const box = (await label.boundingBox())!;
+    expect(Math.abs(box.x - first.x)).toBeLessThan(2);
+    expect(box.y).toBeGreaterThan(lastY); lastY=box.y;
+  }
+  if (width >= 1200) expect(frame.width).toBeGreaterThan(900);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
+});
+
+for (const width of [1024, 1440, 1920]) test(`desktop fact list is balanced inside its frame at ${width}`, async ({page}) => {
+  await page.setViewportSize({width,height:1000}); await page.goto(route);
+  const frame=(await page.locator('.xmas-hero__frame').boundingBox())!;
+  const label=(await page.locator('.xmas-facts dt').first().boundingBox())!;
+  const value=(await page.locator('.xmas-facts dd').first().boundingBox())!;
+  expect(Math.abs((label.x + value.x + value.width)/2 - (frame.x + frame.width/2))).toBeLessThan(2);
+  expect(value.x - label.x - label.width).toBeGreaterThanOrEqual(39);
 });
