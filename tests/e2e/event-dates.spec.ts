@@ -71,7 +71,7 @@ test.describe("What's On event sections (UK time)", () => {
 
     await expect(welcomeTeaListItem(page)).toBeHidden();
     await expect(pastEvents(page)).toBeVisible();
-    await pastEvents(page).locator("summary").click();
+    await expect(pastEvents(page).locator("details")).toHaveAttribute("open", "");
     await expect(pastEvents(page).getByRole("heading", { name: "Welcome Tea" })).toBeVisible();
   });
 
