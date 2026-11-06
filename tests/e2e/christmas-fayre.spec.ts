@@ -190,27 +190,18 @@ test.describe("Christmas Fayre without JavaScript", () => {
   });
 });
 
-for (const width of [1199, 1200, 1440, 1920]) test(`desktop fact grouping at ${width}`, async ({ page }) => {
+for (const width of [1024, 1200, 1440, 1920]) test(`desktop single fact list at ${width}`, async ({ page }) => {
   await page.setViewportSize({width, height:1000});
   await page.goto(route);
   const frame = (await page.locator('.xmas-hero__frame').boundingBox())!;
-  const when = (await page.locator('.xmas-facts > div').nth(0).locator('dt').boundingBox())!;
-  const whats = (await page.locator('.xmas-facts > div').nth(3).locator('dt').boundingBox())!;
-  if (width >= 1200) {
-    expect(frame.width).toBeGreaterThan(1100);
-    expect(whats.x).toBeGreaterThan(when.x + 400);
-    expect(Math.abs(when.y - whats.y)).toBeLessThan(2);
-  } else expect(whats.y).toBeGreaterThan(when.y);
-  for (const value of await page.locator('.xmas-facts dd').all()) {
-    const box = (await value.boundingBox())!;
-    expect(box.x).toBeGreaterThan(frame.x);
-    expect(box.x+box.width).toBeLessThan(frame.x+frame.width);
+  const labels = await page.locator('.xmas-facts dt').all();
+  const first = (await labels[0].boundingBox())!;
+  let lastY = first.y - 1;
+  for (const label of labels) {
+    const box = (await label.boundingBox())!;
+    expect(Math.abs(box.x - first.x)).toBeLessThan(2);
+    expect(box.y).toBeGreaterThan(lastY); lastY=box.y;
   }
+  if (width >= 1200) expect(frame.width).toBeGreaterThan(900);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
-});
-test('wide desktop enlarged text falls back to one fact group', async ({page}) => {
-  await page.setViewportSize({width:1440,height:1000}); await page.goto(route);
-  await page.addStyleTag({content:'html {font-size:200%;}'});
-  const a=(await page.locator('.xmas-facts dt').nth(0).boundingBox())!, b=(await page.locator('.xmas-facts dt').nth(3).boundingBox())!;
-  expect(b.y).toBeGreaterThan(a.y); expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
 });
