@@ -11,7 +11,6 @@ import { ukDateKey } from "../lib/event-visibility";
 import { ordinalDateFormatter, formatEventTimeRange } from "../lib/dates";
 const events = await getCollection("events");
 const christmasPreview = Astro.props.christmasPreview === true;
-const christmasIsLive = true;
 const event = events.find(({ id }) => id === "christmas-fayre-2026")?.data;
 if (!event?.contactEmail) throw new Error("Homepage Christmas Fayre content is missing");
 const latestNewsletter = (await getCollection("newsletters"))
@@ -42,7 +41,7 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
        <div class="hero-side">
 
         <article class="event-feature event-feature--poster christmas-home-art" aria-label="Christmas Fayre artwork and details">
-          <img class="christmas-home-wreath" src={withBase("/brand/foa-logo-christmas-home.webp")} alt="The Friends of Ashley Christmas wreath" width="1200" height="630" loading={christmasIsLive ? "eager" : "lazy"} fetchpriority={christmasIsLive ? "high" : "auto"} />
+          <img class="christmas-home-wreath" src={withBase("/brand/foa-logo-christmas-home.webp")} alt="The Friends of Ashley Christmas wreath" width="1200" height="630" loading="eager" fetchpriority="high" />
           <span class="sponsor-ribbon"><img src={withBase("/sponsors/martin-flashman.jpeg")} alt="Martin Flashman and Co" width="225" height="33" loading="lazy" /></span>
         <div class="hero-actions"><a class="button button--primary button--large christmas-home-details" href={withBase(event.path!)}><span class="cta-label">Event <span class="cta-word">detail<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
         <a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the <span class="cta-word">organiser<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
@@ -69,11 +68,8 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
 
 <script>
   import { syncEventVisibility, syncRelativeDates } from "../lib/event-visibility";
-  const switchAt = Date.parse("2026-11-05T21:00:00+00:00");
   const update = () => { syncEventVisibility(); syncRelativeDates(); };
   update();
-  const delay = switchAt - Date.now();
-  if (delay > 0 && delay <= 2147483647) window.setTimeout(update, delay);
   window.setInterval(update, 60000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) update(); });
   window.addEventListener("pageshow", update);
