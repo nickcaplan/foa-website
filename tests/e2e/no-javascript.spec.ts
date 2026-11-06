@@ -31,9 +31,11 @@ test.describe("without JavaScript", () => {
     await page.goto("/");
 
     const main = page.getByRole("main");
-    await expect(main.getByRole("heading", { level: 2, name: "Fireworks on the Field" })).toBeVisible();
+    await expect(main.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(main.getByRole("heading", { level: 1 })).toHaveText(/Christmas Fayre|Fireworks on the Field/);
     await expect(main.getByRole("heading", { name: "Welcome Tea" })).toHaveCount(0);
-    await expect(main.getByRole("link", { name: "Volunteer at Fireworks" })).toBeVisible();
+    await expect(main.getByRole("link", { name: "Christmas Fayre details", exact: true })).toBeVisible();
+    await expect(main.getByRole("link", { name: "Christmas Fayre details", exact: true })).toHaveAttribute("href", "/events/christmas-fayre-2026/");
     await expect(main.getByRole("link", { name: "Get involved Roles, meetings" })).toBeVisible();
   });
 

@@ -6,8 +6,8 @@ import HomeIntroduction from "./HomeIntroduction.astro";
 import SocialLinks from "./SocialLinks.astro";
 import { getCollection } from "astro:content";
 
-interface Props { logo?: string; }
-const { logo = "/brand/foa-logo-ivory.svg" } = Astro.props;
+interface Props { logo?: string; homepage?: boolean; }
+const { logo = "/brand/foa-logo-ivory.svg", homepage = false } = Astro.props;
 
 const primary = [
   { href: "/", label: "Home" },
@@ -26,7 +26,7 @@ const menuEvents = ["fireworks-2026", "christmas-fayre-2026"].map((id) => {
 const mobileOnly = [
   { href: "/contact/", label: "Contact Us" },
 ];
-const currentPath = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ""), "") || "/";
+const currentPath = homepage ? "/" : Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ""), "") || "/";
 const isHomepage = currentPath === "/";
 const isCurrent = (href: string) =>
   href === "/" ? currentPath === href : currentPath.startsWith(href);

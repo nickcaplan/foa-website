@@ -5,13 +5,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import FireworksTorch from "../components/FireworksTorch.astro";
 import "../styles/fireworks.css";
 import { withBase } from "../lib/urls";
-import { ordinalDateFormatter, formatTimeRangeText } from "../lib/dates";
+import { formatTimeRangeText } from "../lib/dates";
 const entry = await getEntry("events", "fireworks-2026");
 const event = entry?.data;
 if (!event?.volunteerRoles) throw new Error("Fireworks volunteering content is missing");
-const eventDate = ordinalDateFormatter({ timeZone: "Europe/London" })(event.start);
 ---
-<BaseLayout title="Fireworks Volunteering" description="Sign up to help at Fireworks on the Field. Choose a slot with your year group's team on Volunteer Sign Up." image="/brand/foa-logo-fireworks-og.png" headerLogo="/brand/foa-logo-fireworks-ivory.svg" bodyClass="fw-theme">
+<BaseLayout title="Fireworks Volunteering" description="Sign up to help at Fireworks on the Field. All Ashley families are welcome. Choose any activity and sign up on Volunteer Sign Up." image="/brand/foa-logo-fireworks-og.png" headerLogo="/brand/foa-logo-fireworks-ivory.svg" bodyClass="fw-theme">
   <div class="fw-vol fw-stage" data-fw-paused>
     <div class="fw-torches" aria-hidden="true"><FireworksTorch /><FireworksTorch /></div>
     <div class="fw-content">
@@ -21,26 +20,25 @@ const eventDate = ordinalDateFormatter({ timeZone: "Europe/London" })(event.star
             <MobilePageHeading logo="/brand/foa-logo-fireworks-ivory.svg">
               <h1>Fireworks <span>Volunteering</span></h1>
             </MobilePageHeading>
-            <p class="event-hero-intro">Help make Fireworks on the Field awesome. Every Ashley family can play a part. Each year group is looking after one activity, so find your child's year, choose a slot and sign up in moments.</p>
-            <p class="fw-vol-date"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>{eventDate}</p>
+            <p class="fw-vol-date">Thursday 5th November 2026</p>
+            <p class="event-hero-intro">Help make Fireworks on the Field awesome. Every Ashley family can play a part. All activities are open to every year group. Choose any activity, pick a slot and sign up in moments.</p>
           </div>
         </div>
       </section>
       <section class="content-section content-section--compact" aria-labelledby="volunteer-teams-title">
         <div class="site-width">
           <p class="vol-tip"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 21h4"></path><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg><span><strong>Tip:</strong> the sign-up buttons take you to the Volunteer Sign Up site, where you choose your slot.</span></p>
+          <p class="vol-tip vol-priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fireworks-availability.json")}>Check the sign-up sheets for available places.</p>
+          <p class="vol-preview-note" data-availability-updated role="status" aria-live="polite"></p>
+          <p class="vol-preview-note" data-preview-note hidden>Preview snapshot - not updating yet.</p>
           <h2 id="volunteer-teams-title" class="visually-hidden">Volunteer activities</h2>
           <ul class="vol-grid">
-            {event.volunteerRoles.map((role) => {
+            {event.volunteerRoles.filter((role) => role.name !== "Token presales").map((role) => {
               const label = role.name.toLowerCase();
               const split = label.lastIndexOf(" ") + 1;
               return (
-              <li class="vol-card">
-                <div class="vol-card__head">
-                  <p class="vol-card__group">{role.group}</p>
-                  <p class="vol-card__dates"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>{role.dates}</p>
-                </div>
-                <h3>{role.name}</h3>
+              <li class="vol-card" data-availability-code={role.url.split("/").pop()} data-activity-name={role.name}>
+                <div class="vol-card__heading"><h3>{role.name}</h3><p class="vol-availability" aria-live="polite"></p></div>
                 <p>{role.description}</p>
                 <dl class="vol-shifts">
                   {role.shifts.map((shift) => <div><dt>{shift.label}</dt><dd>{formatTimeRangeText(shift.when)}<span>{shift.helpers} {shift.helpers === 1 ? "helper" : "helpers"} {role.shifts.length > 1 && shift.label !== "Setup" && shift.label !== "Clear up" ? "per shift" : "per slot"}</span></dd></div>)}
@@ -56,3 +54,108 @@ const eventDate = ordinalDateFormatter({ timeZone: "Europe/London" })(event.star
     </div>
   </div>
 </BaseLayout>
+<script>
+  import { remaining, compareRemaining, isSnapshot, retainValid, type Snapshot } from "../lib/fireworks-availability";
+  let snapshot: Snapshot = {};
+  const originalOrder = new Map([...document.querySelectorAll<HTMLElement>("[data-availability-code]")].map((card,index)=>[card,index]));
+  const ended = () => Date.now() >= Date.parse("2026-11-05T19:00:00+00:00");
+  /** Render validated counts without repeated announcements or needless focus changes. */
+  function render() {
+    const now = Date.now();
+    const previewNote = document.querySelector<HTMLElement>("[data-preview-note]");
+    if (previewNote) previewNote.hidden = !location.hostname.startsWith("deploy-preview-");
+    const ranked: { name: string; count: number }[] = [];
+    const totals = new Map<HTMLElement, number | null>();
+    const cards = [...document.querySelectorAll<HTMLElement>("[data-availability-code]")];
+    let allFresh = cards.length > 0;
+    for (const card of cards) {
+      const activity = snapshot.schema === 1 ? snapshot.activities?.[card.dataset.availabilityCode!] : undefined;
+      const count = ended() ? 0 : remaining(activity, now);
+      totals.set(card, count);
+      const output = card.querySelector<HTMLElement>(".vol-availability");
+      if (!output) continue;
+      const state = ended() ? "ended" : count === null ? "unavailable" : String(count);
+      const changed = output.dataset.state !== state;
+      output.dataset.state = state;
+      if (ended() && changed) output.textContent = "Finished";
+      else if (count === null) { if (changed) output.textContent = ""; allFresh = false; }
+      else if (!ended()) {
+        if (changed) {
+        const number = document.createElement("strong");
+        number.className = count > 0 ? "vol-count" : "vol-count vol-count--zero";
+        number.textContent = String(count);
+        const label = document.createElement("span");
+        label.className = "vol-count-label";
+        label.textContent = ` ${count === 1 ? "place" : "places"} left`;
+        output.replaceChildren(number, label);
+        }
+        ranked.push({ name: card.dataset.activityName!, count });
+      }
+    }
+    // Reorder actual DOM so visual, keyboard and screen-reader order agree.
+    if (!ended()) {
+      const sorted = [...cards].sort((a, b) => allFresh ? compareRemaining(totals.get(a) ?? null, totals.get(b) ?? null) : (originalOrder.get(a)! - originalOrder.get(b)!));
+      if (sorted.some((card, index) => card !== cards[index])) {
+        const focused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        const restoreFocus = focused && cards.some(card => card.contains(focused));
+        sorted.forEach(card => card.parentElement?.append(card));
+        if (restoreFocus) focused.focus({ preventScroll: true });
+      }
+    }
+    const updated = document.querySelector<HTMLElement>("[data-availability-updated]");
+    const times = cards.map(card => snapshot.activities?.[card.dataset.availabilityCode!]?.checkedAt).filter((time): time is string => !!time).map(Date.parse).filter(Number.isFinite);
+    if (updated) {
+      const oldest = times.length ? Math.min(...times) : null;
+      const text = ended() || oldest === null ? "" : `Last updated ${new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", hour: "2-digit", minute: "2-digit" }).format(oldest)} GMT${now - oldest > 90 * 60000 ? " - showing last known numbers; refresh delayed." : "."}`;
+      if (updated.textContent !== text) updated.textContent = text;
+    }
+    const summary = document.querySelector<HTMLElement>("[data-most-help]");
+    if (!summary) return;
+    if (ended()) { const text = "Volunteering has finished. Thank you to everyone who helped."; if(summary.textContent !== text) summary.textContent = text; }
+    else if (!allFresh) { const text = "Check the sign-up sheets for available places."; if(summary.textContent !== text) summary.textContent = text; }
+    else {
+      ranked.sort((a, b) => b.count - a.count);
+      const highest = ranked[0]?.count || 0;
+      const leaders = ranked.filter(a => a.count === highest).map(a => a.name).join(" & ");
+      if (highest) {
+        const title = document.createElement("strong"); title.textContent = "Most help needed";
+        const detail = document.createElement("span"); detail.textContent = `${leaders} - ${highest} ${highest === 1 ? "place" : "places"} left`;
+        if (summary.textContent !== title.textContent + detail.textContent) summary.replaceChildren(title, detail);
+      } else { const text = "All shifts filled. Thank you!"; if(summary.textContent !== text) summary.textContent = text; }
+
+    }
+  }
+  /** Reload our published file while retaining the last validated counts on failure. */
+  async function load() {
+    try {
+      const url = document.querySelector<HTMLElement>("[data-availability-url]")?.dataset.availabilityUrl;
+      if (!url) return;
+      const response = await fetch(url, { cache: "no-cache" });
+      if (!response.ok) throw new Error("Unavailable");
+      const candidate: unknown = await response.json();
+      if (!isSnapshot(candidate)) throw new Error("Invalid snapshot");
+      snapshot = retainValid(snapshot, candidate);
+    } catch { /* Retain the last validated snapshot, with its original timestamps. */ }
+    render();
+  }
+  load();
+  // Only recalculate time boundaries locally. Never poll VolunteerSignup from visitors' browsers.
+  window.setInterval(render, 30000);
+  // Refresh only our published file every 15 minutes, not the provider. Stop after the event.
+  window.setInterval(() => { if (!ended()) load(); }, 15 * 60000);
+</script>
+
+<style is:global>
+  .fw-theme .vol-card .vol-availability { position: static; margin: 0; min-height: 0; padding: 0; max-width: 100%; text-align: left; font-size: .85rem; line-height: 1.25; }
+  .vol-availability .vol-count { display: inline; color: #9e201f; font-size: 1.25rem; line-height: 1.25; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .vol-availability .vol-count--zero { color: #345039; }
+  .vol-count-label { display: inline; font-size: 1rem; line-height: 1.25; }
+  .fw-theme .vol-card h3 { padding-right: 0; min-height: 0; margin: 0; }
+  .vol-card__heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .35rem .8rem; margin-bottom: .75rem; }
+  .vol-card__heading .vol-availability { white-space: nowrap; }
+
+  .fw-theme .vol-priority { display: block; background: #f8df9b; border: 2px solid #c99b35; border-left: .5rem solid #9e201f; padding: 1rem 1.25rem; }
+  .vol-priority strong { display: block; color: #8c1c1b; font-size: .85rem; text-transform: uppercase; letter-spacing: .08em; }
+  .vol-priority span { display: block; color: #362b15; font-size: 1.3rem; line-height: 1.3; font-weight: 800; margin-top: .3rem; }
+  .vol-preview-note { font-size: .8rem; margin: -.25rem 0 1rem; color: #f3dfae; }
+</style>

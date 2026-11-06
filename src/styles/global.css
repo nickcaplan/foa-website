@@ -39,7 +39,6 @@
   --mobile-heading-inset: 1rem;
   --mobile-heading-panel-padding: 1.5rem;
   --mobile-heading-control-clearance: 2rem;
-  --home-heading-fit-max: 3rem;
   --home-heading-line-height: 1.2;
   --involved-section-gap: clamp(2rem, 5vw, 3rem);
   --involved-column-gap: 2.5rem;
@@ -749,34 +748,52 @@ a {
   margin-top: 2rem;
 }
 
-.hero-copy .hero-actions {
+/* Enlarged text leaves hero CTAs little room beside the pinned icon, so the
+   inline padding is trimmed to keep words whole; the global reserved icon
+   lane stays as it is. */
+.hero-event .hero-actions .button {
+  padding-inline: 1rem;
+}
+
+/* Middle words stay whole under enlarged text instead of breaking anywhere
+   ("Firework/s"); the final word keeps its .cta-word escape hatch. The extra
+   .button class outranks the global pill label rule. Below 22.5rem the
+   anywhere fallback still applies so a long word can never clip. */
+@media (min-width: 22.5rem) {
+  .hero-event .hero-actions .button .cta-label {
+    overflow-wrap: normal;
+    hyphens: auto;
+  }
+}
+
+.hero-event .hero-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
   max-width: 30rem;
 }
 
-.hero-copy .hero-actions .button--amber,
-.hero-copy .hero-actions .button--wide {
+.hero-event .hero-actions .button--amber,
+.hero-event .hero-actions .button--wide {
   grid-column: 1 / -1;
 }
 
-.hero-copy .hero-actions .button--secondary {
+.hero-event .hero-actions .button--secondary {
   padding-inline: 0.75rem;
 }
 
-.hero-copy .hero-actions .button {
+.hero-event .hero-actions .button {
   min-width: 0;
   flex-wrap: wrap;
   overflow-wrap: anywhere;
 }
 
 @media (max-width: 23rem) {
-  .hero-copy .hero-actions {
+  .hero-event .hero-actions {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .hero-copy .hero-actions .button--secondary {
+  .hero-event .hero-actions .button--secondary {
     font-size: 0.92rem;
     padding-inline: 0.5rem;
   }
@@ -992,32 +1009,247 @@ svg.cta-icon {
   bottom: calc(-1 * var(--scroll-overhang));
 }
 
-.event-feature--poster :focus-visible {
+/* Homepage: one parchment panel unites the hero copy and the event poster card. */
+.hero-event {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+  /* Chrome stays viewport-sized so enlarged text keeps a wide, whole-word column. */
+  --hero-event-pad-inline: min(1.5rem, 5vw);
+  --scroll-ink: #2a1d0c;
+  --scroll-ink-soft: #4d3b1f;
+  --scroll-forest: #26361a;
+  --scroll-gold: #f0c35a;
+  --scroll-edge: #9e7b35;
+  --scroll-overhang: 10px;
+  display: grid;
+  gap: 2rem;
+  margin-block: var(--scroll-overhang);
+  padding: 2rem var(--hero-event-pad-inline);
+  border-inline: 2px solid #b08a356b;
+  border-radius: 3px;
+  color: var(--scroll-ink);
+  background: radial-gradient(ellipse at 30% 0%, #f2e5bd, #e0cc96 90%);
+  box-shadow:
+    inset 0 0 30px rgba(110, 75, 20, 0.22),
+    0 12px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Inside the panel the card contributes its contents, not its own parchment. */
+.hero-event .event-feature--poster {
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.hero-event .event-feature--poster::before,
+.hero-event .event-feature--poster::after {
+  display: none;
+}
+
+.hero-event .hero-copy {
+  min-width: 0;
+}
+
+.hero-event > .hero-side {
+  display: contents;
+}
+
+.hero-next-event {
+  display: block;
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 2px 0.5rem auto;
+  padding: 0.26rem 0.7rem;
+  /* Day amber, not var(--amber-light): Night Mode redefines that token dark
+     for page chrome, while this parchment panel keeps the Day palette. */
+  background: #f8e4b7;
+  border: 1.5px dashed var(--scroll-edge, #9e7b35);
+  border-radius: 6px;
+  color: var(--scroll-ink, #2a1d0c);
+  transform: rotate(-1.5deg);
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+  overflow-wrap: normal;
+  text-align: center;
+  text-transform: uppercase;
+  word-break: normal;
+}
+
+@media (min-width: 64rem) {
+  .hero-next-event {
+    position: absolute;
+    top: 1.4rem;
+    right: 2.6rem;
+    margin: 0;
+  }
+
+  /* The absolute Next event tag sits in the panel's top-right corner, so the
+     action rail starts below it. */
+  .hero-event > .hero-side {
+    padding-top: 3rem;
+  }
+}
+
+/* Where enlarged text shrinks the copy column (the heading grid's container),
+   the tag spans the column as a banner instead of overflowing it. */
+/* In the narrow banner fallback the tag spans the column, so it stays
+   square: a tilted full-width band would clip at the edges. */
+@container (max-width: 8rem) {
+  .hero-next-event {
+    width: 100%;
+    margin-left: 0;
+    margin-inline-end: 0;
+    padding-inline: 0.5rem;
+    transform: none;
+  }
+}
+
+.hero-event .hero-copy > p:not(.eyebrow) {
+  color: var(--scroll-ink-soft);
+}
+
+/* The parchment is light in both modes, so the accent stays the dark poster green. */
+.hero-event .hero-copy h1 em {
+  color: var(--scroll-forest);
+}
+
+/* The event facts sit under the heading as icon-led rows so the date, venue
+   and times read at a glance; the date and venue stay bold. */
+.homepage .hero-when {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.hero-fact {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.hero-fact-icon {
+  width: 1.1em;
+  height: 1.1em;
+  margin-top: 0.15em;
+  flex: none;
+  color: var(--scroll-forest, var(--green));
+}
+
+.hero-event .hero-actions {
+  margin-top: 1.5rem;
+}
+
+.hero-event .button--secondary {
+  background: #fdf7e4;
+}
+
+@media (min-width: 48rem) {
+  .hero-event {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: center;
+    column-gap: 2rem;
+    padding: 2.4rem 2.6rem;
+  }
+
+
+  .hero-grid > .hero-event {
+    grid-column: 1 / -1;
+  }
+
+  /* Desktop pairs the event copy with an action rail: the CTAs and the
+     sponsor credit stack in the second column so no tall empty column opens
+     up beside the heading. On phones the rail is plain flow, preserving the
+     approved single-column order (copy, actions, sponsor). */
+  .hero-event > .hero-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    min-width: 0;
+  }
+
+  .hero-event > .hero-side .hero-actions {
+    margin-top: 0;
+  }
+
+  .hero-event .hero-copy {
+    grid-area: auto;
+  }
+}
+
+@media (max-width: 63.99rem) {
+  .homepage .hero .site-width.hero-grid {
+    width: min(calc(100% - min(2rem, 8vw)), var(--max-width));
+  }
+
+  .homepage .hero-event .hero-copy {
+    padding: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .homepage .hero-event .hero-copy .mobile-page-heading h1 {
+    /* Scales with the visitor's text size; the viewport-capped panel chrome keeps every word inside the panel. */
+    font-size: clamp(1.9rem, 8.5vw, 2.4rem);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .hero-event {
+    gap: 1.75rem;
+    padding: 1.4rem min(1.25rem, 5vw) 1.75rem;
+  }
+
+  /* Phones: tighten the panel head. */
+  .homepage .hero-event {
+    padding-top: 1.25rem;
+  }
+
+  .homepage .hero-event .mobile-page-heading {
+    /* The hero heading uses the shared page-heading logo size like
+       every other page. Flex lets the heading wrap below the logo
+       once enlarged text leaves no room beside it, which keeps every
+       word whole. */
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.75rem;
+    row-gap: 0.45rem;
+    align-items: start;
+  }
+
+  .homepage .hero-event .mobile-page-heading-brand {
+    flex: none;
+    width: var(--mobile-page-logo-size);
+    max-width: calc(100% - 4rem);
+  }
+
+  .homepage .hero-event .mobile-page-heading-copy {
+    flex: 1 1 8rem;
+  }
+
+  /* The non-breaking pairs stay together until they would overflow; only then may they break. */
+  .homepage .hero-when {
+    overflow-wrap: anywhere;
+  }
+}
+
+.event-feature--poster :focus-visible,
+.hero-event :focus-visible {
   outline-color: var(--scroll-forest);
 }
 
-.event-poster-link {
-  display: block;
-  width: min(100%, 18rem);
-  background: var(--paper-deep);
-  border-radius: 3px;
-  border: 1px solid var(--scroll-edge, rgba(20, 83, 45, 0.28));
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
-.event-poster-link--wide {
+/* Without the poster photo the sponsor credit stands alone, so it keeps the
+   poster card's width and chrome. */
+.hero-event .sponsor-ribbon {
   width: min(100%, 26rem);
-}
-
-.event-poster-link img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.event-poster-link--sponsored {
-  background: var(--sponsor-green);
+  border: 1px solid var(--scroll-edge, rgba(20, 83, 45, 0.28));
+  border-radius: 3px;
+  box-shadow: var(--shadow);
 }
 
 .sponsor-ribbon {
@@ -1047,17 +1279,6 @@ svg.cta-icon {
   background: var(--sponsor-green);
 }
 
-.event-feature.event-feature--poster > .event-feature-kicker {
-  max-width: none;
-  margin: 0 0 0.75rem;
-  color: #7a4a00;
-  font-family: "UnifrakturCook", "Old English Text MT", Georgia, "Times New Roman", serif;
-  font-size: clamp(1.4rem, 5vw, 1.6rem);
-  font-weight: 700;
-  line-height: 1.1;
-  text-align: center;
-}
-
 .event-feature.event-feature--poster h2 {
   max-width: none;
   margin: 0 0 1.5rem;
@@ -1066,16 +1287,6 @@ svg.cta-icon {
   letter-spacing: -0.02em;
   line-height: 1.1;
   text-align: center;
-}
-
-.event-feature.event-feature--poster > .event-feature-when {
-  display: flex;
-  width: min(100%, 26rem);
-  margin: 1.25rem 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.7rem;
 }
 
 .event-feature.event-feature--poster > .button {
@@ -2742,29 +2953,77 @@ body.menu-open .cookie-banner {
   color: #ffd28b;
 }
 
-.event-feature-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+.hero-copy .event-timeline-wrap {
+  width: 100%;
+  max-width: 30rem;
+  margin: 1.5rem 0 0;
+  container-type: inline-size;
 }
 
-.event-feature--poster .event-timeline {
+.hero-copy .event-timeline {
   --timeline-inset: 2rem;
-  width: calc(100% + 2 * (var(--scroll-pad) - 0.5rem));
-  max-width: none;
+  width: 100%;
+  margin: 0;
 }
 
-.event-feature--poster .event-timeline li {
+.hero-copy .event-timeline li {
   width: 4.5rem;
 }
 
 /* Pull the inner stops toward the centre so neighbours keep clear of the end stops. */
-.event-feature--poster .event-timeline li:not(:first-child, :last-child) {
+.hero-copy .event-timeline li:not(:first-child, :last-child) {
   left: calc(var(--timeline-inset) + (100% - 2 * var(--timeline-inset)) * (0.5 + (var(--at) - 0.5) * 0.8));
 }
 
-.event-feature--poster .event-timeline time {
+.hero-copy .event-timeline time {
   font-size: clamp(1rem, calc((100cqw - 2 * var(--timeline-inset)) / 11.5), 1.6rem);
+}
+
+/* Enlarged text grows the stop labels while the track stays the same pixel
+   width, so once the wrapper is narrow relative to the font size, switch to
+   a vertical list. The em threshold tracks the root font size. */
+@container (max-width: 18em) {
+  .hero-grid .hero-copy .event-timeline {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .hero-grid .hero-copy .event-timeline::before {
+    top: 0.55rem;
+    right: auto;
+    bottom: 0.55rem;
+    left: calc(0.55rem - 1px);
+    width: 2px;
+    height: auto;
+  }
+
+  .hero-grid .hero-copy .event-timeline li {
+    position: relative;
+    left: auto;
+    width: auto;
+    padding: 0 0 0 1.6rem;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.55rem;
+    text-align: left;
+    transform: none;
+  }
+
+  .hero-grid .hero-copy .event-timeline li:not(:first-child, :last-child) {
+    left: auto;
+  }
+
+  .hero-grid .hero-copy .event-timeline li::before {
+    top: 50%;
+    left: 0.2rem;
+    transform: translateY(-50%);
+  }
+
+  .hero-grid .hero-copy .event-timeline span {
+    width: auto;
+  }
 }
 
 .event-feature--poster .button--amber {
@@ -4103,6 +4362,11 @@ body.menu-open .cookie-banner {
 }
 
 @media (min-width: 48rem) and (max-width: 63.99rem) {
+  .homepage .hero-event .hero-copy .mobile-page-heading h1 {
+    /* Fits the copy column beside the shared page-heading logo. */
+    font-size: clamp(2.2rem, 5.5vw, 3rem);
+  }
+
   .homepage .hero-grid > .event-feature {
     margin-top: var(--mobile-heading-control-clearance);
   }
@@ -5136,12 +5400,7 @@ body.menu-open .cookie-banner {
     padding: 2.1rem var(--scroll-pad) 1.4rem;
   }
 
-  .event-feature.event-feature--poster > .event-feature-kicker {
-    margin-bottom: 0.4rem;
-    font-size: 1.4rem;
-  }
-
-  .event-feature.event-feature--poster h2 {
+    .event-feature.event-feature--poster h2 {
     margin-bottom: 0.9rem;
     font-size: clamp(1.7rem, 3.4vh, 2.2rem);
   }
@@ -5151,32 +5410,9 @@ body.menu-open .cookie-banner {
     object-fit: cover;
   }
 
-  .event-feature.event-feature--poster > .event-feature-when {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.1rem;
-    margin: 0.9rem 0 0.75rem;
-  }
-
-  .hero-grid .date-tile {
-    padding: 0.3rem 1.1rem;
-  }
-
-  .hero-grid .event-feature-where {
-    font-size: 0.9rem;
-  }
-
-  .hero-grid .date-tile__day {
-    font-size: 1.9rem;
-  }
-
   .hero-grid .event-timeline {
     min-height: 5.2rem;
     margin-bottom: 0.6rem;
-  }
-
-  .hero-grid .event-feature-actions {
-    gap: 0.6rem;
   }
 
   .hero-links .quick-row {
@@ -5320,3 +5556,13 @@ body.menu-open .cookie-banner {
     inset-inline-end: 0.5rem;
   }
 }
+
+/* Christmas homepage feature, scoped to the new artwork and actions. */
+
+  .christmas-home-admission { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 1rem; font-size: 1.1rem; }
+  .christmas-home-admission span { max-width: 100%; }
+  .christmas-home-art { width: min(100%, 26rem); justify-self: center; }
+  .christmas-home-wreath { display: block; width: 100%; height: auto; border-radius: 3px 3px 0 0; }
+  .hero-event .christmas-home-art { gap: 0; }
+  .hero-event .christmas-home-art .sponsor-ribbon { width: 100%; padding: 0.6rem 1rem; border-radius: 0 0 3px 3px; box-shadow: none; }
+  .hero-event .christmas-home-art .christmas-home-details { margin-top: 1.25rem; min-height: 3.5rem; padding: 0.9rem 1.5rem; line-height: 1.5; width: 100%; }

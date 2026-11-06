@@ -51,9 +51,10 @@ test("the homepage retains desktop branding and uses the shared inline mobile lo
   assert.match(introduction, /The Friends of Ashley/);
   assert.match(introduction, /<img[^>]*width="160"[^>]*height="160"/);
   assert.ok(html.indexOf(introduction) < html.indexOf("<h1"));
-  const main = html.match(/<main\b[\s\S]*?<\/main>/)?.[0];
+  const visibleHtml = html.replace(/<div class="hero-event"[^>]*\shidden(?:="[^"]*")?>[\s\S]*?(?=<div class="hero-event"|<div class="quick-list)/g, "");
+    const main = visibleHtml.match(/<main\b[\s\S]*?<\/main>/)?.[0];
   assert.ok(main);
-  assert.match(main, /class="hero-copy">\s*<div class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1[^>]*data-fit-heading[^>]*>Helping Ashley children <em>flourish\.<\/em><\/h1>/);
+  assert.match(main, /class="hero-copy">\s*<div class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1>(?:<span class="christmas-home-kicker">The Ashley<\/span> Christmas <em>Fayre|Fireworks on the <em>Field\.)<\/em><\/h1>/);
   assert.doesNotMatch(main, /mobile-home-introduction|class="home-introduction"|Ashley C of E Primary School PTA/);
   assert.doesNotMatch(main, /Parent-led\. Child-focused\. All welcome\.|class="eyebrow">Parent-led/);
 });
@@ -77,7 +78,8 @@ test("every public page embeds one mobile home-linked logo beside its heading", 
   for (const path of await discoverPages(root)) {
     if (path.href === new URL("playground.html", root).href) continue;
     const html = await readFile(path, "utf8");
-    const main = html.match(/<main\b[\s\S]*?<\/main>/)?.[0];
+    const visibleHtml = html.replace(/<div class="hero-event"[^>]*\shidden(?:="[^"]*")?>[\s\S]*?(?=<div class="hero-event"|<div class="quick-list)/g, "");
+    const main = visibleHtml.match(/<main\b[\s\S]*?<\/main>/)?.[0];
     assert.ok(main, path.pathname);
     assert.equal(main.match(/class="mobile-page-logo page-logo-home"/g)?.length, 1, path.pathname);
     assert.match(main, /class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1/, path.pathname);

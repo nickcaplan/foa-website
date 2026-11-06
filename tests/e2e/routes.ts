@@ -1,13 +1,21 @@
-import { readdirSync } from "node:fs";
+import { readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { spawnSync } from "node:child_process";
 
-// Routes are discovered from the production build (`dist/`), so a new page is covered automatically.
+// Routes are discovered from the served browser fixture (`.browser-fixture/`), so a new page is covered automatically.
 // Add a route to `excluded` only with a reason.
 const excluded = new Set<string>([
   "/playground.html", // hidden, noindex contact prototype, not a public route
 ]);
 
-const discoverRoutes = (directory = "dist", prefix = ""): string[] =>
+// List mode does not start webServer. The normal build has the same route set.
+if (!existsSync(".browser-fixture") && !existsSync("dist")) {
+  const build = spawnSync(process.execPath, ["scripts/test/build-browser-fixture.mjs"], { stdio: "inherit" });
+  if (build.error) throw build.error;
+  if (build.status !== 0) throw new Error("Browser fixture build failed before route discovery");
+}
+const routeRoot = existsSync(".browser-fixture") ? ".browser-fixture" : "dist";
+const discoverRoutes = (directory = routeRoot, prefix = ""): string[] =>
   readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     if (entry.isDirectory()) return discoverRoutes(join(directory, entry.name), `${prefix}/${entry.name}`);
     if (entry.name === "index.html") return [`${prefix}/`];

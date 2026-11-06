@@ -7,6 +7,7 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
+    - cron: '2,17,32,47 * * * *'
     - cron: '0 8 * * *'
       timezone: Europe/London
 
@@ -17,10 +18,41 @@ permissions:
 
 concurrency:
   group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.ref) || 'pages' }}
-  cancel-in-progress: true
+  cancel-in-progress: false
+  queue: max
 
 jobs:
+  availability:
+    runs-on: ubuntu-24.04
+    outputs:
+      publish: ${{ steps.window.outputs.publish }}
+    steps:
+      - name: Bound availability refresh work to this event
+        id: window
+        run: |
+          if [ "${{ github.event.schedule }}" != '2,17,32,47 * * * *' ] || [ "$(date -u +%s)" -le "$(date -u -d '2026-11-05 20:17:00' +%s)" ]; then
+            echo 'publish=true' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v5
+        if: steps.window.outputs.publish == 'true'
+      - name: Validate reader and snapshot preservation
+        if: steps.window.outputs.publish == 'true'
+        run: python scripts/fireworks_availability_test.py
+      - name: Refresh counts once on schedule or manual fallback
+        if: steps.window.outputs.publish == 'true' && (github.event.schedule == '2,17,32,47 * * * *' || github.event_name == 'workflow_dispatch')
+        run: python scripts/fireworks_availability.py assets/fireworks-availability.json
+      - name: Preserve published counts for other production builds
+        if: steps.window.outputs.publish == 'true' && github.event.schedule != '2,17,32,47 * * * *' && github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch'
+        run: python scripts/fireworks_availability.py assets/fireworks-availability.json --preserve
+      - uses: actions/upload-artifact@v7
+        if: steps.window.outputs.publish == 'true'
+        with:
+          name: volunteer-availability
+          path: assets/fireworks-availability.json
+          retention-days: 1
   verify:
+    needs: availability
+    if: needs.availability.outputs.publish == 'true'
     name: Verify site (shard ${{ matrix.shard }} of 2)
     runs-on: ubuntu-24.04
     # Official Playwright image: browsers and their system libraries are already
@@ -35,6 +67,10 @@ jobs:
         shard: [1, 2]
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v8
+        with:
+          name: volunteer-availability
+          path: assets
       - uses: actions/setup-node@v5
         with:
           node-version: '>=22.18.0 <23'

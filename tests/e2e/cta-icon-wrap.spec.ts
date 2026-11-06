@@ -119,7 +119,7 @@ test.describe("CTA trailing icons stay with the label", () => {
 });
 
 test.describe("Wrapping stays inside the neighbouring content column", () => {
-  for (const width of [320, 768, 1440]) {
+  for (const width of [320, 768, 1280, 1366, 1440]) {
     for (const night of [false, true]) {
       for (const textSize of ["normal", "200% per-element", "200% root"]) {
         for (const path of ["/newsletter/", "/fireworks-volunteering/", "/uniform/"]) {
@@ -139,7 +139,35 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
               // wait until the enlargement has actually taken effect before measuring.
               if (textSize !== "normal") await expect(page.locator(".fw-vol .content-section").first()).toHaveCSS("font-size", "32px");
               const columns = await page.locator(".vol-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length);
-              if (textSize === "normal") expect(columns).toBe(width === 1440 ? 3 : width === 768 ? 2 : 1);
+              if (textSize === "normal" && width >= 1024) {
+                const intro = await page.locator(".fw-vol").evaluate(el => {
+                  const tip = el.querySelector(".vol-tip")!.getBoundingClientRect();
+                  const grid = el.querySelector(".vol-grid")!.getBoundingClientRect();
+                  const paragraph = el.querySelector(".event-hero-intro")!;
+                  return { left: Math.abs(tip.left - grid.left), right: Math.abs(tip.right - grid.right), measure: getComputedStyle(paragraph).maxWidth };
+                });
+                expect(intro.left).toBeLessThanOrEqual(1);
+                expect(intro.right).toBeLessThanOrEqual(1);
+                expect(intro.measure).not.toBe("none");
+              }
+              if (textSize === "normal") {
+                const container = await page.locator(".fw-vol .content-section").evaluate(el => ({ width: el.getBoundingClientRect().width, em: parseFloat(getComputedStyle(el).fontSize) }));
+                expect(columns).toBe(container.width >= 72 * container.em ? 4 : width >= 768 ? 2 : 1);
+                if (columns > 1) {
+                  const actions = await page.locator(".vol-card__action").evaluateAll(links => links.map(link => {
+                    const button = link.getBoundingClientRect();
+                    const card = link.closest(".vol-card")!.getBoundingClientRect();
+                    return { row: Math.round(card.top), top: button.top, height: button.height, bottom: button.bottom };
+                  }));
+                  for (const action of actions) {
+                    for (const neighbour of actions.filter(other => other.row === action.row)) {
+                      expect(Math.abs(action.height - neighbour.height), "signup actions in one row must have equal heights").toBeLessThanOrEqual(1);
+                      expect(Math.abs(action.top - neighbour.top), "signup actions in one row must share their top edge").toBeLessThanOrEqual(1);
+                      expect(Math.abs(action.bottom - neighbour.bottom), "signup actions in one row must share their bottom edge").toBeLessThanOrEqual(1);
+                    }
+                  }
+                }
+              }
               else if (width <= 768) expect(columns, "enlarged narrow columns must stack").toBe(1);
             }
             if (path === "/newsletter/") {

@@ -5,9 +5,10 @@ for (const width of [320, 390, 768, 1023]) {
   test(`${width}px: every page has no header and a clear, fixed mobile burger`, async ({ page }) => {
     // A healthy sweep of every route takes ~20s per width; 60s caps a genuinely missing element without failing slow-but-healthy runs.
     test.setTimeout(60_000);
+    await page.clock.setFixedTime(new Date("2026-11-05T20:00:00Z"));
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    for (const route of routes) {
+    for (const route of routes.filter(route => route !== "/preview/christmas/")) {
       await page.goto(route);
       const header = page.locator(".site-header");
       const trigger = page.getByRole("button", { name: "Open menu" });
@@ -19,28 +20,45 @@ for (const width of [320, 390, 768, 1023]) {
       expect(before!.height).toBe(48);
       expect(before!.x + before!.width).toBeLessThanOrEqual(width);
       {
-        const logo = page.locator(".page-logo-home");
+        const logo = page.locator(".page-logo-home:visible");
         await expect(logo, route).toBeVisible();
         await expect(logo).toHaveAttribute("href", "/");
         const logoBox = (await logo.boundingBox())!;
-        expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
-        expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
-        expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
         expect(logoBox.x + logoBox.width, route).toBeLessThan(before!.x);
         await expect(logo.locator("p, strong, span")).toHaveCount(0);
-        const heading = (await page.locator(".mobile-page-heading-copy").boundingBox())!;
-        expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
+        const heading = (await page.locator(".mobile-page-heading-copy:visible").boundingBox())!;
+        if (route === "/") {
+          // Nick's call: the Fireworks panel uses the shared page-heading
+          // layout too - logo on the left, heading beside it. At 320px the
+          // 128px logo plus the display-size heading leave no room, so flex
+          // stacks the heading below the logo instead of breaking a word;
+          // the same stacking protects enlarged text at every width.
+          expect(logoBox.width, "/: logo matches the shared page-heading size").toBe(128);
+          const headingBeside = heading.x >= logoBox.x + logoBox.width - 0.5;
+          const headingStacked = heading.y >= logoBox.y + logoBox.height - 0.5;
+          expect(headingBeside || headingStacked, "/: the heading sits beside the logo, or stacked below it when narrow").toBe(true);
+        } else {
+          expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
+          expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
+          expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
+          expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
+        }
       }
-      const logoBottom = await page.locator(".mobile-page-logo").evaluate((element) => element.getBoundingClientRect().bottom);
+      const logoBottom = await page.locator(".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
       if (route === "/") {
-        const copy = page.locator(".hero-copy");
+        const copy = page.locator(".hero-copy:visible");
         await expect(copy.locator(".page-logo-home")).toBeVisible();
         await expect(copy.locator(".eyebrow")).toHaveCount(0);
+        await expect(copy.locator(".hero-next-event")).toHaveCount(0);
         const title = (await copy.locator("h1").boundingBox())!;
-        expect(title.y, "Homepage heading moves up without covering the controls").toBe(72);
-        expect(await copy.locator("h1").evaluate((element) => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(24);
-        const intro = (await copy.locator(":scope > p").boundingBox())!;
         const logo = (await copy.locator(".page-logo-home").boundingBox())!;
+        // Beside the logo in the shared layout, or stacked below it at 320px
+        // and under enlarged text so no word breaks.
+        const titleBeside = title.x >= logo.x + logo.width - 0.5;
+        const titleStacked = title.y >= logo.y + logo.height - 0.5;
+        expect(titleBeside || titleStacked, "Homepage heading sits beside the logo, or stacked below it when narrow").toBe(true);
+        expect(await copy.locator("h1").evaluate((element) => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(24);
+        const intro = (await copy.locator(".hero-when").boundingBox())!;
         expect(intro.x, "Homepage introduction uses the full panel width").toBe(logo.x);
         expect(intro.y, "Homepage introduction follows the logo/title row").toBeGreaterThanOrEqual(logoBottom);
       }
@@ -98,7 +116,7 @@ for (const width of [320, 390, 768, 1023]) {
       await expect(trigger).toBeInViewport();
       expect((await trigger.boundingBox())!.y, route).toBe(before!.y);
       if (await page.evaluate((bottom) => scrollY > bottom, logoBottom)) {
-        await expect(page.locator(".page-logo-home"), route).not.toBeInViewport();
+        await expect(page.locator(".page-logo-home:visible"), route).not.toBeInViewport();
       }
       const scroll = await page.evaluate(() => scrollY);
       await trigger.click();
@@ -119,7 +137,7 @@ for (const width of [320, 390, 768, 1023]) {
       await expect(page.locator("body")).toHaveClass("homepage");
       if (route !== "/") {
         await page.goto(route);
-        await page.locator(".page-logo-home").click();
+        await page.locator(".page-logo-home:visible").click();
         await expect(page).toHaveURL(/\/$/);
         await expect(page.locator("body")).toHaveClass("homepage");
       }
@@ -137,7 +155,7 @@ for (const width of [1280, 1440]) {
     for (const route of routes) {
       await page.goto(route);
       await expect(page.locator(".site-header"), route).toBeVisible();
-      await expect(page.locator(".mobile-page-logo"), route).toBeHidden();
+      await expect(page.locator(".mobile-page-logo:visible"), route).toHaveCount(0);
       if (route === "/events/christmas-fayre-2026/") {
         await expect(page.locator(".xmas-baubles--desktop")).toBeVisible();
         await expect(page.locator(".xmas-baubles--mobile")).toBeHidden();
@@ -166,3 +184,28 @@ for (const route of ["/", "/newsletter/", "/uniform/"]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), route).toBeLessThanOrEqual(0);
   });
 }
+
+for (const width of [320, 390, 768, 1023]) {
+  test(`${width}px: Christmas decoration clears the menu and the menu opens and closes`, async ({ page }) => {
+    await page.setViewportSize({width, height: 900});
+    await page.emulateMedia({reducedMotion: "reduce"});
+    await page.clock.setFixedTime(new Date("2026-11-05T21:00:00Z"));
+    await page.goto("/");
+    await expect(page.locator(".hero-next-event")).toHaveCount(0);
+    const bounds = await page.locator("[data-homepage-christmas]").evaluate(el => {
+      const tree=el.querySelector(".christmas-home-tree")!.getBoundingClientRect(),m=document.querySelector(".menu-toggle")!.getBoundingClientRect();
+      return {decorationTop:tree.top,menuBottom:m.bottom};
+    });
+    expect(bounds.decorationTop).toBeGreaterThan(bounds.menuBottom+16);
+    await page.getByRole("button",{name:"Open menu",exact:true}).click();
+    await expect(page.getByRole("dialog",{name:"Site menu"})).toBeVisible();
+    await page.getByRole("button",{name:"Close menu",exact:true}).click();
+    await expect(page.getByRole("dialog",{name:"Site menu"})).toBeHidden();
+  });
+}
+
+for(const width of [320,390,768,1023]) test(`Christmas homepage one wreath and clear tree ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.clock.setFixedTime(new Date("2026-11-05T21:00:00Z"));await page.goto("/");await expect(page.locator('.page-logo-home:visible')).toHaveCount(0);await expect(page.locator('.christmas-home-wreath')).toBeVisible();await expect(page.locator('.christmas-home-art .sponsor-ribbon img')).toBeVisible();await expect(page.locator('.desktop-nav [aria-current="page"]')).toHaveText('Home');
+ const bounds=await page.locator('.christmas-home-tree').evaluate(el=>{const r=el.getBoundingClientRect(),m=document.querySelector('.menu-toggle')!.getBoundingClientRect();return{top:r.top,bottom:m.bottom}});expect(bounds.top).toBeGreaterThanOrEqual(bounds.bottom+16);
+ await page.getByRole('button',{name:'Open menu',exact:true}).click();await expect(page.getByRole('dialog',{name:'Site menu'})).toBeVisible();await page.getByRole('button',{name:'Close menu',exact:true}).click();await expect(page.getByRole('dialog',{name:'Site menu'})).toBeHidden();
+});

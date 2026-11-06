@@ -10,7 +10,7 @@ const kib = 1024;
 // Headroom above the optimised October 2026 build, not target load timings.
 // Don't silently raise a failing budget.
 const routes = [
-  { route: "/", eagerImageKiB: 500 },
+  { route: "/", eagerImageKiB: 100 },
   { route: "/whats-on/", eagerImageKiB: 100 },
   ...["newsletter", "fundraising", "get-involved", "uniform", "contact"].map((name) => ({
     route: `/${name}/`, eagerImageKiB: 100,
@@ -67,23 +67,17 @@ for (const { route, eagerImageKiB } of routes) {
   });
 }
 
-test("homepage image and preload share responsive candidates without downloading the original JPEG", async () => {
+test("homepage ships no poster photo or image preload", async () => {
+  // Nick's call: the hero poster photo is removed, so the homepage must not
+  // fetch it eagerly or preload it. The per-route eager-image budget above
+  // keeps the remaining images honest.
   const html = await readFile(path.join(dist, "index.html"), "utf8");
-  const image = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) => tag)
-    .find((tag) => attribute(tag, "src")?.includes("fireworks-960.webp"));
-  const preload = [...html.matchAll(/<link\b[^>]*>/g)].map(([tag]) => tag)
+  const fireworksImage = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) => tag)
+    .find((tag) => attribute(tag, "src")?.includes("/events/fireworks-"));
+  assert.equal(fireworksImage, undefined, "no fireworks photo on the homepage");
+  const imagePreload = [...html.matchAll(/<link\b[^>]*>/g)].map(([tag]) => tag)
     .find((tag) => attribute(tag, "rel") === "preload" && attribute(tag, "as") === "image");
-  assert.ok(image && preload);
-  assert.equal(attribute(preload, "imagesrcset"), attribute(image, "srcset"));
-  assert.equal(attribute(preload, "imagesizes"), attribute(image, "sizes"));
-  assert.equal(attribute(image, "fetchpriority"), "high");
-  for (const [width, budget] of [[640, 110], [960, 210], [1600, 450]]) {
-    const url = `${base}/events/fireworks-${width}.webp`;
-    assert.ok(attribute(image, "srcset").includes(`${url} ${width}w`));
-    assert.ok((await stat(localFile(url))).size <= budget * kib, `${url} exceeds ${budget} KiB`);
-  }
-  assert.doesNotMatch(image, /fireworks-1600\.jpg/);
-  assert.doesNotMatch(preload, /fireworks-1600\.jpg/);
+  assert.equal(imagePreload, undefined, "no image preload on the homepage");
 });
 
 test("the term-by-term listing does not download event posters", async () => {

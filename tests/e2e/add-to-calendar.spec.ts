@@ -87,6 +87,7 @@ test.describe("Add to calendar", () => {
   });
 
   test("What's On offers the service choices for upcoming events and never for past events", async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2026-11-04T12:00:00Z"));
     await page.goto("/whats-on/");
     // Fireworks, Santa's Grotto and both Happy Bags dates are upcoming.
     await expect(googleLink(page)).toHaveCount(4);

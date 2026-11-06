@@ -14,7 +14,7 @@ for (const width of [390, 1440]) {
     for (const [route, artwork] of routes) {
       await page.goto(route);
       await page.evaluate(() => document.documentElement.removeAttribute("data-theme"));
-      const logo = page.locator(width < 1024 ? ".mobile-page-logo img" : ".site-header .home-introduction img");
+      const logo = page.locator(width < 1024 ? (route === "/" ? ".homepage-mobile-identity img" : ".mobile-page-logo:visible img") : ".site-header .home-introduction img");
       await expect(logo).toBeVisible();
       expect(await logo.getAttribute("src")).toContain(`/brand/${artwork}`);
       await expect(logo).toHaveJSProperty("complete", true);
@@ -23,7 +23,8 @@ for (const width of [390, 1440]) {
       expect(day).not.toBeNull();
       if (artwork === "foa-logo-ivory.svg") {
         await expect(logo).not.toHaveClass(/brand-logo--festive/);
-        expect(day!.width).toBeCloseTo(width < 1024 ? 128 : 112, 0);
+        // Every page's mobile heading logo is the shared 128px, sitting beside the heading.
+        expect(day!.width).toBeCloseTo(width < 1024 ? (route === "/" ? 48 : 128) : 112, 0);
       }
       await page.evaluate(() => document.documentElement.setAttribute("data-theme", "night"));
       expect(await logo.boundingBox()).toEqual(day);

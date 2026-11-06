@@ -1107,3 +1107,31 @@ body.fw-theme::before {
 .fw-event .fw-map-link .cta-tail {
   display: inline-block;
 }
+
+
+/* Keep four activities balanced without defeating text-size-aware stacking. */
+@container volunteer-cards (min-width: 56em) {
+  .fw-theme .vol-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Four compact parchments only when the content container has room. */
+@container volunteer-cards (min-width: 72em) {
+  .fw-theme .vol-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; }
+  .fw-theme .vol-card { padding: 2rem 1rem 1.5rem; }
+  .fw-theme .vol-card > p:first-of-type { min-height: 3em; }
+
+}
+
+/* Align the desktop introduction with the parchment row without long text lines. */
+@media (min-width: 64rem) {
+  .fw-theme .fw-vol .fw-title-copy { max-width: none; }
+  .fw-theme .fw-vol .event-hero-intro { max-width: 75ch; }
+  .fw-theme .fw-vol .vol-tip { max-width: none; }
+}
+
+/* Give neighbouring signup actions the same two-line space, not just a shared baseline. */
+@container volunteer-cards (min-width: 40em) {
+  .fw-theme .vol-card__action { min-height: 4.25rem; }
+}
+
+.fw-theme .vol-card .vol-availability { font-size: 0.9rem; line-height: 1.5; font-weight: 700; margin-top: auto; padding-top: 1rem; }

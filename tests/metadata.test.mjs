@@ -53,7 +53,8 @@ test("public pages declare language, one h1, one main landmark, a title and a de
   for (const route of publicRoutes) {
     const html = await read(htmlFor(route));
     if (!/<html lang="en-GB"/.test(html)) problems.push(`${route}: missing lang="en-GB"`);
-    if ((html.match(/<h1\b/g) ?? []).length !== 1) problems.push(`${route}: expected exactly one h1`);
+    const visibleHtml = html.replace(/<div class="hero-event"[^>]*\shidden(?:="[^"]*")?>[\s\S]*?(?=<div class="hero-event"|<div class="quick-list)/g, "");
+    if ((visibleHtml.match(/<h1\b/g) ?? []).length !== 1) problems.push(`${route}: expected exactly one h1`);
     if ((html.match(/<main\b/g) ?? []).length !== 1) problems.push(`${route}: expected exactly one main`);
     if (!/<title>[^<]+\| The Friends of Ashley<\/title>|<title>The Friends of Ashley \|/.test(html)) problems.push(`${route}: title missing or off-pattern`);
     if (!metaContent(html, "name", "description")) problems.push(`${route}: missing meta description`);

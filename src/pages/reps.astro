@@ -54,8 +54,8 @@ const messageList: {
   {
     title: "Fireworks volunteering",
     paragraphs: [
-      `Can you help at ${fireworks.title}? Each year group is looking after an activity: ${fireworks.volunteerRoles.map((role) => `${role.group.replace(/Y(\d)/g, "Year $1")} (${role.name.toLowerCase()})`).join("; ")}.`,
-      `Presales run from ${fireworks.volunteerRoles[0].dates}, with event-day roles on ${dateFormatter(fireworks.start)}. Find your team, see the slots and sign up here:`,
+      `Can you help at ${fireworks.title}? All activities are open to every year group: ${fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").map((role) => role.name.toLowerCase()).join("; ")}.`,
+      `Event-day roles are on ${dateFormatter(fireworks.start)}. Choose any activity, see the slots and sign up here:`,
     ],
     timing: fireworks,
     href: "/fireworks-volunteering/",
@@ -83,6 +83,7 @@ const messageList: {
     linkLabel: "See how to get involved and contact the Fayre team",
   },
 ];
+const builtAt = Date.now();
 const messages = messageList.map((message) => ({
   ...message,
   reviewed: message.reviewed ?? "2026-10-11",
@@ -94,13 +95,13 @@ const messages = messageList.map((message) => ({
     ...(message.guide ? [`Download the event guide: ${publicUrl(message.guide.path)}`] : []),
     `${message.linkLabel}: ${publicUrl(message.href)}`,
   ].join("\n\n"),
-})).filter(({ expires }) => Date.now() < Date.parse(expires));
+})).filter(({ expires }) => builtAt < Date.parse(expires));
 ---
 <BaseLayout title="Reps Hub" description="Messages from The Friends of Ashley for class representatives to share.">
   <PageHero eyebrow="For class representatives" title="Reps Hub" intro="Copy a message below, paste it into your class group, and share the latest updates from The FOA." />
   <section class="content-section content-section--compact content-section--snug" aria-label="Messages to copy and share">
     <div class="site-width">
-      <div class="message-grid">
+      <div class="message-grid" data-built-at={new Date(builtAt).toISOString()}>
         {messages.map((message) => (
           <article class="message-card" data-reviewed={message.reviewed} data-expires-at={message.expires}>
             <div class="message-when">
