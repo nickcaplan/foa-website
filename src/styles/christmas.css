@@ -361,6 +361,13 @@ body.xmas-theme::before {
    date and leads. Phone/tablet composition stays unchanged. */
 @media (min-width: 64rem) {
   .xmas-hero__frame { max-width: 60rem; }
+  @container xmas-hero (min-width: 42em) {
+    .xmas-facts {
+      grid-template-columns: max-content max-content;
+      justify-content: center;
+      column-gap: 2.5rem;
+    }
+  }
 }
 
 /* A little more air on phones while retaining label/value alignment. */

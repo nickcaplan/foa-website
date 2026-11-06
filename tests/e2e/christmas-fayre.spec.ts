@@ -205,3 +205,12 @@ for (const width of [1024, 1200, 1440, 1920]) test(`desktop single fact list at 
   if (width >= 1200) expect(frame.width).toBeGreaterThan(900);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
 });
+
+for (const width of [1024, 1440, 1920]) test(`desktop fact list is balanced inside its frame at ${width}`, async ({page}) => {
+  await page.setViewportSize({width,height:1000}); await page.goto(route);
+  const frame=(await page.locator('.xmas-hero__frame').boundingBox())!;
+  const label=(await page.locator('.xmas-facts dt').first().boundingBox())!;
+  const value=(await page.locator('.xmas-facts dd').first().boundingBox())!;
+  expect(Math.abs((label.x + value.x + value.width)/2 - (frame.x + frame.width/2))).toBeLessThan(2);
+  expect(value.x - label.x - label.width).toBeGreaterThanOrEqual(39);
+});
