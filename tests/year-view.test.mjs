@@ -8,6 +8,7 @@ test("What's On is the canonical indexed year view with no duplicate prototype r
   assert.ok(html.includes(academicYearLabel()));
   assert.match(html, /data-yearview-term/);
   assert.match(html, /data-yearview-earlier/);
+  assert.match(html, /<details[^>]*class="term-earlier"[^>]*open/);
   assert.match(html, /<h2[^>]*>Autumn term<\/h2>/);
   assert.match(html, /<h3[^>]*>November/);
   assert.doesNotMatch(html, /Fireworks on the Field|events\/fireworks-2026\//);

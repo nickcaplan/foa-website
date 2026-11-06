@@ -60,7 +60,7 @@ test("the current month disappears when its last event expires and upcoming mont
   await page.clock.runFor(60_000);
   await expect(october).toBeHidden();
   await expect(page.locator("[data-month-key]:visible").first()).toHaveAttribute("data-month-key", "2026-11");
-  await page.locator(".term-earlier summary").click();
+  await expect(page.locator(".term-earlier")).toHaveAttribute("open", "");
   await expect(page.locator('[data-earlier-month="2026-10"]')).toBeVisible();
 });
 
@@ -73,7 +73,7 @@ for (const width of [320, 1440]) {
       await page.evaluate((theme) => document.documentElement.dataset.theme = theme, theme);
       const emptyMonth = page.locator('[data-month-key="2026-10"]');
       await expect(emptyMonth).toBeHidden();
-      await page.locator(".term-earlier summary").click();
+      await expect(page.locator(".term-earlier")).toHaveAttribute("open", "");
       for (const textScale of [100, 200]) {
         await page.addStyleTag({ content: `html { font-size: ${textScale}% !important; }` });
         const headings = page.locator(".term-month-heading:visible");
@@ -144,7 +144,7 @@ for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.clock.install({ time: new Date(boundary + 60_000) });
     await page.goto("/whats-on/");
-    await page.getByText("Earlier this year", { exact: true }).click();
+    await expect(page.locator(".term-earlier")).toHaveAttribute("open", "");
     const archive = page.locator("[data-yearview-earlier]");
     const archivedEvent = archive.locator(".event-list-item:not([hidden])").filter({ hasText: event.title });
     await expect(archivedEvent).toHaveCount(1);
@@ -216,3 +216,28 @@ test("upcoming actions and information survive refreshes and narrow enlarged tex
   await page.evaluate(() => document.documentElement.dataset.theme = "night");
   expect((await new AxeBuilder({ page }).analyze()).violations.filter(({ impact }) => impact === "serious" || impact === "critical")).toEqual([]);
 });
+
+for (const javaScriptEnabled of [true, false]) {
+  for (const width of [390, 1440]) {
+    test.describe(`archive default at ${width}px JS=${javaScriptEnabled}`, () => {
+      test.use({ javaScriptEnabled });
+      test("starts open and supports closing and reopening with the keyboard", async ({ page }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await page.goto("/whats-on/");
+        const archive = page.locator(".term-earlier");
+        const summary = archive.locator("summary");
+        await expect(archive).toHaveAttribute("open", "");
+        await expect(archive.locator("[data-yearview-earlier]")).toBeVisible();
+        await summary.focus();
+        await page.keyboard.press("Enter");
+        await expect(archive).not.toHaveAttribute("open", "");
+        await expect(archive.locator("[data-yearview-earlier]")).toBeHidden();
+        await expect(summary).toBeFocused();
+        await page.keyboard.press("Space");
+        await expect(archive).toHaveAttribute("open", "");
+        await expect(archive.locator("[data-yearview-earlier]")).toBeVisible();
+        await expect(summary).toBeFocused();
+      });
+    });
+  }
+}

@@ -51,7 +51,7 @@ const year = academicYearLabel();
   ))}
   <section class="content-section content-section--compact tinted-section" data-past-events-section hidden={!months.some((month) => month.events.some(past))}>
     <div class="site-width">
-      <details class="term-earlier">
+      <details class="term-earlier" open>
         <summary><h2>Earlier this year</h2></summary>
         <div class="term-months" data-yearview-earlier>
           {months.toReversed().filter((month) => month.events.length).map((month) => (
