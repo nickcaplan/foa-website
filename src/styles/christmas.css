@@ -282,8 +282,28 @@ body.xmas-theme::before {
   }
 
   .xmas-baubles--mobile {
+    --bauble-scale: 0.65;
     display: flex;
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Use the spare title-column space rather than a separate full-width row. */
+  .xmas-baubles--mobile li {
+    height: 4rem;
+  }
+
+  .xmas-baubles--mobile .xmas-baubles__string {
+    height: calc(var(--len) * var(--bauble-scale));
+  }
+
+  .xmas-baubles--mobile .xmas-baubles__item {
+    top: calc(var(--len) * var(--bauble-scale));
+  }
+
+  .xmas-baubles--mobile .xmas-baubles__ball {
+    width: calc(var(--d) * var(--bauble-scale));
+    height: calc(var(--d) * var(--bauble-scale));
+    margin-left: calc(var(--d) * var(--bauble-scale) / -2);
   }
 
   .xmas-hero .site-width {
@@ -707,5 +727,11 @@ body.xmas-theme::before {
 
   .xmas-baubles__item {
     animation: none;
+  }
+}
+
+@media (max-width: 24rem) {
+  .xmas-baubles--mobile {
+    --bauble-scale: 0.48;
   }
 }

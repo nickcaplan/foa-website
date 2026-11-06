@@ -65,6 +65,22 @@ test.describe("Christmas Fayre decoration", () => {
     });
   }
 
+  for (const width of [320, 390, 820]) {
+    test(`fits the baubles below the title beside the logo at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      const title = (await page.locator("#xmas-title").boundingBox())!;
+      const copy = (await page.locator(".mobile-page-heading-copy").boundingBox())!;
+      const baubles = (await page.locator(".xmas-baubles--mobile").boundingBox())!;
+      const facts = (await page.locator(".xmas-facts").boundingBox())!;
+      expect(baubles.y).toBeGreaterThanOrEqual(title.y + title.height);
+      expect(baubles.x).toBeGreaterThanOrEqual(copy.x);
+      expect(baubles.x + baubles.width).toBeLessThanOrEqual(copy.x + copy.width + 1);
+      expect(facts.y).toBeGreaterThanOrEqual(baubles.y + baubles.height);
+      expect(await page.locator(".xmas-hero__frame > .xmas-baubles--mobile").count()).toBe(0);
+    });
+  }
+
   test("puts the fact labels beside their values on a phone", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(route);
