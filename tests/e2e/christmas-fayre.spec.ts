@@ -189,3 +189,28 @@ test.describe("Christmas Fayre without JavaScript", () => {
     await expect(page.getByRole("link", { name: /Email the Fayre team/ }).last()).toBeVisible();
   });
 });
+
+for (const width of [1199, 1200, 1440, 1920]) test(`desktop fact grouping at ${width}`, async ({ page }) => {
+  await page.setViewportSize({width, height:1000});
+  await page.goto(route);
+  const frame = (await page.locator('.xmas-hero__frame').boundingBox())!;
+  const when = (await page.locator('.xmas-facts > div').nth(0).locator('dt').boundingBox())!;
+  const whats = (await page.locator('.xmas-facts > div').nth(3).locator('dt').boundingBox())!;
+  if (width >= 1200) {
+    expect(frame.width).toBeGreaterThan(1100);
+    expect(whats.x).toBeGreaterThan(when.x + 400);
+    expect(Math.abs(when.y - whats.y)).toBeLessThan(2);
+  } else expect(whats.y).toBeGreaterThan(when.y);
+  for (const value of await page.locator('.xmas-facts dd').all()) {
+    const box = (await value.boundingBox())!;
+    expect(box.x).toBeGreaterThan(frame.x);
+    expect(box.x+box.width).toBeLessThan(frame.x+frame.width);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
+});
+test('wide desktop enlarged text falls back to one fact group', async ({page}) => {
+  await page.setViewportSize({width:1440,height:1000}); await page.goto(route);
+  await page.addStyleTag({content:'html {font-size:200%;}'});
+  const a=(await page.locator('.xmas-facts dt').nth(0).boundingBox())!, b=(await page.locator('.xmas-facts dt').nth(3).boundingBox())!;
+  expect(b.y).toBeGreaterThan(a.y); expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
+});
