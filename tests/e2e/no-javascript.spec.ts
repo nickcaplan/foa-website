@@ -3,16 +3,12 @@ import { expect, test } from "@playwright/test";
 test.describe("without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
 
-  test("a parent can still find the Fireworks details from What's On", async ({ page }) => {
+  test("What's On does not link to retired Fireworks with JavaScript disabled", async ({ page }) => {
     await page.goto("/whats-on/");
-
-    const fireworks = page.getByRole("link", { name: /Fireworks on the Field/ });
-    await expect(fireworks).toBeVisible();
-    await fireworks.click();
-
-    await expect(page.getByRole("heading", { level: 1, name: "Fireworks on the Field has finished" })).toBeVisible();
-    await expect(page.getByText(/ticket sales and volunteer sign-ups have been retired/)).toBeVisible();
-    await expect(page.locator("a[href*=ticketsource],a[href*=volunteersignup]")).toHaveCount(0);
+    await expect(page.locator('a[href*="fireworks"]')).toHaveCount(0);
+    await page.goto("/events/fireworks-2026/");
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByRole("heading", { level: 1, name: "The Ashley Christmas Fayre" })).toBeVisible();
   });
 
   test("the build-time archive opens with the keyboard without JavaScript or stale appeals", async ({ page }) => {

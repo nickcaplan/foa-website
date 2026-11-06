@@ -9,6 +9,8 @@ const basePath = (process.env.BASE_PATH || "/").replace(/\/$/, "");
 
 // Every built HTML page is checked unless it has an explicit reason not to be indexed.
 const excluded = new Set([
+  "/events/fireworks-2026/", // redirect checked separately
+  "/fireworks-volunteering/", // redirect checked separately
   "/playground.html", // hidden, noindex contact prototype; checked separately below
   "/404.html", // error page, not a sitemap entry; checked separately below
 ]);
@@ -136,11 +138,14 @@ test("the 404 page is generated and kept out of the sitemap", async () => {
   assert.ok(!sitemap.includes("404"), "404 must not appear in the sitemap");
 });
 
-test("retired Fireworks landing is not advertised as an active structured Event", async () => {
-  const html = await read(htmlFor("/events/fireworks-2026/"));
-  assert.doesNotMatch(html, /application\/ld\+json/);
-  assert.match(html, /Fireworks on the Field has finished/);
-  assert.ok(html.includes(`${siteUrl}${basePath}/events/fireworks-2026/`), "old canonical URL preserved");
+test("retired Fireworks redirects are excluded from indexing and point home", async () => {
+  for (const route of ["/events/fireworks-2026/", "/fireworks-volunteering/"]) {
+    const html = await read(htmlFor(route));
+    assert.match(html, /http-equiv="refresh"/);
+    assert.ok(html.includes(`url=${basePath}/`));
+    assert.doesNotMatch(html, /application\/ld\+json/);
+    assert.ok(!(await read(path.join(dist, "sitemap-0.xml"))).includes(route));
+  }
 });
 
 test("the development-only tools are not shipped in the production build", async () => {
@@ -158,7 +163,7 @@ test("every dedicated event page includes its UK date in sharing metadata", asyn
   const eventRoutes = [];
   for (const file of files.filter((name) => name.endsWith(".json"))) {
     const event = JSON.parse(await read(path.resolve("src/content/events", file)));
-    if (!event.path?.startsWith("/events/")) continue;
+    if (!event.path?.startsWith("/events/") || excluded.has(event.path)) continue;
     eventRoutes.push(event.path);
     const html = await read(htmlFor(event.path));
     const date = new Date(event.start);

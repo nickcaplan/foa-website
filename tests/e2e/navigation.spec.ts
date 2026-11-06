@@ -93,7 +93,7 @@ test.describe("mobile navigation", () => {
   for (const width of [320, 360, 390, 430]) {
     test(`Contact Us fits without scrolling at ${width}px wide`, async ({ page }) => {
       await page.setViewportSize({ width, height: 667 });
-      await page.goto("/events/fireworks-2026/");
+      await page.goto("/get-involved/");
       await page.getByRole("button", { name: "Open menu" }).click();
       const panel = page.locator(".mobile-menu-panel");
       await expect(panel).toHaveJSProperty("scrollTop", 0);

@@ -122,7 +122,7 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
   for (const width of [320, 768, 1280, 1366, 1440]) {
     for (const night of [false, true]) {
       for (const textSize of ["normal", "200% per-element", "200% root"]) {
-        for (const path of ["/newsletter/", "/fireworks-volunteering/", "/uniform/"]) {
+        for (const path of ["/newsletter/", "/uniform/"]) {
           test(`${path} ${width}px ${night ? "Night" : "Day"} ${textSize}`, async ({ page }) => {
             await page.setViewportSize({ width, height: 900 });
             await page.emulateMedia({ reducedMotion: "reduce" });
@@ -171,11 +171,4 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
       }
     }
   }
-});
-
-for (const width of [320,390,820,1440])for(const textSize of[100,200])test(`retired Fireworks links remain contained ${width}/${textSize}`,async({page})=>{
- await page.setViewportSize({width,height:900});await page.goto('/events/fireworks-2026/');if(textSize===200)await useLargeText(page);
- await expect(page.locator('.fw-map-link')).toHaveCount(0);const links=page.locator('.content-section a');await expect(links).toHaveCount(2);
- for(const link of await links.all()){await expect(link).toBeVisible();expect(await link.evaluate(e=>e.getBoundingClientRect().right<=innerWidth)).toBe(true)}
- expect(await strandedIcons(page)).toEqual([]);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });

@@ -115,7 +115,7 @@ for (const route of ["/", "/uniform/", "/events/christmas-fayre-2026/"]) {
   });
 }
 
-for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-2026/", "/fireworks-volunteering/"]) {
+for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-2026/"]) {
   test(`${route}: mobile logos stay beside headings and reflow with enlarged text`, async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 900 });
     await page.goto(route);
@@ -197,7 +197,7 @@ test("enlarged homepage text keeps the menu and hero actions inside a narrow vie
 // full navigation fits on one row beside the branding at desktop widths
 // (approved 18 October 2026).
 for (const width of [1280, 1440]) {
-  for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-2026/", "/fireworks-volunteering/"]) {
+  for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-2026/"]) {
     test(`${route}: ${width}px keeps the desktop navigation on a single row`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(route);

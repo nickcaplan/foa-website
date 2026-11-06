@@ -33,13 +33,16 @@ const archiveFrom = new Date(welcomeTea.archiveFrom).toISOString();
 const appeal = JSON.parse(await readFile(path.resolve("src/content/fundraising/current-appeal.json"), "utf8"));
 const money = (value) => `£${value.toLocaleString("en-GB")}`;
 
-test("retired Fireworks URL preserves a clear landing without active event effects or sales", async () => {
-  const html = await readFile(path.join(dist, "events/fireworks-2026/index.html"), "utf8");
-  assert.match(html, /<h1>Fireworks on the Field has finished<\/h1>/);
-  assert.match(html, /2026 event information, ticket sales and volunteer sign-ups have been retired/);
-  assert.doesNotMatch(html, /data-fw-stage|data-fw-sky|fw-theme|ticketsource\.co\.uk|volunteersignup\.org/);
-  for (const route of ["/events/christmas-fayre-2026/", "/whats-on/"]) assert.ok(html.includes(`href="${basePath}${route}"`));
-  assert.match(html, /rel="canonical"[^>]*events\/fireworks-2026\//);
+test("retired Fireworks URLs redirect home without active event effects or sales", async () => {
+  for (const route of ["events/fireworks-2026", "fireworks-volunteering"]) {
+    const html = await readFile(path.join(dist, route, "index.html"), "utf8");
+    assert.match(html, /http-equiv="refresh"/);
+    assert.ok(html.includes(`url=${basePath}/`));
+    assert.ok(html.includes(`href="${basePath}/"`));
+    assert.doesNotMatch(html, /data-fw-stage|data-fw-sky|fw-theme|ticketsource\.co\.uk|volunteersignup\.org/);
+  }
+  const rules = await readFile(path.join(dist, "_redirects"), "utf8");
+  for (const route of ["/events/fireworks-2026/", "/fireworks-volunteering/"]) assert.ok(rules.includes(`${route} / 301!`));
 });
 
 test("the Christmas Fayre page keeps its social card within chat size limits", async () => {
@@ -57,7 +60,7 @@ test("both Fireworks pages keep their social image within chat size limits", asy
   for (const route of ["events/fireworks-2026", "fireworks-volunteering"]) {
     const html = await readFile(path.join(dist, route, "index.html"), "utf8");
     assert.doesNotMatch(html, /<link\b[^>]*rel="preload"[^>]*fireworks-1600\.jpg/);
-    assert.match(html, /<meta\b[^>]*property="og:image"[^>]*foa-logo-og\.png/, route);
+    assert.match(html, /http-equiv="refresh"/, route);
   }
   // WhatsApp drops link preview images over 600KB, so the Fireworks
   // preview is a compact PNG card (approved 18 October 2026).
@@ -435,12 +438,10 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   assert.doesNotMatch(html, /With thanks to/);
 });
 
-test("retired Fireworks volunteering landing removes booking roles and points to current help", async () => {
-  const html = await readFile(path.join(dist, "fireworks-volunteering/index.html"), "utf8");
-  assert.match(html, /<h1>Fireworks volunteering has finished<\/h1>/);
-  assert.match(html, /There are no current Fireworks slots to book here/);
-  assert.doesNotMatch(html, /class="vol-card|volunteersignup\.org|Token presales|JRDXD|fw-vol-date|Help make Fireworks on the Field awesome/);
-  for (const route of ["/get-involved/", "/events/christmas-fayre-2026/"]) assert.ok(html.includes(`href="${basePath}${route}"`));
+test("retired volunteering redirects rather than serving booking roles", async () => {
+ const html = await readFile(path.join(dist, "fireworks-volunteering/index.html"), "utf8");
+ assert.match(html, /http-equiv="refresh"/);
+ assert.doesNotMatch(html, /volunteersignup\.org|vol-card/);
 });
 
 test("retirement preserves historical event data, role records, guide and newsletter references", async () => {
@@ -453,14 +454,14 @@ test("retirement preserves historical event data, role records, guide and newsle
   const news = await readFile(path.join(dist, "newsletter/index.html"), "utf8");
   assert.match(news, /Fireworks/);
   const events = await readFile(path.join(dist, "whats-on/index.html"), "utf8");
-  assert.ok(events.includes(`href="${basePath}${fireworks.path}"`), "archive keeps its old URL");
+  assert.ok(!events.includes(`href="${basePath}${fireworks.path}"`), "What’s On does not link to the retired event, including its earlier section");
 });
 
 test("retired Fireworks landings never collect personal details or hide an active booking CTA", async () => {
   for (const route of ["events/fireworks-2026", "fireworks-volunteering"]) {
     const html = await readFile(path.join(dist, route, "index.html"), "utf8");
     assert.doesNotMatch(html, /<form|<input|type="tel"|volunteersignup\.org|ticketsource\.co\.uk/);
-    assert.ok(html.includes(`href="${basePath}/events/christmas-fayre-2026/"`));
+    assert.ok(html.includes(`href="${basePath}/"`));
   }
 });
 

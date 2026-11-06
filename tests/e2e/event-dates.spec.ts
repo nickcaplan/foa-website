@@ -55,13 +55,7 @@ test.describe("What's On event sections (UK time)", () => {
       const archived = pastEvents(page).locator('[data-past="true"]').filter({ hasText: welcomeTea.title });
       await expect(archived).toHaveJSProperty("hidden", offset < 0);
       const fireworks = page.locator('[data-past="false"]').filter({ hasText: "Fireworks on the Field" });
-      await expect(fireworks).toBeVisible();
-      for (const width of [390, 1440]) {
-        await page.setViewportSize({ width, height: 900 });
-        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-        const box = await fireworks.boundingBox();
-        expect(box?.width).toBeGreaterThan(0);
-      }
+      await expect(fireworks).toHaveCount(0);
     });
   }
 
@@ -81,10 +75,10 @@ test.describe("What's On event sections (UK time)", () => {
     await expect(pastEvents(page).getByRole("heading", { name: "Welcome Tea" })).toBeVisible();
   });
 
-  test("keeps Fireworks upcoming after Welcome Tea has moved", async ({ page }) => {
+  test("does not resurrect retired Fireworks with a historical device clock", async ({ page }) => {
     await openAt(page, firstMomentAfterWelcomeTea, "/whats-on/");
 
-    await expect(page.locator('[data-past="false"]').filter({ hasText: "Fireworks on the Field" })).toBeVisible();
+    await expect(page.locator('[data-past="false"]').filter({ hasText: "Fireworks on the Field" })).toHaveCount(0);
   });
 
   test("hides a timed event at its confirmed end time", async ({ page }) => {
@@ -112,16 +106,16 @@ test.describe("What's On event sections (UK time)", () => {
 });
 
 test.describe("Today and Tomorrow labels use UK time, not the visitor's timezone", () => {
-  const fireworksLabel = (page: Page) =>
-    page.locator('[data-past="false"]').filter({ hasText: "Fireworks on the Field" }).locator(".relative-date");
+  const saleLabel = (page: Page) =>
+    page.locator('[data-month-key="2026-11"] [data-past="false"]').filter({ hasText: "Pre-loved uniform sale" }).locator(".relative-date");
 
   test.describe("behind the UK", () => {
     test.use({ timezoneId: "America/Los_Angeles" });
 
     test("shows Today on the UK event day even though it is still the day before locally", async ({ page }) => {
-      await openAt(page, "2026-11-05T01:00:00Z", "/whats-on/");
+      await openAt(page, "2026-11-06T01:00:00Z", "/whats-on/");
 
-      await expect(fireworksLabel(page)).toHaveText("Today");
+      await expect(saleLabel(page)).toHaveText("Today");
     });
   });
 
@@ -129,9 +123,9 @@ test.describe("Today and Tomorrow labels use UK time, not the visitor's timezone
     test.use({ timezoneId: "Pacific/Auckland" });
 
     test("shows Tomorrow on the UK day before even though it is already the event day locally", async ({ page }) => {
-      await openAt(page, "2026-11-04T12:00:00Z", "/whats-on/");
+      await openAt(page, "2026-11-05T12:00:00Z", "/whats-on/");
 
-      await expect(fireworksLabel(page)).toHaveText("Tomorrow");
+      await expect(saleLabel(page)).toHaveText("Tomorrow");
     });
   });
 });

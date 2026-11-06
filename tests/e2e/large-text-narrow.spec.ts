@@ -90,7 +90,7 @@ for (const theme of ["day", "night"] as const) {
     });
 
     test("Retired Fireworks landing sections fit inside their column", async ({ page }) => {
-      await page.goto("/events/fireworks-2026/");
+      await page.goto("/get-involved/");
       await useLargeText(page);
       const blocks = page.locator(".view-hero, .content-section .site-width");
       expect(await blocks.count()).toBeGreaterThan(0);

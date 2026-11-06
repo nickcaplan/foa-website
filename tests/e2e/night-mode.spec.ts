@@ -39,7 +39,7 @@ const freezeTransitions = (page: Page) => page.addStyleTag({ content: "*, *::bef
 
 test("every page in the build is covered by the Night Mode scans", () => {
   expect(routes.length).toBeGreaterThanOrEqual(15);
-  for (const route of ["/", "/fundraising/", "/fireworks-volunteering/", "/events/christmas-fayre-2026/", "/events/fireworks-2026/", "/about/", "/whats-on/", "/404.html"]) {
+  for (const route of ["/", "/fundraising/", "/events/christmas-fayre-2026/", "/about/", "/whats-on/", "/404.html"]) {
     expect(routes).toContain(route);
   }
 });
@@ -372,11 +372,4 @@ test("mobile menu and cookie controls remain accessible at enlarged scale", asyn
   await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
   expect((await scan()).violations.filter(({ impact }) => impact === "serious" || impact === "critical")).toEqual([]);
-});
-
-for(const route of ["/events/fireworks-2026/", "/fireworks-volunteering/"])test(`retired landing follows site Night Mode ${route}`,async({page})=>{
- await page.goto(route);await freezeTransitions(page);await page.evaluate(()=>document.documentElement.removeAttribute('data-theme'));
- const h=page.locator('.view-hero');await expect(h).toBeVisible();const day=await h.evaluate(e=>getComputedStyle(e).backgroundColor);
- await page.evaluate(()=>document.documentElement.setAttribute('data-theme','night'));expect(await h.evaluate(e=>getComputedStyle(e).backgroundColor)).not.toBe(day);
- await expect(page.locator('.fw-event,.fw-vol,.fw-stage')).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });

@@ -22,9 +22,9 @@ const fayreSummary = "Led by Rachel Briscoe (Squirrel and Otter) and Sophie Glas
 test.describe("Add to calendar", () => {
   test("retired Fireworks page has no calendar CTA but preserves its historical ICS", async ({ page }) => {
     await page.goto("/events/fireworks-2026/");
-    const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
+    const canonical = new URL("/events/fireworks-2026/", (await page.locator('link[rel="canonical"]').getAttribute("href"))!).href;
     await expect(googleLink(page)).toHaveCount(0);await expect(fileLink(page)).toHaveCount(0);
-    await expect(page.getByRole("heading",{level:1,name:"Fireworks on the Field has finished"})).toBeVisible();
+    await expect(page.getByRole("heading",{level:1,name:"The Ashley Christmas Fayre"})).toBeVisible();
     const ics = await fetchIcs(page, "/calendar/fireworks-2026.ics");
     for(const value of ["SUMMARY:Fireworks on the Field","DTSTART:20261105T163000Z","DTEND:20261105T183000Z","STATUS:CONFIRMED"])expect(ics).toContain(value);
     expect(ics.replace(/\r\n[ \t]/g, "")).toContain(`URL:${canonical}`);
@@ -54,14 +54,13 @@ test.describe("Add to calendar", () => {
   test("What's On offers the service choices for upcoming events and never for past events", async ({ page }) => {
     await page.clock.setFixedTime(new Date("2026-11-04T12:00:00Z"));
     await page.goto("/whats-on/");
-    // Fireworks, Santa's Grotto and both Happy Bags dates are upcoming.
-    await expect(googleLink(page)).toHaveCount(4);
+    // Retired Fireworks is excluded; Santa's Grotto and both Happy Bags dates remain upcoming.
+    await expect(googleLink(page)).toHaveCount(3);
     await expect(page.getByRole("link", { name: /Outlook/ })).toHaveCount(0);
     const downloads = fileLink(page);
-    await expect(downloads).toHaveCount(4);
+    await expect(downloads).toHaveCount(3);
     const hrefs = await downloads.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
     expect(hrefs).toEqual([
-      "/calendar/fireworks-2026.ics",
       "/calendar/santas-grotto-2026.ics",
       "/calendar/happy-bags-january-2027.ics",
       "/calendar/happy-bags-april-2027.ics",
