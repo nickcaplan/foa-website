@@ -18,7 +18,7 @@ const primary = [
 ];
 const desktop = [primary[0], { href: "/newsletter/", label: "Newsletter" }, ...primary.slice(1)];
 const events = await getCollection("events");
-const menuEvents = ["fireworks-2026", "christmas-fayre-2026"].map((id) => {
+const menuEvents = ["christmas-fayre-2026"].map((id) => {
   const event = events.find((entry) => entry.id === id)?.data;
   if (!event?.path) throw new Error(`Menu event is missing: ${id}`);
   return { href: event.path, label: event.title };

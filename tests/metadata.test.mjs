@@ -9,6 +9,8 @@ const basePath = (process.env.BASE_PATH || "/").replace(/\/$/, "");
 
 // Every built HTML page is checked unless it has an explicit reason not to be indexed.
 const excluded = new Set([
+  "/events/fireworks-2026/", // redirect checked separately
+  "/fireworks-volunteering/", // redirect checked separately
   "/playground.html", // hidden, noindex contact prototype; checked separately below
   "/404.html", // error page, not a sitemap entry; checked separately below
 ]);
@@ -136,27 +138,14 @@ test("the 404 page is generated and kept out of the sitemap", async () => {
   assert.ok(!sitemap.includes("404"), "404 must not appear in the sitemap");
 });
 
-test("Fireworks Event structured data is valid and matches the event content", async () => {
-  const html = await read(htmlFor("/events/fireworks-2026/"));
-  const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((match) => match[1]);
-  assert.equal(blocks.length, 1, "expected exactly one JSON-LD block");
-
-  const data = JSON.parse(blocks[0]);
-  const event = JSON.parse(await read(path.resolve("src/content/events/fireworks-2026.json")));
-
-  assert.equal(data["@context"], "https://schema.org");
-  assert.equal(data["@type"], "Event");
-  assert.equal(data.name, event.title);
-  assert.equal(data.description, event.summary);
-  assert.equal(new Date(data.startDate).getTime(), new Date(event.start).getTime());
-  assert.equal(new Date(data.endDate).getTime(), new Date(event.end).getTime());
-  assert.ok(new Date(data.endDate) > new Date(data.startDate), "event must end after it starts");
-  assert.equal(data.eventAttendanceMode, "https://schema.org/OfflineEventAttendanceMode");
-  assert.equal(data.location.name, event.location);
-  assert.equal(data.organizer.name, "The Friends of Ashley");
-  assert.equal(data.organizer.url, `${siteUrl}${basePath}/`);
-  assert.ok(data.image.startsWith(`${siteUrl}${basePath}/`), "image URL should respect site URL and base path");
-  assert.ok(await exists(path.join(dist, new URL(data.image).pathname.slice(basePath.length + 1))), "image file should exist");
+test("retired Fireworks redirects are excluded from indexing and point home", async () => {
+  for (const route of ["/events/fireworks-2026/", "/fireworks-volunteering/"]) {
+    const html = await read(htmlFor(route));
+    assert.match(html, /http-equiv="refresh"/);
+    assert.ok(html.includes(`url=${basePath}/`));
+    assert.doesNotMatch(html, /application\/ld\+json/);
+    assert.ok(!(await read(path.join(dist, "sitemap-0.xml"))).includes(route));
+  }
 });
 
 test("the development-only tools are not shipped in the production build", async () => {
@@ -174,7 +163,7 @@ test("every dedicated event page includes its UK date in sharing metadata", asyn
   const eventRoutes = [];
   for (const file of files.filter((name) => name.endsWith(".json"))) {
     const event = JSON.parse(await read(path.resolve("src/content/events", file)));
-    if (!event.path?.startsWith("/events/")) continue;
+    if (!event.path?.startsWith("/events/") || excluded.has(event.path)) continue;
     eventRoutes.push(event.path);
     const html = await read(htmlFor(event.path));
     const date = new Date(event.start);
@@ -185,12 +174,13 @@ test("every dedicated event page includes its UK date in sharing metadata", asyn
     const expectedDate = `${weekday} ${day}${suffix} ${monthYear}`;
     const title = metaContent(html, "property", "og:title");
     const description = metaContent(html, "property", "og:description");
-    assert.equal(title, `${event.title} - ${expectedDate} | The Friends of Ashley`, event.path);
+    const pageTitle = event.path === "/events/fireworks-2026/" ? `${event.title} has finished` : event.title;
+    assert.equal(title, `${pageTitle} - ${expectedDate} | The Friends of Ashley`, event.path);
     assert.ok(description.startsWith(`${expectedDate}. `), event.path);
     assert.equal(metaContent(html, "name", "description"), description, event.path);
     assert.equal(metaContent(html, "name", "twitter:title"), title, event.path);
     assert.equal(metaContent(html, "name", "twitter:description"), description, event.path);
-    assert.equal(titleOf(html), `${event.title} | The Friends of Ashley`, "browser title stays unchanged");
+    assert.equal(titleOf(html), `${pageTitle} | The Friends of Ashley`, "browser title identifies the current landing");
   }
   assert.deepEqual(eventRoutes.sort(), publicRoutes.filter((route) => route.startsWith("/events/")), "every dedicated event route must have a canonical event record");
 });

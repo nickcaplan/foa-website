@@ -33,16 +33,16 @@ const archiveFrom = new Date(welcomeTea.archiveFrom).toISOString();
 const appeal = JSON.parse(await readFile(path.resolve("src/content/fundraising/current-appeal.json"), "utf8"));
 const money = (value) => `£${value.toLocaleString("en-GB")}`;
 
-test("Fireworks defaults to immersive experience with shared guide facts and no poster", async () => {
-  const html = await readFile(path.join(dist, "events/fireworks-2026/index.html"), "utf8");
-  assert.match(html, /<body[^>]*fw-theme/);
-  assert.match(html, /<div[^>]*data-fw-stage[^>]*data-fw-paused/);
-  assert.match(html, /<canvas[^>]*data-fw-sky[^>]*width="0"[^>]*height="0"/);
-  assert.doesNotMatch(html, /data-fw-mode|Immersive/);
-  assert.doesNotMatch(html, /fireworks-poster\.jpg|ferris wheel/i);
-  for (const fact of ["no on-site parking", "Harmony Centre", "St John Ambulance", "Event closes", "cash or card", "subject to availability"]) {
-    assert.ok(html.includes(fact), `Missing guide fact: ${fact}`);
+test("retired Fireworks URLs redirect home without active event effects or sales", async () => {
+  for (const route of ["events/fireworks-2026", "fireworks-volunteering"]) {
+    const html = await readFile(path.join(dist, route, "index.html"), "utf8");
+    assert.match(html, /http-equiv="refresh"/);
+    assert.ok(html.includes(`url=${basePath}/`));
+    assert.ok(html.includes(`href="${basePath}/"`));
+    assert.doesNotMatch(html, /data-fw-stage|data-fw-sky|fw-theme|ticketsource\.co\.uk|volunteersignup\.org/);
   }
+  const rules = await readFile(path.join(dist, "_redirects"), "utf8");
+  for (const route of ["/events/fireworks-2026/", "/fireworks-volunteering/"]) assert.ok(rules.includes(`${route} / 301!`));
 });
 
 test("the Christmas Fayre page keeps its social card within chat size limits", async () => {
@@ -60,7 +60,7 @@ test("both Fireworks pages keep their social image within chat size limits", asy
   for (const route of ["events/fireworks-2026", "fireworks-volunteering"]) {
     const html = await readFile(path.join(dist, route, "index.html"), "utf8");
     assert.doesNotMatch(html, /<link\b[^>]*rel="preload"[^>]*fireworks-1600\.jpg/);
-    assert.match(html, /<meta\b[^>]*property="og:image"[^>]*foa-logo-fireworks-og\.png/, route);
+    assert.match(html, /http-equiv="refresh"/, route);
   }
   // WhatsApp drops link preview images over 600KB, so the Fireworks
   // preview is a compact PNG card (approved 18 October 2026).
@@ -146,7 +146,7 @@ test("navigation exposes the menu on Home and both menus on interior pages", asy
       const destinations = [...nav.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
       const expected = ["/", "/newsletter/", "/whats-on/", "/fundraising/", "/get-involved/", "/uniform/"];
       if (label === "Mobile navigation") {
-        expected.splice(3, 0, "/events/fireworks-2026/", "/events/christmas-fayre-2026/");
+        expected.splice(3, 0, "/events/christmas-fayre-2026/");
         expected.push("/contact/");
       }
       assert.deepEqual(destinations, expected.map((destination) => `${basePath}${destination}`));
@@ -271,8 +271,9 @@ test("the homepage features the chosen Christmas Fayre design without reviving t
   assert.ok(homepage.includes(`mailto:${fayre.contactEmail}?subject=${encodeURIComponent(`Helping at the ${fayre.title}`)}`));
   assert.match(homepage, new RegExp(`href="${basePath}/events/christmas-fayre-2026/"`));
   assert.doesNotMatch(homepage, /hero-tagline|class="site-width home-intro"|Helping Ashley children/);
-  assert.match(homepage, /data-show-before="2026-11-05T21:00:00\+00:00"/);
-  assert.match(homepage, /data-show-from="2026-11-05T21:00:00\+00:00"/);
+  const homeMarkup = homepage.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "").replace(/<style\b[^>]*>[\s\S]*?<\/style>/g, "");
+  assert.doesNotMatch(homeMarkup, /data-homepage-fireworks|data-show-before|data-show-from|ticketsource\.co\.uk|fireworks-volunteering/);
+  assert.equal((homepage.match(/<h1\b/g) || []).length, 1, "one active Christmas heading, no hidden Fireworks panel");
   const hero = homepage.match(/<div class="hero-event"[^>]*data-homepage-christmas([\s\S]*?)<div class="quick-list/)?.[1];
   assert.ok(hero);
   assert.doesNotMatch(hero, /With thanks to/);
@@ -326,8 +327,8 @@ test("What's On delivers build-time visibility and a standalone early date check
   }
 });
 
-test("the homepage and Fireworks event page credit the sponsor with an accessible local logo", async () => {
-  for (const page of ["index.html", "events/fireworks-2026/index.html"]) {
+test("the active homepage credits the sponsor with an accessible local logo", async () => {
+  for (const page of ["index.html"]) {
     const html = await readFile(path.join(dist, page), "utf8");
     assert.match(html, /class="sponsor-ribbon"/);
     assert.match(html, new RegExp(`src="${basePath}/sponsors/martin-flashman.jpeg" alt="Martin Flashman and Co" width="225" height="33"`));
@@ -437,50 +438,31 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   assert.doesNotMatch(html, /With thanks to/);
 });
 
-test("the Fireworks volunteering page shows remaining event-night roles, shifts and sign-up links", async () => {
-  const html = await readFile(path.join(dist, "fireworks-volunteering/index.html"), "utf8");
-  assert.match(html, /<h1>Fireworks <span>Volunteering<\/span><\/h1>/);
-  assert.doesNotMatch(html, /class="fw-kicker"|vol-card__dates/);
-  assert.doesNotMatch(html, /Token presales|JRDXD/);
-  assert.match(html, /class="fw-vol-date">Thursday 5th November 2026/);
-  assert.match(html, /Help make Fireworks on the Field awesome\./);
-  assert.match(html, /All activities are open to every year group\./);
-  assert.doesNotMatch(html, /find your child|Each year group is looking after|Y1 and Y2/);
-  assert.equal([...html.matchAll(/<li class="vol-card"[^>]*>/g)].length, fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").length);
-  for (const role of fireworks.volunteerRoles.filter((role) => role.name !== "Token presales")) {
-    const card = [...html.matchAll(/<li class="vol-card"[^>]*>([\s\S]*?)<\/li>/g)].map((match) => match[1]).find((part) => part.includes(`<h3>${escapeHtml(role.name)}</h3>`));
-    assert.ok(card, `no card for ${role.name}`);
-    assert.doesNotMatch(card, /vol-card__group/);
-    assert.ok(!card.includes(escapeHtml(role.group)), `${role.name}: rendered year-group label removed`);
-    assert.doesNotMatch(card, /vol-card__dates/);
-    assert.ok(card.includes(escapeHtml(role.description)), `${role.name}: description`);
-    for (const shift of role.shifts) {
-      assert.ok(card.includes(`<dt>${escapeHtml(shift.label)}</dt>`), `${role.name}: ${shift.label} label`);
-      assert.ok(card.includes(escapeHtml(shift.when.replace(/(\d{1,2}:\d{2})[–-](?=\d{1,2}:\d{2})/g, "$1-"))), `${role.name}: ${shift.label} time`);
-      assert.match(card, new RegExp(`${shift.helpers} ${shift.helpers === 1 ? "helper" : "helpers"} per (?:slot|shift)`));
-    }
-    assert.ok(card.includes(`href="${role.url}"`), `${role.name}: sign-up link`);
-  }
+test("retired volunteering redirects rather than serving booking roles", async () => {
+ const html = await readFile(path.join(dist, "fireworks-volunteering/index.html"), "utf8");
+ assert.match(html, /http-equiv="refresh"/);
+ assert.doesNotMatch(html, /volunteersignup\.org|vol-card/);
 });
 
-test("Fireworks volunteering sign-ups go to Volunteer Sign Up, open safely in a new tab and say so", async () => {
-  const html = await readFile(path.join(dist, "fireworks-volunteering/index.html"), "utf8");
-  const links = [...html.matchAll(/<a class="button button--amber vol-card__action"[^>]*>[\s\S]*?<\/a>/g)].map((match) => match[0]);
-  assert.equal(links.length, fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").length);
-  for (const link of links) {
-    assert.match(link, /href="https:\/\/volunteersignup\.org\/[A-Za-z0-9]+"/);
-    assert.match(link, /target="_blank"/);
-    assert.match(link, /rel="noopener noreferrer"/);
-    assert.match(link, /\(opens Volunteer Sign Up in a new tab\)/);
-  }
+test("retirement preserves historical event data, role records, guide and newsletter references", async () => {
+  assert.ok(fireworks.volunteerRoles.length > 0);
   const urls = fireworks.volunteerRoles.filter((role) => role.name !== "Token presales").map((role) => role.url);
-  assert.equal(new Set(urls).size, urls.length, "each role has its own sign-up link");
+  assert.equal(new Set(urls).size, urls.length, "historical role links remain distinct in the content record");
+  assert.ok(urls.every((url) => /^https:\/\/volunteersignup\.org\//.test(url)));
+  const guide = await readFile(outputPath(fireworks.guide.path));
+  assert.equal(guide.subarray(0, 4).toString(), "%PDF");
+  const news = await readFile(path.join(dist, "newsletter/index.html"), "utf8");
+  assert.match(news, /Fireworks/);
+  const events = await readFile(path.join(dist, "whats-on/index.html"), "utf8");
+  assert.ok(!events.includes(`href="${basePath}${fireworks.path}"`), "What’s On does not link to the retired event, including its earlier section");
 });
 
-test("Fireworks volunteering links back to the event page and never asks for personal details", async () => {
-  const html = await readFile(path.join(dist, "fireworks-volunteering/index.html"), "utf8");
-  assert.ok(html.includes(`href="${basePath}${fireworks.path}"`));
-  assert.doesNotMatch(html, /<form|<input|type="tel"/);
+test("retired Fireworks landings never collect personal details or hide an active booking CTA", async () => {
+  for (const route of ["events/fireworks-2026", "fireworks-volunteering"]) {
+    const html = await readFile(path.join(dist, route, "index.html"), "utf8");
+    assert.doesNotMatch(html, /<form|<input|type="tel"|volunteersignup\.org|ticketsource\.co\.uk/);
+    assert.ok(html.includes(`href="${basePath}/"`));
+  }
 });
 
 
@@ -513,7 +495,7 @@ test("published newsletter retains its original time-range prose", async () => {
 test("Fireworks recruitment copy invites every year group on the event page and reps hub", async () => {
   for (const page of ["events/fireworks-2026/index.html", "reps/index.html"]) {
     const html = await readFile(path.join(dist, page), "utf8");
-    const expired = page === "reps/index.html" && Date.parse(html.match(/data-built-at="([^"]+)"/)?.[1] || "") >= Date.parse(fireworks.end);
+    const expired = page === "events/fireworks-2026/index.html" || Date.parse(html.match(/data-built-at="([^"]+)"/)?.[1] || "") >= Date.parse(fireworks.end);
     if (expired) { assert.doesNotMatch(html, /All activities are open to every year group|Event-day roles are on Thursday 5th November/); continue; }
     assert.match(html, /All activities are open to every year group/);
     assert.doesNotMatch(html, /Each year group (?:looks after|is looking after)|Find your team/);
