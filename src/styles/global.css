@@ -255,11 +255,12 @@ a {
   transform: scale(1.203);
 }
 
-/* Themed artwork (the festive class marks every non-standard logo) keeps its
-   full square badge in the desktop header and mobile menu, whose own rules
-   would otherwise override the festive reset and circle-clip the decorations. */
-.home-introduction img.brand-logo--festive,
-.mobile-menu-logo.brand-logo--festive {
+/* The uniform artwork keeps its full square badge in the desktop header and
+   mobile menu, whose own rules would otherwise override the festive reset and
+   circle-clip the decorations. Scoped to the Uniform logo only: the same
+   pre-existing clipping on the Christmas artwork is a separate known issue. */
+.home-introduction img.brand-logo--uniform,
+.mobile-menu-logo.brand-logo--uniform {
   border-radius: 0;
   object-fit: contain;
 }
