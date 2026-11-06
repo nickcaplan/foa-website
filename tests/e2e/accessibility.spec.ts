@@ -3,7 +3,10 @@ import { expect, test, type Page } from "@playwright/test";
 import { routes } from "./routes";
 
 test("every public page in the build is covered by the accessibility scans", () => {
-  expect(routes.length).toBeGreaterThanOrEqual(15);
+  // Active pages are discovered; both retired URLs have separate redirect checks.
+  expect(routes.length).toBeGreaterThan(0);
+  expect(new Set(routes).size).toBe(routes.length);
+  for (const retired of ["/events/fireworks-2026/", "/fireworks-volunteering/"]) expect(routes).not.toContain(retired);
   expect(routes).toContain("/");
   expect(routes).toContain("/404.html");
 });
