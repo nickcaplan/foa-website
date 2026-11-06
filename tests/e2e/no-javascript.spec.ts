@@ -11,14 +11,16 @@ test.describe("without JavaScript", () => {
     await expect(page.getByRole("heading", { level: 1, name: "The Ashley Christmas Fayre" })).toBeVisible();
   });
 
-  test("the build-time archive opens with the keyboard without JavaScript or stale appeals", async ({ page }) => {
+  test("the build-time archive starts open and toggles with the keyboard without JavaScript or stale appeals", async ({ page }) => {
     await page.goto("/whats-on/");
     const archive = page.locator("[data-past-events-section]");
     await expect(archive).toBeVisible();
     const disclosure = archive.locator("details");
-    await expect(disclosure).not.toHaveAttribute("open", "");
+    await expect(disclosure).toHaveAttribute("open", "");
     await archive.locator("summary").focus();
     await page.keyboard.press("Enter");
+    await expect(disclosure).not.toHaveAttribute("open", "");
+    await page.keyboard.press("Space");
     await expect(disclosure).toHaveAttribute("open", "");
     await expect(archive.locator(".event-list-item:not([hidden])").first()).toBeVisible();
     await expect(archive.locator(".event-list-actions, .event-list-cta, .event-list-info")).toHaveCount(0);
