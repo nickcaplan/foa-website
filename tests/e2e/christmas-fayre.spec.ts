@@ -69,10 +69,13 @@ test.describe("Christmas Fayre decoration", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(route);
 
-    const label = (await page.locator(".xmas-facts dt").first().boundingBox())!;
-    const value = (await page.locator(".xmas-facts dd").first().boundingBox())!;
-    expect(value.x, "value sits to the right of its label").toBeGreaterThanOrEqual(label.x + label.width);
-    expect(Math.abs(value.y - label.y), "label and value share a row").toBeLessThan(30);
+    for (const row of await page.locator(".xmas-facts > div").all()) {
+      const label = (await row.locator("dt").boundingBox())!;
+      const value = (await row.locator("dd").boundingBox())!;
+      expect(value.x, "value sits to the right of its label").toBeGreaterThanOrEqual(label.x + label.width);
+      expect(Math.abs(value.y - label.y), "label and value share a row").toBeLessThan(30);
+      expect(value.x + value.width, "value fits in the viewport").toBeLessThanOrEqual(390);
+    }
   });
 
   test("stacks the fact labels above their values when text is enlarged", async ({ page }) => {
@@ -80,9 +83,12 @@ test.describe("Christmas Fayre decoration", () => {
     await page.goto(route);
     await page.addStyleTag({ content: "html { font-size: 160%; }" });
 
-    const label = (await page.locator(".xmas-facts dt").first().boundingBox())!;
-    const value = (await page.locator(".xmas-facts dd").first().boundingBox())!;
-    expect(value.y, "value sits below its label").toBeGreaterThanOrEqual(label.y + label.height);
+    for (const row of await page.locator(".xmas-facts > div").all()) {
+      const label = (await row.locator("dt").boundingBox())!;
+      const value = (await row.locator("dd").boundingBox())!;
+      expect(value.y, "value sits below its label").toBeGreaterThanOrEqual(label.y + label.height);
+      expect(value.x + value.width, "value fits in the viewport").toBeLessThanOrEqual(390);
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   });
 
