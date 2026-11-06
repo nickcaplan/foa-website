@@ -6,5 +6,5 @@ const { logo = "/brand/foa-logo-ivory.svg" } = Astro.props;
 ---
 
 <a class="mobile-page-logo page-logo-home" href={withBase("/")} aria-label="The Friends of Ashley home">
-  <img class:list={["brand-logo", { "brand-logo--festive": logo !== "/brand/foa-logo-ivory.svg", "brand-logo--fireworks": logo.includes("fireworks") }]} src={withBase(logo)} alt="" width="160" height="160">
+  <img class:list={["brand-logo", { "brand-logo--festive": logo !== "/brand/foa-logo-ivory.svg", "brand-logo--fireworks": logo.includes("fireworks"), "brand-logo--uniform": logo.includes("uniform") }]} src={withBase(logo)} alt="" width="160" height="160">
 </a>

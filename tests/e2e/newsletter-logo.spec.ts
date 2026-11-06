@@ -16,7 +16,7 @@ test.describe("Newsletter standard logo", () => {
       await expect(page.locator('img[src*="foa-logo-newsletter-ivory"]')).toHaveCount(0);
       const bounds = await logo.boundingBox();
       expect(bounds).not.toBeNull();
-      await page.goto("/uniform/");
+      await page.goto("/about/");
       const standard = await page.locator(width < 1024 ? ".mobile-page-logo img" : ".site-header .brand-logo").boundingBox();
       expect(bounds!.width).toBeCloseTo(standard!.width, 0);
       expect(bounds!.x).toBeCloseTo(standard!.x, 0);

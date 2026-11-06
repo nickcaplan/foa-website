@@ -249,6 +249,12 @@ a {
   transform: scale(1.203);
 }
 
+/* The uniform SVG shares the Fireworks SVG's centred, symmetric padding,
+   so it only needs the same scaling (550 / 457) to match the standard logo. */
+.brand-logo--uniform {
+  transform: scale(1.203);
+}
+
 .type-options {
   display: grid;
   gap: 1.25rem;
