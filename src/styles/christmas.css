@@ -253,15 +253,6 @@ body.xmas-theme::before {
   text-align: center;
 }
 
-.xmas-kicker {
-  margin: 0 0 0.5rem;
-  color: var(--xm-gold-light);
-  font-family: var(--font-display);
-  font-size: clamp(1rem, 3.6vw, 1.35rem);
-  font-style: italic;
-  letter-spacing: 0.04em;
-}
-
 .xmas-theme h1,
 .xmas-theme h2 {
   margin: 0;
@@ -308,9 +299,6 @@ body.xmas-theme::before {
     font-size: clamp(1rem, 14cqi, 3rem);
   }
 
-  .xmas-theme .mobile-page-heading .xmas-kicker {
-    font-size: clamp(1rem, 7cqi, 1.35rem);
-  }
 }
 
 .xmas-facts {
@@ -385,7 +373,7 @@ body.xmas-theme::before {
 }
 
 /* The wide-screen logo is hidden and the heading wrappers use display: contents, so the
-   mark would otherwise come before the kicker. Order it after the title. */
+   mark would otherwise come before the title. Order it after the title. */
 @media (min-width: 64rem) {
   .xmas-theme .mobile-page-heading {
     display: flex;

@@ -54,14 +54,13 @@ test.describe("Christmas Fayre decoration", () => {
 
       const mark = (await page.locator(".xmas-credit img").boundingBox())!;
       const title = (await page.locator("#xmas-title").boundingBox())!;
-      const kicker = (await page.locator(".xmas-kicker").boundingBox())!;
+      await expect(page.getByText("Something magical is coming", { exact: false })).toHaveCount(0);
       if (width < 1024) {
         const logo = (await page.locator(".mobile-page-logo").boundingBox())!;
         expect(mark.y, "mark sits below the Christmas logo").toBeGreaterThanOrEqual(logo.y + logo.height);
         expect(mark.x, "mark is in the logo column, not under the title").toBeLessThan(title.x);
       } else {
         expect(mark.y, "mark sits below the title").toBeGreaterThanOrEqual(title.y + title.height);
-        expect(mark.y, "mark is not above the kicker").toBeGreaterThan(kicker.y);
       }
     });
   }

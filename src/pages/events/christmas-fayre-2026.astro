@@ -51,7 +51,7 @@ const eventJsonLd = {
   organizer: { "@type": "Organization", name: "The Friends of Ashley", url: new URL(withBase("/"), Astro.site).href },
 };
 ---
-<BaseLayout title={event.title} description="Something magical is coming. Help host the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme">
+<BaseLayout title={event.title} description="Help host the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme">
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <div class="xmas-stage">
     <div class="xmas-snow" aria-hidden="true">
@@ -63,7 +63,6 @@ const eventJsonLd = {
       <div class="site-width">
         <div class="xmas-frame xmas-hero__frame">
           <MobilePageHeading logo="/brand/foa-logo-christmas-ivory.svg">
-            <p class="xmas-kicker">Something magical is coming…</p>
             <h1 id="xmas-title">{event.title}</h1>
             <p class="xmas-credit" slot="below-logo"><img src={withBase("/sponsors/martin-flashman-mark.png")} alt="Martin Flashman and Co" width="72" height="72" loading="lazy"></p>
           </MobilePageHeading>
