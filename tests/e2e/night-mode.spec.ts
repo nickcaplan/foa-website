@@ -38,7 +38,10 @@ const closeMenu = async (page: Page) => {
 const freezeTransitions = (page: Page) => page.addStyleTag({ content: "*, *::before, *::after { transition: none !important; }" });
 
 test("every page in the build is covered by the Night Mode scans", () => {
-  expect(routes.length).toBeGreaterThanOrEqual(15);
+  // Retired URLs are redirects, not ordinary pages; dedicated redirect tests cover them.
+  expect(routes.length).toBeGreaterThan(0);
+  expect(new Set(routes).size).toBe(routes.length);
+  for (const retired of ["/events/fireworks-2026/", "/fireworks-volunteering/"]) expect(routes).not.toContain(retired);
   for (const route of ["/", "/fundraising/", "/events/christmas-fayre-2026/", "/about/", "/whats-on/", "/404.html"]) {
     expect(routes).toContain(route);
   }
