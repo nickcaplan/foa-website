@@ -15,7 +15,7 @@ test("all pages share the larger desktop introduction/navigation row and an inde
   assert.match(homeHeader, /class="home-introduction"/);
   assert.equal(homepage.match(/class="home-introduction"/g)?.length, 1);
 
-  for (const route of ["uniform/index.html", "events/fireworks-2026/index.html", "events/christmas-fayre-2026/index.html"]) {
+  for (const route of ["uniform/index.html", "events/christmas-fayre-2026/index.html"]) {
     const html = await readFile(new URL(`../dist/${route}`, import.meta.url), "utf8");
     const header = html.match(/<header\b[\s\S]*?<\/header>/)?.[0];
     assert.ok(header, route);
@@ -25,9 +25,10 @@ test("all pages share the larger desktop introduction/navigation row and an inde
     assert.equal(html.match(/\bdata-theme-toggle(?=[\s=>])/g)?.length, 2, route);
     assert.match(html, /class="mobile-menu-theme"[\s\S]*?data-theme-toggle/, route);
     assert.match(html, /<a class="mobile-menu-home" href="\/(?:foa-website\/)?" aria-label="The Friends of Ashley home">/, route);
-    assert.match(html, /aria-label="Event details"[\s\S]*?href="\/(?:foa-website\/)?events\/fireworks-2026\/"[\s\S]*?href="\/(?:foa-website\/)?events\/christmas-fayre-2026\/"/, route);
+    assert.match(html, /aria-label="Event details"[\s\S]*?href="\/(?:foa-website\/)?events\/christmas-fayre-2026\/"/, route);
     const menuStart = html.indexOf('id="mobile-menu"');
     assert.ok(menuStart > html.indexOf("</header>"), route);
+    assert.doesNotMatch(html.slice(menuStart), /href="\/(?:foa-website\/)?events\/fireworks-2026\/"/, "retired event is not an active menu item");
     assert.match(html.slice(menuStart), /data-theme-toggle\b/, route);
     assert.match(header, /class="brand home-introduction"/, route);
     assert.match(header, /<img[^>]*width="160"[^>]*height="160"/, route);
@@ -78,6 +79,7 @@ test("every public page embeds one mobile home-linked logo beside its heading", 
   for (const path of await discoverPages(root)) {
     if (path.href === new URL("playground.html", root).href) continue;
     const html = await readFile(path, "utf8");
+    if (/http-equiv="refresh"/.test(html)) continue;
     const visibleHtml = html.replace(/<div class="hero-event"[^>]*\shidden(?:="[^"]*")?>[\s\S]*?(?=<div class="hero-event"|<div class="quick-list)/g, "");
     const main = visibleHtml.match(/<main\b[\s\S]*?<\/main>/)?.[0];
     assert.ok(main, path.pathname);

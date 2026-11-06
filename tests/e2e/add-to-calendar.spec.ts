@@ -17,51 +17,16 @@ const expectDetails = (href: string, summary: string, canonical: string) => {
   expect(details).toBe(`${summary}\n\nDetails: ${canonical}`);
 };
 
-const fireworksSummary = "An early quiet display, the main spectacular and an evening of food, games and family fun.";
 const fayreSummary = "Led by Rachel Briscoe (Squirrel and Otter) and Sophie Glass (Fox).";
 
 test.describe("Add to calendar", () => {
-  test("the Fireworks page offers Google and the iCal download with exact times", async ({ page }) => {
+  test("retired Fireworks page has no calendar CTA but preserves its historical ICS", async ({ page }) => {
     await page.goto("/events/fireworks-2026/");
-    const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
-    expect(canonical).toBeTruthy();
-
-    const google = googleLink(page);
-    await expect(google).toBeVisible();
-    const googleHref = (await google.getAttribute("href"))!;
-    expect(new URL(googleHref).origin + new URL(googleHref).pathname).toBe("https://calendar.google.com/calendar/render");
-    const g = new URL(googleHref).searchParams;
-    expect(g.get("action")).toBe("TEMPLATE");
-    expect(g.get("text")).toBe("Fireworks on the Field");
-    expect(g.get("dates")).toBe("20261105T163000Z/20261105T183000Z");
-    expect(g.get("location")).toBe("Ashley School field, Ashley Road, Walton-on-Thames KT12 1HX");
-    expectDetails(googleHref, fireworksSummary, canonical!);
-
-    // Outlook was offered briefly, then Nick chose Google or iCal only (25 October 2026).
-    await expect(page.getByRole("link", { name: /Outlook/ })).toHaveCount(0);
-
-    // Nick's 25 October steering: one shared calendar icon for the cluster, no
-    // per-link icons, and both choices carry an underline as the link signal.
-    const cluster = page.locator(".add-calendar");
-    await expect(cluster.locator(".calendar-icon")).toHaveCount(1);
-    await expect(cluster.locator(".external-link-icon")).toHaveCount(0);
-    await expect(google).toHaveCSS("text-decoration-line", /underline/);
-    await expect(fileLink(page)).toHaveCSS("text-decoration-line", /underline/);
-
-    const download = fileLink(page);
-    await expect(download).toBeVisible();
-    await expect(download).toHaveAttribute("href", /\/calendar\/fireworks-2026\.ics$/);
-    // Nick asked on 25 October 2026 for the link to open the calendar app rather
-    // than force a file save: no download attribute, so the browser/OS calendar
-    // handler decides (Safari on iPhone shows the add-event sheet).
-    expect(await download.getAttribute("download")).toBeNull();
-
+    const canonical = new URL("/events/fireworks-2026/", (await page.locator('link[rel="canonical"]').getAttribute("href"))!).href;
+    await expect(googleLink(page)).toHaveCount(0);await expect(fileLink(page)).toHaveCount(0);
+    await expect(page.getByRole("heading",{level:1,name:"The Ashley Christmas Fayre"})).toBeVisible();
     const ics = await fetchIcs(page, "/calendar/fireworks-2026.ics");
-    expect(ics).toContain("SUMMARY:Fireworks on the Field");
-    expect(ics).toContain("DTSTART:20261105T163000Z");
-    expect(ics).toContain("DTEND:20261105T183000Z");
-    expect(ics).toContain("LOCATION:Ashley School field\\, Ashley Road\\, Walton-on-Thames KT12 1HX");
-    expect(ics).toContain("STATUS:CONFIRMED");
+    for(const value of ["SUMMARY:Fireworks on the Field","DTSTART:20261105T163000Z","DTEND:20261105T183000Z","STATUS:CONFIRMED"])expect(ics).toContain(value);
     expect(ics.replace(/\r\n[ \t]/g, "")).toContain(`URL:${canonical}`);
   });
 
@@ -89,14 +54,13 @@ test.describe("Add to calendar", () => {
   test("What's On offers the service choices for upcoming events and never for past events", async ({ page }) => {
     await page.clock.setFixedTime(new Date("2026-11-04T12:00:00Z"));
     await page.goto("/whats-on/");
-    // Fireworks, Santa's Grotto and both Happy Bags dates are upcoming.
-    await expect(googleLink(page)).toHaveCount(4);
+    // Retired Fireworks is excluded; Santa's Grotto and both Happy Bags dates remain upcoming.
+    await expect(googleLink(page)).toHaveCount(3);
     await expect(page.getByRole("link", { name: /Outlook/ })).toHaveCount(0);
     const downloads = fileLink(page);
-    await expect(downloads).toHaveCount(4);
+    await expect(downloads).toHaveCount(3);
     const hrefs = await downloads.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
     expect(hrefs).toEqual([
-      "/calendar/fireworks-2026.ics",
       "/calendar/santas-grotto-2026.ics",
       "/calendar/happy-bags-january-2027.ics",
       "/calendar/happy-bags-april-2027.ics",

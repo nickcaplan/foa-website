@@ -9,7 +9,8 @@ import { eventVisibilityRules } from "../lib/event-lifecycle";
 import { academicMonths, academicYearStart, academicYearLabel } from "../lib/academic-year";
 
 const events = (await getCollection("events")).map(({ id, data }) => ({ ...data, id }));
-const months = academicMonths(events);
+// Preserve the historical content record, but do not advertise a retired event.
+const months = academicMonths(events.filter((event) => event.path !== "/events/fireworks-2026/"));
 // Older records stay in the collection, but only this academic year is listed.
 // Never silently lose dates published for the next year.
 const nextYear = `${academicYearStart + 1}-09`;

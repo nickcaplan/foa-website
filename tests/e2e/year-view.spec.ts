@@ -3,7 +3,8 @@ import AxeBuilder from "@axe-core/playwright";
 import { readFileSync } from "node:fs";
 
 const load = (name: string) => JSON.parse(readFileSync(new URL(`../../src/content/events/${name}.json`, import.meta.url), "utf8"));
-const event = load("fireworks-2026");
+// Use a still-listed event to test archive transitions; Fireworks is permanently excluded.
+const event = load("christmas-fayre-2026");
 const boundary = Date.parse(event.end);
 const monthLabel = new Intl.DateTimeFormat("en-GB", { month: "long", timeZone: "Europe/London" }).format(new Date(event.start));
 
