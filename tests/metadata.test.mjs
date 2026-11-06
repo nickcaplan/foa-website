@@ -136,27 +136,11 @@ test("the 404 page is generated and kept out of the sitemap", async () => {
   assert.ok(!sitemap.includes("404"), "404 must not appear in the sitemap");
 });
 
-test("Fireworks Event structured data is valid and matches the event content", async () => {
+test("retired Fireworks landing is not advertised as an active structured Event", async () => {
   const html = await read(htmlFor("/events/fireworks-2026/"));
-  const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((match) => match[1]);
-  assert.equal(blocks.length, 1, "expected exactly one JSON-LD block");
-
-  const data = JSON.parse(blocks[0]);
-  const event = JSON.parse(await read(path.resolve("src/content/events/fireworks-2026.json")));
-
-  assert.equal(data["@context"], "https://schema.org");
-  assert.equal(data["@type"], "Event");
-  assert.equal(data.name, event.title);
-  assert.equal(data.description, event.summary);
-  assert.equal(new Date(data.startDate).getTime(), new Date(event.start).getTime());
-  assert.equal(new Date(data.endDate).getTime(), new Date(event.end).getTime());
-  assert.ok(new Date(data.endDate) > new Date(data.startDate), "event must end after it starts");
-  assert.equal(data.eventAttendanceMode, "https://schema.org/OfflineEventAttendanceMode");
-  assert.equal(data.location.name, event.location);
-  assert.equal(data.organizer.name, "The Friends of Ashley");
-  assert.equal(data.organizer.url, `${siteUrl}${basePath}/`);
-  assert.ok(data.image.startsWith(`${siteUrl}${basePath}/`), "image URL should respect site URL and base path");
-  assert.ok(await exists(path.join(dist, new URL(data.image).pathname.slice(basePath.length + 1))), "image file should exist");
+  assert.doesNotMatch(html, /application\/ld\+json/);
+  assert.match(html, /Fireworks on the Field has finished/);
+  assert.ok(html.includes(`${siteUrl}${basePath}/events/fireworks-2026/`), "old canonical URL preserved");
 });
 
 test("the development-only tools are not shipped in the production build", async () => {
@@ -185,12 +169,13 @@ test("every dedicated event page includes its UK date in sharing metadata", asyn
     const expectedDate = `${weekday} ${day}${suffix} ${monthYear}`;
     const title = metaContent(html, "property", "og:title");
     const description = metaContent(html, "property", "og:description");
-    assert.equal(title, `${event.title} - ${expectedDate} | The Friends of Ashley`, event.path);
+    const pageTitle = event.path === "/events/fireworks-2026/" ? `${event.title} has finished` : event.title;
+    assert.equal(title, `${pageTitle} - ${expectedDate} | The Friends of Ashley`, event.path);
     assert.ok(description.startsWith(`${expectedDate}. `), event.path);
     assert.equal(metaContent(html, "name", "description"), description, event.path);
     assert.equal(metaContent(html, "name", "twitter:title"), title, event.path);
     assert.equal(metaContent(html, "name", "twitter:description"), description, event.path);
-    assert.equal(titleOf(html), `${event.title} | The Friends of Ashley`, "browser title stays unchanged");
+    assert.equal(titleOf(html), `${pageTitle} | The Friends of Ashley`, "browser title identifies the current landing");
   }
   assert.deepEqual(eventRoutes.sort(), publicRoutes.filter((route) => route.startsWith("/events/")), "every dedicated event route must have a canonical event record");
 });

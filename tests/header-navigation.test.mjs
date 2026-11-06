@@ -25,9 +25,10 @@ test("all pages share the larger desktop introduction/navigation row and an inde
     assert.equal(html.match(/\bdata-theme-toggle(?=[\s=>])/g)?.length, 2, route);
     assert.match(html, /class="mobile-menu-theme"[\s\S]*?data-theme-toggle/, route);
     assert.match(html, /<a class="mobile-menu-home" href="\/(?:foa-website\/)?" aria-label="The Friends of Ashley home">/, route);
-    assert.match(html, /aria-label="Event details"[\s\S]*?href="\/(?:foa-website\/)?events\/fireworks-2026\/"[\s\S]*?href="\/(?:foa-website\/)?events\/christmas-fayre-2026\/"/, route);
+    assert.match(html, /aria-label="Event details"[\s\S]*?href="\/(?:foa-website\/)?events\/christmas-fayre-2026\/"/, route);
     const menuStart = html.indexOf('id="mobile-menu"');
     assert.ok(menuStart > html.indexOf("</header>"), route);
+    assert.doesNotMatch(html.slice(menuStart), /href="\/(?:foa-website\/)?events\/fireworks-2026\/"/, "retired event is not an active menu item");
     assert.match(html.slice(menuStart), /data-theme-toggle\b/, route);
     assert.match(header, /class="brand home-introduction"/, route);
     assert.match(header, /<img[^>]*width="160"[^>]*height="160"/, route);

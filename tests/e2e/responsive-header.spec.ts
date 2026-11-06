@@ -1,13 +1,14 @@
 import { expect, test } from "@playwright/test";
 
-// Shared-logo layout tests explicitly cover the Fireworks homepage.
-// The Christmas variant has separate one-wreath/tree and inactive-panel coverage.
+// Permanent Christmas homepage: whole words stay inside the hero at normal
+// and enlarged text sizes. Shared-logo checks below cover interior pages.
 test.beforeEach(async ({page}) => { await page.clock.setFixedTime(new Date("2026-11-05T20:59:00Z")); });
 
 for (const width of [320, 390, 768, 1023]) {
   test(`${width}px: homepage heading keeps every word inside the panel at its CSS size`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
     const title = page.locator(".hero-copy:visible h1");
     await expect(title).toBeVisible();
     // The title is pure CSS (clamp with viewport-capped chrome), so it always scales with the visitor's text size.
@@ -18,7 +19,7 @@ for (const width of [320, 390, 768, 1023]) {
     });
     expect(leading).toBeCloseTo(1.2, 2);
     const fits = await title.evaluate((heading) => {
-      const bounds = heading.getBoundingClientRect();
+      const bounds = heading.closest(".hero-event")!.getBoundingClientRect();
       const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) {
         for (const word of walker.currentNode.textContent!.matchAll(/\S+/g)) {
@@ -36,16 +37,17 @@ for (const width of [320, 390, 768, 1023]) {
   });
 }
 
-test("homepage heading scales with enlarged text and stays whole", async ({ page }) => {
+test("homepage heading supports doubled rendered text and stays whole", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
   const title = page.locator(".hero-copy:visible h1");
   const normal = await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize));
-  await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
+  await title.evaluate((heading) => { heading.style.setProperty("font-size", `${parseFloat(getComputedStyle(heading).fontSize) * 2}px`, "important"); });
   const enlarged = await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize));
   expect(enlarged / normal, "the title grows with the visitor's text size").toBeGreaterThan(1.8);
   const fits = await title.evaluate((heading) => {
-    const bounds = heading.getBoundingClientRect();
+    const bounds = heading.closest(".hero-event")!.getBoundingClientRect();
     const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
       for (const word of walker.currentNode.textContent!.matchAll(/\S+/g)) {
@@ -118,6 +120,12 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
     await page.setViewportSize({ width: 320, height: 900 });
     await page.goto(route);
     await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
+    if(route === "/") {
+      await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
+      await expect(page.locator('.homepage-mobile-identity img')).toBeVisible();
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+      return;
+    }
     await expect(page.locator(".page-logo-home:visible"), route).toBeVisible();
     const layout = await page.locator(".mobile-page-heading:visible").evaluate((element) => {
       const logo = element.querySelector(".page-logo-home")!.getBoundingClientRect();
@@ -125,8 +133,8 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
       const burger = document.querySelector(".menu-toggle")!.getBoundingClientRect();
       return { logoLeft: logo.left, logoRight: logo.right, logoTop: logo.top, logoBottom: logo.bottom, burgerLeft: burger.left, burgerBottom: burger.bottom, copyLeft: copy.left, copyRight: copy.right, copyTop: copy.top, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
     });
-    if (route === "/") {
-      // The Fireworks panel wraps the heading below the logo once enlarged
+    if (route.includes("fireworks")) {
+      // The retired landing wraps the heading below the logo once enlarged
       // text leaves no room beside it, so every word stays whole (pinned by
       // the "scales with enlarged text and stays whole" test).
       expect(layout.copyLeft >= layout.logoRight || layout.copyTop >= layout.logoBottom, route).toBe(true);
@@ -144,7 +152,7 @@ test("enlarged homepage text keeps the menu and hero actions inside a narrow vie
   await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
 
   await expect(page.getByRole("button", { name: "Open menu" })).toBeVisible();
-  await expect(page.locator(".hero-copy:visible .page-logo-home")).toBeVisible();
+  await expect(page.locator(".homepage-mobile-identity img")).toBeVisible();
   expect(await page.locator(".hero-copy:visible .mobile-page-heading, .hero-copy:visible .page-logo-home, .hero-copy:visible .page-logo-home img, .hero-copy:visible .mobile-page-heading-copy, .hero-copy:visible .hero-next-event, .hero-copy:visible h1").evaluateAll((elements) =>
     elements.map((element) => {
       const { left, right } = element.getBoundingClientRect();

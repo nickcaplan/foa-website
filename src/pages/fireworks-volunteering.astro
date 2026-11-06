@@ -4,10 +4,19 @@ import PageHero from "../components/PageHero.astro";
 import { withBase } from "../lib/urls";
 ---
 <BaseLayout title="Fireworks volunteering has finished" description="Volunteer sign-ups for the 2026 Fireworks on the Field event have finished. Find current ways to help The Friends of Ashley.">
-  <PageHero eyebrow="Past event" title="Fireworks volunteering has finished" intro="Thank you to everyone who gave their time to help at the 2026 event." />
-  <section class="content-section"><div class="site-width">
+  <div class="retired-event-heading"><PageHero eyebrow="Past event" title="Fireworks volunteering has finished" intro="Thank you to everyone who gave their time to help at the 2026 event." /></div>
+  <section class="content-section content-section--snug"><div class="site-width">
     <p>The Fireworks volunteer sign-up page has been retired. There are no current Fireworks slots to book here.</p>
     <p><a class="button button--primary" href={withBase("/get-involved/")}>Current ways to help</a></p>
     <p><a href={withBase("/events/christmas-fayre-2026/")}>Christmas Fayre details</a></p>
   </div></section>
 </BaseLayout>
+
+<style>
+  @media (max-width: 63.99rem) {
+    .retired-event-heading :global(.mobile-page-heading) { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+    .retired-event-heading :global(.mobile-page-heading-brand) { width: min(128px, 100%); }
+    .retired-event-heading :global(.mobile-page-heading-copy) { width: 100%; padding-top: 0; }
+    .retired-event-heading :global(.mobile-page-heading-copy h1) { font-size: clamp(1rem, 9cqi, 2.65rem); overflow-wrap: normal; }
+  }
+</style>

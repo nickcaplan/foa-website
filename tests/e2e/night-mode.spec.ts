@@ -260,7 +260,7 @@ test("patched amber and heading accents use the Night Mode ink", async ({ page }
   await expect(badge).toHaveCSS("background-color", "rgb(73, 56, 30)");
 });
 
-test("pages with their own parchment or night-sky theme look the same in both modes", async ({ page }) => {
+test("Christmas artwork keeps its own colours in both modes", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
   const snapshot = () => page.evaluate(() => {
@@ -271,7 +271,7 @@ test("pages with their own parchment or night-sky theme look the same in both mo
       return [index, element.tagName, element.className, ownText ? style.color : "", style.backgroundColor, style.backgroundImage, style.borderTopWidth === "0px" ? "" : style.borderColor, style.boxShadow].join("|");
     });
   });
-  for (const route of ["/", "/events/fireworks-2026/", "/events/christmas-fayre-2026/", "/fireworks-volunteering/"]) {
+  for (const route of ["/", "/events/christmas-fayre-2026/"]) {
     await page.goto(route);
     await freezeTransitions(page);
     let toggle = await openThemeToggle(page);
@@ -372,4 +372,11 @@ test("mobile menu and cookie controls remain accessible at enlarged scale", asyn
   await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
   expect((await scan()).violations.filter(({ impact }) => impact === "serious" || impact === "critical")).toEqual([]);
+});
+
+for(const route of ["/events/fireworks-2026/", "/fireworks-volunteering/"])test(`retired landing follows site Night Mode ${route}`,async({page})=>{
+ await page.goto(route);await freezeTransitions(page);await page.evaluate(()=>document.documentElement.removeAttribute('data-theme'));
+ const h=page.locator('.view-hero');await expect(h).toBeVisible();const day=await h.evaluate(e=>getComputedStyle(e).backgroundColor);
+ await page.evaluate(()=>document.documentElement.setAttribute('data-theme','night'));expect(await h.evaluate(e=>getComputedStyle(e).backgroundColor)).not.toBe(day);
+ await expect(page.locator('.fw-event,.fw-vol,.fw-stage')).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });

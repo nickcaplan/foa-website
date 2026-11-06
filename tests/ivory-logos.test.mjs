@@ -7,8 +7,8 @@ const routes = [
   ["index.html", standard],
   ["uniform/index.html", standard],
   ["newsletter/index.html", standard],
-  ["events/fireworks-2026/index.html", "foa-logo-fireworks-ivory.svg"],
-  ["fireworks-volunteering/index.html", "foa-logo-fireworks-ivory.svg"],
+  ["events/fireworks-2026/index.html", standard],
+  ["fireworks-volunteering/index.html", standard],
   ["events/christmas-fayre-2026/index.html", "foa-logo-christmas-ivory.svg"],
 ];
 

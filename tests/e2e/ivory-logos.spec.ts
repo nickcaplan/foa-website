@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 const routes = [
   ["/", "foa-logo-ivory.svg"],
   ["/uniform/", "foa-logo-ivory.svg"],
-  ["/events/fireworks-2026/", "foa-logo-fireworks-ivory.svg"],
+  ["/events/fireworks-2026/", "foa-logo-ivory.svg"],
   ["/events/christmas-fayre-2026/", "foa-logo-christmas-ivory.svg"],
   ["/newsletter/", "foa-logo-ivory.svg"],
 ];

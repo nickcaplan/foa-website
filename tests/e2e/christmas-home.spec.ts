@@ -80,3 +80,9 @@ test('tablet desktop forest clears obsolete mobile heading spacer',async({page})
  const padding=await page.locator('[data-homepage-christmas] .mobile-page-heading').evaluate(el=>parseFloat(getComputedStyle(el).paddingTop));
  expect(padding).toBe(0);
 });
+
+for(const width of [390,1440])test(`retired homepage has no Fireworks actions ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.clock.setFixedTime(new Date('2026-11-05T20:00:00Z'));await page.goto('/');
+ await expect(page.locator('[data-homepage-fireworks]')).toHaveCount(0);await expect(page.locator('[data-homepage-christmas] .hero-actions a')).toHaveCount(2);
+ await expect(page.getByRole('link',{name:'Email the organisers'})).toHaveCSS('background-color','rgb(23, 79, 54)');
+});

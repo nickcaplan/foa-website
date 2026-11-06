@@ -1,7 +1,6 @@
 ---
 import christmasHomeStyles from "../styles/christmas-home.css?inline";
 import HomepageMobileIdentity from "../components/HomepageMobileIdentity.astro";
-import SponsorRibbon from "../components/SponsorRibbon.astro";
 import EventVisibilityInit from "../components/EventVisibilityInit.astro";
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
@@ -11,7 +10,6 @@ import { withBase } from "../lib/urls";
 import { ukDateKey } from "../lib/event-visibility";
 import { ordinalDateFormatter, formatEventTimeRange } from "../lib/dates";
 const events = await getCollection("events");
-const homepageSwitchAt = "2026-11-05T21:00:00+00:00";
 const christmasPreview = Astro.props.christmasPreview === true;
 const christmasIsLive = true;
 const event = events.find(({ id }) => id === "christmas-fayre-2026")?.data;

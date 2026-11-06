@@ -10,8 +10,9 @@ test.describe("without JavaScript", () => {
     await expect(fireworks).toBeVisible();
     await fireworks.click();
 
-    await expect(page.getByRole("heading", { level: 1, name: "Fireworks on the Field" })).toBeVisible();
-    await expect(page.locator(".event-summary").getByText("16:30-18:30", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Fireworks on the Field has finished" })).toBeVisible();
+    await expect(page.getByText(/ticket sales and volunteer sign-ups have been retired/)).toBeVisible();
+    await expect(page.locator("a[href*=ticketsource],a[href*=volunteersignup]")).toHaveCount(0);
   });
 
   test("the build-time archive opens with the keyboard without JavaScript or stale appeals", async ({ page }) => {

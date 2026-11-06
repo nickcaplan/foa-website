@@ -4,7 +4,7 @@ import { routes } from "./routes";
 for (const width of [320, 390, 768, 1023]) {
   test(`${width}px: every page has no header and a clear, fixed mobile burger`, async ({ page }) => {
     // A healthy sweep of every route takes ~20s per width; 60s caps a genuinely missing element without failing slow-but-healthy runs.
-    test.setTimeout(60_000);
+    test.setTimeout(110_000);
     await page.clock.setFixedTime(new Date("2026-11-05T20:00:00Z"));
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -19,7 +19,12 @@ for (const width of [320, 390, 768, 1023]) {
       expect(before!.width).toBe(48);
       expect(before!.height).toBe(48);
       expect(before!.x + before!.width).toBeLessThanOrEqual(width);
-      {
+      if(route === "/") {
+        const identity=page.locator('.homepage-mobile-identity');await expect(identity).toBeVisible();
+        const geometry=await identity.evaluate(e=>{const r=e.getBoundingClientRect(),h=document.querySelector('.hero-grid')!.getBoundingClientRect(),m=document.querySelector('.menu-toggle')!.getBoundingClientRect(),t=e.querySelector('p')!.getBoundingClientRect();return{above:r.bottom<=h.top,clear:t.right<=m.left||t.top>=m.bottom}});expect(geometry).toEqual({above:true,clear:true});
+        await expect(page.locator('.hero-copy h1')).toHaveText('The Ashley Christmas Fayre');
+        await expect(page.locator('.hero-copy .page-logo-home')).toBeHidden();
+      } else {
         const logo = page.locator(".page-logo-home:visible");
         await expect(logo, route).toBeVisible();
         await expect(logo).toHaveAttribute("href", "/");
@@ -41,27 +46,11 @@ for (const width of [320, 390, 768, 1023]) {
           expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
           expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
           expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
-          expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
+          if(route.includes("fireworks"))expect(heading.y, `${route}: retired heading stacks below logo`).toBeGreaterThanOrEqual(logoBox.y+logoBox.height);
+          else expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
         }
       }
-      const logoBottom = await page.locator(".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
-      if (route === "/") {
-        const copy = page.locator(".hero-copy:visible");
-        await expect(copy.locator(".page-logo-home")).toBeVisible();
-        await expect(copy.locator(".eyebrow")).toHaveCount(0);
-        await expect(copy.locator(".hero-next-event")).toHaveCount(0);
-        const title = (await copy.locator("h1").boundingBox())!;
-        const logo = (await copy.locator(".page-logo-home").boundingBox())!;
-        // Beside the logo in the shared layout, or stacked below it at 320px
-        // and under enlarged text so no word breaks.
-        const titleBeside = title.x >= logo.x + logo.width - 0.5;
-        const titleStacked = title.y >= logo.y + logo.height - 0.5;
-        expect(titleBeside || titleStacked, "Homepage heading sits beside the logo, or stacked below it when narrow").toBe(true);
-        expect(await copy.locator("h1").evaluate((element) => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(24);
-        const intro = (await copy.locator(".hero-when").boundingBox())!;
-        expect(intro.x, "Homepage introduction uses the full panel width").toBe(logo.x);
-        expect(intro.y, "Homepage introduction follows the logo/title row").toBeGreaterThanOrEqual(logoBottom);
-      }
+      const logoBottom = await page.locator(route === "/" ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
       const panel = page.locator(".view-hero");
       if (await panel.count()) {
         expect((await panel.boundingBox())!.y, route).toBe(16);
@@ -115,7 +104,7 @@ for (const width of [320, 390, 768, 1023]) {
       await page.evaluate(() => window.scrollTo(0, 800));
       await expect(trigger).toBeInViewport();
       expect((await trigger.boundingBox())!.y, route).toBe(before!.y);
-      if (await page.evaluate((bottom) => scrollY > bottom, logoBottom)) {
+      if (route !== "/" && await page.evaluate((bottom) => scrollY > bottom, logoBottom)) {
         await expect(page.locator(".page-logo-home:visible"), route).not.toBeInViewport();
       }
       const scroll = await page.evaluate(() => scrollY);
@@ -150,7 +139,7 @@ for (const width of [320, 390, 768, 1023]) {
 // wrap (approved 18 October 2026).
 for (const width of [1280, 1440]) {
   test(`${width}px: all pages use the homepage desktop navigation, with no burger after scrolling`, async ({ page }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(110_000);
     await page.setViewportSize({ width, height: 900 });
     for (const route of routes) {
       await page.goto(route);

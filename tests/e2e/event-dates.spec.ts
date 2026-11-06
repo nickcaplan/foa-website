@@ -18,21 +18,21 @@ const openAt = async (page: Page, isoTime: string, path: string) => {
 const homepageWelcomeTea = (page: Page) =>
   page.getByRole("main").getByRole("heading", { level: 2, name: "Welcome Tea" });
 const homepageChristmas = (page: Page) =>
-  page.getByRole("main").getByRole("heading", { level: 1, name: "Christmas Fayre" });
+  page.getByRole("main").getByRole("heading", { level: 1, name: "The Ashley Christmas Fayre" });
 
-test.describe("Homepage switches at 9pm GMT on 5 November", () => {
+test.describe("Permanent Christmas homepage across former Fireworks switch", () => {
  for (const timezoneId of ["Europe/London", "America/Los_Angeles"]) test.describe(timezoneId, () => {
   test.use({timezoneId});
   for(const offset of [-1,0,1000]) test(`boundary ${offset}`,async({page})=>{
    await page.route("**/*",route=>route.request().resourceType()==="script"?route.abort():route.continue());
    await openAt(page,new Date(Date.parse("2026-11-05T21:00:00Z")+offset).toISOString(),"/");
-   if(offset>=0) await expect(homepageChristmas(page)).toBeVisible(); else await expect(homepageChristmas(page)).toBeHidden();
-   await expect(page.locator('[data-homepage-fireworks]')).toHaveJSProperty("hidden",offset>=0);
+   await expect(homepageChristmas(page)).toBeVisible();
+   await expect(page.locator('[data-homepage-fireworks]')).toHaveCount(0);
    await expect(homepageWelcomeTea(page)).toHaveCount(0);
   });
-  test("an open cached homepage switches on the boundary",async({page})=>{
+  test("an open homepage stays Christmas across the former boundary",async({page})=>{
    await page.clock.install({time:new Date("2026-11-05T20:59:59Z")});await page.goto("/");
-   await expect(homepageChristmas(page)).toBeHidden();await page.clock.runFor(1000);await expect(homepageChristmas(page)).toBeVisible();
+   await expect(homepageChristmas(page)).toBeVisible();await page.clock.runFor(1000);await expect(homepageChristmas(page)).toBeVisible();
    await expect(page.locator('[data-homepage-fireworks]')).toBeHidden();
   });
  });

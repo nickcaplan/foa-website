@@ -132,43 +132,16 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
             if (textSize === "200% root") await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
             // Reproduce the wider fallback fonts used by Linux CI, not only macOS fonts.
             await page.addStyleTag({ content: ".cta-label, .newsletter-more a { font-family: Verdana, sans-serif !important; }" });
-            await page.evaluate(() => document.fonts.ready);
+            await page.evaluate(async () => {
+              await document.fonts.ready;
+              // Let font/text/style changes finish a rendered layout before
+              // measuring label and icon boxes.
+              await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+            });
             if (path === "/fireworks-volunteering/") {
-              // Emulating reduced motion triggers a media-change style recalc that can
-              // leave the root percentage font size unsettled for a few hundred ms;
-              // wait until the enlargement has actually taken effect before measuring.
-              if (textSize !== "normal") await expect(page.locator(".fw-vol .content-section").first()).toHaveCSS("font-size", "32px");
-              const columns = await page.locator(".vol-grid").evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length);
-              if (textSize === "normal" && width >= 1024) {
-                const intro = await page.locator(".fw-vol").evaluate(el => {
-                  const tip = el.querySelector(".vol-tip")!.getBoundingClientRect();
-                  const grid = el.querySelector(".vol-grid")!.getBoundingClientRect();
-                  const paragraph = el.querySelector(".event-hero-intro")!;
-                  return { left: Math.abs(tip.left - grid.left), right: Math.abs(tip.right - grid.right), measure: getComputedStyle(paragraph).maxWidth };
-                });
-                expect(intro.left).toBeLessThanOrEqual(1);
-                expect(intro.right).toBeLessThanOrEqual(1);
-                expect(intro.measure).not.toBe("none");
-              }
-              if (textSize === "normal") {
-                const container = await page.locator(".fw-vol .content-section").evaluate(el => ({ width: el.getBoundingClientRect().width, em: parseFloat(getComputedStyle(el).fontSize) }));
-                expect(columns).toBe(container.width >= 72 * container.em ? 4 : width >= 768 ? 2 : 1);
-                if (columns > 1) {
-                  const actions = await page.locator(".vol-card__action").evaluateAll(links => links.map(link => {
-                    const button = link.getBoundingClientRect();
-                    const card = link.closest(".vol-card")!.getBoundingClientRect();
-                    return { row: Math.round(card.top), top: button.top, height: button.height, bottom: button.bottom };
-                  }));
-                  for (const action of actions) {
-                    for (const neighbour of actions.filter(other => other.row === action.row)) {
-                      expect(Math.abs(action.height - neighbour.height), "signup actions in one row must have equal heights").toBeLessThanOrEqual(1);
-                      expect(Math.abs(action.top - neighbour.top), "signup actions in one row must share their top edge").toBeLessThanOrEqual(1);
-                      expect(Math.abs(action.bottom - neighbour.bottom), "signup actions in one row must share their bottom edge").toBeLessThanOrEqual(1);
-                    }
-                  }
-                }
-              }
-              else if (width <= 768) expect(columns, "enlarged narrow columns must stack").toBe(1);
+              await expect(page.locator('.vol-grid,.vol-card__action')).toHaveCount(0);
+              await expect(page.locator('.content-section a')).toHaveCount(2);
+              for(const link of await page.locator('.content-section a').all())expect(await link.evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
             }
             if (path === "/newsletter/") {
               await page.locator("#newsletter-issue-autumn-term-2026 .newsletter-read-more").click();
@@ -176,7 +149,7 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
             }
             expect(await strandedIcons(page)).toEqual([]);
             expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
-            const overflow = await page.locator(".newsletter-more a:visible, .vol-card__action, .uniform-action").evaluateAll((links) => links.flatMap((link) => {
+            const overflow = await page.locator(path === "/fireworks-volunteering/" ? ".content-section a:visible" : ".newsletter-more a:visible, .uniform-action").evaluateAll((links) => links.flatMap((link) => {
               const column = link.closest("p, li, .newsletter-more, .vol-card, .view-hero-action")!.getBoundingClientRect();
               const range = document.createRange();
               const rects = [...link.querySelectorAll(".cta-icon, .external-link-icon")].map((icon) => icon.getBoundingClientRect());
@@ -200,31 +173,9 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
   }
 });
 
-for (const width of [320, 390, 820, 1440]) {
-  for (const textSize of [100, 200]) {
-    test(`Fireworks map arrows stay with the final word inside the paper at ${width}px/${textSize}%`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 });
-      await page.goto("/events/fireworks-2026/");
-      if (textSize === 200) await useLargeText(page);
-      await page.evaluate(() => document.fonts.ready);
-      await expect(page.locator(".fw-map-link")).toHaveCount(2);
-      expect(await strandedIcons(page)).toEqual([]);
-      const outside = await page.locator(".fw-map-link").evaluateAll((links) => links.flatMap((link) => {
-        const column = link.closest("dd")!.getBoundingClientRect();
-        const range = document.createRange();
-        const rects = [...link.querySelectorAll(".external-link-icon")].map((icon) => icon.getBoundingClientRect());
-        const walker = document.createTreeWalker(link, NodeFilter.SHOW_TEXT);
-        let node = walker.nextNode();
-        while (node) {
-          if (node.textContent?.trim() && !node.parentElement?.closest('.visually-hidden, [aria-hidden="true"]')) {
-            range.selectNodeContents(node);
-            rects.push(...range.getClientRects());
-          }
-          node = walker.nextNode();
-        }
-        return rects.filter((rect) => rect.width > 1 && (rect.left < column.left - 1 || rect.right > column.right + 1)).map((rect) => ({ text: link.textContent, left: rect.left, right: rect.right, column: { left: column.left, right: column.right } }));
-      }));
-      expect(outside).toEqual([]);
-    });
-  }
-}
+for (const width of [320,390,820,1440])for(const textSize of[100,200])test(`retired Fireworks links remain contained ${width}/${textSize}`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.goto('/events/fireworks-2026/');if(textSize===200)await useLargeText(page);
+ await expect(page.locator('.fw-map-link')).toHaveCount(0);const links=page.locator('.content-section a');await expect(links).toHaveCount(2);
+ for(const link of await links.all()){await expect(link).toBeVisible();expect(await link.evaluate(e=>e.getBoundingClientRect().right<=innerWidth)).toBe(true)}
+ expect(await strandedIcons(page)).toEqual([]);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
