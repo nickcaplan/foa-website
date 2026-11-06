@@ -432,7 +432,7 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   }
   assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
   assert.match(html, /<dt>Entry<\/dt><dd>£2, under 12s go free<\/dd>/);
-  assert.match(html, /<dt>What’s on<\/dt><dd>Fun Zone<br\/?>Arts and Crafts<br\/?>Festive food and drink<\/dd>/);
+  assert.ok(html.includes(`<dt>What’s on</dt><dd>${christmas.whatsOn.map(escapeHtml).join("<br>")}</dd>`));
   assert.match(html, /<div class="xmas-snow" aria-hidden="true">/);
   assert.match(html, /<p class="xmas-credit"><img src="[^"]*martin-flashman-mark\.png" alt="Martin Flashman and Co"/);
   assert.doesNotMatch(html, /With thanks to/);
