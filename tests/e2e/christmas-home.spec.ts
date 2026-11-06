@@ -81,8 +81,8 @@ test('tablet desktop forest clears obsolete mobile heading spacer',async({page})
  expect(padding).toBe(0);
 });
 
-for(const width of [390,1440])test(`Christmas colours do not recolour Fireworks actions ${width}`,async({page})=>{
+for(const width of [390,1440])test(`retired homepage has no Fireworks actions ${width}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.clock.setFixedTime(new Date('2026-11-05T20:00:00Z'));await page.goto('/');
- const colours=await page.locator('[data-homepage-fireworks] .hero-actions a').evaluateAll(links=>links.map(el=>({amber:el.classList.contains('button--amber'),secondary:el.classList.contains('button--secondary'),background:getComputedStyle(el).backgroundColor})));
- expect(colours.filter(x=>x.amber)).toHaveLength(1);expect(colours.filter(x=>x.secondary)).toHaveLength(1);expect(colours.find(x=>x.amber)!.background).not.toBe('rgb(23, 79, 54)');expect(colours.find(x=>x.secondary)!.background).not.toBe('rgb(23, 79, 54)');
+ await expect(page.locator('[data-homepage-fireworks]')).toHaveCount(0);await expect(page.locator('[data-homepage-christmas] .hero-actions a')).toHaveCount(2);
+ await expect(page.getByRole('link',{name:'Email the organisers'})).toHaveCSS('background-color','rgb(23, 79, 54)');
 });

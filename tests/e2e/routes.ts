@@ -5,6 +5,8 @@ import { spawnSync } from "node:child_process";
 // Routes are discovered from the served browser fixture (`.browser-fixture/`), so a new page is covered automatically.
 // Add a route to `excluded` only with a reason.
 const excluded = new Set<string>([
+  "/events/fireworks-2026/", // redirects checked by fireworks-retirement
+  "/fireworks-volunteering/", // redirects checked by fireworks-retirement
   "/playground.html", // hidden, noindex contact prototype, not a public route
 ]);
 

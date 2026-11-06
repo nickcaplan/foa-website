@@ -38,8 +38,11 @@ const closeMenu = async (page: Page) => {
 const freezeTransitions = (page: Page) => page.addStyleTag({ content: "*, *::before, *::after { transition: none !important; }" });
 
 test("every page in the build is covered by the Night Mode scans", () => {
-  expect(routes.length).toBeGreaterThanOrEqual(15);
-  for (const route of ["/", "/fundraising/", "/fireworks-volunteering/", "/events/christmas-fayre-2026/", "/events/fireworks-2026/", "/about/", "/whats-on/", "/404.html"]) {
+  // Retired URLs are redirects, not ordinary pages; dedicated redirect tests cover them.
+  expect(routes.length).toBeGreaterThan(0);
+  expect(new Set(routes).size).toBe(routes.length);
+  for (const retired of ["/events/fireworks-2026/", "/fireworks-volunteering/"]) expect(routes).not.toContain(retired);
+  for (const route of ["/", "/fundraising/", "/events/christmas-fayre-2026/", "/about/", "/whats-on/", "/404.html"]) {
     expect(routes).toContain(route);
   }
 });
@@ -260,7 +263,7 @@ test("patched amber and heading accents use the Night Mode ink", async ({ page }
   await expect(badge).toHaveCSS("background-color", "rgb(73, 56, 30)");
 });
 
-test("pages with their own parchment or night-sky theme look the same in both modes", async ({ page }) => {
+test("Christmas artwork keeps its own colours in both modes", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
   const snapshot = () => page.evaluate(() => {
@@ -271,7 +274,7 @@ test("pages with their own parchment or night-sky theme look the same in both mo
       return [index, element.tagName, element.className, ownText ? style.color : "", style.backgroundColor, style.backgroundImage, style.borderTopWidth === "0px" ? "" : style.borderColor, style.boxShadow].join("|");
     });
   });
-  for (const route of ["/", "/events/fireworks-2026/", "/events/christmas-fayre-2026/", "/fireworks-volunteering/"]) {
+  for (const route of ["/", "/events/christmas-fayre-2026/"]) {
     await page.goto(route);
     await freezeTransitions(page);
     let toggle = await openThemeToggle(page);

@@ -89,14 +89,14 @@ for (const theme of ["day", "night"] as const) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
 
-    test("Fireworks parchment panels fit inside their column", async ({ page }) => {
-      await page.goto("/events/fireworks-2026/");
+    test("General information sections fit inside their column", async ({ page }) => {
+      await page.goto("/get-involved/");
       await useLargeText(page);
-      const blocks = page.locator(".event-main > .event-block");
+      const blocks = page.locator(".view-hero, .content-section .site-width");
       expect(await blocks.count()).toBeGreaterThan(0);
       const rights = await blocks.evaluateAll((items) => items.map((item) => item.getBoundingClientRect().right));
       for (const right of rights) expect(right).toBeLessThanOrEqual(320);
-      const spill = await page.locator(".event-main > .event-block").evaluateAll((items) =>
+      const spill = await blocks.evaluateAll((items) =>
         items.flatMap((item) => {
           const edge = item.getBoundingClientRect().right;
           return [...item.querySelectorAll("h2, p, li, dd, dt, span")].filter((inner) => inner.getBoundingClientRect().right > edge + 0.5).map((inner) => inner.textContent?.trim().slice(0, 30));
