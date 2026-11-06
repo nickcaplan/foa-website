@@ -5,7 +5,7 @@ import test from "node:test";
 const standard = "foa-logo-ivory.svg";
 const routes = [
   ["index.html", standard],
-  ["uniform/index.html", standard],
+  ["uniform/index.html", "foa-logo-uniform-ivory.svg"],
   ["newsletter/index.html", standard],
   ["events/fireworks-2026/index.html", "foa-logo-fireworks-ivory.svg"],
   ["fireworks-volunteering/index.html", "foa-logo-fireworks-ivory.svg"],
@@ -13,7 +13,7 @@ const routes = [
 ];
 
 test("ivory variants change only the badge fill and preserve the original artwork", async () => {
-  for (const name of ["foa-logo", "foa-logo-fireworks", "foa-logo-christmas", "foa-logo-newsletter"]) {
+  for (const name of ["foa-logo", "foa-logo-fireworks", "foa-logo-christmas", "foa-logo-newsletter", "foa-logo-uniform"]) {
     const original = await readFile(new URL(`../assets/brand/${name}.svg`, import.meta.url), "utf8");
     const ivory = await readFile(new URL(`../dist/brand/${name}-ivory.svg`, import.meta.url), "utf8");
     const badge = /(<circle\b[^>]*\br="220\.75"[^>]*\bfill=")#fff(")/g;
@@ -45,6 +45,13 @@ test("the 404 badge and standalone contact branding also use ivory", async () =>
   assert.match(notFound, /<circle[^>]*r="220\.75"[^>]*fill="#f3ead6"/);
   const playground = await readFile(new URL("../dist/playground.html", import.meta.url), "utf8");
   assert.ok(playground.includes(`/brand/${standard}`));
+});
+
+test("the Uniform logo keeps the standard badge sizing so there is no size jump between pages", async () => {
+  for (const name of ["foa-logo-uniform", "foa-logo-uniform-ivory"]) {
+    const svg = await readFile(new URL(`../assets/brand/${name}.svg`, import.meta.url), "utf8");
+    assert.match(svg, /viewBox="-46\.75 -46\.75 550 550"/, name);
+  }
 });
 
 test("the Fireworks logo keeps the standard badge sizing so there is no size jump between pages", async () => {
