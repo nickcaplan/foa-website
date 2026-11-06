@@ -349,6 +349,14 @@ body.xmas-theme::before {
   }
 }
 
+/* A little more air on phones while retaining label/value alignment. */
+@media (max-width: 47.99rem) {
+  .xmas-facts { margin-top: 1.25rem; padding-top: 1.15rem; }
+  @container xmas-hero (min-width: 18em) {
+    .xmas-facts { row-gap: 0.75rem; }
+  }
+}
+
 .xmas-facts dt {
   color: var(--xm-gold-light);
   font-size: clamp(0.85rem, 2.6vw, 1rem);
