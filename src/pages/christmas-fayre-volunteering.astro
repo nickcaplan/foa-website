@@ -22,8 +22,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
    <p class="fayre-volunteer__tip">Sign-up buttons open the matching activity on JustSignup in a new tab. Choose your time and check current availability there.</p>
   </section>
   <ul class="fayre-volunteer__grid" aria-label="Volunteer activities">
-   {event.signupActivities.map((activity,index)=><li class="fayre-volunteer__card">
-    <span class="fayre-volunteer__number" aria-hidden="true">{String(index+1).padStart(2,'0')}</span>
+   {event.signupActivities.map(activity=><li class="fayre-volunteer__card">
     <h3>{activity.name}</h3>
     <p>{activity.description}</p>
     <dl class="fayre-volunteer__schedule">{activity.schedule.map(shift=><div><dt>{shift.label}</dt><dd>{shift.when}</dd></div>)}</dl>
@@ -49,7 +48,6 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__tip{padding:1rem;border:1px solid #b99a5b66;border-radius:.5rem;background:#fff3d509;font-size:.95rem}
 .fayre-volunteer__grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1.25rem}
 .fayre-volunteer__card{position:relative;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem;padding:1.5rem;display:flex;flex-direction:column;min-width:0}
-.fayre-volunteer__number{font:italic 1.25rem Georgia,serif;color:#edcb83;margin-bottom:1rem}
 .fayre-volunteer__card h3{font:500 1.6rem/1.2 Georgia,serif;margin:0 0 1rem;color:#fff3d5;overflow-wrap:anywhere}
 .fayre-volunteer__schedule{margin:0 0 1.5rem;border-top:1px solid #b99a5b55;font-size:.9rem;line-height:1.6}.fayre-volunteer__schedule>div{display:flex;justify-content:space-between;gap:.4rem 1rem;flex-wrap:wrap;padding-top:.5rem}.fayre-volunteer__schedule dt{color:#edcb83}.fayre-volunteer__schedule dd{margin:0;white-space:nowrap;color:#fff3d5}
 .fayre-volunteer__card p{font-size:1rem;line-height:1.7;margin:0 0 1.5rem;color:#f4ead1}
