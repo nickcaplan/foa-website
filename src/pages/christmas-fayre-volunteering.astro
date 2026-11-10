@@ -7,7 +7,7 @@ import {withBase} from '../lib/urls';
 import '../styles/christmas.css';
 const entry=await getEntry('events','christmas-fayre-2026');
 const event=entry?.data;
-if(!event?.signupActivities || !event.signupUrl || !event.path) throw new Error('Fayre volunteering content is missing');
+if(!event?.signupActivities || !event.signupUrl || !event.loanSignupAnchor || !event.path) throw new Error('Fayre volunteering content is missing');
 const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>';
 ---
 <BaseLayout title="Christmas Fayre Volunteering" description="Help bring Narnia to life at Ashley School. Choose a Christmas Fayre activity and pick your volunteer slot on JustSignup." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering">

@@ -9,7 +9,7 @@ const fireworks = events.find(({ id }) => id === "fireworks-2026")?.data;
 const uniform = events.find(({ id }) => id === "uniform-november-2026")?.data;
 const decemberUniform = events.find(({ id }) => id === "uniform-december-2026")?.data;
 const christmas = events.find(({ id }) => id === "christmas-fayre-2026")?.data;
-if (!fireworks?.schedule || !fireworks.volunteerRoles || !uniform || !decemberUniform || !christmas?.helpAreas) {
+if (!fireworks?.schedule || !fireworks.volunteerRoles || !uniform || !decemberUniform || !christmas?.helpAreas || !christmas.volunteeringPath) {
   throw new Error("Reps Hub event content is missing");
 }
 const dateFormatter = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" });
@@ -79,7 +79,7 @@ const messageList: {
       `This year, anyone across the school can help in any area, rather than stalls being assigned to year groups. Bring a friend and help with the ${list(christmas.helpAreas.map(({ name }) => name))}. No experience needed. Choose an activity on the Fayre volunteering page, then pick a slot on JustSignup.`,
     ],
     timing: christmas,
-    href: christmas.volunteeringPath!,
+    href: christmas.volunteeringPath,
     linkLabel: "Choose a Christmas Fayre volunteer activity",
   },
 ];

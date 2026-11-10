@@ -4,7 +4,8 @@ for(const width of [320,390,768,1024,1440])test(`Fayre retains facts and no over
  await page.setViewportSize({width,height:1000});await page.goto(route);
  await expect(page.getByRole('heading',{level:1,name:'Christmas Fayre'})).toBeVisible();
  await expect(page.locator('.xmas-area')).toHaveCount(7);
- await expect(page.locator('.narnia-landscape__date')).toHaveText('Saturday 5th December · 12:00-15:00');
+ await expect(page.locator('.narnia-landscape__date')).toContainText('Saturday 5th December');
+ await expect(page.locator('.narnia-landscape__time')).toHaveText('12:00 - 15:00');
  await expect(page.locator('.xmas-facts')).toContainText('Rachel Briscoe');
  await expect(page.locator('.xmas-facts')).toContainText('Sophie Glass');
  await expect(page.locator('.narnia-sponsor img')).toBeVisible();
