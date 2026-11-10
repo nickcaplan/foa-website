@@ -25,7 +25,7 @@ const discoverRoutes = async (directory = dist, prefix = "") => {
   return nested.flat();
 };
 
-const publicRoutes = (await discoverRoutes()).filter((route) => !excluded.has(route)).sort();
+const publicRoutes = (await discoverRoutes()).filter((route) => !excluded.has(route) && !route.startsWith("/preview/")).sort();
 
 const htmlFor = (route) => path.join(dist, route.replace(/^\//, ""), route.endsWith("/") ? "index.html" : "");
 const read = (file) => readFile(file, "utf8");
@@ -207,4 +207,13 @@ test("metadata comparisons decode escaped event titles without double decoding",
   assert.equal(metaContent(`<meta property="og:title" content="${encoded}">`, "property", "og:title"), text);
   assert.equal(decodeHtml("&#x27;&#34;&apos;"), `'"'`);
   assert.equal(decodeHtml("&amp;lt;"), "&lt;");
+});
+
+test("design preview routes are noindex and omitted from the sitemap", async () => {
+  const sitemap=await read(path.join(dist,"sitemap-0.xml"));
+  for(const route of (await discoverRoutes()).filter(r=>r.startsWith("/preview/"))) {
+    const html=await read(htmlFor(route));
+    assert.match(html, /name="robots" content="noindex/);
+    assert.ok(!sitemap.includes(route));
+  }
 });
