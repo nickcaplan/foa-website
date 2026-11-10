@@ -7,6 +7,7 @@ import ChristmasTrees from "../../components/ChristmasTrees.astro";
 import "../../styles/christmas.css";
 import { withBase } from "../../lib/urls";
 
+const leadOption = Astro.props.leadOption as "a" | "b" | undefined;
 const entry = await getEntry("events", "christmas-fayre-2026");
 if (!entry?.data.helpAreas || !entry.data.contactEmail) throw new Error("Christmas Fayre content is missing");
 const event = entry.data;
@@ -51,7 +52,7 @@ const eventJsonLd = {
   organizer: { "@type": "Organization", name: "The Friends of Ashley", url: new URL(withBase("/"), Astro.site).href },
 };
 ---
-<BaseLayout title={event.title} description="Help at the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-event">
+<BaseLayout noindex={!!leadOption} socialTitle="Christmas Fayre | Saturday 5 December 2026 | Ashley School" socialDescription="Step into Narnia at Ashley School, Saturday 5 December, 12:00 - 15:00. Games, crafts, food and festive fun. Entry \u00a32; under 12s free." image="/social/christmas-fayre-2026-v1.jpg" imageAlt="Christmas Fayre, Saturday 5 December 2026, 12:00 - 15:00 at Ashley School, with the Narnia-inspired woodland artwork." imageWidth={1200} imageHeight={630} title={event.title} description="Help at the Ashley Christmas Fayre: join a slot with your friends, no experience needed." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-event">
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <div class="xmas-stage">
     <div class="xmas-snow" aria-hidden="true">
@@ -63,8 +64,8 @@ const eventJsonLd = {
         <div class="narnia-mobile-brand"><PageLogo logo="/brand/foa-logo-christmas-ivory.svg" /></div>
         <NarniaHero event={event} eventPage={true} />
         <div class="narnia-event-details">
-          <section class="fayre-leads" aria-labelledby="fayre-leads-title">
-            <h2 id="fayre-leads-title">Led by</h2>
+          <section class:list={["fayre-leads",leadOption && `fayre-leads--${leadOption}`]} aria-labelledby="fayre-leads-title">
+            <h2 id="fayre-leads-title">{leadOption ? `Option ${leadOption.toUpperCase()} · Led by` : "Led by"}</h2>
             <div class="fayre-leads__grid">{leads.map(lead=><p class="fayre-leads__card"><span>{lead}</span></p>)}</div>
           </section>
         </div>
@@ -190,3 +191,14 @@ const eventJsonLd = {
 </style>
 
 
+
+<style is:inline>
+/* Preview alternatives only. The existing lead treatment remains selected. */
+.fayre-leads--a .fayre-leads__grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.fayre-leads--a .fayre-leads__card,.fayre-leads--b .fayre-leads__grid{border:1px solid var(--xm-gold);border-radius:var(--radius-sm);background:linear-gradient(#17503ab3,#0f3a27b3);box-shadow:inset 0 0 0 4px #08241ae6,inset 0 0 0 5px var(--xm-gold-dim)}
+.fayre-leads--a .fayre-leads__card{width:auto;padding:1.15rem;text-align:center;font:700 1.15rem/1.4 var(--font-display);color:var(--xm-gold-light)}
+.fayre-leads--b .fayre-leads__grid{display:flex;justify-content:center;align-items:center;gap:0;padding:.45rem;max-width:100%}
+.fayre-leads--b .fayre-leads__card{border:0;box-shadow:none;background:none;flex:1;width:auto;text-align:center;padding:.85rem 1.15rem;font:700 1.15rem/1.4 var(--font-display);color:var(--xm-gold-light)}
+.fayre-leads--b .fayre-leads__card+.fayre-leads__card{border-left:1px solid var(--xm-gold-dim);border-radius:0}
+@media(max-width:47.99rem){.fayre-leads--a .fayre-leads__grid{grid-template-columns:1fr}.fayre-leads--b .fayre-leads__grid{flex-direction:column}.fayre-leads--b .fayre-leads__card{width:100%}.fayre-leads--b .fayre-leads__card+.fayre-leads__card{border-left:0;border-top:1px solid var(--xm-gold-dim)}}
+</style>

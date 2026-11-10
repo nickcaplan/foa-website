@@ -175,8 +175,10 @@ test("every dedicated event page includes its UK date in sharing metadata", asyn
     const title = metaContent(html, "property", "og:title");
     const description = metaContent(html, "property", "og:description");
     const pageTitle = event.path === "/events/fireworks-2026/" ? `${event.title} has finished` : event.title;
-    assert.equal(title, `${pageTitle} - ${expectedDate} | The Friends of Ashley`, event.path);
-    assert.ok(description.startsWith(`${expectedDate}. `), event.path);
+    if(event.path === "/events/christmas-fayre-2026/") assert.equal(title,"Christmas Fayre | Saturday 5 December 2026 | Ashley School");
+    else assert.equal(title, `${pageTitle} - ${expectedDate} | The Friends of Ashley`, event.path);
+    if(event.path === "/events/christmas-fayre-2026/") assert.ok(description.includes("Saturday 5 December, 12:00 - 15:00"));
+    else assert.ok(description.startsWith(`${expectedDate}. `), event.path);
     assert.equal(metaContent(html, "name", "description"), description, event.path);
     assert.equal(metaContent(html, "name", "twitter:title"), title, event.path);
     assert.equal(metaContent(html, "name", "twitter:description"), description, event.path);
@@ -188,9 +190,11 @@ test("every dedicated event page includes its UK date in sharing metadata", asyn
 test("non-event pages keep their existing metadata without a sale date", async () => {
   for (const route of publicRoutes.filter((route) => !route.startsWith("/events/"))) {
     const html = await read(htmlFor(route));
-    assert.equal(metaContent(html, "property", "og:title"), titleOf(html), route);
+    const customTitles = {"/":"The Friends of Ashley | Ashley School PTA","/whats-on/":"What's On at Ashley | The Friends of Ashley","/christmas-fayre-volunteering/":"Volunteer at the Christmas Fayre | Ashley School"};
+    const expectedTitle=customTitles[route] ?? titleOf(html);
+    assert.equal(metaContent(html, "property", "og:title"), expectedTitle, route);
     assert.equal(metaContent(html, "property", "og:description"), metaContent(html, "name", "description"), route);
-    assert.equal(metaContent(html, "name", "twitter:title"), titleOf(html), route);
+    assert.equal(metaContent(html, "name", "twitter:title"), expectedTitle, route);
     assert.equal(metaContent(html, "name", "twitter:description"), metaContent(html, "name", "description"), route);
   }
 });

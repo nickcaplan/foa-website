@@ -10,5 +10,5 @@ export default defineConfig({
   site: process.env.SITE_URL || "https://example.com",
   base: process.env.BASE_PATH || "/",
   publicDir: "./assets",
-  integrations: [sitemap({ filter: (page) => !/\/(events\/fireworks-2026|fireworks-volunteering)\/?$/.test(page) })],
+  integrations: [sitemap({ filter: (page) => !page.includes("/preview/") && !/\/(events\/fireworks-2026|fireworks-volunteering)\/?$/.test(page) })],
 });

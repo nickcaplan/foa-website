@@ -45,15 +45,20 @@ test("retired Fireworks URLs redirect home without active event effects or sales
   for (const route of ["/events/fireworks-2026/", "/fireworks-volunteering/"]) assert.ok(rules.includes(`${route} / 301!`));
 });
 
-test("the Christmas Fayre page keeps its social card within chat size limits", async () => {
-  const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  assert.match(html, /<meta\b[^>]*property="og:image"[^>]*foa-logo-christmas-og\.png/);
-  // WhatsApp drops link preview images over 600KB, so the Christmas
-  // preview is a compact PNG card (approved 18 October 2026).
-  const image = await readFile(path.join(dist, "brand/foa-logo-christmas-og.png"));
-  assert.equal(image.readUInt32BE(16), 1200);
-  assert.equal(image.readUInt32BE(20), 630);
-  assert.ok(image.length < 600 * 1024, `foa-logo-christmas-og.png is ${image.length} bytes`);
+test("the four changed pages use compact purpose-made social cards", async () => {
+  const cards={"":"home","whats-on":"whats-on","events/christmas-fayre-2026":"christmas-fayre","christmas-fayre-volunteering":"fayre-volunteering"};
+  for(const [route,name] of Object.entries(cards)) {
+    const html=await readFile(path.join(dist,route,"index.html"),"utf8");
+    assert.ok(html.includes(`/social/${name}-2026-v1.jpg`));
+    assert.match(html, /property="og:image:width" content="1200"/);
+    assert.match(html, /property="og:image:height" content="630"/);
+    assert.match(html, /name="twitter:image" content="https?:[^"]+"/);
+    const image=await readFile(path.join(dist,`social/${name}-2026-v1.jpg`));
+    assert.ok(image.length<600*1024);
+    let pos=2,dimensions;
+    while(pos<image.length){const marker=image[pos+1],size=image.readUInt16BE(pos+2);if([0xc0,0xc1,0xc2].includes(marker)){dimensions=[image.readUInt16BE(pos+7),image.readUInt16BE(pos+5)];break}pos+=2+size;}
+    assert.deepEqual(dimensions,[1200,630]);
+  }
 });
 
 test("both Fireworks pages keep their social image within chat size limits", async () => {

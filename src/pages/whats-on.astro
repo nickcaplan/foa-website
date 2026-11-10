@@ -29,7 +29,7 @@ const terms = [
 ];
 const year = academicYearLabel();
 ---
-<BaseLayout title="What's On" description={`Events listed by The Friends of Ashley for ${year}, grouped term by term with earlier events to look back on.`}>
+<BaseLayout socialTitle="What's On at Ashley | The Friends of Ashley" socialDescription="School events, term by term. Find dates and details for the Christmas Fayre, uniform sales and more at Ashley School." image="/social/whats-on-2026-v1.jpg" imageAlt="What's on at Ashley: school events, term by term, over the Christmas Fayre woodland artwork." imageWidth={1200} imageHeight={630} title="What's On" description={`Events listed by The Friends of Ashley for ${year}, grouped term by term with earlier events to look back on.`}>
   <PageHero eyebrow="Dates for the diary" title="What's on at Ashley" intro="The academic year, term by term." />
   <section class="content-section content-section--compact" data-yearview-empty hidden={months.some((month) => month.events.some(upcoming))}>
     <div class="site-width"><p>No upcoming events are listed for {year}. We’ll share more dates when they are confirmed.</p></div>
