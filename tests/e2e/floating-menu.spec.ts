@@ -19,11 +19,10 @@ for (const width of [320, 390, 768, 1023]) {
       expect(before!.width).toBe(48);
       expect(before!.height).toBe(48);
       expect(before!.x + before!.width).toBeLessThanOrEqual(width);
-      if(route === "/") {
-        const identity=page.locator('.homepage-mobile-identity');await expect(identity).toBeVisible();
-        const geometry=await identity.evaluate(e=>{const r=e.getBoundingClientRect(),h=document.querySelector('.hero-grid')!.getBoundingClientRect(),m=document.querySelector('.menu-toggle')!.getBoundingClientRect(),t=e.querySelector('p')!.getBoundingClientRect();return{above:r.bottom<=h.top,clear:t.right<=m.left||t.top>=m.bottom}});expect(geometry).toEqual({above:true,clear:true});
-        await expect(page.locator('.hero-copy h1')).toHaveText('The Ashley Christmas Fayre');
-        await expect(page.locator('.hero-copy .page-logo-home')).toBeHidden();
+      if(route === "/" || route === "/events/christmas-fayre-2026/") {
+        await expect(page.locator('.narnia-landscape h1')).toHaveText('Christmas Fayre');
+        if(route === "/")await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
+        else await expect(page.locator('.narnia-mobile-brand .page-logo-home')).toBeVisible();
       } else {
         const logo = page.locator(".page-logo-home:visible");
         await expect(logo, route).toBeVisible();
@@ -63,7 +62,7 @@ for (const width of [320, 390, 768, 1023]) {
         expect(intro.y, `${route}: introduction sits below the logo`).toBeGreaterThanOrEqual(logoBottom);
       }
       const stage = page.locator(".fw-stage, .xmas-stage");
-      if (await stage.count()) {
+      if (await stage.count() && route !== "/events/christmas-fayre-2026/") {
         expect((await stage.boundingBox())!.y, `${route}: artwork starts at the top without a logo strip`).toBe(0);
         await expect(stage.locator(".page-logo-home"), route).toBeVisible();
         await expect(page.locator("#main-content")).toHaveCSS("padding-top", "0px");
@@ -145,10 +144,7 @@ for (const width of [1280, 1440]) {
       await page.goto(route);
       await expect(page.locator(".site-header"), route).toBeVisible();
       await expect(page.locator(".mobile-page-logo:visible"), route).toHaveCount(0);
-      if (route === "/events/christmas-fayre-2026/") {
-        await expect(page.locator(".xmas-baubles--desktop")).toBeVisible();
-        await expect(page.locator(".xmas-baubles--mobile")).toBeHidden();
-      }
+
       await expect(page.getByRole("navigation", { name: "Primary navigation" }), route).toBeVisible();
       await expect(page.locator(".menu-toggle"), route).toBeHidden();
       const introduction = await page.locator(".site-header .home-introduction").boundingBox();
@@ -173,28 +169,3 @@ for (const route of ["/", "/newsletter/", "/uniform/"]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), route).toBeLessThanOrEqual(0);
   });
 }
-
-for (const width of [320, 390, 768, 1023]) {
-  test(`${width}px: Christmas decoration clears the menu and the menu opens and closes`, async ({ page }) => {
-    await page.setViewportSize({width, height: 900});
-    await page.emulateMedia({reducedMotion: "reduce"});
-    await page.clock.setFixedTime(new Date("2026-11-05T21:00:00Z"));
-    await page.goto("/");
-    await expect(page.locator(".hero-next-event")).toHaveCount(0);
-    const bounds = await page.locator("[data-homepage-christmas]").evaluate(el => {
-      const tree=el.querySelector(".christmas-home-tree")!.getBoundingClientRect(),m=document.querySelector(".menu-toggle")!.getBoundingClientRect();
-      return {decorationTop:tree.top,menuBottom:m.bottom};
-    });
-    expect(bounds.decorationTop).toBeGreaterThan(bounds.menuBottom+16);
-    await page.getByRole("button",{name:"Open menu",exact:true}).click();
-    await expect(page.getByRole("dialog",{name:"Site menu"})).toBeVisible();
-    await page.getByRole("button",{name:"Close menu",exact:true}).click();
-    await expect(page.getByRole("dialog",{name:"Site menu"})).toBeHidden();
-  });
-}
-
-for(const width of [320,390,768,1023]) test(`Christmas homepage one wreath and clear tree ${width}`,async({page})=>{
- await page.setViewportSize({width,height:900});await page.clock.setFixedTime(new Date("2026-11-05T21:00:00Z"));await page.goto("/");await expect(page.locator('.page-logo-home:visible')).toHaveCount(0);await expect(page.locator('.christmas-home-wreath')).toBeVisible();await expect(page.locator('.christmas-home-art .sponsor-ribbon img')).toBeVisible();await expect(page.locator('.desktop-nav [aria-current="page"]')).toHaveText('Home');
- const bounds=await page.locator('.christmas-home-tree').evaluate(el=>{const r=el.getBoundingClientRect(),m=document.querySelector('.menu-toggle')!.getBoundingClientRect();return{top:r.top,bottom:m.bottom}});expect(bounds.top).toBeGreaterThanOrEqual(bounds.bottom+16);
- await page.getByRole('button',{name:'Open menu',exact:true}).click();await expect(page.getByRole('dialog',{name:'Site menu'})).toBeVisible();await page.getByRole('button',{name:'Close menu',exact:true}).click();await expect(page.getByRole('dialog',{name:'Site menu'})).toBeHidden();
-});

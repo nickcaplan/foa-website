@@ -8,7 +8,7 @@ test.describe("without JavaScript", () => {
     await expect(page.locator('a[href*="fireworks"]')).toHaveCount(0);
     await page.goto("/events/fireworks-2026/");
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole("heading", { level: 1, name: "The Ashley Christmas Fayre" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Christmas Fayre" })).toBeVisible();
   });
 
   test("the build-time archive starts open and toggles with the keyboard without JavaScript or stale appeals", async ({ page }) => {

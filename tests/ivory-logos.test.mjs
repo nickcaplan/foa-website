@@ -24,7 +24,7 @@ test("shared branding uses ivory artwork without giving the standard logo festiv
   for (const [route, logo] of routes) {
     const html = await readFile(new URL(`../dist/${route}`, import.meta.url), "utf8");
     const header = html.match(/<header\b[\s\S]*?<\/header>/)?.[0];
-    const mobile = html.match(/class="mobile-page-logo page-logo-home"[\s\S]*?<\/a>/)?.[0];
+    const mobile = route === "index.html" ? html.match(/class="homepage-mobile-identity"[\s\S]*?<\/div>/)?.[0] : html.match(/class="mobile-page-logo page-logo-home"[\s\S]*?<\/a>/)?.[0];
     const menu = html.match(/class="mobile-menu-home"[\s\S]*?<\/a>/)?.[0];
     for (const region of [header, mobile, menu]) {
       assert.ok(region, `${route}: branding region exists`);

@@ -24,7 +24,7 @@ test.describe("Add to calendar", () => {
     await page.goto("/events/fireworks-2026/");
     const canonical = new URL("/events/fireworks-2026/", (await page.locator('link[rel="canonical"]').getAttribute("href"))!).href;
     await expect(googleLink(page)).toHaveCount(0);await expect(fileLink(page)).toHaveCount(0);
-    await expect(page.getByRole("heading",{level:1,name:"The Ashley Christmas Fayre"})).toBeVisible();
+    await expect(page.getByRole("heading",{level:1,name:"Christmas Fayre"})).toBeVisible();
     const ics = await fetchIcs(page, "/calendar/fireworks-2026.ics");
     for(const value of ["SUMMARY:Fireworks on the Field","DTSTART:20261105T163000Z","DTEND:20261105T183000Z","STATUS:CONFIRMED"])expect(ics).toContain(value);
     expect(ics.replace(/\r\n[ \t]/g, "")).toContain(`URL:${canonical}`);
@@ -34,7 +34,7 @@ test.describe("Add to calendar", () => {
     await page.goto("/events/christmas-fayre-2026/");
     const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
 
-    await expect(page.locator(".xmas-facts")).toContainText("12:00-15:00");
+    await expect(page.locator(".narnia-landscape__date")).toContainText("12:00-15:00");
     const eventData = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
     expect(eventData.startDate).toBe("2026-12-05T12:00:00.000Z");
     expect(eventData.endDate).toBe("2026-12-05T15:00:00.000Z");

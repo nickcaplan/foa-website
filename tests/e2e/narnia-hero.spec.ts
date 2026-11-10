@@ -1,11 +1,11 @@
 import {expect,test} from '@playwright/test';
 
-for (const route of ['narnia-home','narnia-fayre']) {
+for (const route of ['home','fayre']) {
   for (const width of [390,768,1440]) {
     for (const scale of [1,2]) {
       test(`${route}: centred readable hero at ${width}px with ${scale * 100}% text`, async ({page}) => {
         await page.setViewportSize({width,height:1000});
-        await page.goto(`/preview/${route}/`);
+        await page.goto(route==='home'?'/':'/events/christmas-fayre-2026/');
         await page.evaluate(scale=>{document.documentElement.style.fontSize=`${16 * scale}px`;},scale);
         const hero=page.locator('.narnia-landscape');
         await expect(hero.getByRole('heading',{level:1})).toHaveText('Christmas Fayre');
@@ -18,16 +18,16 @@ for (const route of ['narnia-home','narnia-fayre']) {
         expect(measurements.centreOffset).toBeLessThan(2);
         expect(measurements.align).toBe('center');
         expect(measurements.overflow).toBeLessThanOrEqual(0);
-        await expect(hero.getByRole('link',{name:'Sign up to help'})).toHaveAttribute('href',route==='narnia-home'?'/events/christmas-fayre-2026/#sign-up':'#sign-up');
+        await expect(hero.getByRole('link',{name:/Sign up to help/})).toHaveAttribute('href',route==='home'?'/events/christmas-fayre-2026/#sign-up':'https://justsignup.io/s/uhyd1u3wq4');
       });
     }
   }
 }
 
-for (const route of ['narnia-home','narnia-fayre'])for(const width of [320,390,768,1023]) {
+for (const route of ['home','fayre'])for(const width of [320,390,768,1023]) {
   test(`${route}: ${width}px custom hero keeps the menu clear and usable`,async({page})=>{
     await page.setViewportSize({width,height:900});
-    await page.goto(`/preview/${route}/`);
+    await page.goto(route==='home'?'/':'/events/christmas-fayre-2026/');
     const trigger=page.getByRole('button',{name:'Open menu'});
     const before=(await trigger.boundingBox())!;
     await expect(trigger).toBeVisible();
@@ -36,7 +36,7 @@ for (const route of ['narnia-home','narnia-fayre'])for(const width of [320,390,7
       return elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&&r.height&&r.left<b.right&&r.right>b.left&&r.top<b.bottom&&r.bottom>b.top}).map(e=>e.textContent);
     });
     expect(overlap).toEqual([]);
-    if(route==='narnia-fayre')await expect(page.locator('.poster-preview-note .page-logo-home')).toBeVisible();
+    if(route==='fayre')await expect(page.locator('.narnia-mobile-brand .page-logo-home')).toBeVisible();
     await page.evaluate(()=>scrollTo(0,800));
     expect((await trigger.boundingBox())!.y).toBe(before.y);
     await trigger.click();await expect(page.getByRole('button',{name:'Close menu'})).toBeFocused();
@@ -44,12 +44,3 @@ for (const route of ['narnia-home','narnia-fayre'])for(const width of [320,390,7
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(0);
   });
 }
-
-for(const option of ['a','b'])test(`sign-up ${option} moves keyboard focus to the form`,async({page})=>{
-  await page.route('https://justsignup.io/**',r=>r.fulfill({contentType:'text/html',body:'<p>External form fixture</p>'}));
-  await page.goto(`/preview/signup-${option}/`);
-  await page.locator('[data-load-signup]').focus();await page.keyboard.press('Enter');
-  await expect(page.locator('[data-signup-frame]')).toBeFocused();
-  await expect(page.locator('[data-load-signup]')).toBeHidden();
-  await expect(page.getByRole('link',{name:/Open the sign-up page on/})).toHaveAttribute('href','https://justsignup.io/s/uhyd1u3wq4');
-});

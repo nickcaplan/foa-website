@@ -258,23 +258,23 @@ test("the footer and mobile menu share social links without adding them to prima
 
 test("the homepage features the chosen Christmas Fayre design without reviving the old introduction", async () => {
   const homepage = await readFile(path.join(dist, "index.html"), "utf8");
-  assert.match(homepage, /<div class="hero-event"[^>]*data-homepage-christmas/);
-  assert.match(homepage, /<h1[^>]*><span class="christmas-home-kicker">The Ashley<\/span> Christmas <em>Fayre<\/em><\/h1>/);
+  assert.match(homepage, /<section class="narnia-landscape"[^>]*data-homepage-christmas/);
+  assert.match(homepage, /<h1[^>]*>Christmas <em>Fayre<\/em><\/h1>/);
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
   assert.ok(homepage.includes(ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(fayre.start)));
   assert.ok(homepage.includes(fayre.location));
   assert.ok(homepage.includes(formatEventTimeRange(new Date(fayre.start), new Date(fayre.end))));
   assert.ok(homepage.includes(fayre.entry));
   assert.doesNotMatch(homepage, /Featured event|hero-next-event/);
-  assert.match(homepage, /class="christmas-home-wreath"/);
-  assert.match(homepage, new RegExp(`src="${basePath}/brand/foa-logo-christmas-home\\.webp"`));
-  assert.ok(homepage.includes(`mailto:${fayre.contactEmail}?subject=${encodeURIComponent(`Helping at the ${fayre.title}`)}`));
+  assert.match(homepage, /class="narnia-landscape__art"/);
+  assert.match(homepage, new RegExp(`src="${basePath}/brand/narnia-hero-landscape\\.avif"`));
+  assert.ok(homepage.includes(`href="${basePath}${fayre.path}#sign-up"`));
   assert.match(homepage, new RegExp(`href="${basePath}/events/christmas-fayre-2026/"`));
   assert.doesNotMatch(homepage, /hero-tagline|class="site-width home-intro"|Helping Ashley children/);
   const homeMarkup = homepage.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "").replace(/<style\b[^>]*>[\s\S]*?<\/style>/g, "");
   assert.doesNotMatch(homeMarkup, /data-homepage-fireworks|data-show-before|data-show-from|ticketsource\.co\.uk|fireworks-volunteering/);
   assert.equal((homepage.match(/<h1\b/g) || []).length, 1, "one active Christmas heading, no hidden Fireworks panel");
-  const hero = homepage.match(/<div class="hero-event"[^>]*data-homepage-christmas([\s\S]*?)<div class="quick-list/)?.[1];
+  const hero = homepage.match(/<section class="narnia-landscape"[^>]*data-homepage-christmas([\s\S]*?)<div class="quick-list/)?.[1];
   assert.ok(hero);
   assert.doesNotMatch(hero, /With thanks to/);
   assert.match(hero, /alt="Martin Flashman and Co"/);
@@ -398,14 +398,14 @@ test("the Christmas Fayre page lists every help area from the event record", asy
   assert.equal(areas.length, 7);
 });
 
-test("the Christmas Fayre page uses the Fayre inbox for every sign-up link, with a clear subject", async () => {
+test("the Christmas Fayre page uses a JustSignup click-out and keeps the Fayre inbox for questions", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
   const links = [...html.matchAll(/href="(mailto:[^"]+)"/g)].map((match) => match[1]);
-  assert.equal(links.length, 2);
+  assert.equal(links.length, 1);
   for (const link of links) {
     assert.equal(link, `mailto:${christmas.contactEmail}?subject=Helping%20at%20the%20Christmas%20Fayre`);
   }
-  assert.equal([...html.matchAll(/>Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span/g)].length, 2);
+  assert.equal([...html.matchAll(/>Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span/g)].length, 1);
 });
 
 test("the Christmas Fayre page keeps reminders in a plain list, separate from the help areas", async () => {
@@ -419,22 +419,18 @@ test("the Christmas Fayre page keeps reminders in a plain list, separate from th
 
 test("the Christmas Fayre page shows the date, place and lead from the event record, with decoration hidden from assistive technology", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  assert.match(html, /<dd><span class="xmas-nowrap">Saturday 5th December,<\/span> <span class="xmas-nowrap">12:00-15:00<\/span><\/dd>/);
-  assert.match(html, new RegExp(`<dd>${christmas.location}</dd>`));
-  assert.ok(html.includes(`<dd>${christmas.lead.split(/(?<=\)) and /).map(escapeHtml).join("<br>")}</dd>`));
-  // One visible decoration row at each breakpoint, in its approved position.
-  assert.match(html, /<ul class="xmas-baubles xmas-baubles--desktop" aria-hidden="true">/);
-  assert.match(html, /<ul class="xmas-baubles xmas-baubles--mobile" aria-hidden="true">/);
-  const baubleRows = [...html.matchAll(/<ul class="xmas-baubles xmas-baubles--(?:desktop|mobile)" aria-hidden="true">([\s\S]*?)<\/ul>/g)];
-  assert.equal(baubleRows.length, 2);
-  for (const [, row] of baubleRows) {
-    assert.equal([...row.matchAll(/<li style="--i:\d+;/g)].length, 20);
-  }
-  assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
-  assert.match(html, /<dt>Entry<\/dt><dd>£2, under 12s go free<\/dd>/);
-  assert.ok(html.includes(`<dt>What’s on</dt><dd>${christmas.whatsOn.map(escapeHtml).join("<br>")}</dd>`));
+  assert.match(html, /class="narnia-landscape__date">Saturday 5th December · 12:00-15:00/);
+  assert.ok(html.includes(christmas.location));
+  assert.ok(html.includes(escapeHtml(christmas.lead)));
+  assert.ok(html.includes(escapeHtml(christmas.entry)));
+  assert.ok(html.includes(christmas.whatsOn.map(escapeHtml).join(' · ')));
   assert.match(html, /<div class="xmas-snow" aria-hidden="true">/);
-  assert.match(html, /<p class="xmas-credit"><img src="[^"]*martin-flashman-mark\.png" alt="Martin Flashman and Co"/);
+  assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
+  assert.match(html, /martin-flashman-mark\.png" alt="Martin Flashman and Co"/);
+  assert.ok(html.includes(`href="${christmas.signupUrl}" target="_blank" rel="noopener noreferrer"`));
+  assert.doesNotMatch(html, /<iframe|Design preview only|Compare sign-up/);
+  assert.doesNotMatch(html, /name="robots" content="noindex/);
+
   assert.doesNotMatch(html, /With thanks to/);
 });
 

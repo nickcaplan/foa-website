@@ -1,26 +1,19 @@
 ---
 import PageLogo from "../../components/PageLogo.astro";
-import PosterHero from "../../components/PosterHero.astro";
-import SignupPreview from "../../components/SignupPreview.astro";
-import MobilePageHeading from "../../components/MobilePageHeading.astro";
+import NarniaHero from "../../components/NarniaHero.astro";
 import { getEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ChristmasBaubles from "../../components/ChristmasBaubles.astro";
 import ChristmasTrees from "../../components/ChristmasTrees.astro";
 import AddToCalendar from "../../components/AddToCalendar.astro";
 import "../../styles/christmas.css";
 import { withBase } from "../../lib/urls";
-import { ordinalDateFormatter, formatEventTimeRange } from "../../lib/dates";
 
-const narniaPreview = Astro.props.narniaPreview === true;
-const signupOption = Astro.props.signupOption ?? "c";
 const entry = await getEntry("events", "christmas-fayre-2026");
 if (!entry?.data.helpAreas || !entry.data.contactEmail) throw new Error("Christmas Fayre content is missing");
 const event = entry.data;
 const whatsOn = event.whatsOn ?? [];
 const helpAreas = event.helpAreas!;
 const email = event.contactEmail!;
-const dateFormatter = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" });
 const mailto = `mailto:${email}?subject=${encodeURIComponent("Helping at the Christmas Fayre")}`;
 
 const icons = {
@@ -56,7 +49,7 @@ const eventJsonLd = {
   organizer: { "@type": "Organization", name: "The Friends of Ashley", url: new URL(withBase("/"), Astro.site).href },
 };
 ---
-<BaseLayout noindex={true} title={event.title} description="Help host the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass={narniaPreview ? "xmas-theme narnia-event-preview" : "xmas-theme"}>
+<BaseLayout title={event.title} description="Help host the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-event">
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <div class="xmas-stage">
     <div class="xmas-snow" aria-hidden="true">
@@ -64,23 +57,17 @@ const eventJsonLd = {
     </div>
 
     <section class="xmas-hero" aria-labelledby="xmas-title">
-      <ChristmasBaubles placement="desktop" />
       <div class="site-width">
-        {narniaPreview ? <><div class="poster-preview-note"><PageLogo logo="/brand/foa-logo-christmas-ivory.svg" /><p>Design preview only.</p></div><PosterHero event={event} eventPage={true} /></> : <div class="xmas-frame xmas-hero__frame">
-            <MobilePageHeading logo="/brand/foa-logo-christmas-ivory.svg">
-            <h1 id="xmas-title">{event.title}</h1>
-            <ChristmasBaubles placement="mobile" />
-              <p class="xmas-credit" slot="below-logo"><img src={withBase("/sponsors/martin-flashman-mark.png")} alt="Martin Flashman and Co" width="72" height="72" loading="lazy"></p>
-          </MobilePageHeading>
+        <div class="narnia-mobile-brand"><PageLogo logo="/brand/foa-logo-christmas-ivory.svg" /></div>
+        <NarniaHero event={event} eventPage={true} />
+        <div class="narnia-event-details">
+          <p class="narnia-sponsor"><img src={withBase('/sponsors/martin-flashman-mark.png')} alt="Martin Flashman and Co" width="72" height="72" loading="lazy" /></p>
           <dl class="xmas-facts">
-            <div><dt>When</dt><dd><span class="xmas-nowrap">{dateFormatter(event.start)},</span> <span class="xmas-nowrap">{formatEventTimeRange(event.start, event.end)}</span></dd></div>
-            <div><dt>Where</dt><dd>{event.location}</dd></div>
-            {event.entry && <div><dt>Entry</dt><dd>{event.entry}</dd></div>}
-            {whatsOn.length > 0 && <div><dt>What’s on</dt><dd>{whatsOn.map((item, index) => <>{index > 0 && <br />}{item}</>)}</dd></div>}
-            <div><dt>Led by</dt><dd>{event.lead?.split(/(?<=\)) and /).map((lead, index) => <>{index > 0 && <br />}{lead}</>)}</dd></div>
+            {whatsOn.length > 0 && <div><dt>What's on</dt><dd>{whatsOn.join(' · ')}</dd></div>}
+            <div><dt>Led by</dt><dd>{event.lead}</dd></div>
           </dl>
-          <p class="xmas-actions"><a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a><AddToCalendar eventId={entry.id} /></p>
-        </div>}
+          <AddToCalendar eventId={entry.id} />
+        </div>
       </div>
     </section>
 
@@ -107,14 +94,13 @@ const eventJsonLd = {
       </div>
     </section>
 
-    <SignupPreview option={signupOption} />
 
     <section class="xmas-section xmas-section--last" aria-labelledby="xmas-contact-title">
       <div class="site-width xmas-narrow">
         <div class="xmas-frame xmas-contact">
           <div class="xmas-contact__copy">
             <h2 id="xmas-contact-title">Get in touch</h2>
-            <p>Email the Christmas Fayre team or chat with the team in the playground if you have any questions about helping. Choose a slot using the sign-up section above.</p>
+            <p>Email the Christmas Fayre team or chat with the team in the playground if you have any questions about helping. Choose your volunteer slot on JustSignup using the sign-up button above.</p>
             <p class="xmas-actions"><a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a></p>
           </div>
           <ChristmasTrees />
@@ -124,4 +110,7 @@ const eventJsonLd = {
   </div>
 </BaseLayout>
 
-{narniaPreview && <style is:inline>.narnia-event-preview .xmas-hero .xmas-baubles{display:none}.poster-preview-note{display:flex;align-items:center;gap:1rem;padding:1rem 5rem 1rem 0;color:#f3ead3;font-size:.85rem;max-width:56rem;margin:auto}.poster-preview-note p{margin:0}.poster-preview-note .mobile-page-logo{width:3rem;height:3rem;flex:none}.poster-preview-note .brand-logo{width:100%;height:100%}@media(min-width:80rem){.poster-preview-note .mobile-page-logo{display:none}}</style>}
+<style is:inline>
+.narnia-mobile-brand{padding:1rem 4rem 1rem 0}.narnia-mobile-brand .mobile-page-logo{display:block;width:3rem;height:3rem}.narnia-mobile-brand img{width:100%;height:100%}.narnia-event-details{max-width:52rem;margin:2rem auto 0;text-align:center}.narnia-sponsor img{display:block;width:3rem;height:auto;margin:auto}.narnia-event-details .xmas-facts{margin:1.5rem auto}.narnia-event-details .add-to-calendar{margin:1rem auto}@media(min-width:80rem){.narnia-mobile-brand{display:none}}
+</style>
+<style is:inline>.narnia-event-details .add-calendar,.narnia-event-details .add-calendar a,.narnia-event-details .add-calendar-label{color:#fff3d5}.narnia-event-details .add-calendar a:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}</style>

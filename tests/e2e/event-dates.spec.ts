@@ -18,7 +18,7 @@ const openAt = async (page: Page, isoTime: string, path: string) => {
 const homepageWelcomeTea = (page: Page) =>
   page.getByRole("main").getByRole("heading", { level: 2, name: "Welcome Tea" });
 const homepageChristmas = (page: Page) =>
-  page.getByRole("main").getByRole("heading", { level: 1, name: "The Ashley Christmas Fayre" });
+  page.getByRole("main").getByRole("heading", { level: 1, name: "Christmas Fayre" });
 
 test.describe("Permanent Christmas homepage across former Fireworks switch", () => {
  for (const timezoneId of ["Europe/London", "America/Los_Angeles"]) test.describe(timezoneId, () => {
