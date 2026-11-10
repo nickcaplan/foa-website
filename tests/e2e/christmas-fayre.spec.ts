@@ -3,7 +3,7 @@ const route='/events/christmas-fayre-2026/';
 for(const width of [320,390,768,1024,1440])test(`Fayre retains facts and no overflow at ${width}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto(route);
  await expect(page.getByRole('heading',{level:1,name:'Christmas Fayre'})).toBeVisible();
- await expect(page.locator('.xmas-area')).toHaveCount(7);
+ await expect(page.locator('.xmas-area')).toHaveCount(10);
  await expect(page.locator('.narnia-landscape__date')).toContainText('Saturday 5th December');
  await expect(page.locator('.narnia-landscape__time')).toHaveText('12:00 - 15:00');
  await expect(page.locator('.xmas-facts')).toContainText('Rachel Briscoe');
@@ -30,5 +30,5 @@ test('snow stays outside the reading area and honours reduced motion',async({pag
  expect(await page.locator('.xmas-snow i').evaluateAll(els=>els.filter(e=>getComputedStyle(e).animationName!=='none').length)).toBe(0);
 });
 test.describe('without JavaScript',()=>{test.use({javaScriptEnabled:false});test('sign-up link, calendar and contact remain available',async({page})=>{
- await page.goto(route);await expect(page.getByRole('link',{name:/Sign up to help/})).toBeVisible();await expect(page.locator('.xmas-area')).toHaveCount(7);await expect(page.getByRole('link',{name:/Email the Fayre team/})).toBeVisible();
+ await page.goto(route);await expect(page.getByRole('link',{name:/Sign up to help/})).toBeVisible();await expect(page.locator('.xmas-area')).toHaveCount(10);await expect(page.getByRole('link',{name:/Email the Fayre team/})).toBeVisible();
 });});
