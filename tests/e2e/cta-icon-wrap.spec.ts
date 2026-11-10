@@ -8,14 +8,18 @@ const ctas = "a:has(.cta-icon), a:has(.external-link-icon), a.fw-map-link, a.but
 const strandedIcons = (page: Page) =>
   page.evaluate((selector) => {
     const failures: string[] = [];
+    for (const arrow of document.querySelectorAll("a [aria-hidden=true],button [aria-hidden=true]")) {
+      if (/^[→↗]$/.test(arrow.textContent?.trim() ?? "") && !arrow.matches(".cta-icon,.external-link-icon")) failures.push(`Unclassified arrow: ${arrow.closest("a,button")?.textContent?.trim().slice(0,60)}`);
+    }
     const range = document.createRange();
     for (const cta of document.querySelectorAll<HTMLElement>(selector)) {
       const icon = [...cta.querySelectorAll<HTMLElement>("[aria-hidden='true']")]
         .filter((el) => el.getBoundingClientRect().width > 0)
         .pop();
       if (!icon) continue;
+      const label = icon.closest(".cta-label") ?? cta;
       const textNodes: Text[] = [];
-      const walker = document.createTreeWalker(cta, NodeFilter.SHOW_TEXT);
+      const walker = document.createTreeWalker(label, NodeFilter.SHOW_TEXT);
       let node = walker.nextNode();
       while (node) {
         if (node.textContent?.trim() && !(node.parentElement?.closest(".visually-hidden, [aria-hidden='true']"))) textNodes.push(node as Text);
@@ -30,7 +34,7 @@ const strandedIcons = (page: Page) =>
       const isPill = cta.matches("a.button, .event-list-cta--button");
       {
         const sameLine = iconBox.top < lastLine.bottom - 1 && iconBox.bottom > lastLine.top + 1;
-        const gap = (iconBox.left - lastLine.right) / parseFloat(getComputedStyle(cta).fontSize);
+        const gap = (iconBox.left - lastLine.right) / parseFloat(getComputedStyle(label).fontSize);
         if (gap < .12 || gap > .55) failures.push(`${cta.textContent?.trim().slice(0,40)}: inconsistent icon gap ${gap.toFixed(2)}em`);
         if (!sameLine) {
           failures.push(`${cta.textContent?.trim().replace(/\s+/g, " ").slice(0, 40)}: icon line y=${Math.round(iconBox.top)} but label's last line y=${Math.round(lastLine.top)}`);
@@ -152,7 +156,7 @@ for (const width of [390,1440]) test(`paired CTA consistency and short labels at
  await page.setViewportSize({width,height:1000});
  for(const route of ['/','/whats-on/','/events/christmas-fayre-2026/','/christmas-fayre-volunteering/']){
   await page.goto(route);
-  const bad=await page.locator('a.button:visible,.event-list-cta--button:visible').evaluateAll(es=>es.flatMap(e=>{const walker=document.createTreeWalker(e,NodeFilter.SHOW_TEXT);let n;const rects=[];while(n=walker.nextNode()){if(!n.textContent?.trim()||n.parentElement?.closest('.visually-hidden,[aria-hidden="true"]'))continue;const r=document.createRange();r.selectNodeContents(n);rects.push(...r.getClientRects());}const text=e.textContent?.trim()??'';return /^(Volunteer|Event details|Sign up on JustSignup|Choose a slot)/.test(text)&&rects.some(r=>Math.abs(r.top-rects[0].top)>3)?[text]:[]}));
+  const bad=await page.locator('a.button:visible,.event-list-cta--button:visible').evaluateAll(es=>es.flatMap(e=>{const walker=document.createTreeWalker(e,NodeFilter.SHOW_TEXT);let n;const rects: DOMRect[]=[];while(n=walker.nextNode()){if(!n.textContent?.trim()||n.parentElement?.closest('.visually-hidden,[aria-hidden="true"]'))continue;const r=document.createRange();r.selectNodeContents(n);rects.push(...r.getClientRects());}const text=e.textContent?.trim()??'';return /^(Volunteer|Event details|Sign up on JustSignup|Choose a slot)/.test(text)&&rects.some(r=>Math.abs(r.top-rects[0].top)>3)?[text]:[]}));
   expect(bad,route).toEqual([]);
   if(route==='/whats-on/'){
    const sizes=await page.locator('[data-volunteer-actions] .event-list-cta--button,[data-volunteer-actions] .event-volunteer-link .button').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return{width:r.width,height:r.height}}));expect(sizes).toHaveLength(2);expect(Math.abs(sizes[0].width-sizes[1].width)).toBeLessThan(1);expect(Math.abs(sizes[0].height-sizes[1].height)).toBeLessThan(1);

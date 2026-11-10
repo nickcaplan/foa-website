@@ -1552,7 +1552,7 @@ svg.cta-icon {
 
 .quick-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   padding: 1.35rem 0;
   border-bottom: 1px solid var(--line);
   align-items: center;
@@ -1580,15 +1580,6 @@ svg.cta-icon {
   font-size: 0.92rem;
 }
 
-.quick-arrow {
-  justify-self: end;
-  font-size: 1.45rem;
-  transition: transform 160ms ease;
-}
-
-.quick-row:hover .quick-arrow {
-  transform: translateX(0.25rem);
-}
 
 .tinted-section {
   background: var(--green-light);
@@ -1944,9 +1935,6 @@ svg.cta-icon {
   line-height: 1.1;
 }
 
-.not-found-links .quick-arrow {
-  font-size: 1.25rem;
-}
 
 .info-card--link {
   display: block;

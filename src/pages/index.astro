@@ -23,8 +23,8 @@ if (!appeal) throw new Error("Homepage fundraising content is missing");
     <div class="site-width hero-grid">
       <NarniaHero event={event} homepage={true} />
      <div class="quick-list hero-links">
-     {latestNewsletter && <a class="quick-row" href={withBase("/newsletter/")}><span><h3>Read the latest newsletter</h3><p>{latestNewsletter.title}</p></span><span class="quick-arrow" aria-hidden="true">&rarr;</span></a>}
-     <a class="quick-row" href={withBase("/get-involved/")}><span><h3>Get involved</h3><p>Roles, meetings, class reps and ways to help.</p></span><span class="quick-arrow" aria-hidden="true">&rarr;</span></a>
+     {latestNewsletter && <a class="quick-row" href={withBase("/newsletter/")}><span><h3 class="cta-label">Read the latest <span class="cta-tail">newsletter<span class="cta-icon" aria-hidden="true">&rarr;</span></span></h3><p>{latestNewsletter.title}</p></span></a>}
+     <a class="quick-row" href={withBase("/get-involved/")}><span><h3 class="cta-label">Get <span class="cta-tail">involved<span class="cta-icon" aria-hidden="true">&rarr;</span></span></h3><p>Roles, meetings, class reps and ways to help.</p></span></a>
      </div>
     </div>
   </section>
