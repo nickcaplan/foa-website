@@ -1,7 +1,7 @@
 import {expect,test} from '@playwright/test';
 
 for (const route of ['home','fayre']) {
-  for (const width of [390,768,1440]) {
+  for (const width of [320,390,768,1440]) {
     for (const scale of [1,2]) {
       test(`${route}: centred readable hero at ${width}px with ${scale * 100}% text`, async ({page}) => {
         await page.setViewportSize({width,height:1000});
@@ -9,6 +9,8 @@ for (const route of ['home','fayre']) {
         await page.evaluate(scale=>{document.documentElement.style.fontSize=`${16 * scale}px`;},scale);
         const hero=page.locator('.narnia-landscape');
         await expect(hero.getByRole('heading',{level:1})).toHaveText('Christmas Fayre');
+        await expect(hero.locator('.narnia-landscape__date')).toContainText('12:00 - 15:00');
+        await expect(hero.locator('.narnia-landscape__time')).toHaveCSS('white-space','nowrap');
         const measurements=await hero.evaluate(node=>{
           const heading=node.querySelector('h1')!;
           const copy=node.querySelector('.narnia-landscape__copy')!;

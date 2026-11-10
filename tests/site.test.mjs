@@ -263,7 +263,7 @@ test("the homepage features the chosen Christmas Fayre design without reviving t
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
   assert.ok(homepage.includes(ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(fayre.start)));
   assert.ok(homepage.includes(fayre.location));
-  assert.ok(homepage.includes(formatEventTimeRange(new Date(fayre.start), new Date(fayre.end))));
+  assert.ok(homepage.includes(formatEventTimeRange(new Date(fayre.start), new Date(fayre.end)).replace('-', ' - ')));
   assert.ok(homepage.includes(fayre.entry));
   assert.doesNotMatch(homepage, /Featured event|hero-next-event/);
   assert.match(homepage, /class="narnia-landscape__art"/);
@@ -419,7 +419,7 @@ test("the Christmas Fayre page keeps reminders in a plain list, separate from th
 
 test("the Christmas Fayre page shows the date, place and lead from the event record, with decoration hidden from assistive technology", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  assert.match(html, /class="narnia-landscape__date">Saturday 5th December[\s\S]*?class="narnia-landscape__time">12:00-15:00/);
+  assert.match(html, /class="narnia-landscape__date">Saturday 5th December[\s\S]*?class="narnia-landscape__time">12:00 - 15:00/);
   assert.ok(html.includes(christmas.location));
   assert.ok(html.includes(escapeHtml(christmas.lead)));
   assert.ok(html.includes(escapeHtml(christmas.entry)));
