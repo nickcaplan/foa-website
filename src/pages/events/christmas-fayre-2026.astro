@@ -129,3 +129,23 @@ const eventJsonLd = {
 .narnia-event-details .add-calendar-links{justify-content:flex-start}
 }
 </style>
+
+<style is:inline>
+.narnia-event .narnia-landscape__copy{min-height:0;padding:2rem 1.5rem;max-width:48rem}
+.narnia-event .narnia-landscape h1{font-size:clamp(2rem,3.5vw,3rem);margin-bottom:.75rem}
+.narnia-event .narnia-landscape h1 em{display:inline}
+.narnia-event .narnia-landscape__date{margin-bottom:.5rem}
+.narnia-event .narnia-landscape__venue{margin-bottom:1rem}
+@media(max-width:47.99rem){
+.narnia-event .narnia-landscape__art{position:absolute;inset:0;height:100%;aspect-ratio:auto;object-fit:cover}
+.narnia-event .narnia-landscape:before{display:block;background:linear-gradient(90deg,#10232ccc,#10232cdd 35%,#10232ccc)}
+.narnia-event .narnia-landscape h1{font-size:2rem!important}
+.narnia-event .narnia-landscape__copy{padding:1.25rem 1rem}
+}
+</style>
+
+<style is:inline>
+.narnia-event .narnia-landscape__art{width:160%;max-width:none;left:0;right:auto;object-position:left center}
+.narnia-event .narnia-landscape:before{display:block;background:linear-gradient(90deg,#10232c44,#10232cdd 42%,#10232ce6)}
+@media(max-width:47.99rem){.narnia-event .narnia-landscape__art{width:180%;object-position:left center}}
+</style>

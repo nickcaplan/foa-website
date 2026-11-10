@@ -41,6 +41,8 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__brand :global(.mobile-page-logo){display:block;width:3rem;height:3rem}
 .fayre-volunteer__brand :global(img){width:100%;height:100%}
 .fayre-volunteer :global(.narnia-landscape){max-width:none}
+.fayre-volunteer :global(.narnia-landscape__art){width:160%;max-width:none;left:auto;right:0;object-position:right center}
+.fayre-volunteer :global(.narnia-landscape:before){display:block;background:linear-gradient(90deg,#10232ce6,#10232cdd 58%,#10232c44)}
 .fayre-volunteer__intro{width:100%;margin:1.25rem auto;line-height:1.65;text-align:center;font-size:.95rem}
 .fayre-volunteer__intro p{margin:0}
 .fayre-volunteer :global(.narnia-landscape__copy){min-height:0;padding:2rem 1.5rem;max-width:48rem}
@@ -74,4 +76,8 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer{container-type:inline-size}
 @container(max-width:20em){.fayre-volunteer__card,.fayre-volunteer__contact{padding:1rem}.fayre-volunteer__contact .button{width:100%}}
 @media(min-width:80rem){.fayre-volunteer__brand{display:none}}
+</style>
+
+<style>
+@media(max-width:47.99rem){.fayre-volunteer :global(.narnia-landscape__art){width:180%;left:auto;right:0;object-position:right center}.fayre-volunteer :global(.narnia-landscape:before){background:linear-gradient(90deg,#10232ce6,#10232cdd 58%,#10232c66)}}
 </style>
