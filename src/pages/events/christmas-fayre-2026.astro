@@ -65,7 +65,7 @@ const eventJsonLd = {
         <div class="narnia-event-details">
           <section class="fayre-leads" aria-labelledby="fayre-leads-title">
             <h2 id="fayre-leads-title">Led by</h2>
-            <div class="fayre-leads__grid">{leads.map(lead=><p class="fayre-leads__card"><svg class="fayre-leads__star" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" /></svg><span>{lead}</span><svg class="fayre-leads__star" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" /></svg></p>)}</div>
+            <div class="fayre-leads__grid">{leads.map(lead=><p class="fayre-leads__card"><span>{lead}</span></p>)}</div>
           </section>
         </div>
       </div>
@@ -169,8 +169,8 @@ const eventJsonLd = {
 
 
 <style is:inline>
-.fayre-leads{margin:0}.narnia-event .fayre-leads h2{margin:0 0 .75rem;font:700 .85rem/1.4 var(--font-body,system-ui,sans-serif);letter-spacing:.12em;text-transform:uppercase;color:#edcb83;text-align:left}.narnia-event .fayre-leads h2:after{display:none}.fayre-leads__grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.fayre-leads__card{margin:0;padding:.4rem 0 .4rem 1rem;color:#f4ead1;border-left:3px solid #d4b36c;font:500 1.15rem/1.5 Georgia,serif;text-align:left}
-@media(max-width:47.99rem){.fayre-leads__grid{grid-template-columns:1fr;gap:.65rem}.fayre-leads__card{padding:.3rem 0 .3rem .85rem}.narnia-event .fayre-leads h2{text-align:left}}
+.fayre-leads{margin:0}.narnia-event .fayre-leads h2{margin:0 0 .75rem;font:700 .85rem/1.4 var(--font-body,system-ui,sans-serif);letter-spacing:.12em;text-transform:uppercase;color:#edcb83;text-align:left}.narnia-event .fayre-leads h2:after{display:none}.fayre-leads__grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.fayre-leads__card{margin:0;padding:.85rem 1rem;color:#f4ead1;border:1px solid #d4b36c;border-radius:2px;font:500 1.15rem/1.5 Georgia,serif;text-align:left}
+@media(max-width:47.99rem){.fayre-leads__grid{grid-template-columns:1fr;gap:.65rem}.fayre-leads__card{padding:.75rem 1rem}.narnia-event .fayre-leads h2{text-align:left}}
 </style>
 
 <style is:inline>
@@ -189,4 +189,4 @@ const eventJsonLd = {
 }
 </style>
 
-<style>.fayre-leads__card{display:flex;align-items:center;gap:.6rem}.fayre-leads__star{width:.8rem;height:.8rem;flex:0 0 .8rem;fill:#d4b36c}.fayre-leads__card span{min-width:0}</style>
+
