@@ -5520,3 +5520,6 @@ body.menu-open .cookie-banner {
   .hero-event .christmas-home-art .christmas-home-details { margin-top: 1.25rem; min-height: 3.5rem; padding: 0.9rem 1.5rem; line-height: 1.5; width: 100%; }
 
 .event-list-cta--button:has(.cta-icon){border:1px solid transparent}
+/* Text actions in event lists share the same right-edge lane as the pills. */
+.event-list-cta:not(.event-list-cta--button){position:relative;display:block;width:15rem;max-width:100%;padding-inline-end:calc(1.05em + 1.8rem)}
+.event-list-cta:not(.event-list-cta--button) .cta-icon{position:absolute!important;right:.9rem;top:50%;translate:0 -50%;margin:0!important}

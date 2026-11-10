@@ -38,7 +38,7 @@ const strandedIcons = (page: Page) =>
       const lastLine = lines.reduce((lowest, rect) => (rect.top > lowest.top ? rect : lowest));
       const iconBox = icon.getBoundingClientRect();
       const isPill = cta.matches("a.button, .event-list-cta--button");
-      const structured = isPill || !!icon.closest(".button,.event-list-cta--button,.quick-row,.mobile-menu nav a");
+      const structured = isPill || !!icon.closest(".button,.event-list-cta,.quick-row,.mobile-menu nav a");
       if (!structured) {
         const sameLine = iconBox.top < lastLine.bottom - 1 && iconBox.bottom > lastLine.top + 1;
         const gap = (iconBox.left - lastLine.right) / parseFloat(getComputedStyle(label).fontSize);
