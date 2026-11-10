@@ -8,6 +8,8 @@ for(const width of[320,390,768,1440])test(`Fayre information and CTA widths ${wi
  const paths=await page.locator('.xmas-area').evaluateAll(els=>Object.fromEntries(els.map(e=>[e.textContent?.trim(),e.querySelector('path')?.getAttribute('d')])));
  expect(paths.BBQ).not.toBe(paths['Café']);expect(paths.Bar).not.toBe(paths['Café']);expect(paths.Bar).not.toBe(paths.BBQ);
  await page.goto('/whats-on/');const row=page.locator('[data-volunteer-actions]');
+ await expect(row.getByRole('link',{name:'Event details',exact:true})).toHaveAttribute('href','/events/christmas-fayre-2026/');
+ await expect(row.getByRole('link',{name:'Explore volunteering',exact:true})).toHaveAttribute('href','/christmas-fayre-volunteering/');
  const widths=await row.locator('.event-list-cta--button,.event-volunteer-link .button').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().width));expect(widths).toHaveLength(2);expect(Math.abs(widths[0]-widths[1])).toBeLessThan(1);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBe(0);
 });

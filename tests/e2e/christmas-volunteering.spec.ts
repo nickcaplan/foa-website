@@ -2,7 +2,7 @@ import{expect,test}from'@playwright/test';
 for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(const scale of [1,2])test(`Fayre volunteering ${width} ${mode} text ${scale}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.addInitScript(mode=>{localStorage.setItem('foa-theme',mode);localStorage.setItem('foa-cookie-preferences','essential')},mode);
  const requests:string[]=[];page.on('request',r=>{if(/justsignup/.test(r.url()))requests.push(r.url())});
- await page.goto('/');await page.getByRole('link',{name:'Sign up to help',exact:true}).click();await expect(page).toHaveURL(/\/christmas-fayre-volunteering\/$/);
+ await page.goto('/');await page.getByRole('link',{name:'Explore volunteering',exact:true}).click();await expect(page).toHaveURL(/\/christmas-fayre-volunteering\/$/);
  await page.evaluate(scale=>document.documentElement.style.fontSize=16*scale+'px',scale);
  await expect(page.getByRole('heading',{level:1})).toHaveText('Christmas Fayre Volunteering');
  await expect(page.locator('.fayre-volunteer__card')).toHaveCount(12);
