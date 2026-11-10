@@ -428,7 +428,7 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   assert.ok(html.includes('/sponsors/martin-flashman.jpeg'), 'Landscape sponsor logo is used');
   assert.match(html, /<div class="xmas-snow" aria-hidden="true">/);
   assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
-  assert.match(html, /martin-flashman-mark\.png" alt="Martin Flashman and Co"/);
+  assert.match(html, /martin-flashman\.jpeg" alt="Martin Flashman and Co"/);
   assert.ok(html.includes(`href="${basePath}${christmas.volunteeringPath}"`));
   assert.doesNotMatch(html, /<iframe|Design preview only|Compare sign-up/);
   assert.doesNotMatch(html, /name="robots" content="noindex/);
