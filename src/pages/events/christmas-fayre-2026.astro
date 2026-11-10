@@ -51,7 +51,7 @@ const eventJsonLd = {
   organizer: { "@type": "Organization", name: "The Friends of Ashley", url: new URL(withBase("/"), Astro.site).href },
 };
 ---
-<BaseLayout title={event.title} description="Help host the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-event">
+<BaseLayout title={event.title} description="Help at the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-event">
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <div class="xmas-stage">
     <div class="xmas-snow" aria-hidden="true">
@@ -74,7 +74,7 @@ const eventJsonLd = {
     <section class="xmas-section" aria-labelledby="xmas-areas-title">
       <div class="site-width">
         <h2 id="xmas-areas-title">Where we need friendly faces</h2>
-        <p class="xmas-section__lead">Instead of assigning stalls to year groups, anyone across the school can join in anywhere. Sign up for a slot alongside your friends and help with whatever you’re best at. Right now we’re looking for helpers (pairs welcomed!) to host our key areas:</p>
+        <p class="xmas-section__lead">Instead of assigning stalls to year groups, anyone across the school can join in anywhere. Sign up for a slot alongside your friends and help with whatever you’re best at. Join the helpers at these activities (pairs welcome!):</p>
         <ul class="xmas-areas">
           {helpAreas.map((area) => (
             <li class="xmas-area">
