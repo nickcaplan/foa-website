@@ -166,7 +166,7 @@ test.describe("mobile navigation", () => {
 
     const navigation = page.getByRole("navigation", { name: "Mobile navigation" });
     await expect(navigation.getByRole("link"))
-      .toHaveText(["Home→", "Newsletter→", "What's On→", "Christmas Fayre→", "Christmas Fayre volunteering→", "Fundraising→", "Get Involved→", "Uniform→", "Contact Us"]);
+      .toHaveText(["Home→", "Newsletter→", "What's On→", "Christmas Fayre→", "Fayre Volunteering→", "Fundraising→", "Get Involved→", "Uniform→", "Contact Us"]);
     await expect(navigation.locator(".mobile-menu-arrow")).toHaveCount(8);
     for (const arrow of await navigation.locator(".mobile-menu-arrow").all()) {
       await expect(arrow).toHaveAttribute("aria-hidden", "true");
@@ -181,11 +181,11 @@ test.describe("mobile navigation", () => {
     expect(typography.eventFont).toBe(typography.mainFont);
     await expect(page.locator(".mobile-menu-logo")).toHaveCSS("width", "104px");
 
-    await navigation.getByRole("link", { name: "Christmas Fayre volunteering", exact: true }).click();
+    await navigation.getByRole("link", { name: "Fayre Volunteering", exact: true }).click();
     await expect(page).toHaveURL(/\/christmas-fayre-volunteering\/$/);
     await expect(page.locator("[data-mobile-menu]")).toHaveAttribute("aria-hidden", "true");
     await page.getByRole("button", { name: "Open menu" }).click();
-    await expect(page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "Christmas Fayre volunteering", exact: true })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "Fayre Volunteering", exact: true })).toHaveAttribute("aria-current", "page");
     await page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "Uniform" }).click();
     await expect(page).toHaveURL(/\/uniform\/$/);
     await expect(page.locator("[data-mobile-menu]")).toHaveAttribute("aria-hidden", "true");

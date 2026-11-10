@@ -5509,53 +5509,18 @@ body.menu-open .cookie-banner {
   justify-content: center;
 }
 
-/* Pill button CTAs pin their trailing icon to a reserved lane at the pill's
-   right edge, vertically centred against the whole pill, so icon positions
-   match across labels that wrap to a different number of lines and text can
-   never slide beneath the icon. (Rule change approved by Nick, 30 Oct 2026,
-   superseding the 24 Oct same-line rule for pill buttons only; inline links
-   still keep the icon beside the label's final word.) Icons sit at 1.35em so
-   they balance the 800-weight labels. */
-/* !important: component pills (fireworks summary, uniform actions) set their
-   own padding shorthands with higher specificity; the reserved icon lane must
-   still win. */
-.button:has(.cta-icon),
-.event-list-cta--button:has(.cta-icon) {
-  position: relative;
-  padding-inline-end: calc(1.35em + 1.5rem) !important;
+/* One trailing-icon rule for text links and buttons. Keep the icon beside
+   the label's final word; never pin it to an unrelated container edge. */
+.cta-icon,.button .cta-icon,.event-list-cta--button .cta-icon,
+.external-link-icon,.button .external-link-icon {
+  position:static!important;inset:auto!important;translate:none!important;
+  display:inline-block; margin-inline: .3em 0!important;
+  vertical-align:-.15em;line-height:1;
 }
-
-.button:has(.cta-icon) .cta-label,
-.event-list-cta--button:has(.cta-icon) .cta-label {
-  overflow-wrap: anywhere;
+.cta-icon svg,svg.cta-icon,.external-link-icon svg {
+  width:1.05em!important;height:1.05em!important;vertical-align:-.15em;
 }
-
-.button .cta-icon,
-.button svg.cta-icon,
-.event-list-cta--button .cta-icon {
-  position: absolute;
-  inset-inline-end: 0.9rem;
-  top: 50%;
-  translate: 0 -50%;
-  margin-inline-start: 0;
-}
-
-.button .cta-icon svg,
-.button svg.cta-icon,
-.event-list-cta--button .cta-icon svg {
-  width: 1.35em;
-  height: 1.35em;
-}
-
-@container fireworks-summary (max-width: 8rem) {
-  .fw-theme .event-summary .button:has(.cta-icon) {
-    padding-inline-end: calc(1.35em + 0.8rem) !important;
-  }
-
-  .fw-theme .event-summary .button .cta-icon {
-    inset-inline-end: 0.5rem;
-  }
-}
+.button .cta-label,.event-list-cta--button .cta-label{overflow-wrap:anywhere}
 
 /* Christmas homepage feature, scoped to the new artwork and actions. */
 
@@ -5566,3 +5531,5 @@ body.menu-open .cookie-banner {
   .hero-event .christmas-home-art { gap: 0; }
   .hero-event .christmas-home-art .sponsor-ribbon { width: 100%; padding: 0.6rem 1rem; border-radius: 0 0 3px 3px; box-shadow: none; }
   .hero-event .christmas-home-art .christmas-home-details { margin-top: 1.25rem; min-height: 3.5rem; padding: 0.9rem 1.5rem; line-height: 1.5; width: 100%; }
+
+.mobile-menu nav a:not(.mobile-menu-cta){justify-content:flex-start}.mobile-menu-arrow.cta-icon{font-size:1em}

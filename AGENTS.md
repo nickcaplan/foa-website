@@ -133,3 +133,7 @@ When asked "What are the next steps?":
 2. Check each item's **Blocked by** column and the Open Questions section.
 3. Check the current worktree (`git status`) rather than assuming the docs match exactly.
 4. Answer with the first actionable steps in priority order, separating unblocked **Dev** work from decisions needed from the user.
+
+## Visual consistency gate
+
+Before sending preview screenshots, follow the pre-send checklist in `docs/PROJECT-BRIEF.md`. Run `tests/e2e/cta-icon-wrap.spec.ts` and the Fayre feedback checks. Inspect hosted phone and desktop pixels across all similar controls, including text links, pills, calendar choices and external actions. One trailing-icon rule applies everywhere; component-specific exceptions need a documented user decision. Check equal paired widths, icon alignment, label wrapping and shared column edges before presenting the result.
