@@ -18,10 +18,13 @@ const primary = [
 ];
 const desktop = [primary[0], { href: "/newsletter/", label: "Newsletter" }, ...primary.slice(1)];
 const events = await getCollection("events");
-const menuEvents = ["christmas-fayre-2026"].map((id) => {
+const menuEvents = ["christmas-fayre-2026"].flatMap((id) => {
   const event = events.find((entry) => entry.id === id)?.data;
-  if (!event?.path) throw new Error(`Menu event is missing: ${id}`);
-  return { href: event.path, label: event.title };
+  if (!event?.path || !event.volunteeringPath) throw new Error(`Menu event is missing its routes: ${id}`);
+  return [
+    { href: event.path, label: event.title },
+    { href: event.volunteeringPath, label: `${event.title} volunteering` },
+  ];
 });
 const mobileOnly = [
   { href: "/contact/", label: "Contact Us" },
