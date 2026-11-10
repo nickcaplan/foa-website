@@ -46,3 +46,34 @@ for (const route of ['home','fayre'])for(const width of [320,390,768,1023]) {
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(0);
   });
 }
+
+for (const route of ['fayre', 'volunteer']) for (const width of [320, 390, 768, 1440]) for (const scale of [1, 2]) {
+  test(`${route}: content edges align at ${width}px with ${scale * 100}% text`, async ({page}) => {
+    await page.setViewportSize({width, height:1000});
+    await page.goto(route === 'fayre' ? '/events/christmas-fayre-2026/' : '/christmas-fayre-volunteering/');
+    await page.evaluate(scale => {document.documentElement.style.fontSize = `${16 * scale}px`;}, scale);
+    const selectors = route === 'fayre' ? ['.narnia-landscape', '.xmas-areas'] : ['.narnia-landscape', '.fayre-volunteer__intro', '.fayre-volunteer__grid'];
+    const edges = await page.evaluate(selectors => selectors.map(selector => {
+      const r = document.querySelector(selector)!.getBoundingClientRect();
+      return {left:r.left, right:r.right};
+    }), selectors);
+    for (const edge of edges.slice(1)) {
+      expect(Math.abs(edge.left - edges[0].left)).toBeLessThan(1);
+      expect(Math.abs(edge.right - edges[0].right)).toBeLessThan(1);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+  });
+}
+
+for (const [width, height] of [[390, 844], [412, 915]]) {
+  test(`homepage phone hero stays compact without stretching at ${width}x${height}`, async ({page}) => {
+    await page.setViewportSize({width, height});
+    await page.goto('/');
+    const layout = await page.locator('.narnia-landscape').evaluate(node => ({
+      height: node.getBoundingClientRect().height,
+      size: getComputedStyle(node.querySelector('.narnia-landscape__body')!, '::before').backgroundSize,
+    }));
+    expect(layout.height).toBeLessThan(620);
+    expect(layout.size).toContain('cover');
+  });
+}
