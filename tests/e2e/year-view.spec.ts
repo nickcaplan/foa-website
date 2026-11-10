@@ -198,7 +198,7 @@ test("upcoming actions and information survive refreshes and narrow enlarged tex
   await page.clock.install({ time: new Date("2026-10-18T12:00:00Z") });
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/whats-on/");
-  await expect(page.getByRole("link", { name: /Help at the Fayre/ })).toBeVisible();
+  await expect(page.locator('[data-event-title="Christmas Fayre"][data-past="false"]').getByRole("link", { name: "Event details", exact: true })).toBeVisible();
   await page.getByText("What are Happy Bags?", { exact: true }).first().click();
   const info = page.locator(".event-list-info").first();
   await page.clock.runFor(60_000);
