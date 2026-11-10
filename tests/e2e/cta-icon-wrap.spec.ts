@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// One site-wide rule: trailing icons follow the final label word on the same line.
+// Structured controls align icons in right-edge lanes; prose links stay inline.
 const ctas = "a:has(.cta-icon), a:has(.external-link-icon), a.fw-map-link, a.button, .event-list-cta, a.event-list-calendar, .add-calendar a, a.text-link, a.designer-credit, .member-vacancy a, .newsletter-sign-off a";
 
 // Returns a description of every CTA whose trailing icon sits on a different
@@ -38,7 +38,8 @@ const strandedIcons = (page: Page) =>
       const lastLine = lines.reduce((lowest, rect) => (rect.top > lowest.top ? rect : lowest));
       const iconBox = icon.getBoundingClientRect();
       const isPill = cta.matches("a.button, .event-list-cta--button");
-      {
+      const structured = isPill || !!icon.closest(".button,.event-list-cta--button,.quick-row,.mobile-menu nav a");
+      if (!structured) {
         const sameLine = iconBox.top < lastLine.bottom - 1 && iconBox.bottom > lastLine.top + 1;
         const gap = (iconBox.left - lastLine.right) / parseFloat(getComputedStyle(label).fontSize);
         if (gap < .12 || gap > .55) failures.push(`${cta.textContent?.trim().slice(0,40)}: inconsistent icon gap ${gap.toFixed(2)}em`);
@@ -175,4 +176,14 @@ for (const width of [320,390]) test(`open menu shares arrow geometry at ${width}
  await page.setViewportSize({width,height:900});await page.goto('/');await page.getByRole('button',{name:'Open menu'}).click();
  await expect(page.locator('.mobile-menu-arrow svg[data-cta-arrow="forward"]')).toHaveCount(8);
  expect(await strandedIcons(page)).toEqual([]);
+});
+
+for(const width of [390,1440]) test(`grouped arrow columns at ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});
+ const aligned=async(selector:string)=>{const xs=await page.locator(selector).evaluateAll(es=>es.map(e=>e.getBoundingClientRect().right));expect(xs.length).toBeGreaterThan(1);expect(Math.max(...xs)-Math.min(...xs)).toBeLessThan(1)};
+ await page.goto('/');await aligned('.narnia-landscape .button .cta-icon');
+ const rows=await page.locator('.quick-row').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect(),i=e.querySelector('.cta-icon')!.getBoundingClientRect();return{right:r.right,inset:r.right-i.right}}));expect(rows).toHaveLength(2);expect(Math.abs(rows[0].inset-rows[1].inset)).toBeLessThan(1);if(width===390)await aligned('.quick-row .cta-icon');
+ if(width===390){await page.getByRole('button',{name:'Open menu'}).click();await aligned('.mobile-menu-arrow');}
+ await page.goto('/whats-on/');await aligned('[data-volunteer-actions] .cta-icon');
+ await page.goto('/christmas-fayre-volunteering/');const insets=await page.locator('.fayre-volunteer__action').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().right-e.querySelector('.cta-icon')!.getBoundingClientRect().right));expect(Math.max(...insets)-Math.min(...insets)).toBeLessThan(1);
 });
