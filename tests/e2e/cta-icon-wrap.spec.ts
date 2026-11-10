@@ -9,7 +9,13 @@ const strandedIcons = (page: Page) =>
   page.evaluate((selector) => {
     const failures: string[] = [];
     for (const arrow of document.querySelectorAll("a [aria-hidden=true],button [aria-hidden=true]")) {
-      if (/^[→↗]$/.test(arrow.textContent?.trim() ?? "") && !arrow.matches(".cta-icon,.external-link-icon")) failures.push(`Unclassified arrow: ${arrow.closest("a,button")?.textContent?.trim().slice(0,60)}`);
+      if (/^[→↗]$/.test(arrow.textContent?.trim() ?? "") ) failures.push(`Font-dependent arrow glyph: ${arrow.closest("a,button")?.textContent?.trim().slice(0,60)}`);
+    }
+    for (const svg of document.querySelectorAll<SVGElement>('svg[data-cta-arrow="forward"]')) {
+      if (!svg.getBoundingClientRect().width) continue;
+      const em = parseFloat(getComputedStyle(svg).fontSize);
+      const box = svg.getBoundingClientRect();
+      if (Math.abs(box.width/em - 1.05) > .03 || Math.abs(box.height/em - 1.05) > .03 || svg.querySelector("path")?.getAttribute("d") !== "M5 12h14M12 5l7 7-7 7" || svg.getAttribute("stroke-width") !== "2") failures.push("Forward arrow geometry/size differs from shared icon");
     }
     const range = document.createRange();
     for (const cta of document.querySelectorAll<HTMLElement>(selector)) {
@@ -163,4 +169,10 @@ for (const width of [390,1440]) test(`paired CTA consistency and short labels at
   }
  }
  if(width===390){await page.getByRole('button',{name:'Open menu'}).click();expect(await strandedIcons(page)).toEqual([]);await expect(page.getByRole('link',{name:'Fayre Volunteering',exact:true})).toBeVisible();}
+});
+
+for (const width of [320,390]) test(`open menu shares arrow geometry at ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.goto('/');await page.getByRole('button',{name:'Open menu'}).click();
+ await expect(page.locator('.mobile-menu-arrow svg[data-cta-arrow="forward"]')).toHaveCount(8);
+ expect(await strandedIcons(page)).toEqual([]);
 });

@@ -5502,7 +5502,7 @@ body.menu-open .cookie-banner {
 .cta-icon,.button .cta-icon,.event-list-cta--button .cta-icon,
 .external-link-icon,.button .external-link-icon {
   position:static!important;inset:auto!important;translate:none!important;
-  display:inline-block; margin-inline: .3em 0!important;
+  display:inline-block; margin-inline: .3em 0!important; font-size:1em!important;
   vertical-align:-.15em;line-height:1;
 }
 .cta-icon svg,svg.cta-icon,.external-link-icon svg {

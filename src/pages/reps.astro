@@ -118,7 +118,7 @@ const messages = messageList.map((message) => ({
             <p>{message.linkLabel}: <a href={withBase(message.href)}>{message.url}</a></p>
             <div class="message-actions">
               <button class="button button--secondary" type="button" data-copy-button data-copy-text={message.copyText}>Copy message</button>
-              <a class="text-link" href={withBase(message.href)}>Learn <span class="cta-tail">more<span class="cta-icon" aria-hidden="true">&rarr;</span></span></a>
+              <a class="text-link" href={withBase(message.href)}>Learn <span class="cta-tail">more<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a>
             </div>
             <p class="copy-feedback" data-copy-feedback role="status" aria-live="polite"></p>
           </article>
