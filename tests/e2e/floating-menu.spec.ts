@@ -19,9 +19,10 @@ for (const width of [320, 390, 768, 1023]) {
       expect(before!.width).toBe(48);
       expect(before!.height).toBe(48);
       expect(before!.x + before!.width).toBeLessThanOrEqual(width);
-      if(route === "/" || route === "/events/christmas-fayre-2026/") {
-        await expect(page.locator('.narnia-landscape h1')).toHaveText('Christmas Fayre');
+      if(route === "/" || route === "/events/christmas-fayre-2026/" || route === "/christmas-fayre-volunteering/") {
+        await expect(page.locator('.narnia-landscape h1')).toHaveText(route === '/christmas-fayre-volunteering/' ? 'Christmas Fayre Volunteering' : 'Christmas Fayre');
         if(route === "/")await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
+        else if(route === '/christmas-fayre-volunteering/') await expect(page.locator('.fayre-volunteer__brand .page-logo-home')).toBeVisible();
         else await expect(page.locator('.narnia-mobile-brand .page-logo-home')).toBeVisible();
       } else {
         const logo = page.locator(".page-logo-home:visible");
@@ -31,23 +32,11 @@ for (const width of [320, 390, 768, 1023]) {
         expect(logoBox.x + logoBox.width, route).toBeLessThan(before!.x);
         await expect(logo.locator("p, strong, span")).toHaveCount(0);
         const heading = (await page.locator(".mobile-page-heading-copy:visible").boundingBox())!;
-        if (route === "/") {
-          // Nick's call: the Fireworks panel uses the shared page-heading
-          // layout too - logo on the left, heading beside it. At 320px the
-          // 128px logo plus the display-size heading leave no room, so flex
-          // stacks the heading below the logo instead of breaking a word;
-          // the same stacking protects enlarged text at every width.
-          expect(logoBox.width, "/: logo matches the shared page-heading size").toBe(128);
-          const headingBeside = heading.x >= logoBox.x + logoBox.width - 0.5;
-          const headingStacked = heading.y >= logoBox.y + logoBox.height - 0.5;
-          expect(headingBeside || headingStacked, "/: the heading sits beside the logo, or stacked below it when narrow").toBe(true);
-        } else {
-          expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
-          expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
-          expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
-          if(route.includes("fireworks"))expect(heading.y, `${route}: retired heading stacks below logo`).toBeGreaterThanOrEqual(logoBox.y+logoBox.height);
-          else expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
-        }
+        expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
+        expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
+        expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
+        if(route.includes("fireworks"))expect(heading.y, `${route}: retired heading stacks below logo`).toBeGreaterThanOrEqual(logoBox.y+logoBox.height);
+        else expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
       }
       const logoBottom = await page.locator(route === "/" ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
       const panel = page.locator(".view-hero");
