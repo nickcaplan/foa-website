@@ -59,11 +59,11 @@
     },
     {
       "name": "BBQ",
-      "icon": "cafe"
+      "icon": "bbq"
     },
     {
       "name": "Bar",
-      "icon": "cafe"
+      "icon": "bar"
     }
   ],
   "volunteeringPath": "/christmas-fayre-volunteering/",

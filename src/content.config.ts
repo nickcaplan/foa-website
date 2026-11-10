@@ -52,7 +52,7 @@ const events = defineCollection({
     whatsOn: z.array(z.string()).optional(),
     helpAreas: z.array(z.object({
       name: z.string(),
-      icon: z.enum(["funzone", "craft", "cafe", "photo", "tombola", "tokens", "sparkle"]),
+      icon: z.enum(["funzone", "craft", "cafe", "bbq", "bar", "photo", "tombola", "tokens", "sparkle"]),
     })).optional(),
     reviewed: z.coerce.date().optional(),
   }),

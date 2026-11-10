@@ -20,6 +20,8 @@ const icons = {
   funzone: "M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8.500 8.500h.01M15.500 8.500h.01M12 12h.01M8.500 15.500h.01M15.500 15.500h.01",
   craft: "M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM20 4L8.100 15.900M14.500 14.500L20 20M8.100 8.100L12 12",
   cafe: "M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 2v3M10 2v3M14 2v3",
+  bbq: "M4 10h16a8 8 0 0 1-16 0zM8 17l-2 5M16 17l2 5M7 20h10M8 3v3M12 2v4M16 3v3",
+  bar: "M4 3h16l-8 9zM12 12v9M8 21h8M7 6h10",
   photo: "M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.500 3.500 0 1 0 0-7 3.500 3.500 0 0 0 0 7z",
   tombola: "M4 11h16v9H4zM3 7h18v4H3zM12 7v13M12 7c-2 0-4-1-4-2.500S10.500 3 12 7zM12 7c2 0 4-1 4-2.500S13.500 3 12 7z",
   tokens: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7.500v9M9.500 10h4a1.500 1.500 0 0 1 0 3h-3a1.500 1.500 0 0 0 0 3H15",
@@ -167,12 +169,12 @@ const eventJsonLd = {
 
 
 <style is:inline>
-.fayre-leads{margin:0}.narnia-event .fayre-leads h2{margin:0 0 .75rem;font:700 .85rem/1.4 var(--font-body,system-ui,sans-serif);letter-spacing:.12em;text-transform:uppercase;color:#edcb83;text-align:left}.narnia-event .fayre-leads h2:after{display:none}.fayre-leads__grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.fayre-leads__card{margin:0;padding:1rem 1.25rem;background:#f4ead1;color:#173a2c;border:1px solid #d4b36c;border-radius:8px;font:500 1.15rem/1.5 Georgia,serif;text-align:center;box-shadow:0 4px 12px #001b1633}
-@media(max-width:47.99rem){.fayre-leads__grid{grid-template-columns:1fr;gap:.65rem}.fayre-leads__card{padding:.85rem 1rem}.narnia-event .fayre-leads h2{text-align:center}}
+.fayre-leads{margin:0}.narnia-event .fayre-leads h2{margin:0 0 .75rem;font:700 .85rem/1.4 var(--font-body,system-ui,sans-serif);letter-spacing:.12em;text-transform:uppercase;color:#edcb83;text-align:left}.narnia-event .fayre-leads h2:after{display:none}.fayre-leads__grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.fayre-leads__card{margin:0;padding:.4rem 0 .4rem 1rem;color:#f4ead1;border-left:3px solid #d4b36c;font:500 1.15rem/1.5 Georgia,serif;text-align:left}
+@media(max-width:47.99rem){.fayre-leads__grid{grid-template-columns:1fr;gap:.65rem}.fayre-leads__card{padding:.3rem 0 .3rem .85rem}.narnia-event .fayre-leads h2{text-align:left}}
 </style>
 
 <style is:inline>
-.narnia-event .xmas-area{display:grid;grid-template-rows:1.7rem auto;justify-items:center;align-content:start;align-items:start;row-gap:.65rem;padding:1rem .5rem;text-align:center}
+.narnia-event .xmas-areas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr}@media(min-width:40rem){.narnia-event .xmas-areas{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(min-width:62rem){.narnia-event .xmas-areas{grid-template-columns:repeat(4,minmax(0,1fr))}}.narnia-event .xmas-area{display:grid;grid-template-rows:1.7rem auto;justify-items:center;align-content:start;align-items:start;row-gap:.65rem;padding:1rem .5rem;text-align:center}
 .narnia-event .xmas-area svg{grid-row:1}.narnia-event .xmas-area span{grid-row:2;width:100%;min-width:0}
 </style>
 

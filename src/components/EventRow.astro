@@ -25,7 +25,7 @@ const Cta = hasVolunteerLink ? "a" : "span";
 const Wrapper = wholeRowLink ? "a" : "article";
 ---
 <Wrapper class="event-list-item" href={wholeRowLink ? withBase(event.path!) : undefined}
-  data-yearview-event data-event-title={event.title} data-past={past ? "true" : "false"}
+  data-volunteer-actions={hasVolunteerLink || undefined} data-yearview-event data-event-title={event.title} data-past={past ? "true" : "false"}
   data-show-before={rules.showBefore} data-show-from={rules.showFrom}
   data-expires-at={rules.expiresAt} data-expires-on={rules.expiresOn} data-show-from-day={rules.showFromDay}
   hidden={isHidden(rules, now)}>
@@ -39,3 +39,7 @@ const Wrapper = wholeRowLink ? "a" : "article";
     {!past && event.info && <details class="event-list-info"><summary>{event.info.label}</summary><p>{event.info.text}</p></details>}
   </div>
 </Wrapper>
+
+<style>
+.event-list-item[data-volunteer-actions] .event-list-cta--button,.event-list-item[data-volunteer-actions] .event-volunteer-link .button{display:flex;box-sizing:border-box;width:min(100%,15rem);justify-content:center;text-decoration:none}
+</style>
