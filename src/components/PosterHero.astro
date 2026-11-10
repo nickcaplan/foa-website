@@ -1,5 +1,4 @@
 ---
-import MobilePageHeading from './MobilePageHeading.astro';
 import {withBase} from '../lib/urls';
 import {ordinalDateFormatter,formatEventTimeRange} from '../lib/dates';
 const {event,eventPage=false}=Astro.props;
@@ -8,7 +7,7 @@ const date=ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event
 <section class="narnia-landscape" aria-label="Christmas Fayre">
 <img class="narnia-landscape__art" src={withBase('/brand/narnia-hero-landscape.webp')} width="1672" height="941" alt="" loading="eager" fetchpriority="high" />
 <div class="narnia-landscape__copy">
-<MobilePageHeading><h1 id="xmas-title">Christmas <em>Fayre</em></h1></MobilePageHeading>
+<h1 id="xmas-title">Christmas <em>Fayre</em></h1>
 <p class="narnia-landscape__date">{date} · {formatEventTimeRange(event.start,event.end)}</p>
 <p class="narnia-landscape__venue">{event.location}<br />{event.entry}</p>
 <a class="button" href={eventPage ? '#sign-up' : withBase(event.path)+'#sign-up'}>Sign up to help <span aria-hidden="true">→</span></a>

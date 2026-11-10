@@ -308,7 +308,7 @@ test("hero panel keeps dark focus outlines and heading accent in both modes", as
     throw new Error(`could not tab to ${selector}`);
   };
   await page.clock.setFixedTime(new Date("2026-11-05T21:00:00Z"));
-  const heroLinks = ["[data-homepage-christmas] .hero-actions .button--amber", ".christmas-home-details"];
+  const heroLinks = ["[data-homepage-christmas] .hero-actions a[href$=\"#sign-up\"]", ".christmas-home-email", ".christmas-home-details"];
   for (const width of [390, 1280]) {
     for (const zoom of [false, true]) {
       await page.setViewportSize({ width, height: 844 });

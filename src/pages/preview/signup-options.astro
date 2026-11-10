@@ -1,10 +1,10 @@
 ---
-import MobilePageHeading from '../../components/MobilePageHeading.astro';
+import PageHero from '../../components/PageHero.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import {withBase} from '../../lib/urls';
 ---
 <BaseLayout title="Christmas Fayre design options" description="Compare sign-up treatments and winter hero design concepts." noindex={true}>
-<section class="site-width options"><p class="eyebrow">For discussion</p><MobilePageHeading><h1>Christmas Fayre design options</h1></MobilePageHeading><p>Compare the ways parents could sign up to help, plus a first Narnia-inspired hero concept. Nothing here has replaced the live website.</p>
+<PageHero eyebrow="For discussion" title="Christmas Fayre design options" intro="Compare the ways parents could sign up to help, plus a Narnia-inspired hero concept. Nothing here has replaced the live website." /><section class="site-width options">
 <h2>Sign-up options</h2><p>Each option keeps the same event information. The homepage has a Sign up to help link to the Fayre page.</p>
 <div class="choices">
 <article><h3>A. Simple embed</h3><p>The live JustSignup form inside the Fayre page, with minimal framing. The whole board makes a long page.</p><a class="button" href={withBase('/preview/signup-a/')+'#sign-up'}>View option A</a></article>
@@ -14,7 +14,7 @@ import {withBase} from '../../lib/urls';
 <p>Both embed previews ask you to load the third-party form. Privacy and consent handling still needs review. The form is live: please do not submit test sign-ups.</p>
 <p><a class="text-link" href={withBase('/')}>See the shared homepage link</a></p>
 <p><a class="button" href={withBase("/preview/signup-loaded/")+"#sign-up"}>View the board already loaded</a></p>
-<h2>Narnia-inspired hero concept</h2><p>An original winter illustration with a wardrobe, snowy trees and a warm lamppost, rather than film imagery. First design, not ready for release.</p><p><a class="button" href={withBase('/preview/narnia-home/')}>Homepage concept</a> <a class="button" href={withBase('/preview/narnia-fayre/')}>Fayre page concept</a></p>
+<h2>Narnia-inspired hero concept</h2><p>An original winter illustration with a castle, lion, snowy trees, heraldic banners and a glowing lamppost, drawing on the school poster. Design preview, not ready for release.</p><p><a class="button" href={withBase('/preview/narnia-home/')}>Homepage concept</a> <a class="button" href={withBase('/preview/narnia-fayre/')}>Fayre page concept</a></p>
 <p>Use the site's day/night control to compare themes. Phone layouts and enlarged text are part of the design review.</p></section>
 </BaseLayout>
 <style>.options{padding-block:3rem}.options h1{font-size:clamp(2rem,6vw,4rem);max-width:18ch}.options>p{max-width:70ch}.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr));gap:1.5rem;margin-block:2rem}.choices article{border:1px solid var(--line);border-radius:1rem;padding:1.5rem}.choices h3{font-size:1.5rem}.options .button{margin:.4rem .4rem .4rem 0}</style>

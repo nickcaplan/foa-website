@@ -83,6 +83,15 @@ test("every public page embeds one mobile home-linked logo beside its heading", 
     const visibleHtml = html.replace(/<div class="hero-event"[^>]*\shidden(?:="[^"]*")?>[\s\S]*?(?=<div class="hero-event"|<div class="quick-list)/g, "");
     const main = visibleHtml.match(/<main\b[\s\S]*?<\/main>/)?.[0];
     assert.ok(main, path.pathname);
+    // These discussion routes deliberately use the landscape hero instead of
+    // the standard logo-beside-heading template. Their geometry, menu and home
+    // link are covered in narnia-preview.spec.ts.
+    if (path.pathname.includes("/preview/narnia-")) {
+      assert.match(main, /class="narnia-landscape"/);
+      assert.equal(main.match(/<h1\b/g)?.length, 1, path.pathname);
+      if (path.pathname.includes("narnia-fayre")) assert.match(main, /class="mobile-page-logo page-logo-home"/);
+      continue;
+    }
     assert.equal(main.match(/class="mobile-page-logo page-logo-home"/g)?.length, 1, path.pathname);
     assert.match(main, /class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1/, path.pathname);
     if (html.includes('class="view-hero')) {

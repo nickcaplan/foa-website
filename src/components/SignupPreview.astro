@@ -19,7 +19,7 @@ const url = "https://justsignup.io/s/uhyd1u3wq4";
 </section>
 <script>
 const frame = document.querySelector<HTMLIFrameElement>('[data-signup-frame]');
-document.querySelector('[data-load-signup]')?.addEventListener('click', e => {if(frame){frame.src=frame.dataset.src!;frame.hidden=false;(e.currentTarget as HTMLElement).hidden=true;}});
+document.querySelector('[data-load-signup]')?.addEventListener('click', e => {if(frame){frame.src=frame.dataset.src!;frame.hidden=false;frame.focus();(e.currentTarget as HTMLElement).hidden=true;}});
 addEventListener('message', e => { if (frame && e.origin === 'https://justsignup.io' && e.source === frame.contentWindow && e.data?.type === 'justsignup:height' && Number.isFinite(Number(e.data.height))) { const h=Number(e.data.height); if(h>0 && h<100000) frame.style.height=Math.max(700,h)+'px'; }});
 </script>
 <style>

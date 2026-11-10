@@ -8,7 +8,7 @@ for (const width of [320, 390, 768, 1023]) {
     await page.clock.setFixedTime(new Date("2026-11-05T20:00:00Z"));
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    for (const route of routes.filter(route => route !== "/preview/christmas/")) {
+    for (const route of routes.filter(route => !["/preview/christmas/", "/preview/narnia-home/", "/preview/narnia-fayre/"].includes(route))) {
       await page.goto(route);
       const header = page.locator(".site-header");
       const trigger = page.getByRole("button", { name: "Open menu" });
