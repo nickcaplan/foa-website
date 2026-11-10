@@ -5,7 +5,7 @@
 
 @media(min-width:64rem){.homepage .hero-event .christmas-home-art .hero-actions{flex-direction:row;align-items:stretch}.homepage .hero-event .christmas-home-art .hero-actions .button{flex:1;min-width:0;width:auto;padding-inline:.65rem}}
 
-@media(min-width:64rem){.homepage .hero-event[data-homepage-christmas]{padding-bottom:1rem}.homepage [data-homepage-christmas] .christmas-home-admission{display:flex;flex-direction:column;align-items:flex-start;gap:.75rem}.homepage .hero-links{width:100%;grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem;max-width:none;align-items:stretch}.homepage .hero-links .quick-row{height:100%;align-items:center}}
+@media(min-width:64rem){.homepage .hero-event[data-homepage-christmas]{padding-bottom:1rem}.homepage [data-homepage-christmas] .christmas-home-admission{display:flex;flex-direction:column;align-items:flex-start;gap:.75rem}.homepage .hero-links{width:100%;grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem;max-width:none;align-items:stretch;border-top:0}.homepage .hero-links .quick-row{height:100%;align-items:center}}
 
 @media(max-width:47.99rem){
  .homepage [data-homepage-christmas] .hero-when{margin-top:1.5rem}
