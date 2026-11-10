@@ -1,4 +1,5 @@
 ---
+import SignupPreview from "../../components/SignupPreview.astro";
 import MobilePageHeading from "../../components/MobilePageHeading.astro";
 import { getEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -9,6 +10,7 @@ import "../../styles/christmas.css";
 import { withBase } from "../../lib/urls";
 import { ordinalDateFormatter, formatEventTimeRange } from "../../lib/dates";
 
+const signupOption = Astro.props.signupOption ?? "c";
 const entry = await getEntry("events", "christmas-fayre-2026");
 if (!entry?.data.helpAreas || !entry.data.contactEmail) throw new Error("Christmas Fayre content is missing");
 const event = entry.data;
@@ -51,7 +53,7 @@ const eventJsonLd = {
   organizer: { "@type": "Organization", name: "The Friends of Ashley", url: new URL(withBase("/"), Astro.site).href },
 };
 ---
-<BaseLayout title={event.title} description="Help host the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme">
+<BaseLayout noindex={true} title={event.title} description="Help host the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme">
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <div class="xmas-stage">
     <div class="xmas-snow" aria-hidden="true">
@@ -102,12 +104,14 @@ const eventJsonLd = {
       </div>
     </section>
 
+    <SignupPreview option={signupOption} />
+
     <section class="xmas-section xmas-section--last" aria-labelledby="xmas-contact-title">
       <div class="site-width xmas-narrow">
         <div class="xmas-frame xmas-contact">
           <div class="xmas-contact__copy">
             <h2 id="xmas-contact-title">Get in touch</h2>
-            <p>Email the Christmas Fayre team or chat with the team in the playground to find out more and to sign up.</p>
+            <p>Email the Christmas Fayre team or chat with the team in the playground if you have any questions about helping. Choose a slot using the sign-up section above.</p>
             <p class="xmas-actions"><a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a></p>
           </div>
           <ChristmasTrees />
