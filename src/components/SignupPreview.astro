@@ -6,12 +6,13 @@ const url = "https://justsignup.io/s/uhyd1u3wq4";
  <p class="eyebrow">Design preview only</p>
  <h2 id="signup-heading">Sign up to help</h2>
  <p>Choose an area and a slot alongside your friends.</p>
+ {option === "loaded" && <p>Preview only: the live JustSignup board below loads automatically. Please do not submit test sign-ups.</p>}
  <nav aria-label="Compare sign-up options"><a href="/preview/signup-a/">A: Simple embed</a> · <a href="/preview/signup-b/">B: Framed embed</a> · <a href="/preview/signup-c/">C: Link only</a></nav>
- {option === "c" ? <div class="signup-card"><h3>A little time. A big difference.</h3><p>See the available slots and sign up on JustSignup.</p><a class="button button--amber" href={url} target="_blank" rel="noopener noreferrer">Sign up to <span class="cta-tail">help<span class="external-link-icon" aria-hidden="true">↗</span></span><span class="visually-hidden"> (opens in a new tab)</span></a></div> : <div class:list={["signup-embed", {"signup-embed--framed": option === "b"}]}>
- {option === "b" && <header><h3>Find your place at the Fayre</h3><p>Live slots, provided by JustSignup. Its page stays in its own light theme.</p></header>}
- <p>Loading this form connects to JustSignup, a separate service with its own privacy policy. This preview does not load it until you choose below.</p>
- <button class="button button--amber" data-load-signup>Load the sign-up form</button>
- <iframe data-signup-frame data-src={url + "?embed=1"} title="Ashley School's Narnia Christmas Fayre volunteer sign-up" style="width:100%;border:0;min-height:700px" loading="lazy" hidden></iframe>
+ {option === "c" ? <div class="signup-card"><h3>A little time. A big difference.</h3><p>See the available slots and sign up on JustSignup.</p><a class="button button--amber" href={url} target="_blank" rel="noopener noreferrer">Sign up to <span class="cta-tail">help<span class="external-link-icon" aria-hidden="true">↗</span></span><span class="visually-hidden"> (opens in a new tab)</span></a></div> : <div class:list={["signup-embed", {"signup-embed--framed": (option === "b" || option === "loaded")}]}>
+ {(option === "b" || option === "loaded") && <header><h3>Find your place at the Fayre</h3><p>Live slots, provided by JustSignup. Its page stays in its own light theme.</p></header>}
+ {option !== "loaded" && <><p>Loading this form connects to JustSignup, a separate service with its own privacy policy. This preview does not load it until you choose below.</p>
+ <button class="button button--amber" data-load-signup>Load the sign-up form</button></>}
+ <iframe data-signup-frame src={option === "loaded" ? url + "?embed=1" : undefined} data-src={url + "?embed=1"} title="Ashley School's Narnia Christmas Fayre volunteer sign-up" style="width:100%;border:0;min-height:700px" loading={option === "loaded" ? "eager" : "lazy"} hidden={option !== "loaded"}></iframe>
  </div>}
  <p><a class="text-link" href={url} target="_blank" rel="noopener noreferrer">Open the sign-up page on <span class="cta-tail">JustSignup<span class="external-link-icon" aria-hidden="true">↗</span></span><span class="visually-hidden"> (opens in a new tab)</span></a></p>
  <p class="signup-note">Preview for discussion, not a finished release. The form is live: please do not submit test sign-ups.</p>
