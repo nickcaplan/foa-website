@@ -8,7 +8,7 @@ if (!signupUrl) throw new Error("Christmas Fayre sign-up URL is missing");
 const date=ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event.start);
 ---
 <section class="narnia-landscape" aria-label="Christmas Fayre" id={eventPage ? "sign-up" : undefined} data-homepage-christmas={homepage ? "" : undefined} style={homepage ? `--narnia-woodland:url(${withBase('/brand/narnia-woodland-continuation.jpg')})` : undefined}>
-<img class="narnia-landscape__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" loading="eager" fetchpriority="high" />
+<img class="narnia-landscape__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
 <div class="narnia-landscape__body">
 <div class="narnia-landscape__copy">
 <h1 id="xmas-title">Christmas <em>Fayre</em>{volunteerPage && <> <span class="narnia-landscape__subtitle">Volunteering</span></>}</h1>
