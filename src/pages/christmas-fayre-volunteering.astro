@@ -29,7 +29,10 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
    <div><h2 id="loan-props">Lend a little Narnia magic</h2><p>Have fairy lights, faux Christmas trees or props to lend? See the props and decor list on JustSignup for what's needed, drop-off details and return information.</p></div>
    <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+event.loanSignupAnchor} target="_blank" rel="noopener noreferrer"><span>See the loan list<span class="visually-hidden"> (opens JustSignup in a new tab)</span></span><span class="external-link-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></a>
   </section>
-  <div class="fayre-volunteer__closing"><a href={withBase(event.path)}>Back to Christmas Fayre details</a><p>Questions about helping? <a href={'mailto:'+event.contactEmail}>Email the Fayre team</a>.</p></div>
+  <div class="fayre-volunteer__closing">
+   <a class="button fayre-volunteer__back" href={withBase(event.path)}>Back to Christmas Fayre details</a>
+   <section class="fayre-volunteer__contact" aria-labelledby="volunteer-questions"><h2 id="volunteer-questions">Questions about helping?</h2><a class="button fayre-volunteer__email" href={'mailto:'+event.contactEmail}>Email the Fayre team</a></section>
+  </div>
  </div>
 </BaseLayout>
 <style>
@@ -49,7 +52,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1.25rem}
 .fayre-volunteer__card{position:relative;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem;padding:1.5rem;display:flex;flex-direction:column;min-width:0}
 .fayre-volunteer__card h3{font:500 1.6rem/1.2 Georgia,serif;margin:0 0 1rem;color:#fff3d5;overflow-wrap:anywhere}
-.fayre-volunteer__schedule{margin:0 0 1.5rem;border-top:1px solid #b99a5b55;font-size:.9rem;line-height:1.6}.fayre-volunteer__schedule>div{display:flex;justify-content:space-between;gap:.4rem 1rem;flex-wrap:wrap;padding-top:.5rem}.fayre-volunteer__schedule dt{color:#edcb83}.fayre-volunteer__schedule dd{margin:0;color:#fff3d5}.fayre-volunteer__schedule dd span{white-space:nowrap}
+.fayre-volunteer__schedule{margin:0 0 1.5rem;border-top:1px solid #b99a5b55;font-size:.9rem;line-height:1.6}.fayre-volunteer__schedule>div{display:flex;justify-content:space-between;gap:.4rem 1rem;flex-wrap:wrap;padding-top:.5rem}.fayre-volunteer__schedule dt{color:#edcb83}.fayre-volunteer__schedule dd{margin:0;white-space:nowrap;color:#fff3d5}.fayre-volunteer__schedule dd span{white-space:nowrap}
 .fayre-volunteer__card p{font-size:1rem;line-height:1.7;margin:0 0 1.5rem;color:#f4ead1}
 .fayre-volunteer .fayre-volunteer__action{margin-top:auto;min-width:0;min-height:3.25rem;max-width:100%;white-space:normal;background:#742f3c;color:#fff5e2;border:1px solid #c9a65f;font-size:1rem;line-height:1.5;gap:.75rem;padding:.75rem 1rem;display:flex;flex-wrap:nowrap;justify-content:space-between;align-items:center;text-align:left}
 .fayre-volunteer__action>span:first-child{min-width:0}.fayre-volunteer__action .external-link-icon{flex:0 0 auto;margin:0}
@@ -59,7 +62,15 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__loan>div{flex:1 1 28rem;min-width:0}
 .fayre-volunteer__loan h2{margin:0 0 1rem}
 .fayre-volunteer__loan p{margin:0;line-height:1.7}
-.fayre-volunteer__closing{text-align:center;margin-top:2rem;line-height:1.7}
-.fayre-volunteer__closing a{color:#edcb83;text-decoration:underline;text-underline-offset:.2em;overflow-wrap:anywhere}
+.fayre-volunteer__closing{margin-top:1.5rem;display:grid;justify-items:center;gap:1.5rem}
+.fayre-volunteer__closing .button{font-size:1rem;line-height:1.5;min-height:3.25rem;max-width:100%;padding:.75rem 1.25rem;white-space:normal;text-align:center;text-decoration:none;color:#fff3d5;border:1px solid #c9a65f}
+.fayre-volunteer__closing .fayre-volunteer__back{background:transparent}
+.fayre-volunteer__contact{width:100%;border:1px solid #b99a5b88;border-radius:.65rem;background:#173844;padding:1.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem 2rem}
+.fayre-volunteer__contact h2{margin:0;font:500 clamp(1.5rem,2.5vw,2rem)/1.2 Georgia,serif;color:#fff3d5}
+.fayre-volunteer__closing .fayre-volunteer__email{background:#742f3c}
+.fayre-volunteer__closing .button:hover{background:#954052}
+.fayre-volunteer__closing .button:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}
+.fayre-volunteer{container-type:inline-size}
+@container(max-width:20em){.fayre-volunteer__card,.fayre-volunteer__contact{padding:1rem}.fayre-volunteer__contact .button{width:100%}}
 @media(min-width:80rem){.fayre-volunteer__brand{display:none}}
 </style>

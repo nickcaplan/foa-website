@@ -419,7 +419,7 @@ test("the Christmas Fayre page keeps reminders in a plain list, separate from th
 
 test("the Christmas Fayre page shows the date, place and lead from the event record, with decoration hidden from assistive technology", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  assert.match(html, /class="narnia-landscape__date">Saturday 5th December · 12:00-15:00/);
+  assert.match(html, /class="narnia-landscape__date">Saturday 5th December[\s\S]*?class="narnia-landscape__time">12:00-15:00/);
   assert.ok(html.includes(christmas.location));
   assert.ok(html.includes(escapeHtml(christmas.lead)));
   assert.ok(html.includes(escapeHtml(christmas.entry)));
