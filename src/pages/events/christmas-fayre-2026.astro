@@ -4,14 +4,12 @@ import NarniaHero from "../../components/NarniaHero.astro";
 import { getEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ChristmasTrees from "../../components/ChristmasTrees.astro";
-import AddToCalendar from "../../components/AddToCalendar.astro";
 import "../../styles/christmas.css";
 import { withBase } from "../../lib/urls";
 
 const entry = await getEntry("events", "christmas-fayre-2026");
 if (!entry?.data.helpAreas || !entry.data.contactEmail) throw new Error("Christmas Fayre content is missing");
 const event = entry.data;
-const whatsOn = event.whatsOn ?? [];
 const helpAreas = event.helpAreas!;
 const email = event.contactEmail!;
 const mailto = `mailto:${email}?subject=${encodeURIComponent("Helping at the Christmas Fayre")}`;
@@ -61,12 +59,10 @@ const eventJsonLd = {
         <div class="narnia-mobile-brand"><PageLogo logo="/brand/foa-logo-christmas-ivory.svg" /></div>
         <NarniaHero event={event} eventPage={true} />
         <div class="narnia-event-details">
-          <p class="narnia-sponsor"><img src={withBase('/sponsors/martin-flashman-mark.png')} alt="Martin Flashman and Co" width="72" height="72" loading="lazy" /></p>
+          <p class="narnia-sponsor"><img src={withBase('/sponsors/martin-flashman.jpeg')} alt="Martin Flashman and Co" width="225" height="33" loading="lazy" /></p>
           <dl class="xmas-facts">
-            {whatsOn.length > 0 && <div><dt>What's on</dt><dd>{whatsOn.join(' · ')}</dd></div>}
             <div><dt>Led by</dt><dd>{event.lead}</dd></div>
           </dl>
-          <div class="narnia-calendar"><AddToCalendar eventId={entry.id} /></div>
         </div>
       </div>
     </section>
@@ -111,22 +107,18 @@ const eventJsonLd = {
 </BaseLayout>
 
 <style is:inline>
-.narnia-event .xmas-stage .site-width{width:min(calc(100% - 2rem),62rem)}@media(min-width:48rem){.narnia-event .xmas-stage .site-width{width:min(calc(100% - 3rem),62rem)}}.narnia-event .narnia-landscape{max-width:none}.narnia-mobile-brand{padding:1rem 4rem 1rem 0}.narnia-mobile-brand .mobile-page-logo{display:block;width:3rem;height:3rem}.narnia-mobile-brand img{width:100%;height:100%}.narnia-event-details{max-width:52rem;margin:2rem auto 0;text-align:center}.narnia-sponsor img{display:block;width:3rem;height:auto;margin:auto}.narnia-event-details .xmas-facts{margin:1.5rem auto}.narnia-event-details .add-to-calendar{margin:1rem auto}@media(min-width:80rem){.narnia-mobile-brand{display:none}}
+.narnia-event .xmas-stage .site-width{width:min(calc(100% - 2rem),62rem)}@media(min-width:48rem){.narnia-event .xmas-stage .site-width{width:min(calc(100% - 3rem),62rem)}}.narnia-event .narnia-landscape{max-width:none}.narnia-mobile-brand{padding:1rem 4rem 1rem 0}.narnia-mobile-brand .mobile-page-logo{display:block;width:3rem;height:3rem}.narnia-mobile-brand img{width:100%;height:100%}.narnia-event-details{max-width:52rem;margin:2rem auto 0;text-align:center}.narnia-sponsor img{display:block;width:min(100%,225px);height:auto;margin:auto}.narnia-event-details .xmas-facts{margin:1.5rem auto}@media(min-width:80rem){.narnia-mobile-brand{display:none}}
 </style>
-<style is:inline>.narnia-event-details .add-calendar,.narnia-event-details .add-calendar a,.narnia-event-details .add-calendar-label{color:#fff3d5}.narnia-event-details .add-calendar a:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}</style>
 
 <style is:inline>
 @media(min-width:64rem){
 .narnia-event-details{max-width:none;text-align:left;display:grid;grid-template-columns:1fr auto;gap:1.5rem 2rem;align-items:start}
-.narnia-event-details .narnia-sponsor{grid-column:2;grid-row:1/3;margin:0;padding-top:.25rem}
-.narnia-event-details .narnia-sponsor img{width:4rem}
+.narnia-event-details .narnia-sponsor{grid-column:2;grid-row:1;margin:0;padding-top:.25rem}
+.narnia-event-details .narnia-sponsor img{width:225px}
 .narnia-event-details .xmas-facts{display:block;margin:0;padding:0;border:0;max-width:none}
 .narnia-event-details .xmas-facts>div{display:grid;grid-template-columns:8rem minmax(0,1fr);gap:1rem;align-items:start;padding:1rem 0;border-bottom:1px solid #b99a5b66;text-align:left}
 .narnia-event-details .xmas-facts dt{margin:0;text-align:left}
 .narnia-event-details .xmas-facts dd{font-size:1.15rem;line-height:1.6;text-align:left}
-.narnia-event-details .narnia-calendar{grid-column:1}
-.narnia-event-details .add-calendar{display:grid;grid-template-columns:8rem minmax(0,1fr);gap:1rem;align-items:center;justify-items:start;text-align:left}
-.narnia-event-details .add-calendar-links{justify-content:flex-start}
 }
 </style>
 

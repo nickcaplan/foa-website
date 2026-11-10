@@ -423,7 +423,9 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   assert.ok(html.includes(christmas.location));
   assert.ok(html.includes(escapeHtml(christmas.lead)));
   assert.ok(html.includes(escapeHtml(christmas.entry)));
-  assert.ok(html.includes(christmas.whatsOn.map(escapeHtml).join(' · ')));
+  assert.ok(!html.includes(christmas.whatsOn.map(escapeHtml).join(' · ')), 'Stalls are not repeated above the activity cards');
+  assert.ok(!html.includes('class="add-calendar"'), 'Calendar choices are hidden on Fayre details');
+  assert.ok(html.includes('/sponsors/martin-flashman.jpeg'), 'Landscape sponsor logo is used');
   assert.match(html, /<div class="xmas-snow" aria-hidden="true">/);
   assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
   assert.match(html, /martin-flashman-mark\.png" alt="Martin Flashman and Co"/);

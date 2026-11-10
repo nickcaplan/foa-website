@@ -9,6 +9,7 @@ for(const width of [320,390,768,1024,1440])test(`Fayre retains facts and no over
  await expect(page.locator('.xmas-facts')).toContainText('Rachel Briscoe');
  await expect(page.locator('.xmas-facts')).toContainText('Sophie Glass');
  await expect(page.locator('.narnia-sponsor img')).toBeVisible();
+ await expect(page.locator('.add-calendar')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBe(0);
 });
 test('click-out matches Fireworks volunteering safety and loads no third-party board',async({page})=>{
@@ -29,6 +30,6 @@ test('snow stays outside the reading area and honours reduced motion',async({pag
  await expect(page.locator('.xmas-snow')).toHaveAttribute('aria-hidden','true');
  expect(await page.locator('.xmas-snow i').evaluateAll(els=>els.filter(e=>getComputedStyle(e).animationName!=='none').length)).toBe(0);
 });
-test.describe('without JavaScript',()=>{test.use({javaScriptEnabled:false});test('sign-up link, calendar and contact remain available',async({page})=>{
+test.describe('without JavaScript',()=>{test.use({javaScriptEnabled:false});test('sign-up link and contact remain available',async({page})=>{
  await page.goto(route);await expect(page.getByRole('link',{name:/Sign up to help/})).toBeVisible();await expect(page.locator('.xmas-area')).toHaveCount(10);await expect(page.getByRole('link',{name:/Email the Fayre team/})).toBeVisible();
 });});
