@@ -49,3 +49,7 @@ if (!appeal) throw new Error("Homepage fundraising content is missing");
 </script>
 
 <style is:inline>@media(min-width:64rem){.homepage .hero-links{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:none;width:100%}}</style>
+
+<style is:inline>
+@media(min-width:64rem) and (max-width:79.99rem){.homepage .menu-toggle{top:calc(1rem + (var(--introduction-logo-size) - 3rem)/2)}}
+</style>
