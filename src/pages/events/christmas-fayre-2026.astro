@@ -1,4 +1,5 @@
 ---
+import NarniaScene from "../../components/NarniaScene.astro";
 import SignupPreview from "../../components/SignupPreview.astro";
 import MobilePageHeading from "../../components/MobilePageHeading.astro";
 import { getEntry } from "astro:content";
@@ -10,6 +11,7 @@ import "../../styles/christmas.css";
 import { withBase } from "../../lib/urls";
 import { ordinalDateFormatter, formatEventTimeRange } from "../../lib/dates";
 
+const narniaPreview = Astro.props.narniaPreview === true;
 const signupOption = Astro.props.signupOption ?? "c";
 const entry = await getEntry("events", "christmas-fayre-2026");
 if (!entry?.data.helpAreas || !entry.data.contactEmail) throw new Error("Christmas Fayre content is missing");
@@ -53,7 +55,7 @@ const eventJsonLd = {
   organizer: { "@type": "Organization", name: "The Friends of Ashley", url: new URL(withBase("/"), Astro.site).href },
 };
 ---
-<BaseLayout noindex={true} title={event.title} description="Help host the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme">
+<BaseLayout noindex={true} title={event.title} description="Help host the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass={narniaPreview ? "xmas-theme narnia-event-preview" : "xmas-theme"}>
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <div class="xmas-stage">
     <div class="xmas-snow" aria-hidden="true">
@@ -64,11 +66,13 @@ const eventJsonLd = {
       <ChristmasBaubles placement="desktop" />
       <div class="site-width">
         <div class="xmas-frame xmas-hero__frame">
+          {narniaPreview && <p class="narnia-concept-note">Narnia hero concept. Design preview only.</p>}
           <MobilePageHeading logo="/brand/foa-logo-christmas-ivory.svg">
             <h1 id="xmas-title">{event.title}</h1>
             <ChristmasBaubles placement="mobile" />
               <p class="xmas-credit" slot="below-logo"><img src={withBase("/sponsors/martin-flashman-mark.png")} alt="Martin Flashman and Co" width="72" height="72" loading="lazy"></p>
           </MobilePageHeading>
+          {narniaPreview && <NarniaScene />}
           <dl class="xmas-facts">
             <div><dt>When</dt><dd><span class="xmas-nowrap">{dateFormatter(event.start)},</span> <span class="xmas-nowrap">{formatEventTimeRange(event.start, event.end)}</span></dd></div>
             <div><dt>Where</dt><dd>{event.location}</dd></div>
@@ -120,3 +124,9 @@ const eventJsonLd = {
     </section>
   </div>
 </BaseLayout>
+
+<style is:global>
+.narnia-event-preview .xmas-hero__frame{background:linear-gradient(120deg,#102837,#1d4250);color:#f2eee3}.narnia-event-preview .xmas-hero__frame .winter-scene{float:right;width:44%;margin:0 0 1.5rem 2rem}.narnia-event-preview .xmas-hero__frame:after{content:"";display:table;clear:both}.narnia-event-preview .narnia-concept-note{font:700 .8rem system-ui;letter-spacing:.1em;color:#e5c887}.narnia-event-preview .xmas-hero__frame h1{color:#e5c887}.narnia-event-preview .xmas-hero__frame dt,.narnia-event-preview .xmas-hero__frame dd{color:#f2eee3}.narnia-event-preview .xmas-hero__frame .xmas-facts{clear:both}.narnia-event-preview .xmas-hero .xmas-baubles{display:none}@media(max-width:47.99rem){.narnia-event-preview .xmas-hero__frame .winter-scene{float:none;width:100%;margin:1rem auto}}
+</style>
+
+<style is:global>.narnia-event-preview .xmas-hero__frame .winter-scene{float:none;width:min(100%,36rem);margin:1rem auto 2rem}.narnia-event-preview .xmas-hero__frame .winter-scene svg{max-height:20rem}</style>

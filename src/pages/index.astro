@@ -1,4 +1,5 @@
 ---
+import NarniaScene from "../components/NarniaScene.astro";
 import christmasHomeStyles from "../styles/christmas-home.css?inline";
 import HomepageMobileIdentity from "../components/HomepageMobileIdentity.astro";
 import EventVisibilityInit from "../components/EventVisibilityInit.astro";
@@ -9,6 +10,7 @@ import MobilePageHeading from "../components/MobilePageHeading.astro";
 import { withBase } from "../lib/urls";
 import { ukDateKey } from "../lib/event-visibility";
 import { ordinalDateFormatter, formatEventTimeRange } from "../lib/dates";
+const narniaPreview = Astro.props.narniaPreview === true;
 const events = await getCollection("events");
 const christmasPreview = Astro.props.christmasPreview === true;
 const event = events.find(({ id }) => id === "christmas-fayre-2026")?.data;
@@ -25,9 +27,10 @@ const titleLead = titleParts.join(" ");
 const baseAwareChristmasStyles = christmasHomeStyles.replaceAll('url("/brand/', `url("${withBase("/brand/")}`);
 const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helping at the ${event.title}`)}`;
 ---
-   <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview} homepage={christmasPreview}>
+   <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass={narniaPreview ? "homepage narnia-preview" : "homepage"} noindex={christmasPreview || narniaPreview} homepage={christmasPreview}>
 
   <style is:inline set:html={baseAwareChristmasStyles} />
+  {narniaPreview && <p class="site-width">Narnia hero concept. Design preview only, not ready for release.</p>}
   <HomepageMobileIdentity />
   <section class="hero">
     <div class="site-width hero-grid">
@@ -41,7 +44,7 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
        <div class="hero-side">
 
         <article class="event-feature event-feature--poster christmas-home-art" aria-label="Christmas Fayre artwork and details">
-          <img class="christmas-home-wreath" src={withBase("/brand/foa-logo-christmas-home.webp")} alt="The Friends of Ashley Christmas wreath" width="1200" height="630" loading="eager" fetchpriority="high" />
+          {narniaPreview ? <NarniaScene /> : <img class="christmas-home-wreath" src={withBase("/brand/foa-logo-christmas-home.webp")} alt="The Friends of Ashley Christmas wreath" width="1200" height="630" loading="eager" fetchpriority="high" />}
           <span class="sponsor-ribbon"><img src={withBase("/sponsors/martin-flashman.jpeg")} alt="Martin Flashman and Co" width="225" height="33" loading="lazy" /></span>
         <div class="hero-actions"><a class="button button--primary button--large christmas-home-details" href={withBase(event.path!)}><span class="cta-label">Event <span class="cta-word">detail<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
         <a class="button button--amber button--large" href={withBase(event.path!) + "#sign-up"}><span class="cta-label">Sign up to <span class="cta-word">hel<span class="cta-tail">p<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
@@ -75,3 +78,9 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
   document.addEventListener("visibilitychange", () => { if (!document.hidden) update(); });
   window.addEventListener("pageshow", update);
 </script>
+
+<style is:global>
+.narnia-preview [data-homepage-christmas]{background:linear-gradient(120deg,#102837,#1d4250)!important;color:#f2eee3!important;border-color:#b69761!important}.narnia-preview [data-homepage-christmas] h1,.narnia-preview [data-homepage-christmas] h1 em,.narnia-preview .hero-fact{color:#f2eee3!important}.narnia-preview [data-homepage-christmas] .christmas-home-tree{display:none!important}.narnia-preview [data-homepage-christmas] .hero-copy{background:none!important}.narnia-preview [data-homepage-christmas] h1 em{color:#e5c887!important}.narnia-preview .christmas-home-art{background:transparent!important;box-shadow:none!important}.narnia-preview .hero-actions .button{font-size:1rem}.narnia-preview .hero-copy .mobile-page-heading{padding-top:0!important}
+</style>
+
+<style is:global>.homepage.narnia-preview .hero-event[data-homepage-christmas] h1 em{color:#e5c887!important}.homepage.narnia-preview .hero-event[data-homepage-christmas] .hero-fact-icon{color:#e5c887!important}</style>
