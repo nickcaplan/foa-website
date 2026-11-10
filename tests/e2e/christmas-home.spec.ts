@@ -18,7 +18,7 @@ for (const width of [320,390,768,1024,1440]) for (const theme of ['day','night']
   });
   expect(titleLayout).toEqual({whole:true,contained:true,separate:true});
   const actions=page.locator('.christmas-home-art .hero-actions');
-  await expect(actions.getByRole('link')).toHaveCount(2);
+  await expect(actions.getByRole('link')).toHaveCount(3);
   const positions=await actions.evaluate(el=>{const links=[...el.querySelectorAll('a')],sponsor=el.closest('article')!.querySelector('.sponsor-ribbon')!.getBoundingClientRect();return {below:el.getBoundingClientRect().top>=sponsor.bottom,ordered:getComputedStyle(el).flexDirection==="row"?Math.abs(links[0].getBoundingClientRect().top-links[1].getBoundingClientRect().top)<2&&links[0].getBoundingClientRect().right<=links[1].getBoundingClientRect().left:links[0].getBoundingClientRect().bottom<=links[1].getBoundingClientRect().top,red:getComputedStyle(el.querySelector(".christmas-home-details")!).backgroundColor}});
   expect(positions).toEqual({below:true,ordered:true,red:'rgb(167, 43, 57)'});
   const image=page.locator('.christmas-home-wreath');expect(await image.evaluate((e:HTMLImageElement)=>e.complete&&e.naturalWidth>0)).toBe(true);
@@ -83,6 +83,6 @@ test('tablet desktop forest clears obsolete mobile heading spacer',async({page})
 
 for(const width of [390,1440])test(`retired homepage has no Fireworks actions ${width}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.clock.setFixedTime(new Date('2026-11-05T20:00:00Z'));await page.goto('/');
- await expect(page.locator('[data-homepage-fireworks]')).toHaveCount(0);await expect(page.locator('[data-homepage-christmas] .hero-actions a')).toHaveCount(2);
+ await expect(page.locator('[data-homepage-fireworks]')).toHaveCount(0);await expect(page.locator('[data-homepage-christmas] .hero-actions a')).toHaveCount(3);
  await expect(page.getByRole('link',{name:'Email the organisers'})).toHaveCSS('background-color','rgb(23, 79, 54)');
 });
