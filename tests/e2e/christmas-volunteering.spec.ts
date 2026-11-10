@@ -10,7 +10,7 @@ for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(cons
  await expect(page.locator('.fayre-volunteer__schedule').first()).toContainText('08:30 - 10:30');
  await expect(page.locator('.narnia-landscape__date')).toContainText('12:00 - 15:00');
  await expect(page.locator('.narnia-landscape__time')).toHaveCSS('white-space','nowrap');
- await expect(page.locator('.fayre-volunteer__back')).toHaveAttribute('href','/events/christmas-fayre-2026/');
+ await expect(page.locator('.fayre-volunteer__back')).toHaveCount(0);
  await expect(page.locator('.fayre-volunteer__email')).toHaveAttribute('href',/^mailto:/);
  for(const range of await page.locator('.fayre-volunteer__schedule dd').all()) await expect(range).toHaveCSS('white-space','nowrap');
  if(scale===1)expect(await page.locator('.fayre-volunteer__card').first().evaluate(n=>n.getBoundingClientRect().top)).toBeLessThan(width<500?600:700);
@@ -18,6 +18,5 @@ for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(cons
  expect(requests).toEqual([]);await expect(page.locator('iframe')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBe(0);
  const escaped=await page.locator('.fayre-volunteer__card').evaluateAll(cards=>cards.filter(card=>[...card.querySelectorAll('h3,p,a')].some(child=>{const r=child.getBoundingClientRect(),c=card.getBoundingClientRect();return r.left<c.left||r.right>c.right})).length);expect(escaped).toBe(0);
- await page.getByRole('link',{name:'Back to Christmas Fayre details'}).click();await expect(page).toHaveURL(/\/events\/christmas-fayre-2026\/$/);
- await expect(page.getByRole('link',{name:'Sign up to help',exact:true})).toHaveAttribute('href','/christmas-fayre-volunteering/');
+
 });

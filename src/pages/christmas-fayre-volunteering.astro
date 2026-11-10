@@ -30,7 +30,6 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
    <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+event.loanSignupAnchor} target="_blank" rel="noopener noreferrer"><span>See the loan list<span class="visually-hidden"> (opens JustSignup in a new tab)</span></span><span class="external-link-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></a>
   </section>
   <div class="fayre-volunteer__closing">
-   <a class="button fayre-volunteer__back" href={withBase(event.path)}><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7-7-7 7 7 7"/></svg><span>Back to Christmas Fayre details</span></a>
    <section class="fayre-volunteer__contact" aria-labelledby="volunteer-questions"><h2 id="volunteer-questions">Questions about helping?</h2><a class="button fayre-volunteer__email" href={'mailto:'+event.contactEmail}>Email the Fayre team</a></section>
   </div>
  </div>
@@ -67,7 +66,6 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__loan p{margin:0;line-height:1.7}
 .fayre-volunteer__closing{margin-top:1.5rem;display:grid;justify-items:center;gap:1.5rem}
 .fayre-volunteer__closing .button{font-size:1rem;line-height:1.5;min-height:3.25rem;max-width:100%;padding:.75rem 1.25rem;white-space:normal;text-align:center;text-decoration:none;color:#fff3d5;border:1px solid #c9a65f}
-.fayre-volunteer__closing .fayre-volunteer__back{background:transparent;display:inline-flex;gap:.75rem;align-items:center;justify-content:center}.fayre-volunteer__back svg{flex:none}
 .fayre-volunteer__contact{width:100%;border:1px solid #b99a5b88;border-radius:.65rem;background:#173844;padding:1.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem 2rem}
 .fayre-volunteer__contact h2{margin:0;font:500 clamp(1.5rem,2.5vw,2rem)/1.2 Georgia,serif;color:#fff3d5}
 .fayre-volunteer__closing .fayre-volunteer__email{background:#742f3c}
