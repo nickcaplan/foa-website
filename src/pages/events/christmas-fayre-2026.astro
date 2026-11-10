@@ -65,7 +65,7 @@ const eventJsonLd = {
         <div class="narnia-event-details">
           <section class="fayre-leads" aria-labelledby="fayre-leads-title">
             <h2 id="fayre-leads-title">Led by</h2>
-            <div class="fayre-leads__grid">{leads.map(lead=><p class="fayre-leads__card">{lead}</p>)}</div>
+            <div class="fayre-leads__grid">{leads.map(lead=><p class="fayre-leads__card"><svg class="fayre-leads__star" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" /></svg><span>{lead}</span><svg class="fayre-leads__star" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" /></svg></p>)}</div>
           </section>
         </div>
       </div>
@@ -188,3 +188,5 @@ const eventJsonLd = {
 .narnia-event .narnia-landscape:before{background:linear-gradient(90deg,#10232c33,#10232cdd 35%,#10232cdd 62%,#10232c88)}
 }
 </style>
+
+<style>.fayre-leads__card{display:flex;align-items:center;gap:.6rem}.fayre-leads__star{width:.8rem;height:.8rem;flex:0 0 .8rem;fill:#d4b36c}.fayre-leads__card span{min-width:0}</style>
