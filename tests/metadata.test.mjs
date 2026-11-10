@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 
 const dist = path.resolve("dist");
-const siteUrl = (process.env.SITE_URL || "https://example.com").replace(/\/$/, "");
+const siteUrl = (process.env.SITE_URL || "https://www.thefriendsofashley.org").replace(/\/$/, "");
 const basePath = (process.env.BASE_PATH || "/").replace(/\/$/, "");
 
 // Every built HTML page is checked unless it has an explicit reason not to be indexed.
