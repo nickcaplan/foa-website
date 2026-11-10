@@ -15,3 +15,9 @@ for(const width of[320,390,768,1440])test(`Fayre information and CTA widths ${wi
  const widths=await row.locator('.event-list-cta--button,.event-volunteer-link .button').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().width));expect(widths).toHaveLength(2);expect(Math.abs(widths[0]-widths[1])).toBeLessThan(1);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBe(0);
 });
+
+for(const width of [390,1440]) test(`lead outline widths at ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.goto('/events/christmas-fayre-2026/');
+ const boxes=await page.locator('.fayre-leads__card').evaluateAll(es=>es.map(e=>{const box=e.getBoundingClientRect(),text=e.querySelector('span')!.getBoundingClientRect(),parent=e.parentElement!.getBoundingClientRect();return{width:box.width,textWidth:text.width,parentWidth:parent.width,top:box.top}}));
+ expect(boxes).toHaveLength(2);if(width===1440){expect(Math.abs(boxes[0].top-boxes[1].top)).toBeLessThan(1);for(const b of boxes)expect(b.width-b.textWidth).toBeLessThan(40)}else for(const b of boxes)expect(Math.abs(b.width-b.parentWidth)).toBeLessThan(1);
+});
