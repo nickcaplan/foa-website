@@ -1,4 +1,5 @@
 ---
+import PosterHero from "../components/PosterHero.astro";
 import PosterForest from "../components/PosterForest.astro";
 import NarniaScene from "../components/NarniaScene.astro";
 import christmasHomeStyles from "../styles/christmas-home.css?inline";
@@ -31,11 +32,11 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
    <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass={narniaPreview ? "homepage narnia-preview" : "homepage"} noindex={christmasPreview || narniaPreview} homepage={christmasPreview}>
 
   <style is:inline set:html={baseAwareChristmasStyles} />
-  {narniaPreview && <p class="site-width narnia-preview-label">Narnia hero concept. Design preview only, not ready for release.</p>}
+  {narniaPreview && <p class="site-width narnia-preview-label">Design preview only.</p>}
   <HomepageMobileIdentity />
   <section class="hero">
     <div class="site-width hero-grid">
-      <div class="hero-event" data-homepage-christmas>
+      {narniaPreview ? <PosterHero event={event} /> : <div class="hero-event" data-homepage-christmas>
         {narniaPreview && <PosterForest />}
         <span class="christmas-home-tree" aria-hidden="true"></span>
        <div class="hero-copy">
@@ -54,7 +55,7 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
           </div>
         </article>
        </div>
-      </div>
+      </div>}
      <div class="quick-list hero-links">
      {latestNewsletter && <a class="quick-row" href={withBase("/newsletter/")}><span><h3>Read the latest newsletter</h3><p>{latestNewsletter.title}</p></span><span class="quick-arrow" aria-hidden="true">&rarr;</span></a>}
      <a class="quick-row" href={withBase("/get-involved/")}><span><h3>Get involved</h3><p>Roles, meetings, class reps and ways to help.</p></span><span class="quick-arrow" aria-hidden="true">&rarr;</span></a>

@@ -1,4 +1,5 @@
 ---
+import PosterHero from "../../components/PosterHero.astro";
 import PosterForest from "../../components/PosterForest.astro";
 import NarniaScene from "../../components/NarniaScene.astro";
 import SignupPreview from "../../components/SignupPreview.astro";
@@ -66,7 +67,7 @@ const eventJsonLd = {
     <section class="xmas-hero" aria-labelledby="xmas-title">
       <ChristmasBaubles placement="desktop" />
       <div class="site-width">
-        <div class="xmas-frame xmas-hero__frame">
+        {narniaPreview ? <><p class="poster-preview-note">Design preview only.</p><PosterHero event={event} eventPage={true} /></> : <div class="xmas-frame xmas-hero__frame">
           {narniaPreview && <PosterForest />}
           {narniaPreview && <p class="narnia-concept-note">Narnia hero concept. Design preview only.</p>}
           <MobilePageHeading logo="/brand/foa-logo-christmas-ivory.svg">
@@ -83,7 +84,7 @@ const eventJsonLd = {
             <div><dt>Led by</dt><dd>{event.lead?.split(/(?<=\)) and /).map((lead, index) => <>{index > 0 && <br />}{lead}</>)}</dd></div>
           </dl>
           <p class="xmas-actions"><a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a><AddToCalendar eventId={entry.id} /></p>
-        </div>
+        </div>}
       </div>
     </section>
 
@@ -144,3 +145,5 @@ const eventJsonLd = {
 {narniaPreview && <style is:inline>@media(max-width:63.99rem){.narnia-event-preview .poster-forest{display:none}.narnia-event-preview .xmas-hero__frame{padding-inline:1.25rem}.narnia-event-preview .narnia-concept-note{padding-inline:0 3rem;text-align:left}}</style>}
 
 {narniaPreview && <style is:inline>@media(max-width:47.99rem){.narnia-event-preview .xmas-hero__frame .mobile-page-heading-copy h1{font-size:min(1.5rem,7vw)!important;line-height:1.25;max-width:100%}.narnia-event-preview .narnia-concept-note{margin-right:2rem}}</style>}
+
+{narniaPreview && <style is:inline>.poster-preview-note{padding:1rem 5rem 1rem 0;color:#f3ead3;font-size:.85rem;max-width:56rem;margin:auto}</style>}
