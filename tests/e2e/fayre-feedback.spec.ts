@@ -9,7 +9,7 @@ for(const width of[320,390,768,1440])test(`Fayre information and CTA widths ${wi
  expect(paths.BBQ).not.toBe(paths['Café']);expect(paths.Bar).not.toBe(paths['Café']);expect(paths.Bar).not.toBe(paths.BBQ);
  await page.goto('/whats-on/');const row=page.locator('[data-volunteer-actions]');
  await expect(row.getByRole('link',{name:'Event details',exact:true})).toHaveAttribute('href','/events/christmas-fayre-2026/');
- await expect(row.getByRole('link',{name:'Explore volunteering',exact:true})).toHaveAttribute('href','/christmas-fayre-volunteering/');
+ await expect(row.getByRole('link',{name:'Volunteer',exact:true})).toHaveAttribute('href','/christmas-fayre-volunteering/');
  await expect(row.locator('.event-volunteer-link svg[aria-hidden="true"]')).toHaveCount(1);
  expect(await row.locator('.event-volunteer-link .button').evaluate(e=>{const r=e.getBoundingClientRect(),s=e.querySelector('svg')!.getBoundingClientRect();return Math.abs((s.top+s.bottom)/2-(r.top+r.bottom)/2)})).toBeLessThan(1);
  const widths=await row.locator('.event-list-cta--button,.event-volunteer-link .button').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().width));expect(widths).toHaveLength(2);expect(Math.abs(widths[0]-widths[1])).toBeLessThan(1);

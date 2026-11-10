@@ -10,10 +10,10 @@ for(const width of [320,390,768,1024,1440])for(const mode of ['day','night'])for
  expect(await page.locator('.narnia-landscape__art').evaluate((i:HTMLImageElement)=>i.naturalWidth)).toBeGreaterThan(0);
  await expect(page.locator('.sponsor-ribbon img')).toHaveAttribute('alt','Martin Flashman and Co');
  const hero=page.locator('.narnia-landscape');
- await expect(hero.getByRole('link',{name:'Explore volunteering'})).toHaveAttribute('href','/christmas-fayre-volunteering/');
+ await expect(hero.getByRole('link',{name:'Volunteer'})).toHaveAttribute('href','/christmas-fayre-volunteering/');
  await expect(hero.getByRole('link',{name:'Event details'})).toHaveAttribute('href','/events/christmas-fayre-2026/');
  await expect(hero.locator('.narnia-landscape__copy .button').first()).toHaveText('Event details');
- await expect(hero.locator('.narnia-landscape__secondary')).toHaveText('Explore volunteering');
+ await expect(hero.locator('.narnia-landscape__secondary')).toHaveText('Volunteer');
  const geometry=await hero.evaluate(el=>{const h=el.querySelector('h1')!.getBoundingClientRect(),a=el.querySelector('.button')!.getBoundingClientRect(),r=el.getBoundingClientRect();return{separate:h.bottom<=a.top,contained:h.left>=r.left&&h.right<=r.right,overflow:document.documentElement.scrollWidth-innerWidth}});
  expect(geometry).toEqual({separate:true,contained:true,overflow:0});
  await hero.getByRole('link',{name:'Event details'}).click();await expect(page).toHaveURL(/\/events\/christmas-fayre-2026\/$/);

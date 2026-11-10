@@ -32,7 +32,7 @@ test('snow stays outside the reading area and honours reduced motion',async({pag
  expect(await page.locator('.xmas-snow i').evaluateAll(els=>els.filter(e=>getComputedStyle(e).animationName!=='none').length)).toBe(0);
 });
 test.describe('without JavaScript',()=>{test.use({javaScriptEnabled:false});test('sign-up link and contact remain available',async({page})=>{
- await page.goto(route);await expect(page.getByRole('link',{name:/Explore volunteering/}).first()).toBeVisible();await expect(page.locator('.xmas-area')).toHaveCount(10);await expect(page.getByRole('link',{name:/Email the Fayre team/})).toBeVisible();
+ await page.goto(route);await expect(page.getByRole('link',{name:/Volunteer/}).first()).toBeVisible();await expect(page.locator('.xmas-area')).toHaveCount(10);await expect(page.getByRole('link',{name:/Email the Fayre team/})).toBeVisible();
 });});
 
-test('What’s On Fayre item keeps details and links to volunteering',async({page})=>{await page.goto('/whats-on/');const row=page.locator('[data-event-title="Christmas Fayre"][data-past="false"]');await expect(row.getByRole('link',{name:'Christmas Fayre',exact:true})).toHaveAttribute('href',route);await expect(row.getByRole('link',{name:'Explore volunteering',exact:true})).toHaveAttribute('href','/christmas-fayre-volunteering/');await expect(row.locator('a a')).toHaveCount(0);});
+test('What’s On Fayre item keeps details and links to volunteering',async({page})=>{await page.goto('/whats-on/');const row=page.locator('[data-event-title="Christmas Fayre"][data-past="false"]');await expect(row.getByRole('link',{name:'Christmas Fayre',exact:true})).toHaveAttribute('href',route);await expect(row.getByRole('link',{name:'Volunteer',exact:true})).toHaveAttribute('href','/christmas-fayre-volunteering/');await expect(row.locator('a a')).toHaveCount(0);});
