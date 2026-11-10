@@ -12,6 +12,8 @@ for(const width of [320,390,768,1024,1440])for(const mode of ['day','night'])for
  const hero=page.locator('.narnia-landscape');
  await expect(hero.getByRole('link',{name:'Sign up to help'})).toHaveAttribute('href','/events/christmas-fayre-2026/#sign-up');
  await expect(hero.getByRole('link',{name:'Event details'})).toHaveAttribute('href','/events/christmas-fayre-2026/');
+ await expect(hero.locator('.button')).toHaveText('Event details');
+ await expect(hero.locator('.narnia-landscape__footer a')).toHaveText('Sign up to help');
  const geometry=await hero.evaluate(el=>{const h=el.querySelector('h1')!.getBoundingClientRect(),a=el.querySelector('.button')!.getBoundingClientRect(),r=el.getBoundingClientRect();return{separate:h.bottom<=a.top,contained:h.left>=r.left&&h.right<=r.right,overflow:document.documentElement.scrollWidth-innerWidth}});
  expect(geometry).toEqual({separate:true,contained:true,overflow:0});
  await hero.getByRole('link',{name:'Event details'}).click();await expect(page).toHaveURL(/\/events\/christmas-fayre-2026\/$/);

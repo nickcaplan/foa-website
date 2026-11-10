@@ -296,7 +296,7 @@ test("Christmas artwork keeps its own colours in both modes", async ({ page }) =
   }
 });
 
-test("hero panel keeps dark focus outlines and heading accent in both modes", async ({ page }) => {
+test("hero panel keeps visible focus outlines and heading accent in both modes", async ({ page }) => {
   // Keyboard focus, not programmatic .focus(): :focus-visible only applies
   // after keyboard interaction, which is the state this rule exists for.
   const tabTo = async (selector: string) => {
