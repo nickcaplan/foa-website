@@ -10,7 +10,7 @@ for(const width of [320,390,768,1024,1440])for(const mode of ['day','night'])for
  expect(await page.locator('.narnia-landscape__art').evaluate((i:HTMLImageElement)=>i.naturalWidth)).toBeGreaterThan(0);
  await expect(page.locator('.sponsor-ribbon img')).toHaveAttribute('alt','Martin Flashman and Co');
  const hero=page.locator('.narnia-landscape');
- await expect(hero.getByRole('link',{name:'Sign up to help'})).toHaveAttribute('href','/events/christmas-fayre-2026/#sign-up');
+ await expect(hero.getByRole('link',{name:'Sign up to help'})).toHaveAttribute('href','/christmas-fayre-volunteering/');
  await expect(hero.getByRole('link',{name:'Event details'})).toHaveAttribute('href','/events/christmas-fayre-2026/');
  await expect(hero.locator('.narnia-landscape__copy .button').first()).toHaveText('Event details');
  await expect(hero.locator('.narnia-landscape__secondary')).toHaveText('Sign up to help');

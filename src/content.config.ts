@@ -45,6 +45,9 @@ const events = defineCollection({
     })).optional(),
     contactEmail: z.email().optional(),
     signupUrl: z.url().optional(),
+    volunteeringPath: z.string().optional(),
+    signupActivities: z.array(z.object({ name: z.string(), description: z.string(), anchor: z.string(), schedule: z.array(z.object({label:z.string(),when:z.string()})) })).optional(),
+    loanSignupAnchor: z.string().optional(),
     entry: z.string().optional(),
     whatsOn: z.array(z.string()).optional(),
     helpAreas: z.array(z.object({

@@ -12,7 +12,7 @@ for(const width of [320,390,768,1024,1440])test(`Fayre retains facts and no over
 });
 test('click-out matches Fireworks volunteering safety and loads no third-party board',async({page})=>{
  const requests:string[]=[];page.on('request',r=>{if(/justsignup|posthog|vercel-storage/.test(r.url()))requests.push(r.url())});
- await page.goto(route);
+ await page.goto('/christmas-fayre-volunteering/');
  const signup=page.getByRole('link',{name:'Sign up to help (opens JustSignup in a new tab)'});
  await expect(signup).toHaveAttribute('href','https://justsignup.io/s/uhyd1u3wq4');
  await expect(signup).toHaveAttribute('target','_blank');await expect(signup).toHaveAttribute('rel','noopener noreferrer');

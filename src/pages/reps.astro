@@ -76,11 +76,11 @@ const messageList: {
     reviewed: "2026-11-10",
     paragraphs: [
       `The ${christmas.title} is on ${dateFormatter(christmas.start)} ${timeRange(christmas)} at ${christmas.location}, led by ${christmas.lead}. They’re looking for helpers!`,
-      `This year, anyone across the school can help in any area, rather than stalls being assigned to year groups. Bring a friend and help with the ${list(christmas.helpAreas.map(({ name }) => name))}. No experience needed. Choose a volunteer slot using the sign-up link on the Fayre page.`,
+      `This year, anyone across the school can help in any area, rather than stalls being assigned to year groups. Bring a friend and help with the ${list(christmas.helpAreas.map(({ name }) => name))}. No experience needed. Choose an activity on the Fayre volunteering page, then pick a slot on JustSignup.`,
     ],
     timing: christmas,
-    href: christmas.path!,
-    linkLabel: "See the Fayre details and choose a volunteer slot",
+    href: christmas.volunteeringPath!,
+    linkLabel: "Choose a Christmas Fayre volunteer activity",
   },
 ];
 const builtAt = Date.now();

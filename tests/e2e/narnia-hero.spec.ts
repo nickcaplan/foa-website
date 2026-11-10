@@ -18,7 +18,7 @@ for (const route of ['home','fayre']) {
         expect(measurements.centreOffset).toBeLessThan(2);
         expect(measurements.align).toBe('center');
         expect(measurements.overflow).toBeLessThanOrEqual(0);
-        await expect(hero.getByRole('link',{name:/Sign up to help/})).toHaveAttribute('href',route==='home'?'/events/christmas-fayre-2026/#sign-up':'https://justsignup.io/s/uhyd1u3wq4');
+        await expect(hero.getByRole('link',{name:/Sign up to help/})).toHaveAttribute('href','/christmas-fayre-volunteering/');
       });
     }
   }
