@@ -263,7 +263,7 @@ test("the homepage features the chosen Christmas Fayre design without reviving t
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
   assert.ok(homepage.includes(ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(fayre.start)));
   assert.ok(homepage.includes(fayre.location));
-  assert.ok(homepage.includes(formatEventTimeRange(new Date(fayre.start), new Date(fayre.end)).replace('-', ' - ')));
+  assert.ok(homepage.includes(formatEventTimeRange(new Date(fayre.start), new Date(fayre.end)).replace(/(?<=\d)-(?=\d)/g, ' - ')));
   assert.ok(homepage.includes(fayre.entry));
   assert.doesNotMatch(homepage, /Featured event|hero-next-event/);
   assert.match(homepage, /class="narnia-landscape__art"/);
@@ -393,7 +393,7 @@ const fireworks = JSON.parse(await readFile(path.resolve("src/content/events/fir
 
 test("the Christmas Fayre page lists every help area from the event record", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  const areas = [...html.matchAll(/<li class="xmas-area">[\s\S]*?<span>([^<]*)<\/span>/g)].map((match) => match[1]);
+  const areas = [...html.matchAll(/<li class="xmas-area"[^>]*>[\s\S]*?<span[^>]*>([^<]*)<\/span>/g)].map((match) => match[1]);
   assert.deepEqual(areas, christmas.helpAreas.map((area) => escapeHtml(area.name)));
   assert.equal(areas.length, 10);
 });
@@ -405,14 +405,14 @@ test("the Christmas Fayre page uses a JustSignup click-out and keeps the Fayre i
   for (const link of links) {
     assert.equal(link, `mailto:${christmas.contactEmail}?subject=Helping%20at%20the%20Christmas%20Fayre`);
   }
-  assert.equal([...html.matchAll(/>Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span/g)].length, 1);
+  assert.equal([...html.matchAll(/>Email the Fayre <span class="cta-word"[^>]*>tea<span class="cta-tail"[^>]*>m<span/g)].length, 1);
 });
 
 test("the Christmas Fayre page keeps reminders in a plain list, separate from the help areas", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  const notes = html.match(/<div class="xmas-notes">([\s\S]*?)<\/div>/)?.[1] ?? "";
-  assert.match(notes, /<h3>Good to know<\/h3>/);
-  assert.equal([...notes.matchAll(/<li>/g)].length, 3);
+  const notes = html.match(/<div class="xmas-notes"[^>]*>([\s\S]*?)<\/div>/)?.[1] ?? "";
+  assert.match(notes, /<h3[^>]*>Good to know<\/h3>/);
+  assert.equal([...notes.matchAll(/<li(?:\s[^>]*)?>/g)].length, 3);
   for (const reminder of ["Join in anywhere", "Bring a friend", "No experience needed"]) assert.match(notes, new RegExp(reminder));
   assert.doesNotMatch(notes, /xmas-area/);
 });
@@ -427,7 +427,7 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   assert.ok(!html.includes(christmas.whatsOn.map(escapeHtml).join(' · ')), 'Stalls are not repeated above the activity cards');
   assert.ok(!html.includes('class="add-calendar"'), 'Calendar choices are hidden on Fayre details');
   assert.ok(html.includes('/sponsors/martin-flashman.jpeg'), 'Landscape sponsor logo is used');
-  assert.match(html, /<div class="xmas-snow" aria-hidden="true">/);
+  assert.match(html, /<div class="xmas-snow" aria-hidden="true"[^>]*>/);
   assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
   assert.match(html, /martin-flashman\.jpeg" alt="Martin Flashman and Co"/);
   assert.ok(html.includes(`href="${basePath}${christmas.volunteeringPath}"`));

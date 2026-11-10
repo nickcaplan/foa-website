@@ -3,7 +3,8 @@ import {withBase} from '../lib/urls';
 import {ordinalDateFormatter,formatEventTimeRange} from '../lib/dates';
 const {event,eventPage=false,homepage=false,volunteerPage=false}=Astro.props;
 const signupUrl = event.signupUrl;
-const volunteerPath = event.volunteeringPath ?? event.path+"#sign-up";
+const volunteerPath = event.volunteeringPath ?? (event.path ? event.path+"#sign-up" : undefined);
+if (!volunteerPath) throw new Error("Christmas Fayre volunteering path is missing");
 if (!signupUrl) throw new Error("Christmas Fayre sign-up URL is missing");
 const date=ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event.start);
 ---
