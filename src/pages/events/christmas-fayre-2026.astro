@@ -11,6 +11,8 @@ const entry = await getEntry("events", "christmas-fayre-2026");
 if (!entry?.data.helpAreas || !entry.data.contactEmail) throw new Error("Christmas Fayre content is missing");
 const event = entry.data;
 const helpAreas = event.helpAreas!;
+if (!event.lead) throw new Error("Christmas Fayre leads are missing");
+const leads = event.lead.split(/ and (?=[^()]*\()/);
 const email = event.contactEmail!;
 const mailto = `mailto:${email}?subject=${encodeURIComponent("Helping at the Christmas Fayre")}`;
 
@@ -59,10 +61,10 @@ const eventJsonLd = {
         <div class="narnia-mobile-brand"><PageLogo logo="/brand/foa-logo-christmas-ivory.svg" /></div>
         <NarniaHero event={event} eventPage={true} />
         <div class="narnia-event-details">
-          <p class="narnia-sponsor"><img src={withBase('/sponsors/martin-flashman.jpeg')} alt="Martin Flashman and Co" width="225" height="33" loading="lazy" /></p>
-          <dl class="xmas-facts">
-            <div><dt>Led by</dt><dd>{event.lead}</dd></div>
-          </dl>
+          <section class="fayre-leads" aria-labelledby="fayre-leads-title">
+            <h2 id="fayre-leads-title">Led by</h2>
+            <div class="fayre-leads__grid">{leads.map(lead=><p class="fayre-leads__card">{lead}</p>)}</div>
+          </section>
         </div>
       </div>
     </section>
@@ -108,18 +110,12 @@ const eventJsonLd = {
 </BaseLayout>
 
 <style is:inline>
-.narnia-event .xmas-stage .site-width{width:min(calc(100% - 2rem),62rem)}@media(min-width:48rem){.narnia-event .xmas-stage .site-width{width:min(calc(100% - 3rem),62rem)}}.narnia-event .narnia-landscape{max-width:none}.narnia-mobile-brand{padding:1rem 4rem 1rem 0}.narnia-mobile-brand .mobile-page-logo{display:block;width:3rem;height:3rem}.narnia-mobile-brand img{width:100%;height:100%}.narnia-event-details{max-width:52rem;margin:2rem auto 0;text-align:center}.narnia-sponsor img{display:block;width:min(100%,225px);height:auto;margin:auto}.narnia-event-details .xmas-facts{margin:1.5rem auto}@media(min-width:80rem){.narnia-mobile-brand{display:none}}
+.narnia-event .xmas-stage .site-width{width:min(calc(100% - 2rem),62rem)}@media(min-width:48rem){.narnia-event .xmas-stage .site-width{width:min(calc(100% - 3rem),62rem)}}.narnia-event .narnia-landscape{max-width:none}.narnia-mobile-brand{padding:1rem 4rem 1rem 0}.narnia-mobile-brand .mobile-page-logo{display:block;width:3rem;height:3rem}.narnia-mobile-brand img{width:100%;height:100%}.narnia-event-details{max-width:52rem;margin:2rem auto 0;text-align:center}@media(min-width:80rem){.narnia-mobile-brand{display:none}}
 </style>
 
 <style is:inline>
 @media(min-width:64rem){
-.narnia-event-details{max-width:none;text-align:left;display:grid;grid-template-columns:1fr auto;gap:1.5rem 2rem;align-items:start}
-.narnia-event-details .narnia-sponsor{grid-column:2;grid-row:1;margin:0;padding-top:.25rem}
-.narnia-event-details .narnia-sponsor img{width:225px}
-.narnia-event-details .xmas-facts{display:block;margin:0;padding:0;border:0;max-width:none}
-.narnia-event-details .xmas-facts>div{display:grid;grid-template-columns:8rem minmax(0,1fr);gap:1rem;align-items:start;padding:1rem 0;border-bottom:1px solid #b99a5b66;text-align:left}
-.narnia-event-details .xmas-facts dt{margin:0;text-align:left}
-.narnia-event-details .xmas-facts dd{font-size:1.15rem;line-height:1.6;text-align:left}
+.narnia-event-details{max-width:none;text-align:left}
 }
 </style>
 
@@ -152,13 +148,8 @@ const eventJsonLd = {
 </style>
 
 <style is:inline>
-.narnia-event-details .xmas-facts{padding:1rem 1.25rem;border:1px solid #b99a5b66;border-left:3px solid #b99a5b;border-radius:8px;background:#102d3866}
-.narnia-event-details .xmas-facts>div{border:0;padding:0}
-.narnia-event-details .xmas-facts dt{color:#edcb83;font-size:.8rem;letter-spacing:.12em}
-.narnia-event-details .xmas-facts dd{margin-bottom:0;color:#fff3d5}
 @media(max-width:47.99rem){
 .narnia-event .xmas-hero{padding-bottom:0}
-.narnia-event-details .xmas-facts{margin-bottom:0}
 .narnia-event .xmas-hero+.xmas-section{padding-top:.75rem}
 .narnia-event .xmas-hero+.xmas-section h2{margin-top:0}
 }
@@ -172,4 +163,10 @@ const eventJsonLd = {
 }
 @media(min-width:64rem){.narnia-event .narnia-mobile-brand{display:none}}
 @media(min-width:64rem) and (max-width:79.99rem){.narnia-event .menu-toggle{top:calc(1rem + var(--introduction-logo-size)*.45 - 1.5rem)}}
+</style>
+
+
+<style is:inline>
+.fayre-leads{margin:0}.narnia-event .fayre-leads h2{margin:0 0 .75rem;font:700 .85rem/1.4 var(--font-body,system-ui,sans-serif);letter-spacing:.12em;text-transform:uppercase;color:#edcb83;text-align:left}.narnia-event .fayre-leads h2:after{display:none}.fayre-leads__grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.fayre-leads__card{margin:0;padding:1rem 1.25rem;background:#f4ead1;color:#173a2c;border:1px solid #d4b36c;border-radius:8px;font:500 1.15rem/1.5 Georgia,serif;text-align:center;box-shadow:0 4px 12px #001b1633}
+@media(max-width:47.99rem){.fayre-leads__grid{grid-template-columns:1fr;gap:.65rem}.fayre-leads__card{padding:.85rem 1rem}.narnia-event .fayre-leads h2{text-align:center}}
 </style>

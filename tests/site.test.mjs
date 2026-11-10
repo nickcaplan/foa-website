@@ -421,7 +421,8 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
   assert.match(html, /class="narnia-landscape__date">Saturday 5th December[\s\S]*?class="narnia-landscape__time">12:00 - 15:00/);
   assert.ok(html.includes(christmas.location));
-  assert.ok(html.includes(escapeHtml(christmas.lead)));
+  for (const lead of christmas.lead.split(/ and (?=[^()]*\()/)) assert.ok(html.includes(escapeHtml(lead)));
+  assert.equal([...html.matchAll(/class="fayre-leads__card"/g)].length, 2);
   assert.ok(html.includes(escapeHtml(christmas.entry)));
   assert.ok(!html.includes(christmas.whatsOn.map(escapeHtml).join(' · ')), 'Stalls are not repeated above the activity cards');
   assert.ok(!html.includes('class="add-calendar"'), 'Calendar choices are hidden on Fayre details');
