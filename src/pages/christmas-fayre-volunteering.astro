@@ -14,18 +14,14 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
  <div class="site-width fayre-volunteer">
   <div class="fayre-volunteer__brand"><PageLogo logo="/brand/foa-logo-christmas-ivory.svg" /></div>
   <NarniaHero event={event} eventPage={true} volunteerPage={true}/>
-  <section class="fayre-volunteer__intro" aria-labelledby="choose-activity">
-   <p class="fayre-volunteer__eyebrow">Step through the wardrobe</p>
-   <h2 id="choose-activity">Help bring Narnia to life</h2>
-   <p>Everyone across the school can join in anywhere. Bring a friend and choose an activity you'll enjoy. No experience needed.</p>
-   <p>Event helper slots are 30 minutes, leaving time to enjoy the Fayre with your family. Setup and clear-up times vary by activity.</p>
-   <p class="fayre-volunteer__tip">Sign-up buttons open the matching activity on JustSignup in a new tab. Choose your time and check current availability there.</p>
+  <section class="fayre-volunteer__intro" aria-label="Choose your volunteer activity">
+   <p>Choose an activity below. Buttons open JustSignup in a new tab to pick your slot. Event helper slots are 30 minutes; setup and clear-up vary.</p>
   </section>
   <ul class="fayre-volunteer__grid" aria-label="Volunteer activities">
    {event.signupActivities.map(activity=><li class="fayre-volunteer__card">
     <h3>{activity.name}</h3>
     <p>{activity.description}</p>
-    <dl class="fayre-volunteer__schedule">{activity.schedule.map(shift=><div><dt>{shift.label}</dt><dd>{shift.when}</dd></div>)}</dl>
+    <dl class="fayre-volunteer__schedule">{activity.schedule.map(shift=><div><dt>{shift.label}</dt><dd>{shift.when.split('-').map((time,index)=><>{index>0 && ' - '}<span>{time}</span></>)}</dd></div>)}</dl>
     <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+activity.anchor} target="_blank" rel="noopener noreferrer"><span>Choose a slot<span class="visually-hidden"> for {activity.name} (opens JustSignup in a new tab)</span></span><span class="external-link-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></a>
    </li>)}
   </ul>
@@ -41,15 +37,19 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__brand{padding:1rem 4rem 1rem 0}
 .fayre-volunteer__brand :global(.mobile-page-logo){display:block;width:3rem;height:3rem}
 .fayre-volunteer__brand :global(img){width:100%;height:100%}
-.fayre-volunteer__intro{max-width:44rem;margin:2.5rem auto;text-align:center}
-.fayre-volunteer__intro h2,.fayre-volunteer__loan h2{font-family:Georgia,serif;font-weight:500;color:#fff3d5;line-height:1.2;font-size:clamp(1.75rem,3vw,2.5rem)}
-.fayre-volunteer__eyebrow{color:#edcb83;text-transform:uppercase;font-size:.8rem;letter-spacing:.15em;font-weight:700}
-.fayre-volunteer__intro p{line-height:1.75}
-.fayre-volunteer__tip{padding:1rem;border:1px solid #b99a5b66;border-radius:.5rem;background:#fff3d509;font-size:.95rem}
+.fayre-volunteer__intro{max-width:52rem;margin:1.25rem auto;line-height:1.65;text-align:center;font-size:.95rem}
+.fayre-volunteer__intro p{margin:0}
+.fayre-volunteer :global(.narnia-landscape__copy){min-height:0;padding:2rem 1.5rem;max-width:48rem}
+.fayre-volunteer :global(.narnia-landscape h1){font-size:clamp(2rem,3.5vw,3rem);margin-bottom:.75rem}
+.fayre-volunteer :global(.narnia-landscape h1 em){display:inline}
+.fayre-volunteer :global(.narnia-landscape__subtitle){font-size:.5em;margin-top:.35em}
+.fayre-volunteer :global(.narnia-landscape__date){margin-bottom:.5rem}
+.fayre-volunteer :global(.narnia-landscape__venue){margin-bottom:1rem}
+@media(max-width:47.99rem){.fayre-volunteer :global(.narnia-landscape__art){position:absolute;inset:0;height:100%;aspect-ratio:auto;object-fit:cover}.fayre-volunteer :global(.narnia-landscape:before){display:block;background:linear-gradient(90deg,#10232ccc,#10232cdd 35%,#10232ccc)}.fayre-volunteer :global(.narnia-landscape h1){font-size:2rem!important}.fayre-volunteer :global(.narnia-landscape__copy){padding:1.25rem 1rem}}
 .fayre-volunteer__grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1.25rem}
 .fayre-volunteer__card{position:relative;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem;padding:1.5rem;display:flex;flex-direction:column;min-width:0}
 .fayre-volunteer__card h3{font:500 1.6rem/1.2 Georgia,serif;margin:0 0 1rem;color:#fff3d5;overflow-wrap:anywhere}
-.fayre-volunteer__schedule{margin:0 0 1.5rem;border-top:1px solid #b99a5b55;font-size:.9rem;line-height:1.6}.fayre-volunteer__schedule>div{display:flex;justify-content:space-between;gap:.4rem 1rem;flex-wrap:wrap;padding-top:.5rem}.fayre-volunteer__schedule dt{color:#edcb83}.fayre-volunteer__schedule dd{margin:0;white-space:nowrap;color:#fff3d5}
+.fayre-volunteer__schedule{margin:0 0 1.5rem;border-top:1px solid #b99a5b55;font-size:.9rem;line-height:1.6}.fayre-volunteer__schedule>div{display:flex;justify-content:space-between;gap:.4rem 1rem;flex-wrap:wrap;padding-top:.5rem}.fayre-volunteer__schedule dt{color:#edcb83}.fayre-volunteer__schedule dd{margin:0;color:#fff3d5}.fayre-volunteer__schedule dd span{white-space:nowrap}
 .fayre-volunteer__card p{font-size:1rem;line-height:1.7;margin:0 0 1.5rem;color:#f4ead1}
 .fayre-volunteer .fayre-volunteer__action{margin-top:auto;min-width:0;min-height:3.25rem;max-width:100%;white-space:normal;background:#742f3c;color:#fff5e2;border:1px solid #c9a65f;font-size:1rem;line-height:1.5;gap:.75rem;padding:.75rem 1rem;display:flex;flex-wrap:nowrap;justify-content:space-between;align-items:center;text-align:left}
 .fayre-volunteer__action>span:first-child{min-width:0}.fayre-volunteer__action .external-link-icon{flex:0 0 auto;margin:0}

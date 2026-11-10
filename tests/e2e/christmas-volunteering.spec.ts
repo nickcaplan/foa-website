@@ -7,7 +7,9 @@ for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(cons
  await expect(page.getByRole('heading',{level:1})).toHaveText('Christmas Fayre Volunteering');
  await expect(page.locator('.fayre-volunteer__card')).toHaveCount(12);
  await expect(page.locator('.fayre-volunteer__number')).toHaveCount(0);
- await expect(page.locator('.fayre-volunteer__schedule').first()).toContainText('08:30-10:30');
+ await expect(page.locator('.fayre-volunteer__schedule').first()).toContainText('08:30 - 10:30');
+ await expect(page.locator('.narnia-landscape__date')).toContainText('12:00 - 15:00');
+ if(scale===1)expect(await page.locator('.fayre-volunteer__card').first().evaluate(n=>n.getBoundingClientRect().top)).toBeLessThan(width<500?600:700);
  for(const link of await page.locator('.fayre-volunteer__action').all()){await expect(link).toHaveAttribute('href',/^https:\/\/justsignup.io\/s\/uhyd1u3wq4#s-/);await expect(link).toHaveAttribute('rel','noopener noreferrer');await expect(link).toHaveAttribute('target','_blank')}
  expect(requests).toEqual([]);await expect(page.locator('iframe')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBe(0);
