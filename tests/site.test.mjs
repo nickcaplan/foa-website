@@ -98,7 +98,7 @@ test("Reps Hub shareable messages follow build-time expiry and preserve active l
   const builtAt = Date.parse(html.match(/data-built-at="([^"]+)"/)?.[1] || "");
   assert.ok(Number.isFinite(builtAt), "Build time is recorded for expiry-aware assertions");
   const fireworks = JSON.parse(await readFile("src/content/events/fireworks-2026.json", "utf8"));
-  const uniform = JSON.parse(await readFile("src/content/events/uniform-november-2026.json", "utf8"));
+  const uniform = JSON.parse(await readFile("src/content/events/uniform-december-2026.json", "utf8"));
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
   const cards = [...html.matchAll(/<article class="message-card"[^>]*>([\s\S]*?)<\/article>/g)].map(match => match[1]).filter(card => !card.includes("<h2>Christmas Fayre Donations Day</h2>"));
   const events = [fireworks, fireworks, uniform, fayre];
@@ -120,7 +120,7 @@ test("Reps Hub shareable messages follow build-time expiry and preserve active l
       for (const role of fireworks.volunteerRoles.filter((role) => role.name !== "Token presales")) assert.ok(card.includes(role.name.toLowerCase()));
       assert.doesNotMatch(card, /[Pp]resales|JRDXD/);
     }
-    if (index === 2) { assert.ok(card.includes("weather permitting")); for (const date of [uniform.start, uniform.end]) assert.ok(card.includes(`datetime="${new Date(date).toISOString()}"`)); }
+    if (index === 2) { assert.ok(card.includes("weather permitting")); for (const date of [uniform.start, uniform.end].filter(Boolean)) assert.ok(card.includes(`datetime="${new Date(date).toISOString()}"`)); }
     if (index === 3) {
       assert.ok(card.includes("rather than stalls being assigned to year groups"));
       assert.ok(card.includes("No experience needed"));
