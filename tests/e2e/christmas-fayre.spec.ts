@@ -13,6 +13,14 @@ for(const width of [320,390,768,1024,1440])test(`Fayre retains facts and no over
  await expect(page.locator('.xmas-stalls-cta a')).toHaveAttribute('href','/christmas-fayre-volunteering/');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBe(0);
 });
+for(const width of [390,1440])test(`Fayre centred leads and donations notice at ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.goto(route);
+ await expect(page.locator('.narnia-event .fayre-leads h2')).toHaveCSS('text-align','center');
+ const notice=page.locator('.fayre-donations-notice').first();
+ await expect(notice).toHaveCSS('text-align','center');
+ await expect(notice).toHaveCSS('border-top-width','3px');
+ await expect(notice).toHaveCSS('border-left-width','1px');
+});
 test('click-out matches Fireworks volunteering safety and loads no third-party board',async({page})=>{
  const requests:string[]=[];page.on('request',r=>{if(/justsignup|posthog|vercel-storage/.test(r.url()))requests.push(r.url())});
  await page.goto('/christmas-fayre-volunteering/');
