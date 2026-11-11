@@ -760,3 +760,13 @@ body.xmas-theme::before {
     padding-top: 0;
   }
 }
+
+/* Keep the full framed hero outline clear of the desktop header. */
+@media (min-width: 64rem) {
+  :is(.narnia-event, .narnia-volunteering) #main-content {
+    padding-top: 1.5rem;
+  }
+  .narnia-event .xmas-hero > .site-width {
+    padding-top: 0;
+  }
+}

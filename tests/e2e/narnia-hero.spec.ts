@@ -105,3 +105,18 @@ for (const width of [360, 390, 412, 1280, 1366, 1440]) {
     expect(layout.before).toBeGreaterThan(0);
   });
 }
+
+for (const route of ['/christmas-fayre-art-competition/', '/events/christmas-fayre-2026/', '/christmas-fayre-volunteering/']) {
+  for (const width of [1024, 1280, 1440]) {
+    test(`${route}: full hero outline clears the desktop header at ${width}px`, async ({page}) => {
+      await page.setViewportSize({width, height:900});
+      await page.goto(route);
+      const gap = await page.evaluate(() => {
+        const header = document.querySelector('.site-header')!.getBoundingClientRect();
+        const hero = document.querySelector('.art-comp-banner, .narnia-landscape')!.getBoundingClientRect();
+        return hero.top - header.bottom;
+      });
+      expect(gap).toBeCloseTo(24, 0);
+    });
+  }
+}
