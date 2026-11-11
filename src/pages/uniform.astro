@@ -10,7 +10,7 @@ import PageHero from "../components/PageHero.astro";
       <a class="button button--amber button--large uniform-action" href="https://tinyurl.com/foapreloved" target="_blank" rel="noopener noreferrer"><span class="cta-label">Reserve via Google <span class="cta-word">For<span class="cta-tail">m<span class="external-link-icon cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span></span></span><span class="visually-hidden"> (opens in a new tab)</span></span></a>
     </Fragment>
   </PageHero>
-  <section class="content-section content-section--compact content-section--snug uniform-details"><div class="site-width split-layout split-layout--snug uniform-details-grid"><div class="christmas-sale"><div class="christmas-sale-top"><p class="eyebrow">Next sale</p><img class="christmas-knit" src={withBase("/brand/christmas-jumper-fair-isle.svg")} width="500" height="470" alt="" aria-hidden="true" /></div><h2 class="editorial-heading">Friday 4th December</h2><p class="section-copy">Christmas jumpers will be on sale alongside pre-loved uniform at the final sale of term.</p><p class="section-copy christmas-donations"><strong>Christmas jumpers wanted:</strong> in good condition, age 5 and up.</p><div class="sale-time">
+  <section class="content-section content-section--compact content-section--snug uniform-details"><div class="site-width split-layout split-layout--snug uniform-details-grid"><div class="christmas-sale"><div class="christmas-sale-top"><div class="christmas-sale-heading"><p class="eyebrow">Next sale</p><h2 class="editorial-heading">Friday 4th December</h2></div><img class="christmas-knit" src={withBase("/brand/christmas-jumper-fair-isle.svg")} width="500" height="470" alt="" aria-hidden="true" /></div><p class="section-copy">Christmas jumpers will be on sale alongside pre-loved uniform at the final sale of term.</p><p class="section-copy christmas-donations"><strong>Christmas jumpers wanted:</strong> in good condition, age 5 and up.</p><div class="sale-time">
     <svg class="sale-time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
     <div><h3 class="sale-time-title">Sales start at <strong>15:25</strong></h3><p>In the school playground, weather permitting.</p></div>
   </div></div><article class="info-card"><h2>Uniform prices and donations</h2><ul class="price-list"><li><span>New-logo items and coats</span><strong class="price-tag">£3 each</strong></li><li><span>All other items</span><strong class="price-tag">£1 each</strong></li></ul><p class="price-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg>Card payments only</p><p class="donation-note">If you have any uniform which you would like to donate, please drop it in the green bins by the School Office - no torn items please!</p></article></div></section>
@@ -42,16 +42,17 @@ import PageHero from "../components/PageHero.astro";
   }
 
   .christmas-sale-top {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    flex-wrap: wrap;
-    justify-content: space-between;
     gap: 1rem;
     margin-bottom: 0.25rem;
   }
 
+  .christmas-sale-heading { min-width: 0; }
+  .christmas-sale-heading .editorial-heading { margin-bottom: 0; }
   .christmas-sale-top .eyebrow { color: var(--logo-gold); margin: 0; }
-  .christmas-knit { width: 6rem; height: auto; flex: none; color: var(--christmas-knit-red); }
+  .christmas-knit { width: clamp(4rem, 15vw, 6rem); height: auto; color: var(--christmas-knit-red); }
   .christmas-sale .editorial-heading { color: var(--christmas-sale-cream); font-size: clamp(2rem, 4vw, 3rem); }
   .christmas-sale .section-copy { color: var(--christmas-sale-cream); }
   .christmas-donations { border-top: 1px solid color-mix(in srgb, var(--logo-gold) 45%, transparent); padding-top: 1rem; }

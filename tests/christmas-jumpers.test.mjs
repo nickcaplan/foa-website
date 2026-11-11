@@ -16,3 +16,8 @@ test('Christmas sale has its own decorative jumper and fixed readable festive pa
 test('Uniform shares the approved Fair Isle jumper beside the logo',async()=>{
 const html=await readFile('dist/uniform/index.html','utf8');assert.match(html,/property="og:image"[^>]*uniform-christmas-jumpers-2026-v1.jpg/);assert.ok(html.includes('christmas-jumper-fair-isle.svg'));const art=await readFile('assets/brand/christmas-jumper-fair-isle.svg','utf8');assert.ok(art.includes('#762e3a'));
 });
+
+test("Sale date shares the jumper row rather than leaving a label-only row",async()=>{
+ const html=await readFile("dist/uniform/index.html","utf8");
+ assert.match(html, /class="christmas-sale-top"[^>]*>[\s\S]*class="christmas-sale-heading"[^>]*>[\s\S]*Next sale[\s\S]*Friday 4th December[\s\S]*class="christmas-knit"/);
+});
