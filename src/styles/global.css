@@ -46,7 +46,8 @@
   --involved-column-gap: 2.5rem;
   --involved-skills-accent: #9a5400;
   --involved-heading-rule-size: 2px;
-  --newsletter-index-width: 20rem;
+  --newsletter-index-width: 18rem;
+  --newsletter-page-max-width: 84rem;
   --newsletter-reader-gap: 1.5rem;
   --desktop-section-gap: 2.25rem;
   --whats-on-term-date-gap: 0.125rem;
@@ -2028,6 +2029,10 @@ svg.cta-icon {
 }
 
 @container (min-width: 72em) {
+  .newsletter-reader-container > .newsletter-page {
+    width: min(calc(100% - 3rem), var(--newsletter-page-max-width));
+  }
+
   .newsletter-page[data-reader-ready] {
     --newsletter-reader-wide: 1;
     grid-template-columns: minmax(0, 1fr) var(--newsletter-index-width);
@@ -2036,8 +2041,8 @@ svg.cta-icon {
   }
 
   .newsletter-page[data-reader-ready] .newsletter-reading-board {
-    padding: 1.5rem;
-    border-width: 0.65rem;
+    padding: 0.75rem;
+    border-width: 0.5rem;
   }
 
   .newsletter-page[data-reader-ready] .newsletter-reading-board .newsletter-sheet {
