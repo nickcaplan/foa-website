@@ -37,12 +37,20 @@ test("all pages share the larger desktop introduction/navigation row and an inde
     assert.match(html.slice(menuStart), /data-theme-toggle\b/, route);
     assert.match(header, /class="brand home-introduction"/, route);
     assert.match(header, /<img[^>]*width="160"[^>]*height="160"/, route);
-    const pageLogo = html.match(/<a class="mobile-page-logo page-logo-home"[\s\S]*?<\/a>/)?.[0];
-    assert.ok(pageLogo, route);
-    assert.match(pageLogo, /href="\/(?:foa-website\/)?" aria-label="The Friends of Ashley home">/, route);
-    assert.match(pageLogo, /<img[^>]*width="160"[^>]*height="160"/, route);
-    assert.doesNotMatch(pageLogo, /<p\b|<strong\b|<span\b/, route);
-    assert.ok(html.indexOf(pageLogo) < html.indexOf("<h1"), route);
+    if (route.includes("christmas-fayre")) {
+      // Approved: the Fayre pages open with the homepage identity bar
+      // instead of the small page-level logo.
+      assert.match(html, /class="homepage-mobile-identity"/, route);
+      assert.ok(html.indexOf('class="homepage-mobile-identity"') < html.indexOf("<h1"), route);
+      assert.doesNotMatch(html, /narnia-mobile-brand/, route);
+    } else {
+      const pageLogo = html.match(/<a class="mobile-page-logo page-logo-home"[\s\S]*?<\/a>/)?.[0];
+      assert.ok(pageLogo, route);
+      assert.match(pageLogo, /href="\/(?:foa-website\/)?" aria-label="The Friends of Ashley home">/, route);
+      assert.match(pageLogo, /<img[^>]*width="160"[^>]*height="160"/, route);
+      assert.doesNotMatch(pageLogo, /<p\b|<strong\b|<span\b/, route);
+      assert.ok(html.indexOf(pageLogo) < html.indexOf("<h1"), route);
+    }
     if (!route.includes("christmas-fayre")) assert.match(html, /class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1/, route);
     assert.doesNotMatch(html, /class="site-width mobile-page-logo"/, route);
     assert.doesNotMatch(header, /data-menu-toggle/, route);
@@ -95,7 +103,10 @@ test("every public page embeds one mobile home-linked logo beside its heading", 
     if (main.includes('class="narnia-landscape"')) {
       assert.match(main, /class="narnia-landscape"/);
       assert.equal(main.match(/<h1\b/g)?.length, 1, path.pathname);
-      if (path.pathname.includes("christmas-fayre-2026")) assert.match(main, /class="mobile-page-logo page-logo-home"/);
+      if (path.pathname.includes("christmas-fayre-2026")) {
+        assert.match(main, /class="homepage-mobile-identity"/, path.pathname);
+        assert.doesNotMatch(main, /class="mobile-page-logo page-logo-home"/, path.pathname);
+      }
       continue;
     }
     assert.equal(main.match(/class="mobile-page-logo page-logo-home"/g)?.length, 1, path.pathname);
