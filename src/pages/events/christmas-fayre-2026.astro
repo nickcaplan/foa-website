@@ -82,6 +82,7 @@ const eventJsonLd = {
             <li class="xmas-area">
               <svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={icons[area.icon]}></path></svg>
               <span>{area.name}</span>
+              {supporterVariant==="b" && area.name==="Glitter Tattoos" && <img class="glitter-stall-logo" src={withBase("/brand/glitter-tree.png")} alt="The Glitter Tree" width="64" height="64" loading="lazy"/>}
             </li>
           ))}
         </ul>
@@ -192,4 +193,8 @@ const eventJsonLd = {
 .narnia-event .narnia-landscape__art{width:100%;left:0;right:0;object-position:center center}
 .narnia-event .narnia-landscape:before{background:linear-gradient(90deg,#10232c33,#10232cdd 35%,#10232cdd 62%,#10232c88)}
 }
+</style>
+
+<style>
+.glitter-stall-logo{width:3rem;height:3rem;border-radius:.35rem;object-fit:contain;background:white;grid-row:3}
 </style>
