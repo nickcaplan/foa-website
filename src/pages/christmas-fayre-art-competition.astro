@@ -10,7 +10,7 @@ const deadlineText=deadline;
 <BaseLayout title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering">
  <div class="art-comp-banner">
   <img class="art-comp-banner__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
-  <PageHero eyebrow="Ashley School Christmas Fayre" title="Art Competition" intro="The theme is Narnia." logo="/brand/foa-logo-christmas-ivory.svg" />
+  <PageHero eyebrow="Ashley School Christmas Fayre" title="Art Competition" intro="Narnia Theme" logo="/brand/foa-logo-christmas-ivory.svg" />
   <div class="site-width"><p class="art-comp-banner__deadline"><span>Deadline</span><strong>{deadlineText}</strong></p></div>
  </div>
  <div class="site-width art-comp">
@@ -28,7 +28,7 @@ const deadlineText=deadline;
    </ul>
   </section>
   </div>
-  <p class="art-comp__credit">Thanks to Steph Cotela.</p>
+  <p class="art-comp__credit">Thanks to Steph Cotela for organising.</p>
   <p class="art-comp__back"><a class="button" href={withBase('/events/christmas-fayre-2026/')}><span class="cta-label"><span class="cta-tail">Back to the Christmas Fayre<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
  </div>
 </BaseLayout>
@@ -43,7 +43,7 @@ const deadlineText=deadline;
 .art-comp-banner :global(.view-hero .eyebrow){color:#f4e3b0}
 .art-comp-banner > .site-width{width:100%;padding:0 clamp(1rem,4vw,3rem) 1.5rem}
 .art-comp-banner__deadline{margin:1rem 0 0;display:grid;gap:.15rem;padding:.9rem 1.25rem;width:fit-content;max-width:100%;background:#102d38e6;border:1px solid #c9a65f;border-radius:.6rem;color:#fff3d5;text-shadow:none}
-@media(max-width:59.99rem){.art-comp-banner{min-height:26rem;display:flex;flex-direction:column;justify-content:space-between}.art-comp-banner__art{object-position:100% 70%}}
+@media(max-width:59.99rem){.art-comp-banner{display:flex;flex-direction:column}.art-comp-banner :global(.view-hero){order:1}.art-comp-banner__art{order:2;position:static;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;object-position:center 30%}.art-comp-banner:before{display:none}.art-comp-banner > .site-width{order:3}}
 @media(min-width:60rem) and (max-width:63.99rem){.art-comp-banner__art{object-position:88% 40%}}
 @media(min-width:64rem){.art-comp-banner :global(.view-hero p:not(.eyebrow)){text-align:center;margin-inline:auto}.art-comp-banner__deadline{margin-inline:auto;text-align:center}}
 @media(min-width:60rem){.art-comp-banner{min-height:28rem;display:flex;flex-direction:column;justify-content:space-between}.art-comp-banner > .site-width{padding-bottom:2rem}}
