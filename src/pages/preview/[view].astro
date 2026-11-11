@@ -1,7 +1,8 @@
 ---
 import Homepage from "../index.astro";
 export function getStaticPaths() {
-  return process.env.CONTEXT === "deploy-preview" ? [{ params: { view: "christmas" } }] : [];
+  const previewBuild = process.env.CONTEXT === "deploy-preview" || (process.env.CF_PAGES === "1" && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== "main");
+  return previewBuild ? ["christmas"].map(view=>({params:{view}})) : [];
 }
 ---
 <Homepage christmasPreview={true} />

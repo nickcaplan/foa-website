@@ -1,36 +1,31 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// Nick's rule (24 Oct 2026, amended 30 Oct 2026): an inline CTA's trailing
-// icon (arrow, external-link marker, calendar glyph) must stay on the same
-// line as the final word of its label - it may never wrap onto a line of its
-// own. Detects recurrence by comparing the icon's box with the label's last
-// text line.
-//
-// Amendment (approved by Nick, 30 Oct 2026): pill buttons (a.button,
-// .event-list-cta--button) pin the icon in a reserved lane at the pill's
-// right edge instead. For those, this spec asserts the icon clears the label
-// text entirely and stays inside the pill; the same-line rule still applies
-// to every other (inline) CTA.
-//
-// A compliant inline CTA keeps its whole label (including the icon) in a
-// single .cta-label span, with no whitespace between the final word and the
-// icon.
-
-const ctas = "a.fw-map-link, a.button, .event-list-cta, a.event-list-calendar, .add-calendar a, a.text-link, a.designer-credit, .member-vacancy a, .newsletter-sign-off a";
+// Structured controls align icons in right-edge lanes; prose links stay inline.
+const ctas = "a:has(.cta-icon), a:has(.external-link-icon), a.fw-map-link, a.button, .event-list-cta, a.event-list-calendar, .add-calendar a, a.text-link, a.designer-credit, .member-vacancy a, .newsletter-sign-off a";
 
 // Returns a description of every CTA whose trailing icon sits on a different
 // line from the end of its label.
 const strandedIcons = (page: Page) =>
   page.evaluate((selector) => {
     const failures: string[] = [];
+    for (const arrow of document.querySelectorAll("a [aria-hidden=true],button [aria-hidden=true]")) {
+      if (/^[→↗]$/.test(arrow.textContent?.trim() ?? "") ) failures.push(`Font-dependent arrow glyph: ${arrow.closest("a,button")?.textContent?.trim().slice(0,60)}`);
+    }
+    for (const svg of document.querySelectorAll<SVGElement>('svg[data-cta-arrow="forward"]')) {
+      if (!svg.getBoundingClientRect().width) continue;
+      const em = parseFloat(getComputedStyle(svg).fontSize);
+      const box = svg.getBoundingClientRect();
+      if (Math.abs(box.width/em - 1.05) > .03 || Math.abs(box.height/em - 1.05) > .03 || svg.querySelector("path")?.getAttribute("d") !== "M5 12h14M12 5l7 7-7 7" || svg.getAttribute("stroke-width") !== "2") failures.push("Forward arrow geometry/size differs from shared icon");
+    }
     const range = document.createRange();
     for (const cta of document.querySelectorAll<HTMLElement>(selector)) {
       const icon = [...cta.querySelectorAll<HTMLElement>("[aria-hidden='true']")]
         .filter((el) => el.getBoundingClientRect().width > 0)
         .pop();
       if (!icon) continue;
+      const label = icon.closest(".cta-label") ?? cta;
       const textNodes: Text[] = [];
-      const walker = document.createTreeWalker(cta, NodeFilter.SHOW_TEXT);
+      const walker = document.createTreeWalker(label, NodeFilter.SHOW_TEXT);
       let node = walker.nextNode();
       while (node) {
         if (node.textContent?.trim() && !(node.parentElement?.closest(".visually-hidden, [aria-hidden='true']"))) textNodes.push(node as Text);
@@ -43,22 +38,13 @@ const strandedIcons = (page: Page) =>
       const lastLine = lines.reduce((lowest, rect) => (rect.top > lowest.top ? rect : lowest));
       const iconBox = icon.getBoundingClientRect();
       const isPill = cta.matches("a.button, .event-list-cta--button");
-      if (!isPill) {
+      const structured = isPill || !!icon.closest(".button,.event-list-cta,.quick-row,.mobile-menu nav a");
+      if (!structured) {
         const sameLine = iconBox.top < lastLine.bottom - 1 && iconBox.bottom > lastLine.top + 1;
+        const gap = (iconBox.left - lastLine.right) / parseFloat(getComputedStyle(label).fontSize);
+        if (gap < .12 || gap > .55) failures.push(`${cta.textContent?.trim().slice(0,40)}: inconsistent icon gap ${gap.toFixed(2)}em`);
         if (!sameLine) {
           failures.push(`${cta.textContent?.trim().replace(/\s+/g, " ").slice(0, 40)}: icon line y=${Math.round(iconBox.top)} but label's last line y=${Math.round(lastLine.top)}`);
-        }
-      }
-      if (isPill) {
-        // Pinned lane: the icon must clear the label text entirely - text may
-        // never run beneath it, including when the label wraps at 200% text.
-        const label = cta.querySelector(".cta-label");
-        if (label) {
-          const labelBox = label.getBoundingClientRect();
-          const overlaps = !(iconBox.right < labelBox.left + 1 || iconBox.left > labelBox.right - 1 || iconBox.bottom < labelBox.top + 1 || iconBox.top > labelBox.bottom - 1);
-          if (overlaps) {
-            failures.push(`${cta.textContent?.trim().replace(/\s+/g, " ").slice(0, 40)}: pinned icon overlaps its label text`);
-          }
         }
       }
       // Containment: a button CTA's icon must stay inside the button's own
@@ -171,4 +157,33 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
       }
     }
   }
+});
+
+for (const width of [390,1440]) test(`paired CTA consistency and short labels at ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});
+ for(const route of ['/','/whats-on/','/events/christmas-fayre-2026/','/christmas-fayre-volunteering/']){
+  await page.goto(route);
+  const bad=await page.locator('a.button:visible,.event-list-cta--button:visible').evaluateAll(es=>es.flatMap(e=>{const walker=document.createTreeWalker(e,NodeFilter.SHOW_TEXT);let n;const rects: DOMRect[]=[];while(n=walker.nextNode()){if(!n.textContent?.trim()||n.parentElement?.closest('.visually-hidden,[aria-hidden="true"]'))continue;const r=document.createRange();r.selectNodeContents(n);rects.push(...r.getClientRects());}const text=e.textContent?.trim()??'';return /^(Volunteer|Event details|Sign up on JustSignup|Choose a slot)/.test(text)&&rects.some(r=>Math.abs(r.top-rects[0].top)>3)?[text]:[]}));
+  expect(bad,route).toEqual([]);
+  if(route==='/whats-on/'){
+   const sizes=await page.locator('[data-volunteer-actions] .event-list-cta--button,[data-volunteer-actions] .event-volunteer-link .button').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return{width:r.width,height:r.height}}));expect(sizes).toHaveLength(2);expect(Math.abs(sizes[0].width-sizes[1].width)).toBeLessThan(1);expect(Math.abs(sizes[0].height-sizes[1].height)).toBeLessThan(1);
+  }
+ }
+ if(width===390){await page.getByRole('button',{name:'Open menu'}).click();expect(await strandedIcons(page)).toEqual([]);await expect(page.getByRole('link',{name:'Fayre Volunteering',exact:true})).toBeVisible();}
+});
+
+for (const width of [320,390]) test(`open menu shares arrow geometry at ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.goto('/');await page.getByRole('button',{name:'Open menu'}).click();
+ await expect(page.locator('.mobile-menu-arrow svg[data-cta-arrow="forward"]')).toHaveCount(8);
+ expect(await strandedIcons(page)).toEqual([]);
+});
+
+for(const width of [390,1440]) test(`grouped arrow columns at ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});
+ const aligned=async(selector:string)=>{const xs=await page.locator(selector).evaluateAll(es=>es.map(e=>e.getBoundingClientRect().right));expect(xs.length).toBeGreaterThan(1);expect(Math.max(...xs)-Math.min(...xs)).toBeLessThan(1)};
+ await page.goto('/');await aligned('.narnia-landscape .button .cta-icon');
+ const rows=await page.locator('.quick-row').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect(),i=e.querySelector('.cta-icon')!.getBoundingClientRect();return{right:r.right,inset:r.right-i.right}}));expect(rows).toHaveLength(2);expect(Math.abs(rows[0].inset-rows[1].inset)).toBeLessThan(1);if(width===390)await aligned('.quick-row .cta-icon');
+ if(width===390){await page.getByRole('button',{name:'Open menu'}).click();await aligned('.mobile-menu-arrow');}
+ await page.goto('/whats-on/');await aligned('[data-volunteer-actions] .cta-icon');
+ await page.goto('/christmas-fayre-volunteering/');const insets=await page.locator('.fayre-volunteer__action').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().right-e.querySelector('.cta-icon')!.getBoundingClientRect().right));expect(Math.max(...insets)-Math.min(...insets)).toBeLessThan(1);
 });

@@ -11,15 +11,283 @@
   "ctaButton": true,
   "lead": "Rachel Briscoe (Squirrel and Otter) and Sophie Glass (Fox)",
   "entry": "£2, under 12s go free",
-  "whatsOn": ["Fun Zone", "Arts and Crafts", "Festive food and drink"],
+  "whatsOn": [
+    "Fun Zone",
+    "Craft Workshop",
+    "Kids Tombola",
+    "Bottle Tombola",
+    "Glitter Tattoos",
+    "Photo booth and Narnia trail prizes",
+    "BBQ",
+    "Bar",
+    "Café"
+  ],
+  "signupUrl": "https://justsignup.io/s/uhyd1u3wq4",
   "contactEmail": "ashleyschoolchristmasfair2026@gmail.com",
   "helpAreas": [
-    { "name": "Fun Zone", "icon": "funzone" },
-    { "name": "Craft Room", "icon": "craft" },
-    { "name": "Café", "icon": "cafe" },
-    { "name": "Photo Booth", "icon": "photo" },
-    { "name": "Tombola", "icon": "tombola" },
-    { "name": "Entrance & Tokens", "icon": "tokens" },
-    { "name": "Glitter Tattoos", "icon": "sparkle" }
-  ]
+    {
+      "name": "Fun Zone",
+      "icon": "funzone"
+    },
+    {
+      "name": "Craft Workshop",
+      "icon": "craft"
+    },
+    {
+      "name": "Café",
+      "icon": "cafe"
+    },
+    {
+      "name": "Photo booth + Trail prizes",
+      "icon": "photo"
+    },
+    {
+      "name": "Kids Tombola",
+      "icon": "tombola"
+    },
+    {
+      "name": "Bottle Tombola",
+      "icon": "tombola"
+    },
+    {
+      "name": "Entrance & Tokens",
+      "icon": "tokens"
+    },
+    {
+      "name": "Glitter Tattoos",
+      "icon": "sparkle"
+    },
+    {
+      "name": "BBQ",
+      "icon": "bbq"
+    },
+    {
+      "name": "Bar",
+      "icon": "bar"
+    }
+  ],
+  "volunteeringPath": "/christmas-fayre-volunteering/",
+  "signupActivities": [
+    {
+      "name": "Setup Crew",
+      "description": "Help bring Narnia to life, kingdom-wide. Lifting, hanging lights and decorating.",
+      "anchor": "s-9z27xb8lvc3vdxu4gh9z",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "08:30-10:30"
+        }
+      ]
+    },
+    {
+      "name": "Entrance",
+      "description": "Welcome families as they arrive, take payment for entry and issue wrist bands.",
+      "anchor": "s-9rk30l952ac5dcyrv1b6",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "10:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    },
+    {
+      "name": "Tokens + Maps",
+      "description": "Hand out event maps and sell token packs to parents using card readers/cash.",
+      "anchor": "s-6b8rcxcfrk1lv003tvbq",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "11:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    },
+    {
+      "name": "Fun Zone",
+      "description": "Run quick, fun winter games. Prizes supplied. Tokens only.",
+      "anchor": "s-58jrhbakre1cok8d8g46",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "10:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    },
+    {
+      "name": "Kids Tombola",
+      "description": "Help run the kids toy tombola. Tokens only.",
+      "anchor": "s-qy9t9njttedps29frhoq",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "10:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    },
+    {
+      "name": "Craft Workshop",
+      "description": "Help children decorate crafty bits and make their own festive cards. Tokens only.",
+      "anchor": "s-ilsqruvmzgp7ikbof8gm",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "10:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    },
+    {
+      "name": "Glitter Tattoos",
+      "description": "Apply quick cosmetic glitter stencils & jewels. Tokens only.",
+      "anchor": "s-b9mfzh5e7omgognallww",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "10:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    },
+    {
+      "name": "Bottle Tombola",
+      "description": "Help run the bottle tombola. Cash/card.",
+      "anchor": "s-x8hqzyn7vixtyi3g2uni",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "10:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    },
+    {
+      "name": "Photo booth + Trail prizes",
+      "description": "Help families with fun photo props and hand out small prizes to children who finish the Narnia trail.",
+      "anchor": "s-4tqodm8f8ov3qug0roza",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "10:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    },
+    {
+      "name": "BBQ",
+      "description": "Help cook & serve some tasty food. Cash/card.",
+      "anchor": "s-347j3to553mqwgc2e8v6",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "10:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    },
+    {
+      "name": "Bar",
+      "description": "Help serve alcoholic drinks. Cash/card.",
+      "anchor": "s-68fkyos7q433r46qa2mw",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "10:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    },
+    {
+      "name": "Cafe",
+      "description": "Help serve hot & cold (non-alcoholic) drinks and sweet treats. Cash/card.",
+      "anchor": "s-q91ot57mfue5y7nawcxr",
+      "schedule": [
+        {
+          "label": "Morning setup",
+          "when": "10:00-12:00"
+        },
+        {
+          "label": "30-minute slots",
+          "when": "12:00-15:00"
+        },
+        {
+          "label": "Clear up",
+          "when": "15:00-15:30"
+        }
+      ]
+    }
+  ],
+  "loanSignupAnchor": "s-h59eou8whrd1zhl6b2tp"
 }

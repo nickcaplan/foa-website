@@ -9,7 +9,7 @@ for (const width of [320, 390, 768, 1023]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
-    const title = page.locator(".hero-copy:visible h1");
+    const title = page.locator(".narnia-landscape h1");
     await expect(title).toBeVisible();
     // The title is pure CSS (clamp with viewport-capped chrome), so it always scales with the visitor's text size.
     expect(await title.evaluate((heading) => heading.style.fontSize)).toBe("");
@@ -17,9 +17,9 @@ for (const width of [320, 390, 768, 1023]) {
       const style = getComputedStyle(heading);
       return parseFloat(style.lineHeight) / parseFloat(style.fontSize);
     });
-    expect(leading).toBeCloseTo(1.2, 2);
+    expect(leading).toBeCloseTo(1.12, 2);
     const fits = await title.evaluate((heading) => {
-      const bounds = heading.closest(".hero-event")!.getBoundingClientRect();
+      const bounds = heading.closest(".narnia-landscape")!.getBoundingClientRect();
       const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) {
         for (const word of walker.currentNode.textContent!.matchAll(/\S+/g)) {
@@ -41,13 +41,13 @@ test("homepage heading supports doubled rendered text and stays whole", async ({
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
-  const title = page.locator(".hero-copy:visible h1");
+  const title = page.locator(".narnia-landscape h1");
   const normal = await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize));
   await title.evaluate((heading) => { heading.style.setProperty("font-size", `${parseFloat(getComputedStyle(heading).fontSize) * 2}px`, "important"); });
   const enlarged = await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize));
   expect(enlarged / normal, "the title grows with the visitor's text size").toBeGreaterThan(1.8);
   const fits = await title.evaluate((heading) => {
-    const bounds = heading.closest(".hero-event")!.getBoundingClientRect();
+    const bounds = heading.closest(".narnia-landscape")!.getBoundingClientRect();
     const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
       for (const word of walker.currentNode.textContent!.matchAll(/\S+/g)) {
@@ -69,7 +69,7 @@ test.describe("homepage heading without JavaScript", () => {
   test.use({ javaScriptEnabled: false, viewport: { width: 390, height: 900 } });
   test("retains its readable CSS size", async ({ page }) => {
     await page.goto("/");
-    const title = page.locator(".hero-copy:visible h1");
+    const title = page.locator(".narnia-landscape h1");
     await expect(title).toBeVisible();
     expect(await title.evaluate((heading) => parseFloat(getComputedStyle(heading).fontSize))).toBeGreaterThanOrEqual(24);
     expect(await title.evaluate((heading) => heading.style.fontSize)).toBe("");
@@ -126,6 +126,7 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
       return;
     }
+    if(route.includes("christmas-fayre")){await expect(page.locator(".narnia-mobile-brand .page-logo-home")).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);return;}
     await expect(page.locator(".page-logo-home:visible"), route).toBeVisible();
     const layout = await page.locator(".mobile-page-heading:visible").evaluate((element) => {
       const logo = element.querySelector(".page-logo-home")!.getBoundingClientRect();
@@ -153,7 +154,7 @@ test("enlarged homepage text keeps the menu and hero actions inside a narrow vie
 
   await expect(page.getByRole("button", { name: "Open menu" })).toBeVisible();
   await expect(page.locator(".homepage-mobile-identity img")).toBeVisible();
-  expect(await page.locator(".hero-copy:visible .mobile-page-heading, .hero-copy:visible .page-logo-home, .hero-copy:visible .page-logo-home img, .hero-copy:visible .mobile-page-heading-copy, .hero-copy:visible .hero-next-event, .hero-copy:visible h1").evaluateAll((elements) =>
+  expect(await page.locator(".hero-copy:visible .mobile-page-heading, .hero-copy:visible .page-logo-home, .hero-copy:visible .page-logo-home img, .hero-copy:visible .mobile-page-heading-copy, .hero-copy:visible .hero-next-event, .narnia-landscape h1").evaluateAll((elements) =>
     elements.map((element) => {
       const { left, right } = element.getBoundingClientRect();
       return { element: element.className || element.tagName, left, right, viewport: window.innerWidth, scrollWidth: element.scrollWidth, clientWidth: element.clientWidth };
@@ -185,7 +186,7 @@ test("enlarged homepage text keeps the menu and hero actions inside a narrow vie
   });
   expect(layout.overflow, `Out-of-viewport content: ${JSON.stringify(layout.elements, null, 2)}`).toBeLessThanOrEqual(0);
   // The hero clips overflow, so document width alone cannot catch spilling actions.
-  expect(await page.locator(".menu-toggle, .hero-event:not([hidden]) .hero-actions .button").evaluateAll((elements) =>
+  expect(await page.locator(".menu-toggle, .narnia-landscape .button").evaluateAll((elements) =>
     elements.every((element) => {
       const { left, right, width, height } = element.getBoundingClientRect();
       return left >= 0 && right <= window.innerWidth && width >= 44 && height >= 44;

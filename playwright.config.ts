@@ -32,7 +32,7 @@ export default defineConfig({
     },
     {
       name: "webkit-fireworks",
-      testMatch: "fireworks.spec.ts",
+      testMatch: ["fireworks.spec.ts", "narnia-hero.spec.ts"],
       use: { ...devices["Desktop Safari"] },
     },
   ],

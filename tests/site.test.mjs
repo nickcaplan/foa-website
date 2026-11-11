@@ -45,15 +45,21 @@ test("retired Fireworks URLs redirect home without active event effects or sales
   for (const route of ["/events/fireworks-2026/", "/fireworks-volunteering/"]) assert.ok(rules.includes(`${route} / 301!`));
 });
 
-test("the Christmas Fayre page keeps its social card within chat size limits", async () => {
-  const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  assert.match(html, /<meta\b[^>]*property="og:image"[^>]*foa-logo-christmas-og\.png/);
-  // WhatsApp drops link preview images over 600KB, so the Christmas
-  // preview is a compact PNG card (approved 18 October 2026).
-  const image = await readFile(path.join(dist, "brand/foa-logo-christmas-og.png"));
-  assert.equal(image.readUInt32BE(16), 1200);
-  assert.equal(image.readUInt32BE(20), 630);
-  assert.ok(image.length < 600 * 1024, `foa-logo-christmas-og.png is ${image.length} bytes`);
+test("the four changed pages use compact purpose-made social cards", async () => {
+  const cards={"":"home","whats-on":"whats-on","events/christmas-fayre-2026":"christmas-fayre","christmas-fayre-volunteering":"fayre-volunteering"};
+  for(const [route,name] of Object.entries(cards)) {
+    const html=await readFile(path.join(dist,route,"index.html"),"utf8");
+    const version=["home","whats-on"].includes(name)?"v3":(name==="christmas-fayre"?"v1":"v2");
+    assert.ok(html.includes(`/social/${name}-2026-${version}.jpg`));
+    assert.match(html, /property="og:image:width" content="1200"/);
+    assert.match(html, /property="og:image:height" content="630"/);
+    assert.match(html, /name="twitter:image" content="https?:[^"]+"/);
+    const image=await readFile(path.join(dist,`social/${name}-2026-${version}.jpg`));
+    assert.ok(image.length<600*1024);
+    let pos=2,dimensions;
+    while(pos<image.length){const marker=image[pos+1],size=image.readUInt16BE(pos+2);if([0xc0,0xc1,0xc2].includes(marker)){dimensions=[image.readUInt16BE(pos+7),image.readUInt16BE(pos+5)];break}pos+=2+size;}
+    assert.deepEqual(dimensions,[1200,630]);
+  }
 });
 
 test("both Fireworks pages keep their social image within chat size limits", async () => {
@@ -92,11 +98,11 @@ test("Reps Hub shareable messages follow build-time expiry and preserve active l
   const builtAt = Date.parse(html.match(/data-built-at="([^"]+)"/)?.[1] || "");
   assert.ok(Number.isFinite(builtAt), "Build time is recorded for expiry-aware assertions");
   const fireworks = JSON.parse(await readFile("src/content/events/fireworks-2026.json", "utf8"));
-  const uniform = JSON.parse(await readFile("src/content/events/uniform-november-2026.json", "utf8"));
+  const uniform = JSON.parse(await readFile("src/content/events/uniform-december-2026.json", "utf8"));
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
-  const cards = [...html.matchAll(/<article class="message-card"[^>]*>([\s\S]*?)<\/article>/g)].map(match => match[1]);
+  const cards = [...html.matchAll(/<article class="message-card"[^>]*>([\s\S]*?)<\/article>/g)].map(match => match[1]).filter(card => !card.includes("<h2>Christmas Fayre Donations Day</h2>"));
   const events = [fireworks, fireworks, uniform, fayre];
-  const routes = ["/events/fireworks-2026/", "/fireworks-volunteering/", "/uniform/", "/events/christmas-fayre-2026/"];
+  const routes = ["/events/fireworks-2026/", "/fireworks-volunteering/", "/uniform/", fayre.volunteeringPath];
   assert.equal(cards.length, events.filter(event => builtAt < Date.parse(event.end || event.start)).length);
   for (const [index, event] of events.entries()) {
     const url = `https://www.thefriendsofashley.org${basePath}${routes[index]}`;
@@ -114,7 +120,7 @@ test("Reps Hub shareable messages follow build-time expiry and preserve active l
       for (const role of fireworks.volunteerRoles.filter((role) => role.name !== "Token presales")) assert.ok(card.includes(role.name.toLowerCase()));
       assert.doesNotMatch(card, /[Pp]resales|JRDXD/);
     }
-    if (index === 2) { assert.ok(card.includes("weather permitting")); for (const date of [uniform.start, uniform.end]) assert.ok(card.includes(`datetime="${new Date(date).toISOString()}"`)); }
+    if (index === 2) { assert.ok(card.includes("weather permitting")); for (const date of [uniform.start, uniform.end].filter(Boolean)) assert.ok(card.includes(`datetime="${new Date(date).toISOString()}"`)); }
     if (index === 3) {
       assert.ok(card.includes("rather than stalls being assigned to year groups"));
       assert.ok(card.includes("No experience needed"));
@@ -146,7 +152,7 @@ test("navigation exposes the menu on Home and both menus on interior pages", asy
       const destinations = [...nav.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
       const expected = ["/", "/newsletter/", "/whats-on/", "/fundraising/", "/get-involved/", "/uniform/"];
       if (label === "Mobile navigation") {
-        expected.splice(3, 0, "/events/christmas-fayre-2026/");
+        expected.splice(3, 0, "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/");
         expected.push("/contact/");
       }
       assert.deepEqual(destinations, expected.map((destination) => `${basePath}${destination}`));
@@ -258,23 +264,23 @@ test("the footer and mobile menu share social links without adding them to prima
 
 test("the homepage features the chosen Christmas Fayre design without reviving the old introduction", async () => {
   const homepage = await readFile(path.join(dist, "index.html"), "utf8");
-  assert.match(homepage, /<div class="hero-event"[^>]*data-homepage-christmas/);
-  assert.match(homepage, /<h1[^>]*><span class="christmas-home-kicker">The Ashley<\/span> Christmas <em>Fayre<\/em><\/h1>/);
+  assert.match(homepage, /<section class="narnia-landscape"[^>]*data-homepage-christmas/);
+  assert.match(homepage, /<h1[^>]*>Christmas <em>Fayre<\/em><\/h1>/);
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
   assert.ok(homepage.includes(ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(fayre.start)));
   assert.ok(homepage.includes(fayre.location));
-  assert.ok(homepage.includes(formatEventTimeRange(new Date(fayre.start), new Date(fayre.end))));
+  assert.ok(homepage.includes(formatEventTimeRange(new Date(fayre.start), new Date(fayre.end)).replace(/(?<=\d)-(?=\d)/g, ' - ')));
   assert.ok(homepage.includes(fayre.entry));
   assert.doesNotMatch(homepage, /Featured event|hero-next-event/);
-  assert.match(homepage, /class="christmas-home-wreath"/);
-  assert.match(homepage, new RegExp(`src="${basePath}/brand/foa-logo-christmas-home\\.webp"`));
-  assert.ok(homepage.includes(`mailto:${fayre.contactEmail}?subject=${encodeURIComponent(`Helping at the ${fayre.title}`)}`));
+  assert.match(homepage, /class="narnia-landscape__art"/);
+  assert.match(homepage, new RegExp(`src="${basePath}/brand/narnia-hero-landscape\\.avif"`));
+  assert.ok(homepage.includes(`href="${basePath}${fayre.volunteeringPath}"`));
   assert.match(homepage, new RegExp(`href="${basePath}/events/christmas-fayre-2026/"`));
   assert.doesNotMatch(homepage, /hero-tagline|class="site-width home-intro"|Helping Ashley children/);
   const homeMarkup = homepage.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "").replace(/<style\b[^>]*>[\s\S]*?<\/style>/g, "");
   assert.doesNotMatch(homeMarkup, /data-homepage-fireworks|data-show-before|data-show-from|ticketsource\.co\.uk|fireworks-volunteering/);
   assert.equal((homepage.match(/<h1\b/g) || []).length, 1, "one active Christmas heading, no hidden Fireworks panel");
-  const hero = homepage.match(/<div class="hero-event"[^>]*data-homepage-christmas([\s\S]*?)<div class="quick-list/)?.[1];
+  const hero = homepage.match(/<section class="narnia-landscape"[^>]*data-homepage-christmas([\s\S]*?)<div class="quick-list/)?.[1];
   assert.ok(hero);
   assert.doesNotMatch(hero, /With thanks to/);
   assert.match(hero, /alt="Martin Flashman and Co"/);
@@ -393,48 +399,47 @@ const fireworks = JSON.parse(await readFile(path.resolve("src/content/events/fir
 
 test("the Christmas Fayre page lists every help area from the event record", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  const areas = [...html.matchAll(/<li class="xmas-area">[\s\S]*?<span>([^<]*)<\/span>/g)].map((match) => match[1]);
+  const areas = [...html.matchAll(/<li class="xmas-area"[^>]*>[\s\S]*?<span[^>]*>([^<]*)<\/span>/g)].map((match) => match[1]);
   assert.deepEqual(areas, christmas.helpAreas.map((area) => escapeHtml(area.name)));
-  assert.equal(areas.length, 7);
+  assert.equal(areas.length, 10);
 });
 
-test("the Christmas Fayre page uses the Fayre inbox for every sign-up link, with a clear subject", async () => {
+test("the Christmas Fayre page uses a JustSignup click-out and keeps the Fayre inbox for questions", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
   const links = [...html.matchAll(/href="(mailto:[^"]+)"/g)].map((match) => match[1]);
-  assert.equal(links.length, 2);
+  assert.equal(links.length, 1);
   for (const link of links) {
     assert.equal(link, `mailto:${christmas.contactEmail}?subject=Helping%20at%20the%20Christmas%20Fayre`);
   }
-  assert.equal([...html.matchAll(/>Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span/g)].length, 2);
+  assert.equal([...html.matchAll(/>Email the Fayre <span class="cta-word"[^>]*>tea<span class="cta-tail"[^>]*>m<span/g)].length, 1);
 });
 
 test("the Christmas Fayre page keeps reminders in a plain list, separate from the help areas", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  const notes = html.match(/<div class="xmas-notes">([\s\S]*?)<\/div>/)?.[1] ?? "";
-  assert.match(notes, /<h3>Good to know<\/h3>/);
-  assert.equal([...notes.matchAll(/<li>/g)].length, 3);
+  const notes = html.match(/<div class="xmas-notes"[^>]*>([\s\S]*?)<\/div>/)?.[1] ?? "";
+  assert.match(notes, /<h3[^>]*>Good to know<\/h3>/);
+  assert.equal([...notes.matchAll(/<li(?:\s[^>]*)?>/g)].length, 3);
   for (const reminder of ["Join in anywhere", "Bring a friend", "No experience needed"]) assert.match(notes, new RegExp(reminder));
   assert.doesNotMatch(notes, /xmas-area/);
 });
 
 test("the Christmas Fayre page shows the date, place and lead from the event record, with decoration hidden from assistive technology", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  assert.match(html, /<dd><span class="xmas-nowrap">Saturday 5th December,<\/span> <span class="xmas-nowrap">12:00-15:00<\/span><\/dd>/);
-  assert.match(html, new RegExp(`<dd>${christmas.location}</dd>`));
-  assert.ok(html.includes(`<dd>${christmas.lead.split(/(?<=\)) and /).map(escapeHtml).join("<br>")}</dd>`));
-  // One visible decoration row at each breakpoint, in its approved position.
-  assert.match(html, /<ul class="xmas-baubles xmas-baubles--desktop" aria-hidden="true">/);
-  assert.match(html, /<ul class="xmas-baubles xmas-baubles--mobile" aria-hidden="true">/);
-  const baubleRows = [...html.matchAll(/<ul class="xmas-baubles xmas-baubles--(?:desktop|mobile)" aria-hidden="true">([\s\S]*?)<\/ul>/g)];
-  assert.equal(baubleRows.length, 2);
-  for (const [, row] of baubleRows) {
-    assert.equal([...row.matchAll(/<li style="--i:\d+;/g)].length, 20);
-  }
+  assert.match(html, /class="narnia-landscape__date">Saturday 5th December[\s\S]*?class="narnia-landscape__time">12:00 - 15:00/);
+  assert.ok(html.includes(christmas.location));
+  for (const lead of christmas.lead.split(/ and (?=[^()]*\()/)) assert.ok(html.includes(escapeHtml(lead)));
+  assert.equal([...html.matchAll(/class="fayre-leads__card"/g)].length, 2);
+  assert.ok(html.includes(escapeHtml(christmas.entry)));
+  assert.ok(!html.includes(christmas.whatsOn.map(escapeHtml).join(' · ')), 'Stalls are not repeated above the activity cards');
+  assert.ok(!html.includes('class="add-calendar"'), 'Calendar choices are hidden on Fayre details');
+  assert.ok(html.includes('/sponsors/martin-flashman.jpeg'), 'Landscape sponsor logo is used');
+  assert.match(html, /<div class="xmas-snow" aria-hidden="true"[^>]*>/);
   assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
-  assert.match(html, /<dt>Entry<\/dt><dd>£2, under 12s go free<\/dd>/);
-  assert.ok(html.includes(`<dt>What’s on</dt><dd>${christmas.whatsOn.map(escapeHtml).join("<br>")}</dd>`));
-  assert.match(html, /<div class="xmas-snow" aria-hidden="true">/);
-  assert.match(html, /<p class="xmas-credit"><img src="[^"]*martin-flashman-mark\.png" alt="Martin Flashman and Co"/);
+  assert.match(html, /martin-flashman\.jpeg" alt="Martin Flashman and Co"/);
+  assert.ok(html.includes(`href="${basePath}${christmas.volunteeringPath}"`));
+  assert.doesNotMatch(html, /<iframe|Design preview only|Compare sign-up/);
+  assert.doesNotMatch(html, /name="robots" content="noindex/);
+
   assert.doesNotMatch(html, /With thanks to/);
 });
 
@@ -501,4 +506,16 @@ test("Fireworks recruitment copy invites every year group on the event page and 
     assert.doesNotMatch(html, /Each year group (?:looks after|is looking after)|Find your team/);
     if (page === "reps/index.html") assert.match(html, /Event-day roles are on Thursday 5th November/);
   }
+});
+
+
+test("Christmas volunteering lists the source activities and safe click-outs without stale counts", async () => {
+ const html=await readFile(path.join(dist,"christmas-fayre-volunteering/index.html"),"utf8");
+ assert.equal([...html.matchAll(/class="fayre-volunteer__card"/g)].length,christmas.signupActivities.length);
+ for(const activity of christmas.signupActivities){
+  assert.ok(html.includes(escapeHtml(activity.name)));
+  assert.ok(html.includes(`href="${christmas.signupUrl}#${activity.anchor}" target="_blank" rel="noopener noreferrer"`));
+ }
+ assert.doesNotMatch(html, /<iframe|places left|of \d+ open|data-availability/);
+ assert.ok(html.includes(`href="${basePath}${christmas.path}"`));
 });

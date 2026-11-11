@@ -1,0 +1,33 @@
+---
+import EventVisibilityInit from "./EventVisibilityInit.astro";
+import { getEntry } from "astro:content";
+import { ordinalDateFormatter } from "../lib/dates";
+import { eventVisibilityRules } from "../lib/event-lifecycle";
+import { isHidden } from "../lib/event-visibility";
+import { withBase } from "../lib/urls";
+const { details = false } = Astro.props;
+const donation = (await getEntry("events", "christmas-fayre-donations-day-2026"))?.data;
+if (!donation) throw new Error("Fayre Donations Day content is missing");
+const fayre = (await getEntry("events", "christmas-fayre-2026"))?.data;
+if (!fayre?.path) throw new Error("Fayre details path is missing");
+const rules = eventVisibilityRules(donation);
+const date = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(donation.start);
+---
+<aside id={details ? "donations-day" : undefined} class="fayre-donations-notice" aria-label="Christmas Fayre Donations Day" data-expires-on={rules.expiresOn} hidden={isHidden(rules, Date.now())}>
+  <p class="eyebrow">Christmas Fayre Donations Day</p>
+  <p class="fayre-donations-notice__date">{date}</p>
+  {!details && <p><a href={withBase(fayre.path+"#donations-day")}>See Fayre details</a></p>}
+</aside>
+<EventVisibilityInit />
+<script>
+ import { syncEventVisibility } from "../lib/event-visibility";
+ syncEventVisibility();
+ window.setInterval(() => syncEventVisibility(), 60000);
+ document.addEventListener("visibilitychange", () => { if (!document.hidden) syncEventVisibility(); });
+</script>
+<style>
+.fayre-donations-notice{margin:1.25rem 0;padding:1.1rem 1.25rem;border:1px solid var(--line);border-left:3px solid var(--logo-gold);border-radius:var(--radius-sm);background:var(--surface);color:var(--ink)}
+.fayre-donations-notice p{margin:0}.fayre-donations-notice p+p{margin-top:.4rem}.fayre-donations-notice__date{font:600 1.25rem/1.4 var(--font-display)}
+:global(.xmas-theme) .fayre-donations-notice{background:linear-gradient(#17503ab3,#0f3a27b3);border-color:var(--xm-gold);color:var(--xm-cream);box-shadow:inset 0 0 0 4px #08241ae6,inset 0 0 0 5px var(--xm-gold-dim)}
+:global(.xmas-theme) .fayre-donations-notice :is(.eyebrow,a){color:var(--xm-gold-light)}
+</style>

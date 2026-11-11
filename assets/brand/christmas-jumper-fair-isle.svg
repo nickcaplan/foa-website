@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 470"><defs>
+<linearGradient id="wool" x2="1" y2="1"><stop stop-color="#25604b"/><stop offset=".5" stop-color="#154b38"/><stop offset="1" stop-color="#0b3025"/></linearGradient>
+<pattern id="knit" width="10" height="12" patternUnits="userSpaceOnUse"><path d="m1 1 4 5 4-5M1 7l4 5 4-5" stroke="#b5c4a6" stroke-opacity=".16" fill="none" stroke-width="1.2"/></pattern>
+<pattern id="rib" width="8" height="10" patternUnits="userSpaceOnUse"><path d="M2 0v10M6 0v10" stroke="#d2b565" stroke-opacity=".65" stroke-width="1.5"/></pattern>
+<pattern id="diamonds" width="40" height="24" patternUnits="userSpaceOnUse"><path d="m20 2 12 10-12 10L8 12Z" fill="none" stroke="#e7d8aa" stroke-width="3"/><path d="m20 8 4 4-4 4-4-4Z" fill="#d0aa52"/></pattern>
+<g id="snow" stroke="#f4ead0" stroke-width="3" stroke-linecap="square"><path d="M0-23v46M-20-12l40 24M-20 12l40-24M-7-20l7 7 7-7M-7 20l7-7 7 7M-21-4l9-3-2-9M21 4l-9 3 2 9M-21 4l9 3-2 9M21-4l-9-3 2-9"/></g>
+<clipPath id="shape"><path d="M168 48 117 67 35 189 94 232 150 156 144 415Q250 439 356 415L350 156 406 232 465 189 383 67 332 48Q316 89 250 89T168 48Z"/></clipPath>
+</defs>
+<path d="M168 48 117 67 35 189 94 232 150 156 144 415Q250 439 356 415L350 156 406 232 465 189 383 67 332 48Q316 89 250 89T168 48Z" fill="url(#wool)" stroke="#d3b568" stroke-width="3" stroke-linejoin="round"/>
+<g clip-path="url(#shape)"><path d="M20 110h460v47H20Z" fill="#eee3c6"/><path d="M20 120h460v26H20Z" fill="#762e3a"/><path d="M20 121h460v24H20Z" fill="url(#diamonds)"/>
+<path d="M20 177h460v89H20Z" fill="#e9dfc2"/><path d="M20 184h460v75H20Z" fill="#174432"/><use href="#snow" x="174" y="222"/><use href="#snow" x="250" y="222"/><use href="#snow" x="326" y="222"/>
+<path d="M20 291h460v42H20Z" fill="#e7d8aa"/><path d="M20 299h460v26H20Z" fill="#762e3a"/><path d="M20 300h460v24H20Z" fill="url(#diamonds)"/>
+<path d="M20 357h460v4H20ZM20 371h460v4H20Z" fill="#d2b565"/><rect width="500" height="470" fill="url(#knit)"/>
+<path d="M142 394q108 23 216 0v46H142Z" fill="#762e3a"/><path d="M142 394q108 23 216 0v46H142Z" fill="url(#rib)"/>
+</g>
+<path d="M168 48q18 48 82 48t82-48l-16-6q-13 32-66 32t-66-32Z" fill="#eee3c6" stroke="#d3b568" stroke-width="2"/>
+<path d="M177 47q13 42 73 42t73-42M183 46q15 36 67 36t67-36" fill="none" stroke="#174432" stroke-width="2"/>
+<g fill="#762e3a" stroke="#d3b568" stroke-width="2"><path d="m35 189-12 18 61 45 12-20Z"/><path d="m465 189 12 18-61 45-12-20Z"/></g>
+<g fill="url(#rib)"><path d="m35 189-12 18 61 45 12-20Z"/><path d="m465 189 12 18-61 45-12-20Z"/></g>
+<path d="m152 159-4 226m200-226 4 226" stroke="#92ac91" stroke-opacity=".4" fill="none"/>
+</svg>
