@@ -6,10 +6,9 @@ import { withBase } from "../lib/urls";
 import { ordinalDateFormatter, formatEventTimeRange, timeRangeSeparator } from "../lib/dates";
 const events = await getCollection("events");
 const fireworks = events.find(({ id }) => id === "fireworks-2026")?.data;
-const uniform = events.find(({ id }) => id === "uniform-november-2026")?.data;
-const decemberUniform = events.find(({ id }) => id === "uniform-december-2026")?.data;
+const uniform = events.find(({ id }) => id === "uniform-december-2026")?.data;
 const christmas = events.find(({ id }) => id === "christmas-fayre-2026")?.data;
-if (!fireworks?.schedule || !fireworks.volunteerRoles || !uniform || !decemberUniform || !christmas?.helpAreas || !christmas.volunteeringPath) {
+if (!fireworks?.schedule || !fireworks.volunteerRoles || !uniform || !christmas?.helpAreas || !christmas.volunteeringPath) {
   throw new Error("Reps Hub event content is missing");
 }
 const dateFormatter = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" });
@@ -62,10 +61,11 @@ const messageList: {
     linkLabel: "Volunteer activities and sign-up links",
   },
   {
-    title: "Pre-loved uniform",
+    title: "Pre-loved uniform and Christmas jumpers",
+    reviewed: "2026-11-11",
     paragraphs: [
-      `The next pre-loved uniform sale is ${dateFormatter(uniform.start)}, ${timeRange(uniform)}, in the school playground, weather permitting. The final sale of term is ${dateFormatter(decemberUniform.start)} ${timeRange(decemberUniform)}.`,
-      "New-logo items and coats are £3; all other items are £1. Card payments only.",
+      `The next pre-loved uniform sale is ${dateFormatter(uniform.start)}, ${timeRange(uniform)}, in the school playground, weather permitting. Christmas jumpers will be on sale alongside uniform at this final sale of term.`,
+      "Christmas jumper donations wanted in good condition, age 5 and up. Card payments only.",
     ],
     timing: uniform,
     href: "/uniform/",
