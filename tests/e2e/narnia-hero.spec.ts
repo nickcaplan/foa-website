@@ -77,3 +77,31 @@ for (const [width, height] of [[390, 844], [412, 915]]) {
     expect(layout.size).toContain('cover');
   });
 }
+
+for (const width of [360, 390, 412, 1280, 1366, 1440]) {
+  test(`art competition theme text and equal hairlines are centred at ${width}px`, async ({page}) => {
+    await page.setViewportSize({width, height:900});
+    await page.goto('/christmas-fayre-art-competition/');
+    await page.evaluate(() => document.fonts.ready);
+    const layout = await page.locator('.art-comp-banner').evaluate(panel => {
+      const theme = panel.querySelector('.view-hero-copy > p')!;
+      const title = panel.querySelector('h1')!;
+      const textCentre = (node: Element) => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const r = range.getBoundingClientRect();
+        return r.x + r.width / 2;
+      };
+      const r = panel.getBoundingClientRect();
+      return {
+        themeCentre: textCentre(theme), titleCentre: textCentre(title), panelCentre: r.x + r.width / 2,
+        before: parseFloat(getComputedStyle(theme, '::before').width),
+        after: parseFloat(getComputedStyle(theme, '::after').width),
+      };
+    });
+    expect(Math.abs(layout.themeCentre - layout.titleCentre)).toBeLessThan(1);
+    expect(Math.abs(layout.themeCentre - layout.panelCentre)).toBeLessThan(1);
+    expect(Math.abs(layout.before - layout.after)).toBeLessThan(1);
+    expect(layout.before).toBeGreaterThan(0);
+  });
+}
