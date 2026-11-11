@@ -19,10 +19,10 @@ for (const width of [320, 390, 768, 1023]) {
       expect(before!.width).toBe(48);
       expect(before!.height).toBe(48);
       expect(before!.x + before!.width).toBeLessThanOrEqual(width);
-      if(route === "/" || route === "/events/christmas-fayre-2026/" || route === "/christmas-fayre-volunteering/") {
-        await expect(page.locator('.narnia-landscape h1')).toHaveText(route === '/christmas-fayre-volunteering/' ? 'Christmas Fayre Volunteering' : 'Christmas Fayre');
-        if(route === "/")await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
-        else await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
+      if(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route)) {
+        // Approved: these pages open with the homepage identity bar on mobile.
+        if(route !== "/christmas-fayre-art-competition/")await expect(page.locator('.narnia-landscape h1')).toHaveText(route === '/christmas-fayre-volunteering/' ? 'Christmas Fayre Volunteering' : 'Christmas Fayre');
+        await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
       } else {
         const logo = page.locator(".page-logo-home:visible");
         await expect(logo, route).toBeVisible();
@@ -37,7 +37,7 @@ for (const width of [320, 390, 768, 1023]) {
         if(route.includes("fireworks"))expect(heading.y, `${route}: retired heading stacks below logo`).toBeGreaterThanOrEqual(logoBox.y+logoBox.height);
         else expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
       }
-      const logoBottom = await page.locator(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/"].includes(route) ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
+      const logoBottom = await page.locator(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route) ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
       const panel = page.locator(".view-hero");
       if (await panel.count()) {
         expect((await panel.boundingBox())!.y, route).toBe(16);

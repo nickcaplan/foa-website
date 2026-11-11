@@ -38,7 +38,7 @@ for (const route of ['home','fayre'])for(const width of [320,390,768,1023]) {
       return elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&&r.height&&r.left<b.right&&r.right>b.left&&r.top<b.bottom&&r.bottom>b.top}).map(e=>e.textContent);
     });
     expect(overlap).toEqual([]);
-    if(route==='fayre')await expect(page.locator('.narnia-mobile-brand .page-logo-home')).toBeVisible();
+    if(route==='fayre')await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
     await page.evaluate(()=>scrollTo(0,800));
     expect((await trigger.boundingBox())!.y).toBe(before.y);
     await trigger.click();await expect(page.getByRole('button',{name:'Close menu'})).toBeFocused();
