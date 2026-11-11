@@ -1,6 +1,6 @@
 ---
 import FayreDonationsNotice from "../../components/FayreDonationsNotice.astro";
-import PageLogo from "../../components/PageLogo.astro";
+import HomepageMobileIdentity from "../../components/HomepageMobileIdentity.astro";
 import NarniaHero from "../../components/NarniaHero.astro";
 import { getEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -61,7 +61,7 @@ const eventJsonLd = {
 
     <section class="xmas-hero" aria-labelledby="xmas-title">
       <div class="site-width">
-        <div class="narnia-mobile-brand"><PageLogo logo="/brand/foa-logo-christmas-ivory.svg" /></div>
+        <HomepageMobileIdentity label="The Friends of Ashley" />
         <NarniaHero event={event} eventPage={true} />
         <FayreDonationsNotice details />
         <div class="narnia-event-details">

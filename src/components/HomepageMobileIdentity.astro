@@ -1,7 +1,10 @@
 ---
 import { withBase } from "../lib/urls";
+
+interface Props { label?: string; }
+const { label = "The Friends of Ashley homepage" } = Astro.props;
 ---
-<div class="homepage-mobile-identity" aria-label="The Friends of Ashley homepage">
+<div class="homepage-mobile-identity" aria-label={label}>
   <img src={withBase("/brand/foa-logo-ivory.svg")} alt="" width="44" height="44" />
   <p><span class="homepage-mobile-identity-prefix">The Friends of</span> Ashley PTA</p>
 </div>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
+import HomepageMobileIdentity from '../components/HomepageMobileIdentity.astro';
 import {withBase} from '../lib/urls';
 import {ordinalDateFormatter} from '../lib/dates';
 import '../styles/christmas.css';
@@ -8,6 +9,7 @@ const deadline=ordinalDateFormatter({weekday:'long',day:'numeric',month:'long',t
 const deadlineText=deadline;
 ---
 <BaseLayout title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering">
+ <HomepageMobileIdentity label="The Friends of Ashley" />
  <div class="art-comp-banner">
   <img class="art-comp-banner__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
   <PageHero eyebrow="Ashley School Christmas Fayre" title="Art Competition" intro="Narnia Theme" logo="/brand/foa-logo-christmas-ivory.svg" />

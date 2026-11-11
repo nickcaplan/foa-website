@@ -748,3 +748,10 @@ body.xmas-theme::before {
     --bauble-scale: 0.48;
   }
 }
+
+/* Identity bar sits on the night sky, so it takes the cream ink. */
+@media (max-width: 63.99rem) {
+  .xmas-theme .homepage-mobile-identity {
+    color: var(--xm-cream);
+  }
+}
