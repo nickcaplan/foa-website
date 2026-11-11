@@ -18,6 +18,7 @@ const date=ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event
 <p class="narnia-landscape__venue">{event.location}{!volunteerPage && <><br />{event.entry}</>}</p>
 <a class="button" href={volunteerPage ? signupUrl : eventPage ? withBase(volunteerPath) : withBase(event.path)} target={volunteerPage ? '_blank' : undefined} rel={volunteerPage ? 'noopener noreferrer' : undefined}><span class="cta-label">{volunteerPage ? "Sign up on " : eventPage ? "" : "Event "}<span class="cta-word">{volunteerPage ? "JustSignup" : eventPage ? "Volunteer" : "details"}<span class="cta-tail">{volunteerPage ? <span class="external-link-icon cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span> : <span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>}</span></span>{volunteerPage && <span class="visually-hidden"> (opens JustSignup in a new tab)</span>}</span></a>
 {homepage && <a class="button narnia-landscape__secondary" href={withBase(volunteerPath)}><span class="cta-label"><span class="cta-word">Volunteer<span class="cta-tail"><span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></span></a>}
+{homepage && <a class="button narnia-landscape__secondary" href={withBase("/christmas-fayre-art-competition/")}><span class="cta-label"><span class="cta-word">Art Competition<span class="cta-tail"><span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></span></a>}
 </div>
 {homepage && <div class="narnia-donations"><FayreDonationsNotice details={true} /></div>}
 {(homepage || (eventPage && !volunteerPage)) && <div class="narnia-landscape__footer"><span class="sponsor-ribbon"><img src={withBase('/sponsors/martin-flashman.jpeg')} alt="Martin Flashman and Co" width="225" height="33" loading="lazy" /></span></div>}
@@ -37,12 +38,14 @@ const date=ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event
 @media(min-width:48rem){.narnia-landscape[data-homepage-christmas] .narnia-landscape__copy{padding-bottom:5rem}}
 @media(max-width:47.99rem){
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__art{mask-image:linear-gradient(#000 65%,transparent 100%)}
-.narnia-landscape[data-homepage-christmas] .narnia-landscape__body{margin-top:-5rem;padding-top:1rem}
-.narnia-landscape[data-homepage-christmas] .narnia-landscape__copy{padding-top:.5rem;padding-bottom:.5rem}
-.narnia-landscape[data-homepage-christmas] h1{margin-bottom:.75rem}
-.narnia-landscape[data-homepage-christmas] .narnia-landscape__date{margin-bottom:.5rem}
-.narnia-landscape[data-homepage-christmas] .narnia-landscape__venue{margin-bottom:.75rem}
-.narnia-landscape[data-homepage-christmas] .narnia-landscape__footer{padding-block:.5rem}
+.narnia-landscape[data-homepage-christmas] .narnia-landscape__body{margin-top:-5rem;padding-top:.5rem}
+.narnia-landscape[data-homepage-christmas] .narnia-landscape__copy{padding-top:.25rem;padding-bottom:.25rem}
+.narnia-landscape[data-homepage-christmas] h1{margin-bottom:.5rem}
+.narnia-landscape[data-homepage-christmas] .narnia-landscape__date{margin-bottom:.25rem}
+.narnia-landscape[data-homepage-christmas] .narnia-landscape__venue{margin-bottom:.5rem}
+.narnia-landscape[data-homepage-christmas] .narnia-landscape__footer{padding-block:.25rem}
+.narnia-landscape[data-homepage-christmas] .button{min-height:2.75rem;padding:.6rem 1.5rem}
+.narnia-landscape[data-homepage-christmas] .narnia-landscape__secondary{margin-top:.5rem}
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__body:before{inset:0;background:linear-gradient(90deg,#102d3855,#102d38f2 27%,#102d38f2 73%,#102d3855),linear-gradient(#102d3800,#102d3877),var(--narnia-woodland) center top/cover;mask-image:linear-gradient(transparent,#000 7rem)}
 }
 </style>

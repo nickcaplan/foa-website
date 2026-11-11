@@ -2,6 +2,11 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
+function menuStartCheck(html) {
+  const i = html.indexOf('id="mobile-menu"');
+  return i >= 0 ? i : 0;
+}
+
 test("all pages share the larger desktop introduction/navigation row and an independent mobile burger", async () => {
   const homepage = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
   assert.match(homepage, /<header\b[^>]*class="site-header site-header--home"/);
@@ -25,7 +30,7 @@ test("all pages share the larger desktop introduction/navigation row and an inde
     assert.equal(html.match(/\bdata-theme-toggle(?=[\s=>])/g)?.length, 2, route);
     assert.match(html, /class="mobile-menu-theme"[\s\S]*?data-theme-toggle/, route);
     assert.match(html, /<a class="mobile-menu-home" href="\/(?:foa-website\/)?" aria-label="The Friends of Ashley home">/, route);
-    assert.match(html, /aria-label="Event details"[\s\S]*?href="\/(?:foa-website\/)?events\/christmas-fayre-2026\/"/, route);
+    assert.match(html.slice(menuStartCheck(html)), /href="\/(?:foa-website\/)?events\/christmas-fayre-2026\/"[\s\S]*?aria-label="Christmas Fayre pages"[\s\S]*?href="\/(?:foa-website\/)?christmas-fayre-volunteering\/"[\s\S]*?href="\/(?:foa-website\/)?christmas-fayre-art-competition\/"/, route);
     const menuStart = html.indexOf('id="mobile-menu"');
     assert.ok(menuStart > html.indexOf("</header>"), route);
     assert.doesNotMatch(html.slice(menuStart), /href="\/(?:foa-website\/)?events\/fireworks-2026\/"/, "retired event is not an active menu item");
