@@ -8,7 +8,11 @@ const deadline=ordinalDateFormatter({weekday:'long',day:'numeric',month:'long',t
 const deadlineText=deadline;
 ---
 <BaseLayout title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering">
- <PageHero eyebrow="Ashley School Christmas Fayre" title="Art Competition" intro={`The theme is Narnia. Deadline: ${deadlineText}.`} logo="/brand/foa-logo-christmas-ivory.svg" />
+ <div class="art-comp-banner">
+  <img class="art-comp-banner__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
+  <PageHero eyebrow="Ashley School Christmas Fayre" title="Art Competition" intro="The theme is Narnia." logo="/brand/foa-logo-christmas-ivory.svg" />
+  <div class="site-width"><p class="art-comp-banner__deadline"><span>Deadline</span><strong>{deadlineText}</strong></p></div>
+ </div>
  <div class="site-width art-comp">
   <section class="art-comp__panel" aria-labelledby="art-comp-theme">
    <h2 id="art-comp-theme">Show us your lions, witches and snow queens!</h2>
@@ -17,7 +21,6 @@ const deadlineText=deadline;
   </section>
   <section class="art-comp__panel" aria-labelledby="art-comp-how">
    <h2 id="art-comp-how">How to enter</h2>
-   <p class="art-comp__deadline-line"><strong>Deadline: {deadlineText}</strong></p>
    <ul class="art-comp__steps">
     <li><strong>On the front of your artwork</strong><span>Class and year</span></li>
     <li><strong>On the back of your artwork</strong><span>Your name, and your consent as Y or N. Consent means you are happy for winning artworks to be displayed at Ashley and Martin Flashman.</span></li>
@@ -28,6 +31,12 @@ const deadlineText=deadline;
  </div>
 </BaseLayout>
 <style>
+.art-comp-banner{position:relative;isolation:isolate;overflow:hidden;padding-bottom:1.5rem;border-bottom:1px solid #b99a5b88}
+.art-comp-banner__art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-2}
+.art-comp-banner:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#10232cf0,#10232ccc 45%,#10232c70),linear-gradient(#10232c00 55%,#10232c)}
+.art-comp-banner__deadline{margin:1.25rem 0 0;display:grid;gap:.15rem;padding:.9rem 1.25rem;width:fit-content;max-width:100%;background:#102d38d9;border:1px solid #c9a65f;border-radius:.6rem;color:#fff3d5}
+.art-comp-banner__deadline span{font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#edcb83}
+.art-comp-banner__deadline strong{font:500 clamp(1.4rem,4vw,2rem)/1.2 Georgia,serif;overflow-wrap:anywhere}
 .art-comp{padding-bottom:2.5rem;color:#fff3d5;container-type:inline-size}
 .art-comp__panel{margin-top:1.25rem;padding:1.5rem;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem}
 .art-comp__panel h2{margin:0 0 1rem;font:500 clamp(1.4rem,2.5vw,1.8rem)/1.25 Georgia,serif;color:#fff3d5}
