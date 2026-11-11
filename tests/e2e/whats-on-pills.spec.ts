@@ -1,6 +1,7 @@
 import {expect,test} from '@playwright/test';
 for(const width of [390,1440])for(const theme of ['day','night']){
  test(`What's On and volunteering use pills at ${width}px ${theme}`,async({page})=>{
+  await page.clock.setFixedTime(new Date('2026-11-11T12:00:00Z'));
   await page.setViewportSize({width,height:1000});
   await page.addInitScript(theme=>localStorage.setItem('foa-theme',theme),theme);
   await page.goto('/whats-on/');
@@ -51,6 +52,7 @@ test('every upcoming event has Google and iCal, with confirmed December calendar
 });
 
 for(const width of [320,390,1024,1440])for(const enlarged of [false,true])test(`Competition details fits ${width}px ${enlarged?'enlarged':'normal'} text`,async({page})=>{
+ await page.clock.setFixedTime(new Date('2026-11-11T12:00:00Z'));
  await page.setViewportSize({width,height:1000});await page.goto('/whats-on/');
  if(enlarged)await page.addStyleTag({content:'html{font-size:125%!important}'});
  const link=page.locator('[data-yearview-term] [data-event-title="Christmas Fayre Art Competition deadline"] .event-list-cta');
