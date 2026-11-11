@@ -43,6 +43,9 @@ const deadlineText=deadline;
 .art-comp-banner :global(.view-hero .eyebrow){color:#f4e3b0}
 .art-comp-banner > .site-width{width:100%;padding:0 clamp(1rem,4vw,3rem) 1.5rem}
 .art-comp-banner__deadline{margin:1rem 0 0;display:grid;gap:.15rem;padding:.9rem 1.25rem;width:fit-content;max-width:100%;background:#102d38e6;border:1px solid #c9a65f;border-radius:.6rem;color:#fff3d5;text-shadow:none}
+@media(max-width:59.99rem){.art-comp-banner{min-height:26rem;display:flex;flex-direction:column;justify-content:space-between}.art-comp-banner__art{object-position:100% 70%}}
+@media(min-width:60rem) and (max-width:63.99rem){.art-comp-banner__art{object-position:88% 40%}}
+@media(min-width:64rem){.art-comp-banner :global(.view-hero p:not(.eyebrow)){text-align:center;margin-inline:auto}.art-comp-banner__deadline{margin-inline:auto;text-align:center}}
 @media(min-width:60rem){.art-comp-banner{min-height:28rem;display:flex;flex-direction:column;justify-content:space-between}.art-comp-banner > .site-width{padding-bottom:2rem}}
 @media(max-width:63.99rem){.art-comp-banner > .site-width{padding-inline:var(--mobile-heading-inset,2rem)}}
 .art-comp-banner__deadline span{font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#edcb83}
