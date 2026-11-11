@@ -30,6 +30,37 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.issue.number }}
         shell: bash
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions: {}
+
+concurrency:
+  group: robin-foa-website-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  review:
+    if: >-
+      github.repository == 'nickcaplan/foa-website' &&
+      github.ref == 'refs/heads/main' && github.actor == 'nickcaplan' &&
+      github.triggering_actor == 'nickcaplan' &&
+      github.event.issue.pull_request && github.event.comment.body == '/review'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Validate the public same-repository PR and complete diff
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        shell: bash
         run: |
           python3 - <<'PY'
           import json, os, re, urllib.request
@@ -68,8 +99,8 @@ jobs:
           fail-on-high: 'false'
           review-on-synchronize: 'false'
           max-diff-size: '20000'
-          estimated-request-token-budget: '16000'
-          max-output-tokens: '4000'
+          estimated-request-token-budget: '32000'
+          max-output-tokens: '16000'
           llm-timeout-ms: '120000'
           max-comments: '5'
           reasoning-effort: 'none'
