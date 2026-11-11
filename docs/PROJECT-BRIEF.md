@@ -389,3 +389,5 @@ Scope, layers, cadence and implementation order are in [`TEST-STRATEGY.md`](TEST
 ### December pre-loved sale
 
 Christmas jumpers join the Friday 4 December sale. The Uniform page's sale panel uses a restrained Christmas treatment: forest green, fine gold outline and a small decorative knitted-jumper illustration. Keep the practical sale and donation copy as live text, with fixed cream text against the forest panel in both themes. Uniform prices remain clearly separate from Christmas-jumper pricing; no jumper price is confirmed.
+
+The December sale uses the same approved red/green Fair Isle knitted jumper illustration in the sale panel and the dedicated Uniform social-sharing image alongside the standard ivory logo. The 1200x630 card has no date baked into it.
