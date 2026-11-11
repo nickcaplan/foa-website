@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 
 const dist = path.resolve("dist");
-const siteUrl = (process.env.SITE_URL || "https://example.com").replace(/\/$/, "");
+const siteUrl = (process.env.SITE_URL || "https://www.thefriendsofashley.org").replace(/\/$/, "");
 const basePath = (process.env.BASE_PATH || "/").replace(/\/$/, "");
 
 // Every built HTML page is checked unless it has an explicit reason not to be indexed.
@@ -25,7 +25,7 @@ const discoverRoutes = async (directory = dist, prefix = "") => {
   return nested.flat();
 };
 
-const publicRoutes = (await discoverRoutes()).filter((route) => !excluded.has(route)).sort();
+const publicRoutes = (await discoverRoutes()).filter((route) => !excluded.has(route) && !route.startsWith("/preview/")).sort();
 
 const htmlFor = (route) => path.join(dist, route.replace(/^\//, ""), route.endsWith("/") ? "index.html" : "");
 const read = (file) => readFile(file, "utf8");
@@ -175,8 +175,10 @@ test("every dedicated event page includes its UK date in sharing metadata", asyn
     const title = metaContent(html, "property", "og:title");
     const description = metaContent(html, "property", "og:description");
     const pageTitle = event.path === "/events/fireworks-2026/" ? `${event.title} has finished` : event.title;
-    assert.equal(title, `${pageTitle} - ${expectedDate} | The Friends of Ashley`, event.path);
-    assert.ok(description.startsWith(`${expectedDate}. `), event.path);
+    if(event.path === "/events/christmas-fayre-2026/") assert.equal(title,"Christmas Fayre | Saturday 5 December 2026 | Ashley School");
+    else assert.equal(title, `${pageTitle} - ${expectedDate} | The Friends of Ashley`, event.path);
+    if(event.path === "/events/christmas-fayre-2026/") assert.ok(description.includes("Saturday 5 December, 12:00 - 15:00"));
+    else assert.ok(description.startsWith(`${expectedDate}. `), event.path);
     assert.equal(metaContent(html, "name", "description"), description, event.path);
     assert.equal(metaContent(html, "name", "twitter:title"), title, event.path);
     assert.equal(metaContent(html, "name", "twitter:description"), description, event.path);
@@ -188,9 +190,11 @@ test("every dedicated event page includes its UK date in sharing metadata", asyn
 test("non-event pages keep their existing metadata without a sale date", async () => {
   for (const route of publicRoutes.filter((route) => !route.startsWith("/events/"))) {
     const html = await read(htmlFor(route));
-    assert.equal(metaContent(html, "property", "og:title"), titleOf(html), route);
+    const customTitles = {"/":"The Friends of Ashley | Ashley School PTA","/whats-on/":"What's On at Ashley | The Friends of Ashley","/christmas-fayre-volunteering/":"Volunteer at the Christmas Fayre | Ashley School"};
+    const expectedTitle=customTitles[route] ?? titleOf(html);
+    assert.equal(metaContent(html, "property", "og:title"), expectedTitle, route);
     assert.equal(metaContent(html, "property", "og:description"), metaContent(html, "name", "description"), route);
-    assert.equal(metaContent(html, "name", "twitter:title"), titleOf(html), route);
+    assert.equal(metaContent(html, "name", "twitter:title"), expectedTitle, route);
     assert.equal(metaContent(html, "name", "twitter:description"), metaContent(html, "name", "description"), route);
   }
 });
@@ -203,4 +207,15 @@ test("metadata comparisons decode escaped event titles without double decoding",
   assert.equal(metaContent(`<meta property="og:title" content="${encoded}">`, "property", "og:title"), text);
   assert.equal(decodeHtml("&#x27;&#34;&apos;"), `'"'`);
   assert.equal(decodeHtml("&amp;lt;"), "&lt;");
+});
+
+test("design preview routes are noindex and omitted from the sitemap", async () => {
+  const sitemap=await read(path.join(dist,"sitemap-0.xml"));
+  const routes=(await discoverRoutes()).filter(r=>r.startsWith("/preview/"));
+  if(process.env.CONTEXT === "deploy-preview" || (process.env.CF_PAGES === "1" && process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== "main")) assert.deepEqual(routes,["/preview/christmas/"]);
+  for(const route of routes) {
+    const html=await read(htmlFor(route));
+    assert.match(html, /name="robots" content="noindex/);
+    assert.ok(!sitemap.includes(route));
+  }
 });

@@ -19,7 +19,7 @@ export const renderInline = (value: string, internalHref: (path: string) => stri
       const split = text.lastIndexOf(" ") + 1;
       const prefix = text.slice(0, split);
       const lastWord = text.slice(split);
-      const icon = '<span class="external-link-icon" aria-hidden="true">↗</span>';
+      const icon = '<span class="external-link-icon" aria-hidden="true"><svg data-cta-arrow="external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span>';
       // Preserve emphasis delimiters together so the final Markdown pass
       // cannot create crossing tags. Plain words can fall back to wrapping
       // within a very narrow column, keeping their final character and arrow

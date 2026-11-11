@@ -267,7 +267,7 @@ test("Christmas artwork keeps its own colours in both modes", async ({ page }) =
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "light" });
   const snapshot = () => page.evaluate(() => {
-    const roots = document.querySelectorAll(".event-feature--poster, .fw-event, .fw-vol, .xmas-frame");
+    const roots = document.querySelectorAll(".narnia-landscape, .xmas-frame");
     return [...roots].flatMap((root) => [root, ...root.querySelectorAll("*")]).filter((element) => !element.closest(".visually-hidden")).map((element, index) => {
       const style = getComputedStyle(element);
       const ownText = [...element.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
@@ -296,7 +296,7 @@ test("Christmas artwork keeps its own colours in both modes", async ({ page }) =
   }
 });
 
-test("hero panel keeps dark focus outlines and heading accent in both modes", async ({ page }) => {
+test("hero panel keeps visible focus outlines and heading accent in both modes", async ({ page }) => {
   // Keyboard focus, not programmatic .focus(): :focus-visible only applies
   // after keyboard interaction, which is the state this rule exists for.
   const tabTo = async (selector: string) => {
@@ -308,7 +308,7 @@ test("hero panel keeps dark focus outlines and heading accent in both modes", as
     throw new Error(`could not tab to ${selector}`);
   };
   await page.clock.setFixedTime(new Date("2026-11-05T21:00:00Z"));
-  const heroLinks = ["[data-homepage-christmas] .hero-actions .button--amber", ".christmas-home-details"];
+  const heroLinks = [".narnia-landscape__copy .button:not(.narnia-landscape__secondary)", ".narnia-landscape__secondary"];
   for (const width of [390, 1280]) {
     for (const zoom of [false, true]) {
       await page.setViewportSize({ width, height: 844 });
@@ -321,7 +321,7 @@ test("hero panel keeps dark focus outlines and heading accent in both modes", as
       for (const sel of heroLinks) {
         await tabTo(sel);
         const link = page.locator(sel);
-        await expect(link).toHaveCSS("outline-color", "rgb(38, 54, 26)");
+        await expect(link).toHaveCSS("outline-color", "rgb(255, 243, 213)");
         await expect(link).toHaveCSS("outline-style", "solid");
         await expect(link).toHaveCSS("outline-width", "3px");
       }
@@ -332,11 +332,11 @@ test("hero panel keeps dark focus outlines and heading accent in both modes", as
       for (const sel of heroLinks) {
         await tabTo(sel);
         const link = page.locator(sel);
-        await expect(link).toHaveCSS("outline-color", "rgb(138, 74, 5)");
+        await expect(link).toHaveCSS("outline-color", "rgb(255, 243, 213)");
         await expect(link).toHaveCSS("outline-style", "solid");
         await expect(link).toHaveCSS("outline-width", "3px");
       }
-      await expect(page.locator(".hero-copy:visible h1 em")).toHaveCSS("color", "rgb(167, 43, 57)");
+      await expect(page.locator(".narnia-landscape h1 em")).toHaveCSS("color", "rgb(237, 203, 131)");
       toggle = await openThemeToggle(page);
       await toggle.click();
       await expect(toggle).toHaveAttribute("aria-pressed", "false");

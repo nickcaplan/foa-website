@@ -8,8 +8,9 @@ const events = await getCollection("events");
 const fireworks = events.find(({ id }) => id === "fireworks-2026")?.data;
 const uniform = events.find(({ id }) => id === "uniform-november-2026")?.data;
 const decemberUniform = events.find(({ id }) => id === "uniform-december-2026")?.data;
+const donations = events.find(({ id }) => id === "christmas-fayre-donations-day-2026")?.data;
 const christmas = events.find(({ id }) => id === "christmas-fayre-2026")?.data;
-if (!fireworks?.schedule || !fireworks.volunteerRoles || !uniform || !decemberUniform || !christmas?.helpAreas) {
+if (!donations || !fireworks?.schedule || !fireworks.volunteerRoles || !uniform || !decemberUniform || !christmas?.helpAreas || !christmas.volunteeringPath) {
   throw new Error("Reps Hub event content is missing");
 }
 const dateFormatter = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" });
@@ -38,6 +39,14 @@ const messageList: {
   guide?: { path: string; fileName: string; size?: string };
   reviewed?: string;
 }[] = [
+  {
+    title: donations.title,
+    paragraphs: [`Donations Day for the Christmas Fayre is on ${dateFormatter(donations.start)}.`],
+    timing: donations,
+    href: christmas.path!,
+    linkLabel: "Christmas Fayre details",
+    reviewed: "2026-11-11",
+  },
   {
     title: fireworks.title,
     paragraphs: [
@@ -73,21 +82,21 @@ const messageList: {
   },
   {
     title: christmas.title,
-    reviewed: "2026-10-26",
+    reviewed: "2026-11-10",
     paragraphs: [
       `The ${christmas.title} is on ${dateFormatter(christmas.start)} ${timeRange(christmas)} at ${christmas.location}, led by ${christmas.lead}. They’re looking for helpers!`,
-      `This year, anyone across the school can help in any area, rather than stalls being assigned to year groups. Bring a friend and help with the ${list(christmas.helpAreas.map(({ name }) => name))}. No experience needed.`,
+      `This year, anyone across the school can help in any area, rather than stalls being assigned to year groups. Bring a friend and help with the ${list(christmas.helpAreas.map(({ name }) => name))}. No experience needed. Choose an activity on the Fayre volunteering page, then pick a slot on JustSignup.`,
     ],
     timing: christmas,
-    href: christmas.path!,
-    linkLabel: "See how to get involved and contact the Fayre team",
+    href: christmas.volunteeringPath,
+    linkLabel: "Choose a Christmas Fayre volunteer activity",
   },
 ];
 const builtAt = Date.now();
 const messages = messageList.map((message) => ({
   ...message,
   reviewed: message.reviewed ?? "2026-10-11",
-  expires: (message.timing.end ?? message.timing.start).toISOString(),
+  expires: message.timing.allDay ? new Date(message.timing.start.getTime() + 86400000).toISOString() : (message.timing.end ?? message.timing.start).toISOString(),
   url: publicUrl(message.href),
   copyText: [
     ...message.paragraphs,
@@ -118,7 +127,7 @@ const messages = messageList.map((message) => ({
             <p>{message.linkLabel}: <a href={withBase(message.href)}>{message.url}</a></p>
             <div class="message-actions">
               <button class="button button--secondary" type="button" data-copy-button data-copy-text={message.copyText}>Copy message</button>
-              <a class="text-link" href={withBase(message.href)}>Learn <span class="cta-tail">more<span aria-hidden="true">&rarr;</span></span></a>
+              <a class="text-link" href={withBase(message.href)}>Learn <span class="cta-tail">more<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a>
             </div>
             <p class="copy-feedback" data-copy-feedback role="status" aria-live="polite"></p>
           </article>

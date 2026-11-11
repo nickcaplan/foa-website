@@ -1,0 +1,89 @@
+---
+import FayreDonationsNotice from "../components/FayreDonationsNotice.astro";
+import {getEntry} from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NarniaHero from '../components/NarniaHero.astro';
+import PageLogo from '../components/PageLogo.astro';
+import {withBase} from '../lib/urls';
+import '../styles/christmas.css';
+const entry=await getEntry('events','christmas-fayre-2026');
+const event=entry?.data;
+if(!event?.signupActivities || !event.signupUrl || !event.loanSignupAnchor || !event.path || !event.contactEmail) throw new Error('Fayre volunteering content is missing');
+const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>';
+---
+<BaseLayout socialTitle="Volunteer at the Christmas Fayre | Ashley School" socialDescription="Help bring Narnia to life on Saturday 5 December. Choose an activity, join friends and pick a helper, setup or clear-up slot on JustSignup." image="/social/fayre-volunteering-2026-v2.jpg" imageAlt="Volunteer at the Fayre, Saturday 5 December 2026, 12:00 - 15:00 at Ashley School." imageWidth={1200} imageHeight={630} title="Christmas Fayre Volunteering" description="Help bring Narnia to life at Ashley School. Choose a Christmas Fayre activity and pick your volunteer slot on JustSignup." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering">
+ <div class="site-width fayre-volunteer">
+  <div class="fayre-volunteer__brand"><PageLogo logo="/brand/foa-logo-christmas-ivory.svg" /></div>
+  <NarniaHero event={event} eventPage={true} volunteerPage={true}/>
+  <section class="fayre-volunteer__intro" aria-label="Choose your volunteer activity">
+   <p>Choose an activity below. Buttons open JustSignup in a new tab to pick your slot. Event helper slots are 30 minutes; setup and clear-up vary.</p>
+  </section>
+  <ul class="fayre-volunteer__grid" aria-label="Volunteer activities">
+   {event.signupActivities.map(activity=><li class="fayre-volunteer__card">
+    <h3>{activity.name}</h3>
+    <p>{activity.description}</p>
+    <dl class="fayre-volunteer__schedule">{activity.schedule.map(shift=><div><dt>{shift.label}</dt><dd>{shift.when.split('-').map((time,index)=><>{index>0 && ' - '}<span>{time}</span></>)}</dd></div>)}</dl>
+    <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+activity.anchor} target="_blank" rel="noopener noreferrer"><span class="cta-label">Choose a <span class="cta-tail">slot<span class="external-link-icon cta-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></span><span class="visually-hidden"> for {activity.name} (opens JustSignup in a new tab)</span></span></a>
+   </li>)}
+  </ul>
+  <FayreDonationsNotice />
+  <section class="fayre-volunteer__loan" aria-labelledby="loan-props">
+   <div><h2 id="loan-props">Lend a little Narnia magic</h2><p>Have fairy lights, faux Christmas trees or props to lend? See the props and decor list on JustSignup for what's needed, drop-off details and return information.</p></div>
+   <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+event.loanSignupAnchor} target="_blank" rel="noopener noreferrer"><span class="cta-label">See the loan <span class="cta-tail">list<span class="external-link-icon cta-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></span><span class="visually-hidden"> (opens JustSignup in a new tab)</span></span></a>
+  </section>
+  <div class="fayre-volunteer__closing">
+   <section class="fayre-volunteer__contact" aria-labelledby="volunteer-questions"><h2 id="volunteer-questions">Questions about helping?</h2><a class="button fayre-volunteer__email" href={'mailto:'+event.contactEmail}>Email the Fayre team</a></section>
+  </div>
+ </div>
+</BaseLayout>
+<style>
+.fayre-volunteer{padding-bottom:2.5rem;color:#fff3d5}
+.fayre-volunteer__brand{padding:1rem 4rem 1rem 0}
+.fayre-volunteer__brand :global(.mobile-page-logo){display:block;width:3rem;height:3rem}
+.fayre-volunteer__brand :global(img){width:100%;height:100%}
+.fayre-volunteer :global(.narnia-landscape){max-width:none}
+.fayre-volunteer :global(.narnia-landscape__art){width:100%;max-width:none;left:0;right:0;object-position:center center}
+.fayre-volunteer :global(.narnia-landscape:before){display:block;background:linear-gradient(90deg,#10232c33,#10232cd9 35%,#10232cd9 64%,#10232c33)}
+.fayre-volunteer__intro{width:100%;margin:1.25rem auto;line-height:1.65;text-align:center;font-size:.95rem}
+.fayre-volunteer__intro p{margin:0}
+.fayre-volunteer :global(.narnia-landscape__copy){min-height:0;padding:2rem 1.5rem;max-width:48rem}
+.fayre-volunteer :global(.narnia-landscape h1){font-size:clamp(2rem,3.5vw,3rem);margin-bottom:.75rem}
+.fayre-volunteer :global(.narnia-landscape h1 em){display:inline}
+.fayre-volunteer :global(.narnia-landscape__subtitle){font-size:.5em;margin-top:.35em}
+.fayre-volunteer :global(.narnia-landscape__date){margin-bottom:.5rem}
+.fayre-volunteer :global(.narnia-landscape__venue){margin-bottom:1rem}
+@media(max-width:47.99rem){.fayre-volunteer :global(.narnia-landscape__art){position:absolute;inset:0;height:100%;aspect-ratio:auto;object-fit:cover}.fayre-volunteer :global(.narnia-landscape:before){display:block;background:linear-gradient(90deg,#10232ccc,#10232cdd 35%,#10232ccc)}.fayre-volunteer :global(.narnia-landscape h1){font-size:2rem!important}.fayre-volunteer :global(.narnia-landscape__copy){padding:1.25rem 1rem}}
+.fayre-volunteer__grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1.25rem}
+.fayre-volunteer__card{position:relative;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem;padding:1.5rem;display:flex;flex-direction:column;min-width:0}
+.fayre-volunteer__card h3{font:500 1.6rem/1.2 Georgia,serif;margin:0 0 1rem;color:#fff3d5;overflow-wrap:anywhere}
+.fayre-volunteer__schedule{margin:0 0 1.5rem;border-top:1px solid #b99a5b55;font-size:.9rem;line-height:1.6}.fayre-volunteer__schedule>div{display:flex;justify-content:space-between;gap:.4rem 1rem;flex-wrap:wrap;padding-top:.5rem}.fayre-volunteer__schedule dt{color:#edcb83}.fayre-volunteer__schedule dd{margin:0;white-space:nowrap;color:#fff3d5}.fayre-volunteer__schedule dd span{white-space:nowrap}
+.fayre-volunteer__card p{font-size:1rem;line-height:1.7;margin:0 0 1.5rem;color:#f4ead1}
+.fayre-volunteer .fayre-volunteer__action{margin-top:auto;min-width:0;min-height:3.25rem;max-width:100%;white-space:normal;background:#742f3c;color:#fff5e2;border:1px solid #c9a65f;font-size:1rem;line-height:1.5;gap:.75rem;padding:.75rem 1rem;display:flex;flex-wrap:nowrap;justify-content:space-between;align-items:center;text-align:left}
+.fayre-volunteer__action>span:first-child{min-width:0}.fayre-volunteer__action .external-link-icon{flex:0 0 auto;margin:0}
+.fayre-volunteer__action :global(svg){flex-shrink:0;width:1.25em;height:1.25em}
+.fayre-volunteer__action:focus-visible,.fayre-volunteer__closing a:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}
+.fayre-volunteer__loan{margin-top:2rem;padding:1.5rem;border:1px solid #b99a5b88;border-radius:.65rem;background:#102d38;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap}
+.fayre-volunteer__loan>div{flex:1 1 28rem;min-width:0}
+.fayre-volunteer__loan h2{margin:0 0 1rem}
+.fayre-volunteer__loan p{margin:0;line-height:1.7}
+.fayre-volunteer__closing{margin-top:1.5rem;display:grid;justify-items:center;gap:1.5rem}
+.fayre-volunteer__closing .button{font-size:1rem;line-height:1.5;min-height:3.25rem;max-width:100%;padding:.75rem 1.25rem;white-space:normal;text-align:center;text-decoration:none;color:#fff3d5;border:1px solid #c9a65f}
+.fayre-volunteer__contact{width:100%;border:1px solid #b99a5b88;border-radius:.65rem;background:#173844;padding:1.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem 2rem}
+.fayre-volunteer__contact h2{margin:0;font:500 clamp(1.5rem,2.5vw,2rem)/1.2 Georgia,serif;color:#fff3d5}
+.fayre-volunteer__closing .fayre-volunteer__email{background:#742f3c}
+.fayre-volunteer__closing .button:hover{background:#954052}
+.fayre-volunteer__closing .button:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}
+.fayre-volunteer{container-type:inline-size}
+@container(max-width:20em){.fayre-volunteer__card,.fayre-volunteer__contact{padding:1rem}.fayre-volunteer__contact .button{width:100%}}
+@media(min-width:80rem){.fayre-volunteer__brand{display:none}}
+</style>
+
+<style>
+@media(max-width:47.99rem){.fayre-volunteer :global(.narnia-landscape__art){width:180%;left:auto;right:0;object-position:right center}.fayre-volunteer :global(.narnia-landscape:before){background:linear-gradient(90deg,#10232ce6,#10232cdd 58%,#10232c66)}}
+</style>
+
+<style is:inline>
+@media(max-width:63.99rem){.narnia-volunteering .fayre-volunteer__brand img{transform:none}}
+@media(min-width:64rem){.narnia-volunteering .fayre-volunteer__brand{display:none}}
+@media(min-width:64rem) and (max-width:79.99rem){.narnia-volunteering .menu-toggle{top:calc(1rem + var(--introduction-logo-size)*.45 - 1.5rem)}}
+</style>
