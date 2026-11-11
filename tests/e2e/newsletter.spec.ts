@@ -20,11 +20,11 @@ test.describe("Newsletter expansion", () => {
       const instagram = signOff.getByRole("link", { name: "Follow us on Instagram", includeHidden: true });
       await expect(instagram).toHaveAttribute("href", "https://www.instagram.com/thefriendsofashley/");
       await expect(instagram).toHaveAttribute("target", "_blank");
-      await expect(instagram).toContainText("↗");
+      await expect(instagram.locator(".external-link-icon svg[data-cta-arrow=external]")).toHaveCount(1);
       const facebook = signOff.locator("a", { hasText: "Join our Facebook group" });
       await expect(facebook).toHaveAttribute("href", "https://www.facebook.com/groups/friendsofashley/");
       await expect(facebook).toHaveAttribute("target", "_blank");
-      await expect(facebook).toContainText("↗");
+      await expect(facebook.locator(".external-link-icon svg[data-cta-arrow=external]")).toHaveCount(1);
       // Both rows are a single linked action, without a plain-text introduction.
       await expect(signOff).not.toContainText("@thefriendsofashley");
       for (const row of await signOff.locator("p").all()) {

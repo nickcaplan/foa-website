@@ -9,20 +9,24 @@ import { eventVisibilityRules } from "../lib/event-lifecycle";
 interface Props {
   event: CollectionEntry<"events">["data"] & { id?: string };
   past?: boolean;
+  showVolunteering?: boolean;
   timed?: boolean;
   now?: number;
   headingLevel?: "h3" | "h4";
 }
-const { event, past = false, timed = true, now = Date.now(), headingLevel: Heading = "h3" } = Astro.props;
+const { event, showVolunteering = false, past = false, timed = true, now = Date.now(), headingLevel: Heading = "h3" } = Astro.props;
 const rules = timed ? eventVisibilityRules(event, past) : {};
 const date = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" });
 const ticketed = Boolean(event.path && event.ticketUrl);
 // Details must never be nested inside a whole-row link.
-const wholeRowLink = Boolean(event.path && !ticketed && !event.info && !past);
+const hasVolunteerLink = showVolunteering && !!event.volunteeringPath && !past;
+const wholeRowLink = Boolean(event.path && !ticketed && !event.info && !past && !hasVolunteerLink);
+const eventCtaLabel = hasVolunteerLink ? "Event details" : event.ctaLabel;
+const Cta = hasVolunteerLink ? "a" : "span";
 const Wrapper = wholeRowLink ? "a" : "article";
 ---
 <Wrapper class="event-list-item" href={wholeRowLink ? withBase(event.path!) : undefined}
-  data-yearview-event data-event-title={event.title} data-past={past ? "true" : "false"}
+  data-volunteer-actions={hasVolunteerLink || undefined} data-yearview-event data-event-title={event.title} data-past={past ? "true" : "false"}
   data-show-before={rules.showBefore} data-show-from={rules.showFrom}
   data-expires-at={rules.expiresAt} data-expires-on={rules.expiresOn} data-show-from-day={rules.showFromDay}
   hidden={isHidden(rules, now)}>
@@ -30,8 +34,14 @@ const Wrapper = wholeRowLink ? "a" : "article";
   <div>
     <Heading>{event.path && !wholeRowLink ? <a href={withBase(event.path)}>{event.title}</a> : event.title}</Heading>
     <p><time datetime={event.start.toISOString()}>{date(event.start)}{event.allDay ? "" : `, ${formatEventTimeRange(event.start, event.end)}`}</time> · {event.location}</p>
-    {!past && (ticketed ? <span class="event-list-actions"><a class="button button--amber" href={withBase(event.path!)}><span class="cta-label">{(() => { const label = event.ctaLabel ?? "View event details"; const split = label.lastIndexOf(" ") + 1; return <>{label.slice(0, split)}<span class="cta-word">{label.slice(split, -1)}<span class="cta-tail">{label.slice(-1)}<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></>; })()}</span></a>{event.id && <AddToCalendar eventId={event.id} class="event-list-calendar" />}</span> : event.ctaLabel && <span class:list={["event-list-cta", event.ctaButton && "event-list-cta--button"]}><span class="cta-label">{(() => { const label = event.ctaLabel!; const split = label.lastIndexOf(" ") + 1; return <>{label.slice(0, split)}<span class="cta-word">{label.slice(split, -1)}<span class="cta-tail">{label.slice(-1)}<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></>; })()}</span></span>)}
-    {!past && !ticketed && !wholeRowLink && event.id && <AddToCalendar eventId={event.id} class="event-list-calendar" />}
+    {!past && (ticketed ? <span class="event-list-actions"><a class="button button--amber" href={withBase(event.path!)}><span class="cta-label">{(() => { const label = event.ctaLabel ?? "View event details"; const split = label.lastIndexOf(" ") + 1; return <>{label.slice(0, split)}<span class="cta-word">{label.slice(split, -1)}<span class="cta-tail">{label.slice(-1)}<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></>; })()}</span></a>{event.id && <AddToCalendar eventId={event.id} class="event-list-calendar" />}</span> : event.ctaLabel && <Cta href={hasVolunteerLink ? withBase(event.path!) : undefined} class:list={["event-list-cta", event.ctaButton && "event-list-cta--button"]}><span class="cta-label">{(() => { const label = eventCtaLabel!; const split = label.lastIndexOf(" ") + 1; return <>{label.slice(0, split)}<span class="cta-word">{label.slice(split, -1)}<span class="cta-tail">{label.slice(-1)}<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></>; })()}</span></Cta>)}
+    {hasVolunteerLink && <p class="event-volunteer-link"><a class="button button--secondary" href={withBase(event.volunteeringPath!)}><span class="cta-label"><span class="cta-tail">Volunteer<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>}
+    {!past && !ticketed && !wholeRowLink && !hasVolunteerLink && event.id && <AddToCalendar eventId={event.id} class="event-list-calendar" />}
     {!past && event.info && <details class="event-list-info"><summary>{event.info.label}</summary><p>{event.info.text}</p></details>}
   </div>
 </Wrapper>
+
+<style>
+.event-list-item[data-volunteer-actions] .event-list-cta--button,.event-list-item[data-volunteer-actions] .event-volunteer-link .button{display:flex;box-sizing:border-box;width:min(100%,15rem);justify-content:center;text-decoration:none}
+.event-list-item[data-volunteer-actions] .event-volunteer-link .button{flex-direction:row;flex-wrap:nowrap;gap:.5rem;font-size:.95rem;padding:.6rem 1.15rem;line-height:1.2;min-height:2.75rem}.event-volunteer-link svg{flex:0 0 1.25rem}
+</style>

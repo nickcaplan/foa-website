@@ -1,14 +1,11 @@
 ---
-import christmasHomeStyles from "../styles/christmas-home.css?inline";
+import NarniaHero from "../components/NarniaHero.astro";
 import HomepageMobileIdentity from "../components/HomepageMobileIdentity.astro";
 import EventVisibilityInit from "../components/EventVisibilityInit.astro";
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import FundraisingSummary from "../components/FundraisingSummary.astro";
-import MobilePageHeading from "../components/MobilePageHeading.astro";
 import { withBase } from "../lib/urls";
-import { ukDateKey } from "../lib/event-visibility";
-import { ordinalDateFormatter, formatEventTimeRange } from "../lib/dates";
 const events = await getCollection("events");
 const christmasPreview = Astro.props.christmasPreview === true;
 const event = events.find(({ id }) => id === "christmas-fayre-2026")?.data;
@@ -18,40 +15,16 @@ const latestNewsletter = (await getCollection("newsletters"))
   .sort((a, b) => b.data.published!.getTime() - a.data.published!.getTime())[0]?.data;
 const appeal = (await getCollection("fundraising")).find(({ id }) => id === "current-appeal")?.data;
 if (!appeal) throw new Error("Homepage fundraising content is missing");
-const eventDate = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(event.start);
-const titleParts = event.title.trim().split(/\s+/);
-const titleEnd = titleParts.pop()!;
-const titleLead = titleParts.join(" ");
-const baseAwareChristmasStyles = christmasHomeStyles.replaceAll('url("/brand/', `url("${withBase("/brand/")}`);
-const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helping at the ${event.title}`)}`;
 ---
-   <BaseLayout title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview} homepage={christmasPreview}>
+   <BaseLayout socialTitle="The Friends of Ashley | Ashley School PTA" socialDescription="School events, volunteering and fundraising for the Ashley C of E Primary School community in Walton-on-Thames." image="/social/home-2026-v3.jpg" imageAlt="Ashley School PTA: school events, community and fundraising, with the Friends of Ashley logo." imageWidth={1200} imageHeight={630} title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview} homepage={christmasPreview}>
 
-  <style is:inline set:html={baseAwareChristmasStyles} />
   <HomepageMobileIdentity />
   <section class="hero">
     <div class="site-width hero-grid">
-      <div class="hero-event" data-homepage-christmas>
-        <span class="christmas-home-tree" aria-hidden="true"></span>
-       <div class="hero-copy">
-          <MobilePageHeading>
-            <h1><span class="christmas-home-kicker">The Ashley</span> {titleLead} <em>{titleEnd}</em></h1>
-          </MobilePageHeading>
-          <p class="hero-when"><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path></svg><strong>{eventDate}<span class="relative-date relative-date--inline" data-event-date={ukDateKey(event.start)} hidden></span></strong></span><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg><strong>{event.location}</strong></span></p><p class="christmas-home-admission"><span class="hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><strong>{formatEventTimeRange(event.start, event.end)}</strong></span><span class="christmas-home-price hero-fact"><svg class="hero-fact-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4V5z"></path><path d="M14 5v2m0 3v4m0 3v2"></path></svg><span>{event.entry}</span></span></p></div>
-       <div class="hero-side">
-
-        <article class="event-feature event-feature--poster christmas-home-art" aria-label="Christmas Fayre artwork and details">
-          <img class="christmas-home-wreath" src={withBase("/brand/foa-logo-christmas-home.webp")} alt="The Friends of Ashley Christmas wreath" width="1200" height="630" loading="eager" fetchpriority="high" />
-          <span class="sponsor-ribbon"><img src={withBase("/sponsors/martin-flashman.jpeg")} alt="Martin Flashman and Co" width="225" height="33" loading="lazy" /></span>
-        <div class="hero-actions"><a class="button button--primary button--large christmas-home-details" href={withBase(event.path!)}><span class="cta-label">Event <span class="cta-word">detail<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
-        <a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the <span class="cta-word">organiser<span class="cta-tail">s<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a>
-          </div>
-        </article>
-       </div>
-      </div>
+      <NarniaHero event={event} homepage={true} />
      <div class="quick-list hero-links">
-     {latestNewsletter && <a class="quick-row" href={withBase("/newsletter/")}><span><h3>Read the latest newsletter</h3><p>{latestNewsletter.title}</p></span><span class="quick-arrow" aria-hidden="true">&rarr;</span></a>}
-     <a class="quick-row" href={withBase("/get-involved/")}><span><h3>Get involved</h3><p>Roles, meetings, class reps and ways to help.</p></span><span class="quick-arrow" aria-hidden="true">&rarr;</span></a>
+     {latestNewsletter && <a class="quick-row" href={withBase("/newsletter/")}><span><h3 class="cta-label">Read the latest <span class="cta-tail">newsletter<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></h3><p>{latestNewsletter.title}</p></span></a>}
+     <a class="quick-row" href={withBase("/get-involved/")}><span><h3 class="cta-label">Get <span class="cta-tail">involved<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></h3><p>Roles, meetings, class reps and ways to help.</p></span></a>
      </div>
     </div>
   </section>
@@ -74,3 +47,13 @@ const mailto = `mailto:${event.contactEmail}?subject=${encodeURIComponent(`Helpi
   document.addEventListener("visibilitychange", () => { if (!document.hidden) update(); });
   window.addEventListener("pageshow", update);
 </script>
+
+<style is:inline>@media(min-width:64rem){.homepage .hero-links{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:none;width:100%}}</style>
+
+<style is:inline>
+@media(min-width:64rem) and (max-width:79.99rem){.homepage .menu-toggle{top:calc(1rem + (var(--introduction-logo-size) - 3rem)/2)}}
+</style>
+
+<style is:inline>
+@media(min-width:64rem){.homepage .narnia-landscape{max-width:none}}
+</style>

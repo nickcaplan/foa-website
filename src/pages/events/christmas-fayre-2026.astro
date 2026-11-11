@@ -1,27 +1,27 @@
 ---
-import MobilePageHeading from "../../components/MobilePageHeading.astro";
+import PageLogo from "../../components/PageLogo.astro";
+import NarniaHero from "../../components/NarniaHero.astro";
 import { getEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ChristmasBaubles from "../../components/ChristmasBaubles.astro";
 import ChristmasTrees from "../../components/ChristmasTrees.astro";
-import AddToCalendar from "../../components/AddToCalendar.astro";
 import "../../styles/christmas.css";
 import { withBase } from "../../lib/urls";
-import { ordinalDateFormatter, formatEventTimeRange } from "../../lib/dates";
 
 const entry = await getEntry("events", "christmas-fayre-2026");
 if (!entry?.data.helpAreas || !entry.data.contactEmail) throw new Error("Christmas Fayre content is missing");
 const event = entry.data;
-const whatsOn = event.whatsOn ?? [];
 const helpAreas = event.helpAreas!;
+if (!event.lead) throw new Error("Christmas Fayre leads are missing");
+const leads = event.lead.split(/ and (?=[^()]*\()/);
 const email = event.contactEmail!;
-const dateFormatter = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" });
 const mailto = `mailto:${email}?subject=${encodeURIComponent("Helping at the Christmas Fayre")}`;
 
 const icons = {
   funzone: "M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8.500 8.500h.01M15.500 8.500h.01M12 12h.01M8.500 15.500h.01M15.500 15.500h.01",
   craft: "M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM20 4L8.100 15.900M14.500 14.500L20 20M8.100 8.100L12 12",
   cafe: "M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 2v3M10 2v3M14 2v3",
+  bbq: "M4 10h16a8 8 0 0 1-16 0zM8 17l-2 5M16 17l2 5M7 20h10M8 3v3M12 2v4M16 3v3",
+  bar: "M4 3h16l-8 9zM12 12v9M8 21h8M7 6h10",
   photo: "M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.500 3.500 0 1 0 0-7 3.500 3.500 0 0 0 0 7z",
   tombola: "M4 11h16v9H4zM3 7h18v4H3zM12 7v13M12 7c-2 0-4-1-4-2.500S10.500 3 12 7zM12 7c2 0 4-1 4-2.500S13.500 3 12 7z",
   tokens: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7.500v9M9.500 10h4a1.500 1.500 0 0 1 0 3h-3a1.500 1.500 0 0 0 0 3H15",
@@ -51,7 +51,7 @@ const eventJsonLd = {
   organizer: { "@type": "Organization", name: "The Friends of Ashley", url: new URL(withBase("/"), Astro.site).href },
 };
 ---
-<BaseLayout title={event.title} description="Help host the Ashley Christmas Fayre: join a slot with your friends, no experience needed." image="/brand/foa-logo-christmas-og.png" headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme">
+<BaseLayout socialTitle="Christmas Fayre | Saturday 5 December 2026 | Ashley School" socialDescription="Step into Narnia at Ashley School, Saturday 5 December, 12:00 - 15:00. Games, crafts, food and festive fun. Entry \u00a32; under 12s free." image="/social/christmas-fayre-2026-v1.jpg" imageAlt="Christmas Fayre, Saturday 5 December 2026, 12:00 - 15:00 at Ashley School, with the Narnia-inspired woodland artwork." imageWidth={1200} imageHeight={630} title={event.title} description="Help at the Ashley Christmas Fayre: join a slot with your friends, no experience needed." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-event">
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <div class="xmas-stage">
     <div class="xmas-snow" aria-hidden="true">
@@ -59,22 +59,14 @@ const eventJsonLd = {
     </div>
 
     <section class="xmas-hero" aria-labelledby="xmas-title">
-      <ChristmasBaubles placement="desktop" />
       <div class="site-width">
-        <div class="xmas-frame xmas-hero__frame">
-          <MobilePageHeading logo="/brand/foa-logo-christmas-ivory.svg">
-            <h1 id="xmas-title">{event.title}</h1>
-            <ChristmasBaubles placement="mobile" />
-              <p class="xmas-credit" slot="below-logo"><img src={withBase("/sponsors/martin-flashman-mark.png")} alt="Martin Flashman and Co" width="72" height="72" loading="lazy"></p>
-          </MobilePageHeading>
-          <dl class="xmas-facts">
-            <div><dt>When</dt><dd><span class="xmas-nowrap">{dateFormatter(event.start)},</span> <span class="xmas-nowrap">{formatEventTimeRange(event.start, event.end)}</span></dd></div>
-            <div><dt>Where</dt><dd>{event.location}</dd></div>
-            {event.entry && <div><dt>Entry</dt><dd>{event.entry}</dd></div>}
-            {whatsOn.length > 0 && <div><dt>What’s on</dt><dd>{whatsOn.map((item, index) => <>{index > 0 && <br />}{item}</>)}</dd></div>}
-            <div><dt>Led by</dt><dd>{event.lead?.split(/(?<=\)) and /).map((lead, index) => <>{index > 0 && <br />}{lead}</>)}</dd></div>
-          </dl>
-          <p class="xmas-actions"><a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a><AddToCalendar eventId={entry.id} /></p>
+        <div class="narnia-mobile-brand"><PageLogo logo="/brand/foa-logo-christmas-ivory.svg" /></div>
+        <NarniaHero event={event} eventPage={true} />
+        <div class="narnia-event-details">
+          <section class="fayre-leads" aria-labelledby="fayre-leads-title">
+            <h2 id="fayre-leads-title">Led by</h2>
+            <div class="fayre-leads__grid">{leads.map(lead=><p class="fayre-leads__card"><span>{lead}</span></p>)}</div>
+          </section>
         </div>
       </div>
     </section>
@@ -82,7 +74,7 @@ const eventJsonLd = {
     <section class="xmas-section" aria-labelledby="xmas-areas-title">
       <div class="site-width">
         <h2 id="xmas-areas-title">Where we need friendly faces</h2>
-        <p class="xmas-section__lead">Instead of assigning stalls to year groups, anyone across the school can join in anywhere. Sign up for a slot alongside your friends and help with whatever you’re best at. Right now we’re looking for helpers (pairs welcomed!) to host our key areas:</p>
+        <p class="xmas-section__lead">Instead of assigning stalls to year groups, anyone across the school can join in anywhere. Sign up for a slot alongside your friends and help with whatever you’re best at. Join the helpers at these activities (pairs welcome!):</p>
         <ul class="xmas-areas">
           {helpAreas.map((area) => (
             <li class="xmas-area">
@@ -91,6 +83,7 @@ const eventJsonLd = {
             </li>
           ))}
         </ul>
+        <p class="xmas-actions xmas-stalls-cta"><a class="button button--large" href={withBase(event.volunteeringPath ?? '/christmas-fayre-volunteering/')}><span class="cta-label"><span class="cta-tail">Volunteer<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
         <div class="xmas-notes">
           <h3>Good to know</h3>
           <ul class="xmas-points">
@@ -102,13 +95,14 @@ const eventJsonLd = {
       </div>
     </section>
 
+
     <section class="xmas-section xmas-section--last" aria-labelledby="xmas-contact-title">
       <div class="site-width xmas-narrow">
         <div class="xmas-frame xmas-contact">
           <div class="xmas-contact__copy">
             <h2 id="xmas-contact-title">Get in touch</h2>
-            <p>Email the Christmas Fayre team or chat with the team in the playground to find out more and to sign up.</p>
-            <p class="xmas-actions"><a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span></span></span></span></a></p>
+            <p>Email the Christmas Fayre team or chat with the team in the playground if you have any questions about helping. Use the sign-up button above to explore the volunteer activities, then choose your slot on JustSignup.</p>
+            <p class="xmas-actions"><a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></span></a></p>
           </div>
           <ChristmasTrees />
         </div>
@@ -116,3 +110,83 @@ const eventJsonLd = {
     </section>
   </div>
 </BaseLayout>
+
+<style is:inline>
+.narnia-event .xmas-stage .site-width{width:min(calc(100% - 2rem),62rem)}@media(min-width:48rem){.narnia-event .xmas-stage .site-width{width:min(calc(100% - 3rem),62rem)}}.narnia-event .narnia-landscape{max-width:none}.narnia-mobile-brand{padding:1rem 4rem 1rem 0}.narnia-mobile-brand .mobile-page-logo{display:block;width:3rem;height:3rem}.narnia-mobile-brand img{width:100%;height:100%}.narnia-event-details{max-width:52rem;margin:2rem auto 0;text-align:center}@media(min-width:80rem){.narnia-mobile-brand{display:none}}
+</style>
+
+<style is:inline>
+@media(min-width:64rem){
+.narnia-event-details{max-width:none;text-align:left}
+}
+</style>
+
+<style is:inline>
+.narnia-event .narnia-landscape__copy{min-height:0;padding:2rem 1.5rem;max-width:48rem}
+.narnia-event .narnia-landscape h1{font-size:clamp(2rem,3.5vw,3rem);margin-bottom:.75rem}
+.narnia-event .narnia-landscape h1 em{display:inline}
+.narnia-event .narnia-landscape__date{margin-bottom:.5rem}
+.narnia-event .narnia-landscape__venue{margin-bottom:1rem}
+@media(max-width:47.99rem){
+.narnia-event .narnia-landscape__art{position:absolute;inset:0;height:100%;aspect-ratio:auto;object-fit:cover}
+.narnia-event .narnia-landscape:before{display:block;background:linear-gradient(90deg,#10232ccc,#10232cdd 35%,#10232ccc)}
+.narnia-event .narnia-landscape h1{font-size:2rem!important}
+.narnia-event .narnia-landscape__copy{padding:1.25rem 1rem}
+}
+</style>
+
+<style is:inline>
+.narnia-event .narnia-landscape__art{width:160%;max-width:none;left:0;right:auto;object-position:left center}
+.narnia-event .narnia-landscape:before{display:block;background:linear-gradient(90deg,#10232c44,#10232cdd 42%,#10232ce6)}
+@media(max-width:47.99rem){.narnia-event .narnia-landscape__art{width:180%;object-position:left center}}
+</style>
+
+<style is:inline>
+.xmas-stalls-cta{margin:2rem auto;text-align:center}.xmas-stalls-cta .button{display:inline-flex;align-items:center;justify-content:center;gap:1rem;width:min(100%,22rem);min-height:3.5rem;padding:.8rem 1.5rem;background:#742f3c;border:1px solid #c9a65f;color:#fff5e2;font-size:1rem;line-height:1.5}.xmas-stalls-cta .button:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}.xmas-stalls-cta svg{flex:none}
+</style>
+
+<style is:inline>
+@media(min-width:64rem){.narnia-event .xmas-section__lead{max-width:none}}
+</style>
+
+<style is:inline>
+@media(max-width:47.99rem){
+.narnia-event .xmas-hero{padding-bottom:0}
+.narnia-event .xmas-hero+.xmas-section{padding-top:.75rem}
+.narnia-event .xmas-hero+.xmas-section h2{margin-top:0}
+}
+</style>
+
+<style is:inline>
+@media(max-width:63.99rem){
+.narnia-event .xmas-hero>.site-width{padding-top:0}
+.narnia-event .narnia-mobile-brand{padding-top:1rem}
+.narnia-event .narnia-mobile-brand img{transform:none}
+}
+@media(min-width:64rem){.narnia-event .narnia-mobile-brand{display:none}}
+@media(min-width:64rem) and (max-width:79.99rem){.narnia-event .menu-toggle{top:calc(1rem + var(--introduction-logo-size)*.45 - 1.5rem)}}
+</style>
+
+
+<style is:inline>
+.fayre-leads{margin:0}.narnia-event .fayre-leads h2{margin:0 0 .75rem;font:700 .85rem/1.4 var(--font-body,system-ui,sans-serif);letter-spacing:.12em;text-transform:uppercase;color:#edcb83;text-align:left}.narnia-event .fayre-leads h2:after{display:none}.fayre-leads__grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.fayre-leads__card{margin:0;max-width:100%;padding:1.15rem;text-align:center;font:700 1.15rem/1.4 var(--font-display);color:var(--xm-gold-light);border:1px solid var(--xm-gold);border-radius:var(--radius-sm);background:linear-gradient(#17503ab3,#0f3a27b3);box-shadow:inset 0 0 0 4px #08241ae6,inset 0 0 0 5px var(--xm-gold-dim)}
+@media(max-width:47.99rem){.fayre-leads__grid{grid-template-columns:1fr}}
+
+</style>
+
+<style is:inline>
+.narnia-event .xmas-areas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr}@media(min-width:40rem){.narnia-event .xmas-areas{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(min-width:62rem){.narnia-event .xmas-areas{grid-template-columns:repeat(4,minmax(0,1fr))}}.narnia-event .xmas-area{display:grid;grid-template-rows:1.7rem auto;justify-items:center;align-content:start;align-items:start;row-gap:.65rem;padding:1rem .5rem;text-align:center}
+.narnia-event .xmas-area svg{grid-row:1}.narnia-event .xmas-area span{grid-row:2;width:100%;min-width:0}
+</style>
+
+<style is:inline>
+.narnia-event .xmas-stage .xmas-narrow{max-width:none}
+</style>
+
+<style is:inline>
+@media(min-width:48rem){
+.narnia-event .narnia-landscape__art{width:100%;left:0;right:0;object-position:center center}
+.narnia-event .narnia-landscape:before{background:linear-gradient(90deg,#10232c33,#10232cdd 35%,#10232cdd 62%,#10232c88)}
+}
+</style>

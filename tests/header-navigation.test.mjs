@@ -38,7 +38,7 @@ test("all pages share the larger desktop introduction/navigation row and an inde
     assert.match(pageLogo, /<img[^>]*width="160"[^>]*height="160"/, route);
     assert.doesNotMatch(pageLogo, /<p\b|<strong\b|<span\b/, route);
     assert.ok(html.indexOf(pageLogo) < html.indexOf("<h1"), route);
-    assert.match(html, /class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1/, route);
+    if (!route.includes("christmas-fayre")) assert.match(html, /class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1/, route);
     assert.doesNotMatch(html, /class="site-width mobile-page-logo"/, route);
     assert.doesNotMatch(header, /data-menu-toggle/, route);
     assert.doesNotMatch(html, /data-header-menu-sentinel\b/, route);
@@ -55,7 +55,8 @@ test("the homepage retains desktop branding and uses the shared inline mobile lo
   const visibleHtml = html.replace(/<div class="hero-event"[^>]*\shidden(?:="[^"]*")?>[\s\S]*?(?=<div class="hero-event"|<div class="quick-list)/g, "");
     const main = visibleHtml.match(/<main\b[\s\S]*?<\/main>/)?.[0];
   assert.ok(main);
-  assert.match(main, /class="hero-copy">\s*<div class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1>(?:<span class="christmas-home-kicker">The Ashley<\/span> Christmas <em>Fayre|Fireworks on the <em>Field\.)<\/em><\/h1>/);
+  assert.match(main, /class="homepage-mobile-identity"/);
+  assert.match(main, /<h1[^>]*>Christmas <em>Fayre<\/em><\/h1>/);
   assert.doesNotMatch(main, /mobile-home-introduction|class="home-introduction"|Ashley C of E Primary School PTA/);
   assert.doesNotMatch(main, /Parent-led\. Child-focused\. All welcome\.|class="eyebrow">Parent-led/);
 });
@@ -83,6 +84,15 @@ test("every public page embeds one mobile home-linked logo beside its heading", 
     const visibleHtml = html.replace(/<div class="hero-event"[^>]*\shidden(?:="[^"]*")?>[\s\S]*?(?=<div class="hero-event"|<div class="quick-list)/g, "");
     const main = visibleHtml.match(/<main\b[\s\S]*?<\/main>/)?.[0];
     assert.ok(main, path.pathname);
+    // These approved routes use the landscape hero instead of
+    // the standard logo-beside-heading template. Their geometry, menu and home
+    // link are covered in narnia-hero.spec.ts.
+    if (main.includes('class="narnia-landscape"')) {
+      assert.match(main, /class="narnia-landscape"/);
+      assert.equal(main.match(/<h1\b/g)?.length, 1, path.pathname);
+      if (path.pathname.includes("christmas-fayre-2026")) assert.match(main, /class="mobile-page-logo page-logo-home"/);
+      continue;
+    }
     assert.equal(main.match(/class="mobile-page-logo page-logo-home"/g)?.length, 1, path.pathname);
     assert.match(main, /class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1/, path.pathname);
     if (html.includes('class="view-hero')) {
