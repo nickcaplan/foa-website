@@ -49,7 +49,7 @@ test("the four changed pages use compact purpose-made social cards", async () =>
   const cards={"":"home","whats-on":"whats-on","events/christmas-fayre-2026":"christmas-fayre","christmas-fayre-volunteering":"fayre-volunteering"};
   for(const [route,name] of Object.entries(cards)) {
     const html=await readFile(path.join(dist,route,"index.html"),"utf8");
-    const version=name==="christmas-fayre"?"v1":"v2";
+    const version=["home","whats-on"].includes(name)?"v3":(name==="christmas-fayre"?"v1":"v2");
     assert.ok(html.includes(`/social/${name}-2026-${version}.jpg`));
     assert.match(html, /property="og:image:width" content="1200"/);
     assert.match(html, /property="og:image:height" content="630"/);

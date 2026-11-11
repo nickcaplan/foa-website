@@ -16,7 +16,7 @@ const latestNewsletter = (await getCollection("newsletters"))
 const appeal = (await getCollection("fundraising")).find(({ id }) => id === "current-appeal")?.data;
 if (!appeal) throw new Error("Homepage fundraising content is missing");
 ---
-   <BaseLayout socialTitle="The Friends of Ashley | Ashley School PTA" socialDescription="School events, volunteering and fundraising for the Ashley C of E Primary School community in Walton-on-Thames." image="/social/home-2026-v2.jpg" imageAlt="Ashley School PTA: school events, community and fundraising, with the Friends of Ashley logo." imageWidth={1200} imageHeight={630} title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview} homepage={christmasPreview}>
+   <BaseLayout socialTitle="The Friends of Ashley | Ashley School PTA" socialDescription="School events, volunteering and fundraising for the Ashley C of E Primary School community in Walton-on-Thames." image="/social/home-2026-v3.jpg" imageAlt="Ashley School PTA: school events, community and fundraising, with the Friends of Ashley logo." imageWidth={1200} imageHeight={630} title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview} homepage={christmasPreview}>
 
   <HomepageMobileIdentity />
   <section class="hero">
