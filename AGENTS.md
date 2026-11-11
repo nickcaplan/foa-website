@@ -33,7 +33,7 @@ The full decision list is in the brief.
 
 ## Content and Safety Rules
 
-- Use British English in new and updated copy and documentation. Do not use em dashes or Oxford commas.
+- Use British English in new and updated copy and documentation. Use ordinary ASCII hyphens for prose dashes, not en dashes or em dashes (confirmed 31 October 2026). Do not use Oxford commas.
 - Whenever the site is updated or a page is added, review `src/pages/reps.astro` for related messages that need adding, updating or retiring. Keep visible and copied messages consistent with the canonical pages, include full public website links and check review and expiry dates. If the change has no relevance to class reps, no message change is needed.
 - Do not invent event, accessibility, ticketing, uniform, committee or legal facts. Label unknown or provisional information clearly; the provisional list is in `docs/ACTIONS.md`.
 - Committee presentation uses names and roles (plus approved portraits) only.
@@ -138,3 +138,9 @@ When asked "What are the next steps?":
 ## Visual consistency gate
 
 Before sending preview screenshots, follow the pre-send checklist in `docs/PROJECT-BRIEF.md`. Run `tests/e2e/cta-icon-wrap.spec.ts` and the Fayre feedback checks. Inspect hosted phone and desktop pixels across all similar controls, including text links, pills, calendar choices and external actions. Structured controls use right-edge icon lanes: arrows in the same menu/list column align with each other; paired stacked buttons share the same icon x position. Only inline prose links keep adjacent icons. Use the shared SVG shape and text-relative size, never font arrow glyphs. Check equal paired widths, icon alignment, label wrapping and shared column edges before presenting the result.
+
+## Final design and performance review
+
+Before calling a visible change ready, make separate whole-journey and whole-page passes on the hosted revision. Exercise controls, repeated actions, loading and error states, then judge hierarchy, spacing, readability and consistency of the complete page. Apply the viewport, theme and enlarged-text checks above. Passing tests or finding no overlap is not a design verdict (confirmed 5 November 2026).
+
+Check performance after changes (confirmed 2 November 2026). For changes that may affect loading or animation, compare like-for-like phone and desktop cold/warm measurements before and after. Flag a measured slowdown before merge and check production after deployment. If a baseline or live check is missing, say what remains unmeasured; do not infer zero impact.
