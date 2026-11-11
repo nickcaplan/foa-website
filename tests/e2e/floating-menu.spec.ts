@@ -40,7 +40,9 @@ for (const width of [320, 390, 768, 1023]) {
       const logoBottom = await page.locator(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route) ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
       const panel = page.locator(".view-hero");
       if (await panel.count()) {
-        expect((await panel.boundingBox())!.y, route).toBe(16);
+        // Identity-bar routes open with the bar flush to the top, so the hero panel starts below it instead of at the usual 16px.
+        const identityBarRoute = ["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route);
+        expect((await panel.boundingBox())!.y, route).toBe(identityBarRoute ? logoBottom : 16);
         await expect(panel.locator(".page-logo-home"), route).toBeVisible();
         const eyebrow = await panel.locator(".eyebrow").boundingBox();
         expect(eyebrow!.y, `${route}: eyebrow should clear the floating controls`).toBeGreaterThanOrEqual(before!.y + before!.height);
@@ -113,7 +115,9 @@ for (const width of [320, 390, 768, 1023]) {
       await expect(page.locator("body")).toHaveClass("homepage");
       if (route !== "/") {
         await page.goto(route);
-        await page.locator(".page-logo-home:visible").click();
+        // Identity-bar routes link home from the bar; standard pages from the mobile hero logo.
+        const homeLink = ["/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route) ? ".homepage-mobile-identity__home" : ".page-logo-home:visible";
+        await page.locator(homeLink).click();
         await expect(page).toHaveURL(/\/$/);
         await expect(page.locator("body")).toHaveClass("homepage");
       }

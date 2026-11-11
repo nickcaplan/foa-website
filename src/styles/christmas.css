@@ -753,7 +753,10 @@ body.xmas-theme::before {
 @media (max-width: 63.99rem) {
   .xmas-theme .homepage-mobile-identity {
     color: var(--xm-cream);
-    /* Match the homepage gap between the identity bar and the hero. */
-    padding-bottom: 1rem;
+  }
+
+  /* The identity bar anchors at the very top, as on the other Fayre pages. */
+  .art-comp #main-content:has(.view-hero) {
+    padding-top: 0;
   }
 }
