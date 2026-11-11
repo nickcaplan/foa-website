@@ -1,4 +1,6 @@
 ---
+import FayreSupporter from "../../components/FayreSupporter.astro";
+const {supporterVariant="a",supporterPreview=false}=Astro.props;
 import PageLogo from "../../components/PageLogo.astro";
 import NarniaHero from "../../components/NarniaHero.astro";
 import { getEntry } from "astro:content";
@@ -51,7 +53,7 @@ const eventJsonLd = {
   organizer: { "@type": "Organization", name: "The Friends of Ashley", url: new URL(withBase("/"), Astro.site).href },
 };
 ---
-<BaseLayout socialTitle="Christmas Fayre | Saturday 5 December 2026 | Ashley School" socialDescription="Step into Narnia at Ashley School, Saturday 5 December, 12:00 - 15:00. Games, crafts, food and festive fun. Entry \u00a32; under 12s free." image="/social/christmas-fayre-2026-v1.jpg" imageAlt="Christmas Fayre, Saturday 5 December 2026, 12:00 - 15:00 at Ashley School, with the Narnia-inspired woodland artwork." imageWidth={1200} imageHeight={630} title={event.title} description="Help at the Ashley Christmas Fayre: join a slot with your friends, no experience needed." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-event">
+<BaseLayout noindex={supporterPreview} socialTitle="Christmas Fayre | Saturday 5 December 2026 | Ashley School" socialDescription="Step into Narnia at Ashley School, Saturday 5 December, 12:00 - 15:00. Games, crafts, food and festive fun. Entry \u00a32; under 12s free." image="/social/christmas-fayre-2026-v1.jpg" imageAlt="Christmas Fayre, Saturday 5 December 2026, 12:00 - 15:00 at Ashley School, with the Narnia-inspired woodland artwork." imageWidth={1200} imageHeight={630} title={event.title} description="Help at the Ashley Christmas Fayre: join a slot with your friends, no experience needed." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-event">
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <div class="xmas-stage">
     <div class="xmas-snow" aria-hidden="true">
@@ -96,6 +98,7 @@ const eventJsonLd = {
     </section>
 
 
+    <div class="site-width"><FayreSupporter variant={supporterVariant}/></div>
     <section class="xmas-section xmas-section--last" aria-labelledby="xmas-contact-title">
       <div class="site-width xmas-narrow">
         <div class="xmas-frame xmas-contact">

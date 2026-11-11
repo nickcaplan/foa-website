@@ -355,7 +355,7 @@ test("external links communicate their destination and open safely in a new tab"
   assert.ok(externalLinkTags.length > 0);
   for (const link of externalLinkTags) {
     assert.match(link, /target="_blank"/);
-    assert.match(link, /rel="noopener noreferrer"/);
+    assert.match(link, /rel="(?=[^"]*\bnoopener\b)(?=[^"]*\bnoreferrer\b)[^"]*"/);
   }
   // The shared footer/menu social links are exempt from the visible arrow: the brand
   // icon plus service name already makes the destination obvious (approved
