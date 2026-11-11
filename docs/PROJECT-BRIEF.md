@@ -389,3 +389,5 @@ Required before launch and enforced in CI where noted:
 - CMS draft/publish/expiry testing and ticket-provider end-to-end testing (when those features exist)
 
 Scope, layers, cadence and implementation order are in [`TEST-STRATEGY.md`](TEST-STRATEGY.md).
+
+The homepage Donations Day notice sits inside the Christmas Fayre splash below its two actions and above the sponsor. It appears once, with the confirmed Friday 20 November date only. Keep the existing date-based expiry and the other public placements; the existing Event details action supplies the details route without another competing link.
