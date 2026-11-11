@@ -77,14 +77,19 @@ const normalDescription = "Find pre-loved uniform from The Friends of Ashley, pl
 
   .uniform-cta {
     display: grid;
+    grid-auto-rows: 1fr;
     gap: 1rem;
     margin-top: 1.25rem;
   }
 
-  @container uniform-details (min-width: 48rem) {
+  @container uniform-details (min-width: 64rem) {
     .uniform-cta {
       display: flex;
       flex-wrap: wrap;
+    }
+    .uniform-cta .uniform-action {
+      flex: 1 1 auto;
+      min-width: 0;
     }
   }
 
@@ -100,7 +105,7 @@ const normalDescription = "Find pre-loved uniform from The Friends of Ashley, pl
     overflow-wrap: anywhere;
   }
 
-  @container uniform-details (min-width: 48rem) {
+  @container uniform-details (min-width: 64rem) {
     .split-layout.uniform-details-grid {
       grid-template-columns: minmax(0, 0.65fr) minmax(0, 1fr);
     }

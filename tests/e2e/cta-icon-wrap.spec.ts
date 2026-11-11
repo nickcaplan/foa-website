@@ -136,7 +136,7 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
             expect(await strandedIcons(page)).toEqual([]);
             expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
             const overflow = await page.locator(path === "/fireworks-volunteering/" ? ".content-section a:visible" : ".newsletter-more a:visible, .uniform-action").evaluateAll((links) => links.flatMap((link) => {
-              const column = link.closest("p, li, .newsletter-more, .vol-card, .view-hero-action")!.getBoundingClientRect();
+              const column = link.closest("p, li, .newsletter-more, .vol-card, .view-hero-action, .uniform-cta")!.getBoundingClientRect();
               const range = document.createRange();
               const rects = [...link.querySelectorAll(".cta-icon, .external-link-icon")].map((icon) => icon.getBoundingClientRect());
               const walker = document.createTreeWalker(link, NodeFilter.SHOW_TEXT);
