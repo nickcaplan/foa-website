@@ -155,6 +155,10 @@ These are confirmed unless the project owner explicitly revises them. Edit entri
 - Confirmed Pre-loved Uniform prices: £3 for coats and new-logo items, £1 for all other items, card only. Donation instruction: "If you have any uniform which you would like to donate, please drop it in the green bins by the School Office - no torn items please!"
 - Christmas Fayre is Saturday 5th December 2026, 12:00-15:00. The Fayre is led by Rachel Briscoe (Squirrel and Otter) and Sophie Glass (Fox). Welcome Tea is Saturday 3rd October. Santa's Grotto is Monday 14th December 2026, run by parents and carers during the school day.
 
+### Christmas Fayre Donations Day
+
+- Confirmed 11 November 2026: Donations Day for the Christmas Fayre is Friday 20th November 2026. Donation items, times and drop-off arrangements are not yet supplied and must not be invented. The date is held in one event record and shown in What's On, with short notices on Home, Fayre details and volunteering, plus a matching Reps Hub message. Date-only notices expire after the UK day.
+
 ### Notice Board
 
 - Deferred; no public route. If introduced, it is editorial and committee-managed: no unmoderated publishing, notices need publication and expiry dates, and the Committee owns review, expiry and takedowns.
@@ -385,3 +389,15 @@ Required before launch and enforced in CI where noted:
 - CMS draft/publish/expiry testing and ticket-provider end-to-end testing (when those features exist)
 
 Scope, layers, cadence and implementation order are in [`TEST-STRATEGY.md`](TEST-STRATEGY.md).
+
+### December pre-loved sale
+
+Christmas jumpers join the Friday 4 December sale. The Uniform page's sale panel uses a restrained Christmas treatment: forest green, fine gold outline and a small decorative knitted-jumper illustration. Keep the practical sale and donation copy as live text, with fixed cream text against the forest panel in both themes. Uniform prices remain clearly separate from Christmas-jumper pricing; no jumper price is confirmed.
+
+The December sale uses the same approved red/green Fair Isle knitted jumper illustration in the sale panel and the dedicated Uniform social-sharing image alongside the standard ivory logo. The 1200x630 card has no date baked into it. The Next sale label and date share a row beside the jumper, avoiding a tall label-only row on phones.
+
+The homepage Donations Day notice sits inside the Christmas Fayre splash below its two actions and above the sponsor. It appears once, with the confirmed Friday 20 November date only. Keep the existing date-based expiry and the other public placements; the existing Event details action supplies the details route without another competing link.
+
+The December jumper treatment runs through the sale day and expires at midnight after Friday 4 December (Europe/London). Uniform returns to its ordinary buy/donate content, without an invented next sale date. The same boundary applies to Reps and the active What's On listing; the latter retains a past-event record. On the first build after expiry, Uniform's social image and description return to the standard logo and evergreen copy. The existing daily 08:00 build supplies that server-rendered metadata update; chat apps may retain cached previews.
+
+The desktop newsletter reader uses an 84rem maximum frame, an 18rem issue index and a slimmer cork surround. Give the reading sheet the recovered width rather than widening only the decoration. On phones, use a 0.375rem cork border and surround with 0.75rem paper side padding, recovering reading width while retaining the noticeboard. The phone letterhead places the logo, name and smaller date stamp on one line when they fit, wrapping naturally on narrower or enlarged-text views, with tighter top and header spacing so the issue starts higher. Keep the stacked layouts, content and reading controls. This layout change is separate from newsletter issue publication.

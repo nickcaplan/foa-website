@@ -7,8 +7,8 @@ test.describe("Newsletter expansion", () => {
   });
 
   test("the latest newsletter preview shows the opening sections", async ({ page }) => {
-    await expect(page.locator(".newsletter-issue").getByText("Fireworks on the Field: Thursday 5th November")).toBeVisible();
-    await expect(page.locator(".newsletter-issue").getByText("Christmas Fayre: Saturday 5th December")).toBeVisible();
+    await expect(page.locator(".newsletter-issue").getByRole("heading", { name: "🎆 Fireworks on the Field", exact: true })).toBeVisible();
+    await expect(page.locator(".newsletter-issue").getByRole("heading", { name: "🎄 Christmas Fayre: Saturday 5th December, 12pm - 3pm", exact: true })).toBeVisible();
   });
 
   test("every issue ends with the Instagram and Facebook group sign-off", async ({ page }) => {
@@ -159,7 +159,7 @@ test.describe("Newsletter expansion", () => {
   }
 
   for (const [name, bodyId, hiddenText] of [
-    ["latest", "newsletter-latest-more", "Santa’s Grotto"],
+    ["latest", "newsletter-latest-more", "Pre-loved Uniform: Friday 4th December - Christmas Jumpers Needed!"],
     ["previous issue", "newsletter-autumn-term-2026-more", "Committee & Volunteer Shout-Outs: Could you be our Co-Secretary?"],
     ["archive", "newsletter-back-to-school-2026-more", "AGM: Come Along & Have Your Say!"],
   ]) {
@@ -258,7 +258,7 @@ test.describe("Newsletter reading room", () => {
     await links.nth(1).focus();
     await page.setViewportSize({ width: 390, height: 900 });
     await expect(page.locator(".newsletter-issue-index")).toBeHidden();
-    await expect(page.locator(".newsletter-archive article")).toHaveCount(2);
+    await expect(page.locator(".newsletter-archive article")).toHaveCount(3);
     const previous = page.locator(".newsletter-archive article").first();
     await expect(previous).toBeFocused();
     await expect(page.locator(`#${id}`)).toBeVisible();

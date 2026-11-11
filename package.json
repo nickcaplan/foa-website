@@ -11,6 +11,7 @@
     "test": "npm run build && npm run test:site && npm run test:e2e",
     "test:site": "node --test tests/*.test.mjs",
     "test:e2e": "playwright test",
+    "test:expiry-build": "node scripts/test-uniform-expiry-build.mjs",
     "test:performance": "npm run build && playwright test --config playwright.performance.config.ts",
     "test:dev": "playwright test --config playwright.dev.config.ts",
     "verify": "npm run check && npm test"
