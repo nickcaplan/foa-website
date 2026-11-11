@@ -385,3 +385,7 @@ Required before launch and enforced in CI where noted:
 - CMS draft/publish/expiry testing and ticket-provider end-to-end testing (when those features exist)
 
 Scope, layers, cadence and implementation order are in [`TEST-STRATEGY.md`](TEST-STRATEGY.md).
+
+### December pre-loved sale
+
+Christmas jumpers join the Friday 4 December sale. The Uniform page's sale panel uses a restrained Christmas treatment: forest green, fine gold outline and a small decorative knitted-jumper illustration. Keep the practical sale and donation copy as live text, with fixed cream text against the forest panel in both themes. Uniform prices remain clearly separate from Christmas-jumper pricing; no jumper price is confirmed.
