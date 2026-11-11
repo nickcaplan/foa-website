@@ -56,6 +56,6 @@ for(const width of [320,390,1024,1440])for(const enlarged of [false,true])test(`
  const link=page.locator('[data-yearview-term] [data-event-title="Christmas Fayre Art Competition deadline"] .event-list-cta');
  await expect(link).toHaveText('Competition details');
  const uniform=page.locator('[data-yearview-term] [data-event-title="Pre-loved uniform and Christmas jumper sale"] .event-list-cta');await expect(uniform).toHaveText('Uniform details');
- for(const action of [link,uniform]){const lines=await action.locator('.cta-label').evaluate(e=>{const r=document.createRange();r.selectNodeContents(e);return new Set(Array.from(r.getClientRects()).map(r=>Math.round(r.y))).size});expect(lines).toBe(1);}
+ for(const action of [link,uniform]){const lines=await action.locator('.cta-label').evaluate(e=>{const r=document.createRange();const w=document.createTreeWalker(e,NodeFilter.SHOW_TEXT);const ys:number[]=[];let n;while(n=w.nextNode()){if(!n.textContent?.trim()||n.parentElement?.closest('[aria-hidden]'))continue;r.selectNodeContents(n);for(const b of r.getClientRects())ys.push(b.y)}return new Set(ys.map(y=>Math.round(y))).size});expect(lines).toBe(1);}
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(0);
 });
