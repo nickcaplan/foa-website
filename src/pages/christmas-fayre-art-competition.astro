@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MobilePageHeading from '../components/MobilePageHeading.astro';
+import {withBase} from '../lib/urls';
+import {ordinalDateFormatter} from '../lib/dates';
+import '../styles/christmas.css';
+const deadline=ordinalDateFormatter({weekday:'long',day:'numeric',month:'long',timeZone:'Europe/London'})(new Date('2026-11-30T12:00:00Z'));
+const deadlineText=deadline;
+---
+<BaseLayout title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering">
+ <div class="site-width art-comp">
+  <section class="art-comp__hero" aria-labelledby="art-comp-title">
+   <img class="art-comp__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" />
+   <div class="art-comp__copy">
+    <MobilePageHeading logo="/brand/foa-logo-christmas-ivory.svg">
+     <p class="art-comp__eyebrow">Ashley School Christmas Fayre</p>
+     <h1 id="art-comp-title">Art <em>Competition</em></h1>
+    </MobilePageHeading>
+    <p class="art-comp__theme">The theme is <strong>Narnia</strong></p>
+    <p class="art-comp__deadline">Deadline: {deadlineText}</p>
+   </div>
+  </section>
+  <section class="art-comp__panel" aria-labelledby="art-comp-theme">
+   <h2 id="art-comp-theme">Show us your lions, witches and snow queens!</h2>
+   <p>Winter wonderland and Christmas themes are also welcome.</p>
+   <p>Use any medium: painting, drawing, crafts, knitting, sculpture and more.</p>
+  </section>
+  <section class="art-comp__panel" aria-labelledby="art-comp-how">
+   <h2 id="art-comp-how">How to enter</h2>
+   <ul class="art-comp__steps">
+    <li><strong>On the front of your artwork</strong><span>Class and year</span></li>
+    <li><strong>On the back of your artwork</strong><span>Name and consent, Y or N. Consent means you are happy for winning artworks to be displayed at Ashley and Martin Flashman.</span></li>
+    <li><strong>Deadline</strong><span>{deadlineText}</span></li>
+   </ul>
+  </section>
+  <p class="art-comp__credit">Thanks to Steph Cotela.</p>
+  <p class="art-comp__back"><a class="button" href={withBase('/events/christmas-fayre-2026/')}><span class="cta-label"><span class="cta-tail">Back to the Christmas Fayre<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
+ </div>
+</BaseLayout>
+<style>
+.art-comp{padding-bottom:2.5rem;color:#fff3d5;container-type:inline-size}
+.art-comp__brand{padding:1rem 4rem 1rem 0}
+.art-comp__brand :global(.mobile-page-logo){display:block;width:3rem;height:3rem}
+.art-comp__brand :global(img){width:100%;height:100%}
+.art-comp__hero{position:relative;isolation:isolate;overflow:hidden;border:1px solid #b99a5b;border-radius:10px;background:#102d38;box-shadow:0 12px 30px #102d3825;margin:0 auto 1.25rem}
+.art-comp__art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-2}
+.art-comp__hero:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#10232c33,#10232cd9 35%,#10232cd9 64%,#10232c33)}
+.art-comp__copy{text-align:center;padding:2rem 1.5rem;max-width:48rem;margin:auto}
+.art-comp__eyebrow{margin:0 0 .5rem;font:700 .85rem/1.4 var(--font-body,system-ui,sans-serif);letter-spacing:.12em;text-transform:uppercase;color:#edcb83}
+.art-comp h1{font:500 clamp(1.6rem,3.5vw,3rem)/1.15 Georgia,serif;margin:0 0 .75rem;color:#fff3d5;hyphens:none}
+.art-comp h1 em{display:inline}
+.art-comp__theme{margin:0 0 .5rem;font-size:1.25rem}.art-comp__theme strong{font:500 1.5rem Georgia,serif;color:#edcb83}
+.art-comp__deadline{margin:0;font-weight:700}
+.art-comp__panel{margin-top:1.25rem;padding:1.5rem;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem}
+.art-comp__panel h2{margin:0 0 1rem;font:500 clamp(1.4rem,2.5vw,1.8rem)/1.25 Georgia,serif;color:#fff3d5}
+.art-comp__panel p{margin:0 0 .75rem;font-size:1.05rem;line-height:1.7;color:#f4ead1}.art-comp__panel p:last-child{margin-bottom:0}
+.art-comp__steps{list-style:none;margin:0;padding:0;display:grid;gap:.9rem}
+.art-comp__steps li{display:grid;gap:.2rem;padding-top:.9rem;border-top:1px solid #b99a5b55;line-height:1.6}.art-comp__steps li:first-child{padding-top:0;border-top:0}
+.art-comp__steps strong{color:#edcb83}.art-comp__steps span{color:#fff3d5;overflow-wrap:anywhere}
+@media(min-width:48rem){.art-comp__steps li{grid-template-columns:15rem 1fr;gap:1.5rem}}
+.art-comp__credit{margin:1.5rem 0 0;text-align:center;font-size:.95rem;color:#edcb83}
+.art-comp__back{margin:1.5rem auto 0;text-align:center}
+.art-comp__back .button{display:inline-flex;align-items:center;justify-content:center;gap:1rem;width:min(100%,22rem);min-height:3.5rem;padding:.8rem 1.5rem;background:#742f3c;border:1px solid #c9a65f;color:#fff5e2;font-size:1rem;line-height:1.5;white-space:normal;text-align:left}
+.art-comp__back .cta-label,.art-comp__back .cta-tail{display:inline;white-space:normal;min-width:0}.art-comp__back .cta-tail svg{display:inline-block;vertical-align:middle;margin-left:.5rem}.art-comp__back .button:hover{background:#954052}.art-comp__back .button:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}.art-comp__back svg{flex:none}
+@media(max-width:47.99rem){.art-comp h1{font-size:1.3rem}.art-comp__eyebrow{font-size:.7rem;letter-spacing:.08em}}
+@media(max-width:23.5rem){.art-comp h1{font-size:1.1rem}}
+@container(max-width:20em){.art-comp__panel{padding:1rem}.art-comp__copy{padding-inline:.75rem}}
+@media(min-width:80rem){.art-comp__brand{display:none}}
+</style>
+<style is:inline>
+@media(max-width:63.99rem){.narnia-volunteering .art-comp__brand img{transform:none}}
+@media(min-width:64rem) and (max-width:79.99rem){.narnia-volunteering .menu-toggle{top:calc(1rem + var(--introduction-logo-size)*.45 - 1.5rem)}}
+</style>
