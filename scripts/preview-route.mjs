@@ -34,6 +34,7 @@
  * move a PR to Cloudflare, so it also routes to Netlify and warns.
  */
 import { execFileSync } from 'node:child_process';
+import { alignPreviewLabel } from './preview-label.mjs';
 
 const SKIP_PREFIX = '[CF-Pages-Skip]';
 const SKIP_PATTERN = /^\[(CF-Pages-Skip|CI Skip|CI-Skip|Skip CI|Skip-CI)\]\s*/i;
@@ -171,19 +172,8 @@ if (headOnMain) {
   }
 }
 
-// 5. Align the PR label.
-if (pr && githubToken && !DRY_RUN) {
-  await api(`https://api.github.com/repos/${slug}/labels`, {
-    token: githubToken, method: 'POST',
-    body: { name: LABEL, color: '1d76db', description: 'Preview builds on Cloudflare Pages instead of Netlify' },
-  }); // 422 = already exists, fine either way
-  if (route === 'cloudflare') {
-    const res = await api(`https://api.github.com/repos/${slug}/issues/${pr.number}/labels`, { token: githubToken, method: 'POST', body: { labels: [LABEL] } });
-    console.log(res.ok ? `Labelled PR #${pr.number} "${LABEL}".` : `Could not label PR #${pr.number} (HTTP ${res.status}).`);
-  } else {
-    await api(`https://api.github.com/repos/${slug}/issues/${pr.number}/labels/${LABEL}`, { token: githubToken, method: 'DELETE' });
-  }
-}
+// 5. Fail closed if the provider label cannot be applied and verified.
+await alignPreviewLabel({api,slug,pr,route,label:LABEL,token:githubToken,dryRun:DRY_RUN});
 
 // 6. Push.
 if (!DRY_RUN) {
