@@ -1,9 +1,8 @@
 ---
 import Homepage from "../index.astro";
-import Fayre from "../events/christmas-fayre-2026.astro";
 export function getStaticPaths() {
   const previewBuild = process.env.CONTEXT === "deploy-preview" || (process.env.CF_PAGES === "1" && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== "main");
-  return previewBuild ? ["christmas","leads-a","leads-b"].map(view=>({params:{view}})) : [];
+  return previewBuild ? ["christmas"].map(view=>({params:{view}})) : [];
 }
 ---
-{Astro.params.view === "christmas" ? <Homepage christmasPreview={true} /> : <Fayre leadOption={Astro.params.view === "leads-a" ? "a" : "b"} />}
+<Homepage christmasPreview={true} />

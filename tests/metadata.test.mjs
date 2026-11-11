@@ -211,7 +211,9 @@ test("metadata comparisons decode escaped event titles without double decoding",
 
 test("design preview routes are noindex and omitted from the sitemap", async () => {
   const sitemap=await read(path.join(dist,"sitemap-0.xml"));
-  for(const route of (await discoverRoutes()).filter(r=>r.startsWith("/preview/"))) {
+  const routes=(await discoverRoutes()).filter(r=>r.startsWith("/preview/"));
+  if(process.env.CONTEXT === "deploy-preview" || (process.env.CF_PAGES === "1" && process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== "main")) assert.deepEqual(routes,["/preview/christmas/"]);
+  for(const route of routes) {
     const html=await read(htmlFor(route));
     assert.match(html, /name="robots" content="noindex/);
     assert.ok(!sitemap.includes(route));

@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 for(const width of[320,390,768,1440])test(`Fayre information and CTA widths ${width}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto('/events/christmas-fayre-2026/');
  const leads=page.locator('.fayre-leads__card');await expect(leads).toHaveCount(2);await expect(leads.locator('svg[aria-hidden="true"]')).toHaveCount(0);
- expect(await leads.first().evaluate(e=>({background:getComputedStyle(e).backgroundColor,radius:getComputedStyle(e).borderRadius}))).toEqual({background:'rgba(0, 0, 0, 0)',radius:'2px'});
+ const style=await leads.first().evaluate(e=>{const s=getComputedStyle(e);return{background:s.backgroundImage,shadow:s.boxShadow,align:s.textAlign,weight:s.fontWeight}});expect(style.background).toContain('linear-gradient');expect(style.shadow).toContain('inset');expect(style.align).toBe('center');expect(style.weight).toBe('700');
  expect(await page.locator('.narnia-landscape__footer').evaluate(e=>getComputedStyle(e).borderTopWidth)).toBe('0px');
  const heights=await page.locator('.xmas-area').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().height));expect(Math.max(...heights)-Math.min(...heights)).toBeLessThan(1);
  const paths=await page.locator('.xmas-area').evaluateAll(els=>Object.fromEntries(els.map(e=>[e.textContent?.trim(),e.querySelector('path')?.getAttribute('d')])));
@@ -16,8 +16,8 @@ for(const width of[320,390,768,1440])test(`Fayre information and CTA widths ${wi
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBe(0);
 });
 
-for(const width of [390,1440]) test(`lead outline widths at ${width}`,async({page})=>{
+for(const width of [390,1440]) test(`selected lead A equal widths at ${width}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto('/events/christmas-fayre-2026/');
  const boxes=await page.locator('.fayre-leads__card').evaluateAll(es=>es.map(e=>{const box=e.getBoundingClientRect(),text=e.querySelector('span')!.getBoundingClientRect(),parent=e.parentElement!.getBoundingClientRect();return{width:box.width,textWidth:text.width,parentWidth:parent.width,top:box.top}}));
- expect(boxes).toHaveLength(2);if(width===1440){expect(Math.abs(boxes[0].top-boxes[1].top)).toBeLessThan(1);for(const b of boxes)expect(b.width-b.textWidth).toBeLessThan(40)}else for(const b of boxes)expect(Math.abs(b.width-b.parentWidth)).toBeLessThan(1);
+ expect(boxes).toHaveLength(2);if(width===1440){expect(Math.abs(boxes[0].top-boxes[1].top)).toBeLessThan(1);expect(Math.abs(boxes[0].width-boxes[1].width)).toBeLessThan(1);expect(boxes[0].width*2).toBeLessThanOrEqual(boxes[0].parentWidth)}else for(const b of boxes)expect(Math.abs(b.width-b.parentWidth)).toBeLessThan(1);
 });
