@@ -31,6 +31,8 @@ The site is live at `https://www.thefriendsofashley.org`. These items must be re
 
 ## Soon
 
+- **Owner / FOA:** Before releasing the Friday 13 November newsletter, supply the Fireworks amount and funding purpose (the master Doc still has £XXXX / YYYY). The draft website issue omits only that unfinished sentence. Donations Day retains the source wording "Full details to be shared shortly" until class item details are confirmed. Confirm final newsletter publication after school review; a draft PR is not release approval.
+
 - **Dev / Owner:** Monitor `http-cache-semantics` 4.2.0 for a fix to GHSA-ch52-4w7c-c8xp (high severity, no patched version published as of 23 October 2026), then update the Astro dependency tree and rerun the full vulnerability scan. It is an Astro build-tool dependency, not a shared HTTP cache serving visitors on this static GitHub Pages site. The push and weekly `Dependency scan (full)` runs remain red while this finding is unresolved. The dependency-scanning policy is recorded in [`PROJECT-BRIEF.md` → Technical direction](PROJECT-BRIEF.md#technical-direction).
 
 - **Owner:** Complete a post-deployment real-device check of the term-by-term What's On page: empty/current-month heading bands, Day/Night Mode, Happy Bags expansion with a stationary date badge, the collapsed archive and enlarged text on a narrow phone and desktop. Automated coverage passes in CI, including 332 browser tests; local agent browser launches remain sandbox-blocked and Review-pane tools are unavailable. The production replacement is merged in PR #17; no further merge approval is outstanding for that change.

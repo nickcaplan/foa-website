@@ -119,7 +119,7 @@ test("newsletter letterheads show just the publication date without an email lab
 
 test("the half term newsletter omits email-only copy and renders clean links", async () => {
   const html = await readFile(path.join(dist, "newsletter", "index.html"), "utf8");
-  const latest = html.slice(html.indexOf("newsletter-board"), html.indexOf("Previous newsletters"));
+  const latest = html.slice(html.indexOf('id="newsletter-issue-half-term-2026"'), html.indexOf('id="newsletter-issue-autumn-term-2026"'));
   assert.ok(latest.includes("Friday 16th October"));
   assert.ok(latest.includes('datetime="2026-10-16T00:00:00.000Z"'));
   assert.ok(latest.includes("two-week half term break"));
@@ -134,7 +134,7 @@ test("the half term newsletter omits email-only copy and renders clean links", a
 
 test("newsletter links to our pages stay internal while ticket links remain external", async () => {
   const html = await readFile(path.join(dist, "newsletter", "index.html"), "utf8");
-  const latest = html.slice(html.indexOf("newsletter-board"), html.indexOf("Previous newsletters"));
+  const latest = html.slice(html.indexOf('id="newsletter-issue-half-term-2026"'), html.indexOf('id="newsletter-issue-autumn-term-2026"'));
   const links = [...latest.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
   for (const route of ["/events/fireworks-2026/", "/fireworks-volunteering/", "/events/christmas-fayre-2026/", "/uniform/", "/fundraising/", "/"]) {
     const link = links.find(([, attributes]) => {
@@ -166,8 +166,8 @@ test("newsletter expansion offers an inert faded peek and a clear primary action
   assert.equal(buttons.length, expandableCount);
   assert.ok(buttons.every(([, content]) => content.includes("Read the full newsletter")));
   const latestPeek = html.slice(html.indexOf('class="newsletter-peek"'), html.indexOf('id="newsletter-latest-more"'));
-  assert.ok(latestPeek.includes("Santa’s Grotto"));
-  assert.ok(latestPeek.includes("Pre-loved Uniform"), "the fade continues into the following section rather than leaving blank space");
+  assert.ok(latestPeek.includes("Pre-loved Uniform"));
+  assert.ok(latestPeek.includes("wherever you are"), "the fade continues into the following section rather than leaving blank space");
 });
 
 test("committee entries have unique display order, names, roles and existing portraits", async () => {
