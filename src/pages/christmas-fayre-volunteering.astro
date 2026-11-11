@@ -1,4 +1,5 @@
 ---
+import FayreDonationsNotice from "../components/FayreDonationsNotice.astro";
 import {getEntry} from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import NarniaHero from '../components/NarniaHero.astro';
@@ -17,6 +18,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
   <section class="fayre-volunteer__intro" aria-label="Choose your volunteer activity">
    <p>Choose an activity below. Buttons open JustSignup in a new tab to pick your slot. Event helper slots are 30 minutes; setup and clear-up vary.</p>
   </section>
+  <FayreDonationsNotice />
   <ul class="fayre-volunteer__grid" aria-label="Volunteer activities">
    {event.signupActivities.map(activity=><li class="fayre-volunteer__card">
     <h3>{activity.name}</h3>

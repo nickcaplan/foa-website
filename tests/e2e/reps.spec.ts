@@ -39,7 +39,7 @@ for (const width of [320, 390, 768, 1440]) {
             expect(line.right).toBeLessThanOrEqual(bounds.right + 0.5);
           }
         }
-        for (const row of await page.locator(".message-when").all()) {
+        for (const row of await page.locator(".message-when:has(.message-time)").all()) {
           const bounds = await row.evaluate((element) => {
             const column = element.getBoundingClientRect();
             const badge = element.querySelector(".message-date")!.getBoundingClientRect();
@@ -81,8 +81,8 @@ test("Reps Hub actions align across desktop cards", async ({ page }) => {
   const tops = await page.locator(".message-actions").evaluateAll((rows) =>
     rows.map((row) => row.getBoundingClientRect().top),
   );
-  expect(tops).toHaveLength(4);
-  for (const row of [tops.slice(0, 2), tops.slice(2)]) {
+  expect(tops).toHaveLength(5);
+  for (const row of [tops.slice(0, 2), tops.slice(2, 4)]) {
     expect(Math.max(...row) - Math.min(...row)).toBeLessThan(1);
   }
 });
@@ -91,7 +91,7 @@ test("Fireworks uses a readable ticket link and keeps its URL in copied text", a
   await page.clock.setSystemTime(beforeFireworks);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/reps/");
-  const card = page.locator(".message-card").first();
+  const card = page.locator(".message-card").filter({has: page.getByRole("heading", {name: fireworks.title, exact: true})});
   const ticket = card.getByRole("link", { name: /https:\/\/buytickets\.at/ });
   await expect(ticket).toBeVisible();
   const url = await ticket.getAttribute("href");
@@ -114,10 +114,10 @@ test("all messages keep their visible website URLs when copied", async ({ page }
 test("expired messages disappear and the empty state becomes visible", async ({ page }) => {
   await page.clock.setSystemTime(new Date("2026-10-11T12:00:00Z"));
   await page.goto("/reps/");
-  await expect(page.locator(".message-card:visible")).toHaveCount(4);
+  await expect(page.locator(".message-card:visible")).toHaveCount(5);
   await page.clock.setSystemTime(new Date("2026-11-07T12:00:00Z"));
   await page.clock.fastForward(60000);
-  await expect(page.locator(".message-card:visible")).toHaveCount(1);
+  await expect(page.locator(".message-card:visible")).toHaveCount(2);
   await expect(page.getByRole("heading", { name: "Christmas Fayre", exact: true })).toBeVisible();
   await page.clock.setSystemTime(new Date("2026-12-05T13:00:00Z"));
   await page.clock.fastForward(60000);
