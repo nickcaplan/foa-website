@@ -10,7 +10,9 @@ for (const width of [320, 390, 768, 1440]) {
       const date = await page.locator('.christmas-sale-top h2').boundingBox();
       const jumper = await page.locator('.christmas-knit').boundingBox();
       expect(label).not.toBeNull(); expect(date).not.toBeNull(); expect(jumper).not.toBeNull();
-      expect(date!.y - (label!.y + label!.height)).toBeLessThan(16);
+      expect(date!.y - (label!.y + label!.height)).toBeGreaterThanOrEqual(9 * scale);
+      expect(date!.y - (label!.y + label!.height)).toBeLessThan(13 * scale);
+      expect(jumper!.width).toBeGreaterThanOrEqual(76);
       expect(date!.x + date!.width).toBeLessThanOrEqual(jumper!.x);
       expect(jumper!.y).toBeLessThan(date!.y + date!.height);
       expect(jumper!.y + jumper!.height).toBeGreaterThan(label!.y);
