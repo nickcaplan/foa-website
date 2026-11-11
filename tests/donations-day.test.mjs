@@ -14,3 +14,9 @@ test("Donations Day notices agree across the public pages without invented items
  const whatsOn=await readFile("dist/whats-on/index.html","utf8");assert.ok(whatsOn.includes('data-event-title="Christmas Fayre Donations Day"'));assert.ok(whatsOn.includes("Friday 20th November"));
  const reps=await readFile("dist/reps/index.html","utf8");const builtAt=Date.parse(reps.match(/data-built-at="([^"]+)"/)?.[1] || "");assert.ok(Number.isFinite(builtAt));assert.equal(reps.includes("Donations Day for the Christmas Fayre is on Friday 20th November."),builtAt<Date.parse("2026-11-21T00:00:00Z"));
 });
+
+test("Homepage Donations Day appears once inside the Christmas splash",async()=>{
+ const html=await readFile("dist/index.html","utf8");
+ assert.equal((html.match(/class="fayre-donations-notice"/g)||[]).length,1);
+ assert.match(html,/<section class="narnia-landscape"[\s\S]*class="narnia-donations"[\s\S]*Friday 20th November[\s\S]*narnia-landscape__footer/);
+});

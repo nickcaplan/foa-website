@@ -394,4 +394,6 @@ Scope, layers, cadence and implementation order are in [`TEST-STRATEGY.md`](TEST
 
 Christmas jumpers join the Friday 4 December sale. The Uniform page's sale panel uses a restrained Christmas treatment: forest green, fine gold outline and a small decorative knitted-jumper illustration. Keep the practical sale and donation copy as live text, with fixed cream text against the forest panel in both themes. Uniform prices remain clearly separate from Christmas-jumper pricing; no jumper price is confirmed.
 
-The December sale uses the same approved red/green Fair Isle knitted jumper illustration in the sale panel and the dedicated Uniform social-sharing image alongside the standard ivory logo. The 1200x630 card has no date baked into it.
+The December sale uses the same approved red/green Fair Isle knitted jumper illustration in the sale panel and the dedicated Uniform social-sharing image alongside the standard ivory logo. The 1200x630 card has no date baked into it. The Next sale label and date share a row beside the jumper, avoiding a tall label-only row on phones.
+
+The homepage Donations Day notice sits inside the Christmas Fayre splash below its two actions and above the sponsor. It appears once, with the confirmed Friday 20 November date only. Keep the existing date-based expiry and the other public placements; the existing Event details action supplies the details route without another competing link.
