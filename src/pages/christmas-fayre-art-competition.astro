@@ -53,15 +53,17 @@ const deadlineText=deadline;
 .art-comp-banner :global(.view-hero){width:100%;margin:0;background:transparent;border-radius:0;text-shadow:0 1px 3px #000c,0 2px 14px #000e}
 .art-comp-banner :global(.mobile-page-heading--no-logo){display:block;text-align:center}
 .art-comp-banner :global(.mobile-page-heading--no-logo .mobile-page-heading-copy){padding-top:var(--mobile-heading-control-clearance)}
+.art-comp-banner :global(.view-hero-copy){text-align:center}
+.art-comp-banner :global(.view-hero-copy h1){margin-inline:auto}
 .art-comp-banner :global(.view-hero-copy > p){text-align:center}
 .art-comp-banner :global(.view-hero p:not(.eyebrow)){color:#fff3d5}
 .art-comp-banner :global(.view-hero h1){text-shadow:none;filter:drop-shadow(0 2px 6px #000b)}
 .art-comp-banner :global(.view-hero .eyebrow){color:#f4e3b0}
 .art-comp-banner > .site-width{width:100%;padding:0 clamp(1rem,4vw,3rem) 1.5rem}
-.art-comp-banner__deadline{margin:1rem 0 0;display:grid;gap:.15rem;padding:.9rem 1.25rem;width:fit-content;max-width:100%;background:#102d38e6;border:1px solid #c9a65f;border-radius:.6rem;color:#fff3d5;text-shadow:none}
+.art-comp-banner__deadline{margin:1rem auto 0;display:grid;gap:.15rem;padding:.9rem 1.25rem;width:fit-content;max-width:100%;text-align:center;background:#102d38e6;border:1px solid #c9a65f;border-radius:.6rem;color:#fff3d5;text-shadow:none}
 @media(max-width:59.99rem){.art-comp-banner{display:flex;flex-direction:column}.art-comp-banner :global(.view-hero){order:1}.art-comp-banner__art{order:2;position:static;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;object-position:center 30%}.art-comp-banner:before{display:none}.art-comp-banner > .site-width{order:3}}
 @media(min-width:60rem) and (max-width:63.99rem){.art-comp-banner__art{object-position:88% 40%}}
-@media(min-width:64rem){.art-comp-banner :global(.view-hero p:not(.eyebrow)){text-align:center;margin-inline:auto}.art-comp-banner__deadline{margin-inline:auto;text-align:center}}
+@media(min-width:64rem){.art-comp-banner :global(.view-hero p:not(.eyebrow)){text-align:center;margin-inline:auto}}
 @media(min-width:60rem){.art-comp-banner{min-height:28rem;display:flex;flex-direction:column;justify-content:space-between}.art-comp-banner > .site-width{padding-bottom:2rem}}
 @media(max-width:63.99rem){.art-comp-banner > .site-width{padding-inline:var(--mobile-heading-inset,2rem)}}
 .art-comp-banner__deadline span{font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#edcb83}
@@ -81,7 +83,7 @@ const deadlineText=deadline;
 .art-comp__back .button{display:inline-flex;align-items:center;justify-content:center;gap:1rem;width:min(100%,22rem);min-height:3.5rem;padding:.8rem 1.5rem;background:#742f3c;border:1px solid #c9a65f;color:#fff5e2;font-size:1rem;line-height:1.5;white-space:normal;text-align:left}
 .art-comp__back .cta-label,.art-comp__back .cta-tail{display:inline;white-space:normal;min-width:0}.art-comp__back .cta-tail svg{display:inline-block;vertical-align:middle;margin-left:.5rem}.art-comp__back .button:hover{background:#954052}.art-comp__back .button:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}.art-comp__back svg{flex:none}
 @container(max-width:20em){.art-comp__panel{padding:1rem}}
-.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)){display:flex;align-items:center;gap:1rem;color:#edcb83;font-size:.85rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;text-shadow:none}
+.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)){display:flex;align-items:center;justify-content:center;gap:1rem;margin-inline:auto;color:#edcb83;font-size:.85rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;text-shadow:none}
 .art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)):before,.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)):after{content:"";height:1px;width:3rem;flex:none;background:linear-gradient(90deg,transparent,#c9a65f)}
 .art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)):after{transform:scaleX(-1)}
 @media(max-width:63.99rem){.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)){padding-left:calc(var(--mobile-page-logo-size) + .75rem - 4rem);white-space:nowrap}.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)):before{flex:0 0 3rem}.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)):after{flex:0 1 3rem;min-width:1.25rem}}@media(max-width:22rem){.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)){padding-left:calc(var(--mobile-page-logo-size) + .75rem);white-space:normal;overflow-wrap:anywhere}.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)):before,.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)):after{display:none}}
