@@ -14,7 +14,7 @@ for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(cons
  }
  if(path==='/preview/glitter-tree-volunteering-b/'){
   const activity=page.locator('.fayre-volunteer__card').filter({has:page.getByRole('heading',{name:'Glitter Tattoos',exact:true})});
-  await expect(activity.locator('img[alt="The Glitter Tree"]')).toHaveCount(1);
+  await expect(page.locator('.fayre-volunteer__card img')).toHaveCount(0);
   await expect(activity.locator('.fayre-supporter')).toHaveCount(0);
   await expect(page.locator('.fayre-volunteer>.fayre-supporter')).toHaveCount(1);
   const heights=await page.locator('.fayre-volunteer__card').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().height));
