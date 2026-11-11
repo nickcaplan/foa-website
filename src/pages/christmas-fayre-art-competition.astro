@@ -9,10 +9,10 @@ const deadline=ordinalDateFormatter({weekday:'long',day:'numeric',month:'long',t
 const deadlineText=deadline;
 ---
 <BaseLayout title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering art-comp">
- <HomepageMobileIdentity label="The Friends of Ashley" />
+ <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
  <div class="art-comp-banner">
   <img class="art-comp-banner__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
-  <PageHero eyebrow="Ashley School Christmas Fayre" title="Art Competition" intro="Narnia Theme" logo="/brand/foa-logo-christmas-ivory.svg" />
+  <PageHero eyebrow="Ashley School Christmas Fayre" title="Art Competition" intro="Narnia Theme" noLogo />
   <div class="site-width"><p class="art-comp-banner__deadline"><span>Deadline</span><strong>{deadlineText}</strong></p></div>
  </div>
  <div class="site-width">
@@ -51,6 +51,9 @@ const deadlineText=deadline;
 .art-comp-banner:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(#10232cd9,#10232c80 38%,#10232c26 62%,#10232ccc 100%),linear-gradient(90deg,#10232c99,#10232c00 40%)}
 .art-comp-banner:after{content:"";position:absolute;inset:0;border:1px solid #b99a5b;border-radius:inherit;pointer-events:none}
 .art-comp-banner :global(.view-hero){width:100%;margin:0;background:transparent;border-radius:0;text-shadow:0 1px 3px #000c,0 2px 14px #000e}
+.art-comp-banner :global(.mobile-page-heading--no-logo){display:block;text-align:center}
+.art-comp-banner :global(.mobile-page-heading--no-logo .mobile-page-heading-copy){padding-top:var(--mobile-heading-control-clearance)}
+.art-comp-banner :global(.view-hero-copy > p){text-align:center}
 .art-comp-banner :global(.view-hero p:not(.eyebrow)){color:#fff3d5}
 .art-comp-banner :global(.view-hero h1){text-shadow:none;filter:drop-shadow(0 2px 6px #000b)}
 .art-comp-banner :global(.view-hero .eyebrow){color:#f4e3b0}

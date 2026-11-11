@@ -1,14 +1,16 @@
 ---
 import PageLogo from "./PageLogo.astro";
 
-interface Props { logo?: string; }
-const { logo } = Astro.props;
+interface Props { logo?: string; noLogo?: boolean; }
+const { logo, noLogo = false } = Astro.props;
 ---
 
-<div class="mobile-page-heading">
-  <div class="mobile-page-heading-brand">
-    <PageLogo logo={logo} />
-    <slot name="below-logo" />
-  </div>
+<div class:list={["mobile-page-heading", { "mobile-page-heading--no-logo": noLogo }]}>
+  {!noLogo && (
+    <div class="mobile-page-heading-brand">
+      <PageLogo logo={logo} />
+      <slot name="below-logo" />
+    </div>
+  )}
   <div class="mobile-page-heading-copy"><slot /></div>
 </div>

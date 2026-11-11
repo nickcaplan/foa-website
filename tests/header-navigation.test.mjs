@@ -109,6 +109,14 @@ test("every public page embeds one mobile home-linked logo beside its heading", 
       }
       continue;
     }
+    if (path.pathname.includes("christmas-fayre-art-competition")) {
+      // Approved 11 November 2026: the art competition hero carries no logo;
+      // the identity bar above it links home.
+      assert.match(main, /class="homepage-mobile-identity"/, path.pathname);
+      assert.match(main, /class="homepage-mobile-identity__home" href="\//, path.pathname);
+      assert.doesNotMatch(main, /class="mobile-page-logo page-logo-home"/, path.pathname);
+      continue;
+    }
     assert.equal(main.match(/class="mobile-page-logo page-logo-home"/g)?.length, 1, path.pathname);
     assert.match(main, /class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1/, path.pathname);
     if (html.includes('class="view-hero')) {

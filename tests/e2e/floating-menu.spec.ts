@@ -43,13 +43,19 @@ for (const width of [320, 390, 768, 1023]) {
         // Identity-bar routes open with the bar flush to the top, so the hero panel starts below it instead of at the usual 16px.
         const identityBarRoute = ["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route);
         expect((await panel.boundingBox())!.y, route).toBe(identityBarRoute ? logoBottom : 16);
-        await expect(panel.locator(".page-logo-home"), route).toBeVisible();
         const eyebrow = await panel.locator(".eyebrow").boundingBox();
         expect(eyebrow!.y, `${route}: eyebrow should clear the floating controls`).toBeGreaterThanOrEqual(before!.y + before!.height);
         const intro = (await panel.locator(".view-hero-copy > p").boundingBox())!;
-        const logo = (await panel.locator(".page-logo-home").boundingBox())!;
-        expect(intro.x, `${route}: introduction uses the full panel width`).toBe(logo.x);
-        expect(intro.y, `${route}: introduction sits below the logo`).toBeGreaterThanOrEqual(logoBottom);
+        if (identityBarRoute) {
+          // Approved: the art competition hero carries no logo; the identity bar above it links home.
+          await expect(panel.locator(".page-logo-home"), route).toHaveCount(0);
+          expect(intro.y, `${route}: introduction sits below the identity bar`).toBeGreaterThanOrEqual(logoBottom);
+        } else {
+          await expect(panel.locator(".page-logo-home"), route).toBeVisible();
+          const logo = (await panel.locator(".page-logo-home").boundingBox())!;
+          expect(intro.x, `${route}: introduction uses the full panel width`).toBe(logo.x);
+          expect(intro.y, `${route}: introduction sits below the logo`).toBeGreaterThanOrEqual(logoBottom);
+        }
       }
       const stage = page.locator(".fw-stage, .xmas-stage");
       if (await stage.count() && route !== "/events/christmas-fayre-2026/") {

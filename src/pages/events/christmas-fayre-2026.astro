@@ -54,7 +54,7 @@ const eventJsonLd = {
 ---
 <BaseLayout socialTitle="Christmas Fayre | Saturday 5 December 2026 | Ashley School" socialDescription="Step into Narnia at Ashley School, Saturday 5 December, 12:00 - 15:00. Games, crafts, food and festive fun. Entry \u00a32; under 12s free." image="/social/christmas-fayre-2026-v1.jpg" imageAlt="Christmas Fayre, Saturday 5 December 2026, 12:00 - 15:00 at Ashley School, with the Narnia-inspired woodland artwork." imageWidth={1200} imageHeight={630} title={event.title} description="Help at the Ashley Christmas Fayre: join a slot with your friends, no experience needed." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-event">
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
-  <HomepageMobileIdentity label="The Friends of Ashley" />
+  <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
   <div class="xmas-stage">
     <div class="xmas-snow" aria-hidden="true">
       {flakes.map((f) => <i style={`--side:${f.side};--lane:${f.lane};--y:${f.y}%;--size:${f.size}px;--dur:${f.duration}s;--delay:${f.delay}s;--alpha:${f.alpha}`}></i>)}

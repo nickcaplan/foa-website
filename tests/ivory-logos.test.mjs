@@ -27,8 +27,8 @@ test("shared branding uses ivory artwork without giving the standard logo festiv
     const usesIdentityBar = route === "index.html" || route.startsWith("events/christmas-fayre-2026/");
     const mobile = usesIdentityBar ? html.match(/class="homepage-mobile-identity"[\s\S]*?<\/div>/)?.[0] : html.match(/class="mobile-page-logo page-logo-home"[\s\S]*?<\/a>/)?.[0];
     const menu = html.match(/class="mobile-menu-home"[\s\S]*?<\/a>/)?.[0];
-    // The Fayre page header keeps its Christmas logo; its identity bar matches the homepage standard ivory artwork.
-    const mobileLogo = route.startsWith("events/christmas-fayre-2026/") ? standard : logo;
+    // Approved 11 November 2026: on Christmas pages and the festive homepage the identity bar uses the Christmas wreath logo.
+    const mobileLogo = route === "index.html" || route.startsWith("events/christmas-fayre-2026/") ? "foa-logo-christmas-ivory.svg" : logo;
     for (const [region, expected] of [[header, logo], [mobile, mobileLogo], [menu, logo]]) {
       assert.ok(region, `${route}: branding region exists`);
       assert.ok(region.includes(`/brand/${expected}`), `${route}: correct ivory variant`);

@@ -1,12 +1,12 @@
 ---
 import { withBase } from "../lib/urls";
 
-interface Props { label?: string; }
-const { label = "The Friends of Ashley homepage" } = Astro.props;
+interface Props { label?: string; logo?: string; }
+const { label = "The Friends of Ashley homepage", logo = "/brand/foa-logo-ivory.svg" } = Astro.props;
 ---
 <div class="homepage-mobile-identity" aria-label={label}>
   <a class="homepage-mobile-identity__home" href={withBase("/")} aria-label="The Friends of Ashley home">
-    <img src={withBase("/brand/foa-logo-ivory.svg")} alt="" width="44" height="44" />
+    <img src={withBase(logo)} alt="" width="44" height="44" />
     <p><span class="homepage-mobile-identity-prefix">The Friends of</span> Ashley PTA</p>
   </a>
 </div>
