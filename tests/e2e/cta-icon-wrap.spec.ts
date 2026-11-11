@@ -174,7 +174,7 @@ for (const width of [390,1440]) test(`paired CTA consistency and short labels at
 
 for (const width of [320,390]) test(`open menu shares arrow geometry at ${width}`,async({page})=>{
  await page.setViewportSize({width,height:900});await page.goto('/');await page.getByRole('button',{name:'Open menu'}).click();
- await expect(page.locator('.mobile-menu-arrow svg[data-cta-arrow="forward"]')).toHaveCount(8);
+ await expect(page.locator('.mobile-menu-arrow svg[data-cta-arrow="forward"]')).toHaveCount(9);
  expect(await strandedIcons(page)).toEqual([]);
 });
 

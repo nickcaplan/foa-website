@@ -428,15 +428,15 @@ a {
 .mobile-menu-panel {
   display: flex;
   flex-direction: column;
-  padding-top: max(0.75rem, env(safe-area-inset-top));
+  padding-top: max(0.375rem, env(safe-area-inset-top));
 }
 
 .mobile-menu-head {
   position: relative;
   display: grid;
   justify-items: center;
-  row-gap: 0.35rem;
-  padding-bottom: 0.4rem;
+  row-gap: 0.25rem;
+  padding-bottom: 0.15rem;
   border-bottom: 1px solid var(--line);
   text-align: center;
   flex-shrink: 0;
@@ -513,7 +513,7 @@ a {
   display: grid;
   flex: none;
   align-content: start;
-  padding-block: 0.25rem 0;
+  padding-block: 0;
 }
 
 .mobile-menu nav a {
@@ -560,7 +560,7 @@ a {
 
 .mobile-menu .mobile-menu-cta {
   min-height: var(--menu-touch-target);
-  margin-top: 0.5rem;
+  margin-top: 0.125rem;
 }
 
 .menu-note {
