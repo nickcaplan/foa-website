@@ -10,6 +10,7 @@ for (const width of [320, 390, 768, 1023]) {
     await page.emulateMedia({ reducedMotion: "reduce" });
     for (const route of routes.filter(route => !["/preview/christmas/", "/preview/narnia-home/", "/preview/narnia-fayre/"].includes(route))) {
       await page.goto(route);
+      const templateRoute = route === "/preview/glitter-tree-details-b/" ? "/events/christmas-fayre-2026/" : route === "/preview/glitter-tree-volunteering-b/" ? "/christmas-fayre-volunteering/" : route;
       const header = page.locator(".site-header");
       const trigger = page.getByRole("button", { name: "Open menu" });
       await expect(header, route).toBeHidden();
@@ -19,10 +20,10 @@ for (const width of [320, 390, 768, 1023]) {
       expect(before!.width).toBe(48);
       expect(before!.height).toBe(48);
       expect(before!.x + before!.width).toBeLessThanOrEqual(width);
-      if(route === "/" || route === "/events/christmas-fayre-2026/" || route === "/christmas-fayre-volunteering/") {
-        await expect(page.locator('.narnia-landscape h1')).toHaveText(route === '/christmas-fayre-volunteering/' ? 'Christmas Fayre Volunteering' : 'Christmas Fayre');
+      if(templateRoute === "/" || templateRoute === "/events/christmas-fayre-2026/" || templateRoute === "/christmas-fayre-volunteering/") {
+        await expect(page.locator('.narnia-landscape h1')).toHaveText(templateRoute === '/christmas-fayre-volunteering/' ? 'Christmas Fayre Volunteering' : 'Christmas Fayre');
         if(route === "/")await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
-        else if(route === '/christmas-fayre-volunteering/') await expect(page.locator('.fayre-volunteer__brand .page-logo-home')).toBeVisible();
+        else if(templateRoute === '/christmas-fayre-volunteering/') await expect(page.locator('.fayre-volunteer__brand .page-logo-home')).toBeVisible();
         else await expect(page.locator('.narnia-mobile-brand .page-logo-home')).toBeVisible();
       } else {
         const logo = page.locator(".page-logo-home:visible");
@@ -51,7 +52,7 @@ for (const width of [320, 390, 768, 1023]) {
         expect(intro.y, `${route}: introduction sits below the logo`).toBeGreaterThanOrEqual(logoBottom);
       }
       const stage = page.locator(".fw-stage, .xmas-stage");
-      if (await stage.count() && route !== "/events/christmas-fayre-2026/") {
+      if (await stage.count() && templateRoute !== "/events/christmas-fayre-2026/") {
         expect((await stage.boundingBox())!.y, `${route}: artwork starts at the top without a logo strip`).toBe(0);
         await expect(stage.locator(".page-logo-home"), route).toBeVisible();
         await expect(page.locator("#main-content")).toHaveCSS("padding-top", "0px");
@@ -71,7 +72,7 @@ for (const width of [320, 390, 768, 1023]) {
           await expect(page.locator("main h1 span")).toHaveCSS("display", "block");
           await expect(page.locator(".event-hero-intro")).toHaveCSS("margin-top", "12px");
         }
-        if (route === "/events/christmas-fayre-2026/") {
+        if (templateRoute === "/events/christmas-fayre-2026/") {
           await expect(page.locator(".xmas-baubles--desktop")).toBeHidden();
           await expect(page.locator(".xmas-baubles--mobile")).toBeVisible();
           const baubles = (await page.locator(".xmas-baubles--mobile").boundingBox())!;
