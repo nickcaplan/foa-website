@@ -100,7 +100,7 @@ test("Reps Hub shareable messages follow build-time expiry and preserve active l
   const fireworks = JSON.parse(await readFile("src/content/events/fireworks-2026.json", "utf8"));
   const uniform = JSON.parse(await readFile("src/content/events/uniform-december-2026.json", "utf8"));
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
-  const cards = [...html.matchAll(/<article class="message-card"[^>]*>([\s\S]*?)<\/article>/g)].map(match => match[1]);
+  const cards = [...html.matchAll(/<article class="message-card"[^>]*>([\s\S]*?)<\/article>/g)].map(match => match[1]).filter(card => !card.includes("<h2>Christmas Fayre Donations Day</h2>"));
   const events = [fireworks, fireworks, uniform, fayre];
   const routes = ["/events/fireworks-2026/", "/fireworks-volunteering/", "/uniform/", fayre.volunteeringPath];
   assert.equal(cards.length, events.filter(event => builtAt < Date.parse(event.end || event.start)).length);

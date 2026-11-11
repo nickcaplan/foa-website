@@ -40,13 +40,14 @@ test.describe("Add to calendar", () => {
   test("What's On offers the service choices for upcoming events and never for past events", async ({ page }) => {
     await page.clock.setFixedTime(new Date("2026-11-04T12:00:00Z"));
     await page.goto("/whats-on/");
-    // Retired Fireworks is excluded; Santa's Grotto and both Happy Bags dates remain upcoming.
-    await expect(googleLink(page)).toHaveCount(3);
+    // Retired Fireworks is excluded; Donations Day, Santa's Grotto and both Happy Bags dates remain upcoming.
+    await expect(googleLink(page)).toHaveCount(4);
     await expect(page.getByRole("link", { name: /Outlook/ })).toHaveCount(0);
     const downloads = fileLink(page);
-    await expect(downloads).toHaveCount(3);
+    await expect(downloads).toHaveCount(4);
     const hrefs = await downloads.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
     expect(hrefs).toEqual([
+      "/calendar/christmas-fayre-donations-day-2026.ics",
       "/calendar/santas-grotto-2026.ics",
       "/calendar/happy-bags-january-2027.ics",
       "/calendar/happy-bags-april-2027.ics",

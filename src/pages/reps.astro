@@ -7,8 +7,9 @@ import { ordinalDateFormatter, formatEventTimeRange, timeRangeSeparator } from "
 const events = await getCollection("events");
 const fireworks = events.find(({ id }) => id === "fireworks-2026")?.data;
 const uniform = events.find(({ id }) => id === "uniform-december-2026")?.data;
+const donations = events.find(({ id }) => id === "christmas-fayre-donations-day-2026")?.data;
 const christmas = events.find(({ id }) => id === "christmas-fayre-2026")?.data;
-if (!fireworks?.schedule || !fireworks.volunteerRoles || !uniform || !christmas?.helpAreas || !christmas.volunteeringPath) {
+if (!donations || !fireworks?.schedule || !fireworks.volunteerRoles || !uniform || !christmas?.helpAreas || !christmas.volunteeringPath) {
   throw new Error("Reps Hub event content is missing");
 }
 const dateFormatter = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" });
@@ -37,6 +38,14 @@ const messageList: {
   guide?: { path: string; fileName: string; size?: string };
   reviewed?: string;
 }[] = [
+  {
+    title: donations.title,
+    paragraphs: [`Donations Day for the Christmas Fayre is on ${dateFormatter(donations.start)}.`],
+    timing: donations,
+    href: christmas.path!,
+    linkLabel: "Christmas Fayre details",
+    reviewed: "2026-11-11",
+  },
   {
     title: fireworks.title,
     paragraphs: [
@@ -87,7 +96,7 @@ const builtAt = Date.now();
 const messages = messageList.map((message) => ({
   ...message,
   reviewed: message.reviewed ?? "2026-10-11",
-  expires: (message.timing.end ?? message.timing.start).toISOString(),
+  expires: message.timing.allDay ? new Date(message.timing.start.getTime() + 86400000).toISOString() : (message.timing.end ?? message.timing.start).toISOString(),
   url: publicUrl(message.href),
   copyText: [
     ...message.paragraphs,
