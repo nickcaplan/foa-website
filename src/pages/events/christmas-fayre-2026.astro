@@ -82,7 +82,6 @@ const eventJsonLd = {
             <li class="xmas-area">
               <svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={icons[area.icon]}></path></svg>
               <span>{area.name}</span>
-              {supporterVariant==="b" && area.name==="Glitter Tattoos" && <img class="glitter-stall-logo" src={withBase("/brand/glitter-tree.png")} alt="The Glitter Tree" width="64" height="64" loading="lazy"/>}
             </li>
           ))}
         </ul>
@@ -195,6 +194,3 @@ const eventJsonLd = {
 }
 </style>
 
-<style>
-.glitter-stall-logo{width:3rem;height:3rem;border-radius:.35rem;object-fit:contain;background:white;grid-row:3}
-</style>

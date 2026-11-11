@@ -5,7 +5,9 @@ for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(cons
  for(const path of ['/events/christmas-fayre-2026/','/preview/glitter-tree-details-b/','/christmas-fayre-volunteering/','/preview/glitter-tree-volunteering-b/']){
  await page.goto(path);
  if(path==='/preview/glitter-tree-details-b/'){
-  await expect(page.locator('.xmas-area').filter({hasText:'Glitter Tattoos'}).locator('img[alt="The Glitter Tree"]')).toHaveCount(1);
+  await expect(page.locator('.xmas-area img')).toHaveCount(0);
+  const tiles=await page.locator('.xmas-area').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().height));
+  expect(Math.max(...tiles)-Math.min(...tiles)).toBeLessThan(1);
   await expect(page.locator('.narnia-landscape img[alt="Martin Flashman and Co"]')).toHaveCount(1);
   await expect(page.locator('.narnia-landscape img[alt="The Glitter Tree"]')).toHaveCount(0);
   await expect(page.locator('.fayre-supporter--b')).toHaveCount(1);
