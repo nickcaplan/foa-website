@@ -46,10 +46,10 @@ test("retired Fireworks URLs redirect home without active event effects or sales
 });
 
 test("the four changed pages use compact purpose-made social cards", async () => {
-  const cards={"":"home","whats-on":"whats-on","events/christmas-fayre-2026":"christmas-fayre","christmas-fayre-volunteering":"fayre-volunteering"};
+  const cards={"":"home","whats-on":"whats-on","events/christmas-fayre-2026":"christmas-fayre","christmas-fayre-volunteering":"fayre-volunteering","christmas-fayre-art-competition":"art-competition"};
   for(const [route,name] of Object.entries(cards)) {
     const html=await readFile(path.join(dist,route,"index.html"),"utf8");
-    const version=["home","whats-on"].includes(name)?"v3":(name==="christmas-fayre"?"v1":"v2");
+    const version=["home","whats-on"].includes(name)?"v3":(["christmas-fayre","art-competition"].includes(name)?"v1":"v2");
     assert.ok(html.includes(`/social/${name}-2026-${version}.jpg`));
     assert.match(html, /property="og:image:width" content="1200"/);
     assert.match(html, /property="og:image:height" content="630"/);
@@ -518,4 +518,25 @@ test("Christmas volunteering lists the source activities and safe click-outs wit
  }
  assert.doesNotMatch(html, /<iframe|places left|of \d+ open|data-availability/);
  assert.ok(html.includes(`href="${basePath}${christmas.path}"`));
+});
+
+
+test("every published normal page has complete social-preview metadata", async () => {
+ for(const file of (await filesUnder(dist)).filter(file=>file.endsWith('.html'))){
+  const html=await readFile(file,'utf8');
+  if(/http-equiv="refresh"|name="robots" content="noindex/.test(html)||file.endsWith('fundraising-progress-options.html'))continue;
+  for(const property of ['og:title','og:description','og:image','og:url'])assert.match(html,new RegExp('property="'+property+'" content="[^" ]+[^"]*"'),file+' missing '+property);
+  for(const name of ['twitter:card','twitter:title','twitter:description','twitter:image'])assert.match(html,new RegExp('name="'+name+'" content="[^" ]+[^"]*"'),file+' missing '+name);
+  assert.match(html,/<link rel="canonical" href="https:[^"]+"/,file);
+ }
+});
+
+
+test("new page sources explicitly select their social image", async()=>{
+ // Existing informational pages predate the 11 November 2026 rule. Never add new exceptions.
+ const legacy=new Set(['404.astro','about.astro','committee.astro','contact.astro','fundraising.astro','get-involved.astro','meeting-minutes.astro','newsletter.astro','privacy.astro','reps.astro']);
+ for(const file of (await filesUnder(path.resolve('src/pages'))).filter(f=>f.endsWith('.astro'))){
+  const relative=path.relative(path.resolve('src/pages'),file);if(relative.startsWith('preview/')||legacy.has(relative))continue;
+  const source=await readFile(file,'utf8');assert.match(source,/<BaseLayout[^>]*\simage=/,relative+' needs an explicit page-specific social image');
+ }
 });
