@@ -14,6 +14,7 @@ const deadlineText=deadline;
   <div class="site-width"><p class="art-comp-banner__deadline"><span>Deadline</span><strong>{deadlineText}</strong></p></div>
  </div>
  <div class="site-width art-comp">
+  <div class="art-comp__grid">
   <section class="art-comp__panel" aria-labelledby="art-comp-theme">
    <h2 id="art-comp-theme">Show us your lions, witches and snow queens!</h2>
    <p>Winter wonderland and Christmas themes are also welcome.</p>
@@ -26,6 +27,7 @@ const deadlineText=deadline;
     <li><strong>On the back of your artwork</strong><span>Your name, and your consent as Y or N. Consent means you are happy for winning artworks to be displayed at Ashley and Martin Flashman.</span></li>
    </ul>
   </section>
+  </div>
   <p class="art-comp__credit">Thanks to Steph Cotela.</p>
   <p class="art-comp__back"><a class="button" href={withBase('/events/christmas-fayre-2026/')}><span class="cta-label"><span class="cta-tail">Back to the Christmas Fayre<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
  </div>
@@ -45,7 +47,7 @@ const deadlineText=deadline;
 .art-comp__steps{list-style:none;margin:0;padding:0;display:grid;gap:.9rem}
 .art-comp__steps li{display:grid;gap:.2rem;padding-top:.9rem;border-top:1px solid #b99a5b55;line-height:1.6}.art-comp__steps li:first-child{padding-top:0;border-top:0}
 .art-comp__steps strong{color:#edcb83}.art-comp__steps span{color:#fff3d5;overflow-wrap:anywhere}
-@media(min-width:48rem){.art-comp__steps li{grid-template-columns:15rem 1fr;gap:1.5rem}}
+.art-comp__grid{display:grid;gap:0}@media(min-width:60rem){.art-comp__grid{grid-template-columns:1fr 1fr;gap:1.25rem;align-items:stretch}.art-comp__grid .art-comp__panel{margin-top:1.25rem}}
 .art-comp__credit{margin:1.5rem 0 0;text-align:center;font-size:.95rem;color:#edcb83}
 .art-comp__back{margin:1.5rem auto 0;text-align:center}
 .art-comp__back .button{display:inline-flex;align-items:center;justify-content:center;gap:1rem;width:min(100%,22rem);min-height:3.5rem;padding:.8rem 1.5rem;background:#742f3c;border:1px solid #c9a65f;color:#fff5e2;font-size:1rem;line-height:1.5;white-space:normal;text-align:left}
