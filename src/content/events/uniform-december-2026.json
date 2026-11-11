@@ -6,5 +6,6 @@
   "status": "confirmed",
   "statusLabel": "Confirmed",
   "path": "/uniform/",
-  "ctaLabel": "See uniform details"
+  "ctaLabel": "See uniform details",
+  "archiveFrom": "2026-12-05T00:00:00+00:00"
 }

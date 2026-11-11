@@ -96,7 +96,7 @@ const builtAt = Date.now();
 const messages = messageList.map((message) => ({
   ...message,
   reviewed: message.reviewed ?? "2026-10-11",
-  expires: message.timing.allDay ? new Date(message.timing.start.getTime() + 86400000).toISOString() : (message.timing.end ?? message.timing.start).toISOString(),
+  expires: message.timing.allDay ? new Date(message.timing.start.getTime() + 86400000).toISOString() : (message.timing.archiveFrom ?? message.timing.end ?? message.timing.start).toISOString(),
   url: publicUrl(message.href),
   copyText: [
     ...message.paragraphs,
