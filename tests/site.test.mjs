@@ -337,7 +337,7 @@ test("the active homepage credits the sponsor with an accessible local logo", as
   for (const page of ["index.html"]) {
     const html = await readFile(path.join(dist, page), "utf8");
     assert.match(html, /class="sponsor-ribbon"/);
-    assert.match(html, new RegExp(`src="${basePath}/sponsors/martin-flashman.jpeg" alt="Martin Flashman and Co" width="225" height="33"`));
+    assert.match(html, new RegExp(`src="${basePath}/sponsors/martin-flashman.png" alt="Martin Flashman and Co" width="1280" height="96"`));
   }
 });
 
@@ -432,10 +432,10 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   assert.ok(html.includes(escapeHtml(christmas.entry)));
   assert.ok(!html.includes(christmas.whatsOn.map(escapeHtml).join(' · ')), 'Stalls are not repeated above the activity cards');
   assert.ok(!html.includes('class="add-calendar"'), 'Calendar choices are hidden on Fayre details');
-  assert.ok(html.includes('/sponsors/martin-flashman.jpeg'), 'Landscape sponsor logo is used');
+  assert.ok(html.includes('/sponsors/martin-flashman.png'), 'Landscape sponsor logo is used');
   assert.match(html, /<div class="xmas-snow" aria-hidden="true"[^>]*>/);
   assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
-  assert.match(html, /martin-flashman\.jpeg" alt="Martin Flashman and Co"/);
+  assert.match(html, /martin-flashman\.png" alt="Martin Flashman and Co"/);
   assert.ok(html.includes(`href="${basePath}${christmas.volunteeringPath}"`));
   assert.doesNotMatch(html, /<iframe|Design preview only|Compare sign-up/);
   assert.doesNotMatch(html, /name="robots" content="noindex/);
