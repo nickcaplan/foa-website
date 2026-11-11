@@ -14,6 +14,10 @@ for(const width of [360,390,430])for(const theme of ['day','night'])for(const en
  await page.setViewportSize({width,height:1000});await page.goto('/newsletter/');await page.evaluate(({theme,enlarged})=>{document.documentElement.dataset.theme=theme;document.documentElement.style.fontSize=enlarged?'200%':'100%'},{theme,enlarged});
  const size=await page.locator('.newsletter-reading-board article').evaluate(el=>el.clientWidth-parseFloat(getComputedStyle(el).paddingLeft)-parseFloat(getComputedStyle(el).paddingRight));
  expect(size).toBeGreaterThanOrEqual(width-(enlarged?164:84));
+ const header=page.locator('.newsletter-reading-board .newsletter-letterhead');
+ const date=header.locator('time');
+ expect(parseFloat(await date.evaluate(el=>getComputedStyle(el).fontSize))).toBeLessThan(enlarged?20:10);
+ if(!enlarged){const h=(await header.boundingBox())!;expect(h.height).toBeLessThan(70);expect((await date.boundingBox())!.y).toBeLessThan(h.y+50)}
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.locator('.newsletter-reading-board .newsletter-read-more').click();await expect(page.locator('.newsletter-reading-board .newsletter-more')).toBeVisible();
 });
