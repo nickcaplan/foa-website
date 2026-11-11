@@ -1,5 +1,4 @@
 ---
-import FayreDonationsNotice from "../components/FayreDonationsNotice.astro";
 import NarniaHero from "../components/NarniaHero.astro";
 import HomepageMobileIdentity from "../components/HomepageMobileIdentity.astro";
 import EventVisibilityInit from "../components/EventVisibilityInit.astro";
@@ -30,7 +29,6 @@ if (!appeal) throw new Error("Homepage fundraising content is missing");
     </div>
   </section>
   <noscript><div class="site-width"><p>Homepage event shown as of the last site update. <a href={withBase(event.path!)}>Christmas Fayre details</a> are always available.</p></div></noscript>
-  <div class="site-width"><FayreDonationsNotice /></div>
   <section class="fundraising-update" aria-labelledby="fundraising-update-title">
     <div class="site-width">
       <FundraisingSummary appeal={appeal} />
