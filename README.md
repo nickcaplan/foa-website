@@ -73,3 +73,5 @@ The model is `nvidia/nemotron-3-ultra-550b-a55b:free`, with reasoning `none`, a 
 `OPENROUTER_ROBIN_PILOT` is a repository Actions secret, never a committed value. The approved shared key has a $0 spending cap with no reset and expires **17 November 2026 at 12:29 UTC**. All configured repositories share the account's 50 free requests per UTC day, not 50 each. The request counter resets at midnight UTC independently of the $0 spending cap. Expiry or a failed free request is not permission to raise the cap, add credits, add a card or switch to a paid model. Key renewal or replacement needs separate approval.
 
 Run the offline safety checks from the repository root with `python3 scripts/test-robin-guards.py`. These do not call GitHub, OpenRouter or a model. The native Compass run succeeded on 10 November 2026 with this pinned action and model setting; this repository's live review remains untested until an approved invocation after Merge.
+
+`npm run test:expiry-build` checks real builds during and after the December uniform sale, including social metadata, without replacing `dist`. Browser expiry tests run with the normal E2E suite.
