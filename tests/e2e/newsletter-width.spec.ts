@@ -17,7 +17,7 @@ for(const width of [360,390,430])for(const theme of ['day','night'])for(const en
  const header=page.locator('.newsletter-reading-board .newsletter-letterhead');
  const date=header.locator('time');
  expect(parseFloat(await date.evaluate(el=>getComputedStyle(el).fontSize))).toBeLessThan(enlarged?20:10);
- if(!enlarged){const h=(await header.boundingBox())!;expect(h.height).toBeLessThan(70);expect((await date.boundingBox())!.y).toBeLessThan(h.y+50)}
+ if(!enlarged){const h=(await header.boundingBox())!;expect(h.height).toBeLessThan(70);expect((await date.boundingBox())!.y).toBeLessThan(h.y+50);if(width>=390)expect((await date.boundingBox())!.y).toBeLessThan(h.y+20)}
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.locator('.newsletter-reading-board .newsletter-read-more').click();await expect(page.locator('.newsletter-reading-board .newsletter-more')).toBeVisible();
 });
