@@ -146,9 +146,9 @@ for (const width of [390, 1440]) {
     await page.goto("/whats-on/");
     await expect(page.locator(".term-earlier")).toHaveAttribute("open", "");
     const archive = page.locator("[data-yearview-earlier]");
-    const archivedEvent = archive.locator(".event-list-item:not([hidden])").filter({ hasText: event.title });
+    const archivedEvent = archive.locator(".event-list-item:not([hidden])").and(page.locator(`[data-event-title="${event.title}"]`));
     await expect(archivedEvent).toHaveCount(1);
-    await expect(archive.locator("[data-earlier-month]").filter({ hasText: event.title }).locator(".term-month-heading")).toHaveText(monthLabel);
+    await expect(archive.locator("[data-earlier-month]").filter({has: page.locator(`[data-event-title="${event.title}"]`)}).locator(".term-month-heading")).toHaveText(monthLabel);
     const link = archivedEvent.getByRole("link", { name: event.title });
     await link.focus();
     const inventory = () => archive.locator(".event-list-item:not([hidden])").allTextContents();
@@ -168,8 +168,8 @@ for (const width of [390, 1440]) {
 test("an event crossing its end switches once without dropping or duplicating visible events", async ({ page }) => {
   await page.clock.install({ time: new Date(boundary - 30_000) });
   await page.goto("/whats-on/");
-  const upcoming = page.locator('[data-past="false"]').filter({ hasText: event.title });
-  const archived = page.locator('[data-past="true"]').filter({ hasText: event.title });
+  const upcoming = page.locator('[data-past="false"]').and(page.locator(`[data-event-title="${event.title}"]`));
+  const archived = page.locator('[data-past="true"]').and(page.locator(`[data-event-title="${event.title}"]`));
   await expect(upcoming).toHaveJSProperty("hidden", false);
   await expect(archived).toHaveJSProperty("hidden", true);
   const count = await page.locator(".event-list-item:not([hidden])").count();

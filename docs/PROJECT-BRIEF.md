@@ -155,6 +155,10 @@ These are confirmed unless the project owner explicitly revises them. Edit entri
 - Confirmed Pre-loved Uniform prices: £3 for coats and new-logo items, £1 for all other items, card only. Donation instruction: "If you have any uniform which you would like to donate, please drop it in the green bins by the School Office - no torn items please!"
 - Christmas Fayre is Saturday 5th December 2026, 12:00-15:00. The Fayre is led by Rachel Briscoe (Squirrel and Otter) and Sophie Glass (Fox). Welcome Tea is Saturday 3rd October. Santa's Grotto is Monday 14th December 2026, run by parents and carers during the school day.
 
+### Christmas Fayre Donations Day
+
+- Confirmed 11 November 2026: Donations Day for the Christmas Fayre is Friday 20th November 2026. Donation items, times and drop-off arrangements are not yet supplied and must not be invented. The date is held in one event record and shown in What's On, with short notices on Home, Fayre details and volunteering, plus a matching Reps Hub message. Date-only notices expire after the UK day.
+
 ### Notice Board
 
 - Deferred; no public route. If introduced, it is editorial and committee-managed: no unmoderated publishing, notices need publication and expiry dates, and the Committee owns review, expiry and takedowns.
