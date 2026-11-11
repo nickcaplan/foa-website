@@ -184,6 +184,6 @@ for(const width of [390,1440]) test(`grouped arrow columns at ${width}`,async({p
  await page.goto('/');await aligned('.narnia-landscape .button .cta-icon');
  const rows=await page.locator('.quick-row').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect(),i=e.querySelector('.cta-icon')!.getBoundingClientRect();return{right:r.right,inset:r.right-i.right}}));expect(rows).toHaveLength(2);expect(Math.abs(rows[0].inset-rows[1].inset)).toBeLessThan(1);if(width===390)await aligned('.quick-row .cta-icon');
  if(width===390){await page.getByRole('button',{name:'Open menu'}).click();await aligned('.mobile-menu-arrow');}
- await page.goto('/whats-on/');await aligned('[data-volunteer-actions] .cta-icon');
+ await page.goto('/whats-on/');await aligned('[data-volunteer-actions] [data-cta-arrow="forward"]');
  await page.goto('/christmas-fayre-volunteering/');const insets=await page.locator('.fayre-volunteer__action').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().right-e.querySelector('.cta-icon')!.getBoundingClientRect().right));expect(Math.max(...insets)-Math.min(...insets)).toBeLessThan(1);
 });

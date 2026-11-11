@@ -42,7 +42,7 @@ const year = academicYearLabel();
           {term.months.map((month) => (
             <div class="term-month" data-month-key={month.key} hidden={!monthVisible(month)}>
               <h3 class="term-month-heading">{month.label}<span class="term-chip" data-current-chip hidden={month.key !== currentMonth}>This month</span></h3>
-              <div class="event-list" hidden={!month.events.some(upcoming)}>{month.events.map((event) => <EventRow event={event} showVolunteering now={now} headingLevel="h4" />)}</div>
+              <div class="event-list" hidden={!month.events.some(upcoming)}>{month.events.map((event) => <EventRow event={event} pillCtas showVolunteering now={now} headingLevel="h4" />)}</div>
             </div>
           ))}
         </div>

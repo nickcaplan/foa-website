@@ -19,7 +19,7 @@ const linkable = {
   summary: event.summary,
   location: locationWithAddress(event.location),
   start: event.start,
-  end: event.end,
+  end: event.calendarEnd ?? event.end,
   allDay: event.allDay,
   url,
 };

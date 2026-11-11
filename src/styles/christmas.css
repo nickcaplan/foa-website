@@ -770,3 +770,8 @@ body.xmas-theme::before {
     padding-top: 0;
   }
 }
+
+/* Volunteering actions keep a full pill curve as labels wrap or grow. */
+.narnia-volunteering .fayre-volunteer .button {
+  border-radius: 999px;
+}
