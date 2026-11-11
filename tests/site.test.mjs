@@ -49,11 +49,12 @@ test("the four changed pages use compact purpose-made social cards", async () =>
   const cards={"":"home","whats-on":"whats-on","events/christmas-fayre-2026":"christmas-fayre","christmas-fayre-volunteering":"fayre-volunteering"};
   for(const [route,name] of Object.entries(cards)) {
     const html=await readFile(path.join(dist,route,"index.html"),"utf8");
-    assert.ok(html.includes(`/social/${name}-2026-v1.jpg`));
+    const version=name==="christmas-fayre"?"v1":"v2";
+    assert.ok(html.includes(`/social/${name}-2026-${version}.jpg`));
     assert.match(html, /property="og:image:width" content="1200"/);
     assert.match(html, /property="og:image:height" content="630"/);
     assert.match(html, /name="twitter:image" content="https?:[^"]+"/);
-    const image=await readFile(path.join(dist,`social/${name}-2026-v1.jpg`));
+    const image=await readFile(path.join(dist,`social/${name}-2026-${version}.jpg`));
     assert.ok(image.length<600*1024);
     let pos=2,dimensions;
     while(pos<image.length){const marker=image[pos+1],size=image.readUInt16BE(pos+2);if([0xc0,0xc1,0xc2].includes(marker)){dimensions=[image.readUInt16BE(pos+7),image.readUInt16BE(pos+5)];break}pos+=2+size;}
