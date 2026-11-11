@@ -35,6 +35,7 @@
  */
 import { execFileSync } from 'node:child_process';
 import { alignPreviewLabel } from './preview-label.mjs';
+import {previewConfig,selectNetlifyAccount,readPreviewPullRequest,choosePreviewProvider} from './preview-config.mjs';
 
 const SKIP_PREFIX = '[CF-Pages-Skip]';
 const SKIP_PATTERN = /^\[(CF-Pages-Skip|CI Skip|CI-Skip|Skip CI|Skip-CI)\]\s*/i;
@@ -80,7 +81,7 @@ async function netlifyMinutes(token) {
   const headers = { Authorization: `Bearer ${token}`, 'User-Agent': 'preview-route' };
   const accounts = await fetch('https://api.netlify.com/api/v1/accounts', { headers })
     .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))));
-  const accountId = accounts?.[0]?.id || accounts?.[0]?.slug;
+  const accountId = selectNetlifyAccount(accounts,previewConfig.netlifyTeam);
   if (!accountId) throw new Error('no Netlify account found');
   const status = await fetch(`https://api.netlify.com/api/v1/${accountId}/builds/status`, { headers })
     .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))));
@@ -126,7 +127,7 @@ if (!process.env.NETLIFY_TOKEN) {
   try {
     minutes = await netlifyMinutes(process.env.NETLIFY_TOKEN);
     console.log(`Netlify build minutes this period: ${minutes.used} of ${minutes.included} (threshold ${THRESHOLD}).`);
-    if (minutes.used >= THRESHOLD) route = 'cloudflare';
+    route = choosePreviewProvider(minutes.used,THRESHOLD,previewConfig.cloudflareReady);
   } catch (error) {
     console.log(`Could not read Netlify build minutes (${error.message}): routing to Netlify.`);
   }
@@ -135,7 +136,7 @@ if (!process.env.NETLIFY_TOKEN) {
 // 2. Find the open PR for this branch.
 const githubToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || '';
 const prs = await api(`https://api.github.com/repos/${slug}/pulls?head=${owner}:${encodeURIComponent(branch)}&state=open`, { token: githubToken });
-const pr = prs.ok && Array.isArray(prs.json) ? prs.json[0] : null;
+const pr = readPreviewPullRequest(prs);
 if (pr) console.log(`Open PR: #${pr.number} (${pr.title})`);
 
 // 3. A Cloudflare route needs the PR label; without a token or PR, stay on Netlify.
@@ -166,7 +167,7 @@ if (headOnMain) {
       ? `Prefixing HEAD commit message with ${SKIP_PREFIX}.`
       : `Removing the Cloudflare skip prefix from HEAD.`);
     if (!DRY_RUN) {
-      git('commit', '--amend', '-m', wanted);
+      git('commit', '--amend', '--only', '-m', wanted);
       amended = true;
     }
   }
