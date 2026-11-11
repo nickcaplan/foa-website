@@ -49,3 +49,13 @@ test('every upcoming event has Google and iCal, with confirmed December calendar
  const ics=await page.request.get((await december.getByRole('link',{name:/^iCal/}).getAttribute('href'))!);expect(await ics.text()).toContain('DTEND:20261204T154500Z');
  await expect(page.locator('[data-yearview-earlier] .add-calendar')).toHaveCount(0);
 });
+
+for(const width of [320,390,1024,1440])for(const enlarged of [false,true])test(`Competition details fits ${width}px ${enlarged?'enlarged':'normal'} text`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.goto('/whats-on/');
+ if(enlarged)await page.addStyleTag({content:'html{font-size:125%!important}'});
+ const link=page.locator('[data-yearview-term] [data-event-title="Christmas Fayre Art Competition deadline"] .event-list-cta');
+ await expect(link).toHaveText('Competition details');
+ const uniform=page.locator('[data-yearview-term] [data-event-title="Pre-loved uniform and Christmas jumper sale"] .event-list-cta');await expect(uniform).toHaveText('Uniform details');
+ for(const action of [link,uniform]){const lines=await action.locator('.cta-label').evaluate(e=>{const r=document.createRange();r.selectNodeContents(e);return new Set(Array.from(r.getClientRects()).map(r=>Math.round(r.y))).size});expect(lines).toBe(1);}
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(0);
+});
