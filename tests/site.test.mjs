@@ -46,10 +46,10 @@ test("retired Fireworks URLs redirect home without active event effects or sales
 });
 
 test("the four changed pages use compact purpose-made social cards", async () => {
-  const cards={"":"home","whats-on":"whats-on","events/christmas-fayre-2026":"christmas-fayre","christmas-fayre-volunteering":"fayre-volunteering"};
+  const cards={"":"home","whats-on":"whats-on","events/christmas-fayre-2026":"christmas-fayre","christmas-fayre-volunteering":"fayre-volunteering","christmas-fayre-art-competition":"art-competition"};
   for(const [route,name] of Object.entries(cards)) {
     const html=await readFile(path.join(dist,route,"index.html"),"utf8");
-    const version=["home","whats-on"].includes(name)?"v3":(name==="christmas-fayre"?"v1":"v2");
+    const version=["home","whats-on"].includes(name)?"v3":(["christmas-fayre","art-competition"].includes(name)?"v1":"v2");
     assert.ok(html.includes(`/social/${name}-2026-${version}.jpg`));
     assert.match(html, /property="og:image:width" content="1200"/);
     assert.match(html, /property="og:image:height" content="630"/);
@@ -152,7 +152,7 @@ test("navigation exposes the menu on Home and both menus on interior pages", asy
       const destinations = [...nav.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
       const expected = ["/", "/newsletter/", "/whats-on/", "/fundraising/", "/get-involved/", "/uniform/"];
       if (label === "Mobile navigation") {
-        expected.splice(3, 0, "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/");
+        expected.splice(3, 0, "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/");
         expected.push("/contact/");
       }
       assert.deepEqual(destinations, expected.map((destination) => `${basePath}${destination}`));
@@ -267,7 +267,7 @@ test("the homepage features the chosen Christmas Fayre design without reviving t
   assert.match(homepage, /<section class="narnia-landscape"[^>]*data-homepage-christmas/);
   assert.match(homepage, /<h1[^>]*>Christmas <em>Fayre<\/em><\/h1>/);
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
-  assert.ok(homepage.includes(ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(fayre.start)));
+  assert.ok(homepage.includes(new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/London" }).format(new Date(fayre.start)).replace(",", "")));
   assert.ok(homepage.includes(fayre.location));
   assert.ok(homepage.includes(formatEventTimeRange(new Date(fayre.start), new Date(fayre.end)).replace(/(?<=\d)-(?=\d)/g, ' - ')));
   assert.ok(homepage.includes(fayre.entry));
@@ -337,7 +337,7 @@ test("the active homepage credits the sponsor with an accessible local logo", as
   for (const page of ["index.html"]) {
     const html = await readFile(path.join(dist, page), "utf8");
     assert.match(html, /class="sponsor-ribbon"/);
-    assert.match(html, new RegExp(`src="${basePath}/sponsors/martin-flashman.jpeg" alt="Martin Flashman and Co" width="225" height="33"`));
+    assert.match(html, new RegExp(`src="${basePath}/sponsors/martin-flashman.png" alt="Martin Flashman and Co" width="1280" height="96"`));
   }
 });
 
@@ -432,10 +432,10 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   assert.ok(html.includes(escapeHtml(christmas.entry)));
   assert.ok(!html.includes(christmas.whatsOn.map(escapeHtml).join(' · ')), 'Stalls are not repeated above the activity cards');
   assert.ok(!html.includes('class="add-calendar"'), 'Calendar choices are hidden on Fayre details');
-  assert.ok(html.includes('/sponsors/martin-flashman.jpeg'), 'Landscape sponsor logo is used');
+  assert.ok(html.includes('/sponsors/martin-flashman.png'), 'Landscape sponsor logo is used');
   assert.match(html, /<div class="xmas-snow" aria-hidden="true"[^>]*>/);
   assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
-  assert.match(html, /martin-flashman\.jpeg" alt="Martin Flashman and Co"/);
+  assert.match(html, /martin-flashman\.png" alt="Martin Flashman and Co"/);
   assert.ok(html.includes(`href="${basePath}${christmas.volunteeringPath}"`));
   assert.doesNotMatch(html, /<iframe|Design preview only|Compare sign-up/);
   assert.doesNotMatch(html, /name="robots" content="noindex/);
@@ -518,4 +518,25 @@ test("Christmas volunteering lists the source activities and safe click-outs wit
  }
  assert.doesNotMatch(html, /<iframe|places left|of \d+ open|data-availability/);
  assert.ok(html.includes(`href="${basePath}${christmas.path}"`));
+});
+
+
+test("every published normal page has complete social-preview metadata", async () => {
+ for(const file of (await filesUnder(dist)).filter(file=>file.endsWith('.html'))){
+  const html=await readFile(file,'utf8');
+  if(/http-equiv="refresh"|name="robots" content="noindex/.test(html)||file.endsWith('fundraising-progress-options.html'))continue;
+  for(const property of ['og:title','og:description','og:image','og:url'])assert.match(html,new RegExp('property="'+property+'" content="[^" ]+[^"]*"'),file+' missing '+property);
+  for(const name of ['twitter:card','twitter:title','twitter:description','twitter:image'])assert.match(html,new RegExp('name="'+name+'" content="[^" ]+[^"]*"'),file+' missing '+name);
+  assert.match(html,/<link rel="canonical" href="https:[^"]+"/,file);
+ }
+});
+
+
+test("new page sources explicitly select their social image", async()=>{
+ // Existing informational pages predate the 11 November 2026 rule. Never add new exceptions.
+ const legacy=new Set(['404.astro','about.astro','committee.astro','contact.astro','fundraising.astro','get-involved.astro','meeting-minutes.astro','newsletter.astro','privacy.astro','reps.astro']);
+ for(const file of (await filesUnder(path.resolve('src/pages'))).filter(f=>f.endsWith('.astro'))){
+  const relative=path.relative(path.resolve('src/pages'),file);if(relative.startsWith('preview/')||legacy.has(relative))continue;
+  const source=await readFile(file,'utf8');assert.match(source,/<BaseLayout[^>]*\simage=/,relative+' needs an explicit page-specific social image');
+ }
 });

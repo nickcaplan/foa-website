@@ -10,7 +10,9 @@ const kib = 1024;
 // Headroom above the optimised October 2026 build, not target load timings.
 // Don't silently raise a failing budget.
 const routes = [
-  { route: "/", eagerImageKiB: 100 },
+  // Raised 11 November 2026 for the approved Christmas wreath identity-bar logo
+  // (foa-logo-christmas-ivory.svg, 43 KiB) alongside the Narnia hero artwork.
+  { route: "/", eagerImageKiB: 140 },
   { route: "/whats-on/", eagerImageKiB: 100 },
   ...["newsletter", "fundraising", "get-involved", "uniform", "contact"].map((name) => ({
     route: `/${name}/`, eagerImageKiB: 100,

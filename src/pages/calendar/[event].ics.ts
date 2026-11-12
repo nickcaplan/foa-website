@@ -19,7 +19,7 @@ export const GET: APIRoute = ({ props, site }) => {
     summary: event.summary,
     location: locationWithAddress(event.location),
     start: event.start,
-    end: event.end,
+    end: event.calendarEnd ?? event.end,
     allDay: event.allDay,
     status: event.status,
     url,
