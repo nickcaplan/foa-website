@@ -275,3 +275,11 @@ const eventJsonLd = {
 <style is:inline>
 .narnia-event .xmas-stage .xmas-art-cta .button:has(.cta-icon){padding-right:calc(1.05em + 1rem)!important}
 </style>
+<style is:inline>
+@container(min-width:56em){
+ .narnia-event .xmas-stage .xmas-donations{grid-template-rows:auto auto;row-gap:.5rem}
+ .narnia-event .xmas-stage .xmas-donations li{display:grid;grid-row:span 2;grid-template-rows:subgrid;align-content:start;gap:.5rem}
+ .narnia-event .xmas-stage .xmas-donations strong,.narnia-event .xmas-stage .xmas-donations span{align-self:start;margin:0;min-width:0}
+ .narnia-event .xmas-upcoming__grid>section[aria-labelledby="xmas-art-title"]>div{grid-template-columns:minmax(0,62ch) max-content;justify-content:start}
+}
+</style>
