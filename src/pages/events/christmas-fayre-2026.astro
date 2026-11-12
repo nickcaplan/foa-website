@@ -146,7 +146,7 @@ const eventJsonLd = {
 </BaseLayout>
 
 <style is:inline>
-.narnia-event .xmas-stage .site-width{width:min(calc(100% - 2rem),62rem)}@media(min-width:48rem){.narnia-event .xmas-stage .site-width{width:min(calc(100% - 3rem),62rem)}}.narnia-event .narnia-landscape{max-width:none}.narnia-event-details{max-width:52rem;margin:2rem auto 0;text-align:center}
+.narnia-event .xmas-stage .site-width{width:min(calc(100% - 2rem),var(--max-width))}@media(min-width:48rem){.narnia-event .xmas-stage .site-width{width:min(calc(100% - 3rem),var(--max-width))}}.narnia-event .narnia-landscape{max-width:none}.narnia-event-details{max-width:52rem;margin:2rem auto 0;text-align:center}
 </style>
 
 <style is:inline>
@@ -208,7 +208,7 @@ const eventJsonLd = {
 </style>
 
 <style is:inline>
-.narnia-event .xmas-areas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr}@media(min-width:40rem){.narnia-event .xmas-areas{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(min-width:62rem){.narnia-event .xmas-areas{grid-template-columns:repeat(4,minmax(0,1fr))}}.narnia-event .xmas-area{display:grid;grid-template-rows:1.7rem auto;justify-items:center;align-content:start;align-items:start;row-gap:.65rem;padding:1rem .5rem;text-align:center}
+.narnia-event .xmas-areas{max-width:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr}@media(min-width:40rem){.narnia-event .xmas-areas{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(min-width:62rem){.narnia-event .xmas-areas{grid-template-columns:repeat(4,minmax(0,1fr))}}.narnia-event .xmas-area{display:grid;grid-template-rows:1.7rem auto;justify-items:center;align-content:start;align-items:start;row-gap:.65rem;padding:1rem .5rem;text-align:center}
 .narnia-event .xmas-area svg{grid-row:1}.narnia-event .xmas-area span{grid-row:2;width:100%;min-width:0}
 </style>
 
