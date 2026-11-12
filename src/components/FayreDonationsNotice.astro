@@ -26,8 +26,8 @@ const date = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" }
  document.addEventListener("visibilitychange", () => { if (!document.hidden) syncEventVisibility(); });
 </script>
 <style>
-.fayre-donations-notice .button{box-sizing:border-box;max-width:100%;padding-inline:12px 44px!important}
-.fayre-donations-notice .button .cta-icon{right:12px!important}
+.fayre-donations-notice .button{box-sizing:border-box;max-width:100%;padding-inline:.75rem calc(1.05em + 1rem)!important}
+.fayre-donations-notice .button .cta-icon{right:.5rem!important}
 
 .fayre-donations-notice{width:fit-content;max-width:100%;margin:1.25rem auto;text-align:center;padding:1.1rem min(1.25rem,20px);border:1px solid var(--line);border-top:3px solid var(--logo-gold);border-radius:var(--radius-sm);background:var(--surface);color:var(--ink)}
 :global(.narnia-donations) .fayre-donations-notice{width:auto}
