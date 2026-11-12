@@ -95,3 +95,9 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer .fayre-volunteer__closing h2::after,
 .fayre-volunteer .fayre-volunteer__loan h2::after{margin-left:0;background:linear-gradient(90deg,var(--xm-gold),transparent)}
 </style>
+<style is:inline>
+/* Reserve the icon lane, rather than letting global symmetric padding squeeze the words. */
+.fayre-volunteer__loan .fayre-volunteer__action{flex:0 0 auto;width:max-content;padding-inline:.75rem calc(1.05em + 1rem)!important}
+.fayre-volunteer__loan .fayre-volunteer__action .cta-label{flex:1 1 auto;text-align:left;overflow-wrap:normal;word-break:normal}
+@media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan{padding:1rem}.narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action{width:100%;border-radius:.65rem}}
+</style>
