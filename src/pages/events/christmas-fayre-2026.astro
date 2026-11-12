@@ -234,3 +234,17 @@ const eventJsonLd = {
 .narnia-event .xmas-stage .button .cta-label{white-space:normal;overflow-wrap:anywhere;min-width:0}
 .narnia-event .xmas-stage .xmas-stalls-cta .cta-tail{white-space:nowrap}
 </style>
+
+<style is:inline>
+/* Reserve the arrow at one side, not two large empty padding columns. */
+.narnia-event .xmas-stage .button .cta-icon{right:.5rem!important}
+</style>
+<style is:inline>
+.narnia-event .xmas-stage .button:has(.cta-icon){padding-inline:.5rem calc(1.05em + .8rem)!important}
+.narnia-event .xmas-contact .button:has(.cta-icon){padding-right:calc(1.05em + .8rem + 2px)!important}
+@container(max-width:20em){
+.narnia-event .narnia-landscape .button:has(.cta-icon){width:calc(100% + .625rem);max-width:calc(100% + .625rem);padding-inline:.4rem calc(1.05em + .4rem)!important}
+.narnia-event .narnia-landscape .button .cta-icon{right:.2rem!important}
+.narnia-event .narnia-landscape .button .cta-word{overflow-wrap:anywhere}
+}
+</style>
