@@ -144,3 +144,7 @@ Before sending preview screenshots, follow the pre-send checklist in `docs/PROJE
 Before calling a visible change ready, make separate whole-journey and whole-page passes on the hosted revision. Exercise controls, repeated actions, loading and error states, then judge hierarchy, spacing, readability and consistency of the complete page. Apply the viewport, theme and enlarged-text checks above. Passing tests or finding no overlap is not a design verdict (confirmed 5 November 2026).
 
 Check performance after changes (confirmed 2 November 2026). For changes that may affect loading or animation, compare like-for-like phone and desktop cold/warm measurements before and after. Flag a measured slowdown before merge and check production after deployment. If a baseline or live check is missing, say what remains unmeasured; do not infer zero impact.
+
+## PR screenshot evidence
+
+- When a PR changes, remove or replace superseded and WIP screenshots in its description and comments so only current evidence remains. Clearly labelled before-and-after comparisons are fine; do not leave stale WIP images that could be mistaken for the latest result. Keep the current desktop screenshot comment easy to find.
