@@ -38,8 +38,8 @@ for (const width of [320, 390, 554, 768, 1023, 1024, 1200, 1440]) {
           // Pinned lane (rule approved 30 Oct 2026): the icon must not
           // intersect any label line - text never runs beneath it.
           const overlapsLabel = lines.some((line) => !(icon.right < line.left + 1 || icon.left > line.right - 1 || icon.bottom < line.top + 1 || icon.top > line.bottom - 1));
-          const container = element.closest(".view-hero-inner")!.getBoundingClientRect();
-          const containerStyle = getComputedStyle(element.closest(".view-hero-inner")!);
+          const container = element.closest(".uniform-cta")!.getBoundingClientRect();
+          const containerStyle = getComputedStyle(element.closest(".uniform-cta")!);
           return {
             labelRight: lastLine.right,
             iconLeft: icon.left,

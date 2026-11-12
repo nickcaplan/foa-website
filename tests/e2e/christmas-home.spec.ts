@@ -13,7 +13,9 @@ for(const width of [320,390,768,1024,1440])for(const mode of ['day','night'])for
  await expect(hero.getByRole('link',{name:'Volunteer'})).toHaveAttribute('href','/christmas-fayre-volunteering/');
  await expect(hero.getByRole('link',{name:'Event details'})).toHaveAttribute('href','/events/christmas-fayre-2026/');
  await expect(hero.locator('.narnia-landscape__copy .button').first()).toHaveText('Event details');
- await expect(hero.locator('.narnia-landscape__secondary')).toHaveText('Volunteer');
+ await expect(hero.getByRole('link',{name:'Art Competition'})).toHaveAttribute('href','/christmas-fayre-art-competition/');
+ await expect(hero.locator('.narnia-landscape__secondary')).toHaveText(['Volunteer','Art Competition']);
+ await expect(hero.locator('.narnia-landscape__copy .button').last()).toHaveText('Art Competition');
  const geometry=await hero.evaluate(el=>{const h=el.querySelector('h1')!.getBoundingClientRect(),a=el.querySelector('.button')!.getBoundingClientRect(),r=el.getBoundingClientRect();return{separate:h.bottom<=a.top,contained:h.left>=r.left&&h.right<=r.right,overflow:document.documentElement.scrollWidth-innerWidth}});
  expect(geometry).toEqual({separate:true,contained:true,overflow:0});
  await hero.getByRole('link',{name:'Event details'}).click();await expect(page).toHaveURL(/\/events\/christmas-fayre-2026\/$/);

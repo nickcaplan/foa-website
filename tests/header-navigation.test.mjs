@@ -2,6 +2,11 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
+function menuStartCheck(html) {
+  const i = html.indexOf('id="mobile-menu"');
+  return i >= 0 ? i : 0;
+}
+
 test("all pages share the larger desktop introduction/navigation row and an independent mobile burger", async () => {
   const homepage = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
   assert.match(homepage, /<header\b[^>]*class="site-header site-header--home"/);
@@ -25,19 +30,27 @@ test("all pages share the larger desktop introduction/navigation row and an inde
     assert.equal(html.match(/\bdata-theme-toggle(?=[\s=>])/g)?.length, 2, route);
     assert.match(html, /class="mobile-menu-theme"[\s\S]*?data-theme-toggle/, route);
     assert.match(html, /<a class="mobile-menu-home" href="\/(?:foa-website\/)?" aria-label="The Friends of Ashley home">/, route);
-    assert.match(html, /aria-label="Event details"[\s\S]*?href="\/(?:foa-website\/)?events\/christmas-fayre-2026\/"/, route);
+    assert.match(html.slice(menuStartCheck(html)), /href="\/(?:foa-website\/)?events\/christmas-fayre-2026\/"[\s\S]*?aria-label="Christmas Fayre pages"[\s\S]*?href="\/(?:foa-website\/)?christmas-fayre-volunteering\/"[\s\S]*?href="\/(?:foa-website\/)?christmas-fayre-art-competition\/"/, route);
     const menuStart = html.indexOf('id="mobile-menu"');
     assert.ok(menuStart > html.indexOf("</header>"), route);
     assert.doesNotMatch(html.slice(menuStart), /href="\/(?:foa-website\/)?events\/fireworks-2026\/"/, "retired event is not an active menu item");
     assert.match(html.slice(menuStart), /data-theme-toggle\b/, route);
     assert.match(header, /class="brand home-introduction"/, route);
     assert.match(header, /<img[^>]*width="160"[^>]*height="160"/, route);
-    const pageLogo = html.match(/<a class="mobile-page-logo page-logo-home"[\s\S]*?<\/a>/)?.[0];
-    assert.ok(pageLogo, route);
-    assert.match(pageLogo, /href="\/(?:foa-website\/)?" aria-label="The Friends of Ashley home">/, route);
-    assert.match(pageLogo, /<img[^>]*width="160"[^>]*height="160"/, route);
-    assert.doesNotMatch(pageLogo, /<p\b|<strong\b|<span\b/, route);
-    assert.ok(html.indexOf(pageLogo) < html.indexOf("<h1"), route);
+    if (route.includes("christmas-fayre")) {
+      // Approved: the Fayre pages open with the homepage identity bar
+      // instead of the small page-level logo.
+      assert.match(html, /class="homepage-mobile-identity"/, route);
+      assert.ok(html.indexOf('class="homepage-mobile-identity"') < html.indexOf("<h1"), route);
+      assert.doesNotMatch(html, /narnia-mobile-brand/, route);
+    } else {
+      const pageLogo = html.match(/<a class="mobile-page-logo page-logo-home"[\s\S]*?<\/a>/)?.[0];
+      assert.ok(pageLogo, route);
+      assert.match(pageLogo, /href="\/(?:foa-website\/)?" aria-label="The Friends of Ashley home">/, route);
+      assert.match(pageLogo, /<img[^>]*width="160"[^>]*height="160"/, route);
+      assert.doesNotMatch(pageLogo, /<p\b|<strong\b|<span\b/, route);
+      assert.ok(html.indexOf(pageLogo) < html.indexOf("<h1"), route);
+    }
     if (!route.includes("christmas-fayre")) assert.match(html, /class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1/, route);
     assert.doesNotMatch(html, /class="site-width mobile-page-logo"/, route);
     assert.doesNotMatch(header, /data-menu-toggle/, route);
@@ -90,7 +103,18 @@ test("every public page embeds one mobile home-linked logo beside its heading", 
     if (main.includes('class="narnia-landscape"')) {
       assert.match(main, /class="narnia-landscape"/);
       assert.equal(main.match(/<h1\b/g)?.length, 1, path.pathname);
-      if (path.pathname.includes("christmas-fayre-2026")) assert.match(main, /class="mobile-page-logo page-logo-home"/);
+      if (path.pathname.includes("christmas-fayre-2026")) {
+        assert.match(main, /class="homepage-mobile-identity"/, path.pathname);
+        assert.doesNotMatch(main, /class="mobile-page-logo page-logo-home"/, path.pathname);
+      }
+      continue;
+    }
+    if (path.pathname.includes("christmas-fayre-art-competition")) {
+      // Approved 11 November 2026: the art competition hero carries no logo;
+      // the identity bar above it links home.
+      assert.match(main, /class="homepage-mobile-identity"/, path.pathname);
+      assert.match(main, /class="homepage-mobile-identity__home" href="\//, path.pathname);
+      assert.doesNotMatch(main, /class="mobile-page-logo page-logo-home"/, path.pathname);
       continue;
     }
     assert.equal(main.match(/class="mobile-page-logo page-logo-home"/g)?.length, 1, path.pathname);
