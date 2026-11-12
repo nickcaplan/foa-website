@@ -11,6 +11,8 @@ for (const width of [320, 390, 768, 1440]) for (const theme of ['day', 'night'])
   await page.goto('/events/christmas-fayre-2026/');
   if (scale === 200) await page.addStyleTag({content: 'html{font-size:200%!important}'});
   const section = page.locator('section[aria-labelledby="xmas-donations-title"]');
+  await expect(section.getByRole('heading')).toHaveText('Donations Day - Friday 20th November');
+  await expect(section.locator('.xmas-section__lead')).not.toContainText('Friday 20th November');
   await expect(section.locator('li')).toHaveCount(3);
   await expect(section).toContainText('Bottles (alcohol or non-alcoholic)');
   await expect(section).toContainText('max value £5');
