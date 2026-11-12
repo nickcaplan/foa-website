@@ -9,6 +9,7 @@ const events = defineCollection({
     summary: z.string(),
     start: z.coerce.date(),
     end: z.coerce.date().optional(),
+    calendarEnd: z.coerce.date().optional(),
     location: z.string(),
     status: z.enum(["confirmed", "tickets-planned", "save-the-date", "completed"]),
     statusLabel: z.string(),
