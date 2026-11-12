@@ -12,6 +12,14 @@ for (const width of [320, 390, 768, 1440]) for (const theme of ['day', 'night'])
   if (scale === 200) await page.addStyleTag({content: 'html{font-size:200%!important}'});
   const section = page.locator('section[aria-labelledby="xmas-donations-title"]');
   await expect(section.getByRole('heading')).toHaveText('Donations Day - Friday 20th November');
+  const date = section.locator('.xmas-donations-date');
+  const heading = section.getByRole('heading');
+  const positions = await heading.evaluate(e => {const r=document.createRange();r.selectNodeContents(e.firstChild!);const d=e.querySelector('span')!;return {label:r.getBoundingClientRect().top,date:d.getBoundingClientRect().top}});
+  if (width < 768) expect(positions.date).toBeGreaterThan(positions.label);
+  if (scale === 100) {
+    const lineCount = await date.evaluate(e => {const r=document.createRange();r.selectNodeContents(e);return r.getClientRects().length});
+    expect(lineCount).toBe(1);
+  }
   await expect(section.locator('.xmas-section__lead')).not.toContainText('Friday 20th November');
   await expect(section.locator('li')).toHaveCount(3);
   await expect(section).toContainText('Bottles (alcohol or non-alcoholic)');
