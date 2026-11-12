@@ -15,7 +15,7 @@ const entry = await getEntry("events", "christmas-fayre-2026");
 if (!entry?.data.helpAreas || !entry.data.contactEmail) throw new Error("Christmas Fayre content is missing");
 const event = entry.data;
 const donation = await getEntry("events", "christmas-fayre-donations-day-2026");
-if (!donation) throw new Error("Donations Day content is missing");
+if (!donation) throw new Error("Missing Donations Day");
 const donationRules = eventVisibilityRules(donation.data);
 const donationDate = ordinalDateFormatter({weekday:"long",timeZone:"Europe/London"})(donation.data.start);
 const helpAreas = event.helpAreas!;
@@ -137,7 +137,7 @@ const eventJsonLd = {
   <script>
     import { syncEventVisibility } from "../../lib/event-visibility";
     syncEventVisibility();
-    window.setInterval(() => syncEventVisibility(), 60000);
+    setInterval(syncEventVisibility, 60000);
     document.addEventListener("visibilitychange", () => !document.hidden && syncEventVisibility());
   </script>
 </BaseLayout>
