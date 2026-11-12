@@ -6,7 +6,7 @@ The Committee page is the phone outlier, mainly because of its oversized portrai
 
 ## Live coverage
 
-All 15 public sitemap URLs returned 200. Fresh Chromium context per route, browser cache cleared for cold visits, immediate reload for warm. Desktop 1440x1000; synthetic phone 390x844, 3Mbps down, 150ms latency and 4x CPU throttle. Essential-only consent. One sample per combination, one test location. Visible images are decoded before the final observation, then 1.5 seconds allowed for paint. These are lab samples, not field percentiles. Warm visits are cache reloads, not repeat users across different routes.
+All 15 public sitemap URLs returned 200. Fresh Chromium context per route, browser cache cleared for cold visits, immediate reload for warm. Desktop 1440x1000; synthetic phone 390x844, 3Mbps down, 150ms latency and 4x CPU throttle. Essential-only consent. One sample per combination, one test location. Visible images are decoded before the final observation, then 1.5 seconds allowed for paint. These are lab samples, not field percentiles. 
 
 An earlier pass waited only 1.5 seconds after load and undercounted lazy Committee portraits. The final tables and CSV files use the completed-image pass.
 
@@ -34,9 +34,9 @@ Resource transfer excludes the document and only counts resources observed durin
 
 https://www.thefriendsofashley.org/christmas-fayre-art-competition/
 
-The essential-only cold visit fetched five resources: shared CSS (about 19KB encoded), Christmas CSS (3.5KB), route CSS (1.7KB), the logo (13.6KB encoded) and the hero AVIF (61.3KB). No web fonts, video, external embeds or third-party requests were observed in this consent state. Earlier response headers included a CDN MISS, roughly 116ms request-to-first-byte, 6.4KB gzip HTML and cache max-age 600; that is not evidence of a major origin cold start. Clearing browser cache does not force a CDN miss.
+The essential-only cold visit fetched: shared CSS (about 19KB encoded), Christmas CSS (3.5KB), route CSS (1.7KB), the logo (13.6KB encoded) and the hero AVIF (61.3KB). No web fonts, video, external embeds or third-party requests were observed in this consent state. Earlier response headers included a CDN MISS, roughly 116ms request-to-first-byte, 6.4KB gzip HTML and cache max-age 600; that is not evidence of a major origin cold start. Clearing browser cache does not force a CDN miss.
 
-Six additional phone checks covered direct entry and menu navigation with no saved consent, essential-only, and analytics allowed. All reached the correct page. Only the analytics-allowed state requested Google Tag Manager / Google Analytics. These checks were functional, not repeated latency benchmarks.
+Six additional phone checks covered direct entry and menu navigation with no saved consent, essential-only, and analytics allowed. All reached the correct page. Only the analytics-allowed state requested Google Tag Manager / Google Analytics. These were functional checks, not latency benchmarks.
 
 ## Proposed fixes
 
@@ -61,7 +61,7 @@ Desktop homepage and warm loads did not show a meaningful improvement. Avoid gen
 
 ## Verification and limits
 
-Local phone/desktop before/after screenshots were personally inspected for Home, Committee and Art. Image quality and crops remain suitable at the displayed size; no layout change intended. Existing budget limits were not raised. Added regression caps for the woodland and total committee portraits plus route-CSS request count. Type checks, production build and content tests run locally. Full CI is required before merge.
+Local phone/desktop before/after screenshots were personally inspected for Home, Committee and Art. Crops and quality remain suitable; no layout change. Existing budget limits were not raised. Added regression caps for the woodland and total committee portraits plus route-CSS request count. Type checks, production build and content tests run locally. Full CI is required before merge.
 
 Not tested: Nick's actual device/network/browser, geographic field distribution, actual user percentiles, forced CDN purge, every historical/private/preview URL, newsletter iframe interactions or external donation/sign-up sites. This report does not establish a definitive cause for Nick's Art Competition stall.
 
