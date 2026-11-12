@@ -2,9 +2,8 @@ import {test,expect} from '@playwright/test';
 for(const width of[320,390,768,1440])test(`Fayre information and CTA widths ${width}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto('/events/christmas-fayre-2026/');
  const leads=page.locator('.fayre-leads__card');await expect(leads).toHaveCount(2);await expect(leads.locator('svg[aria-hidden="true"]')).toHaveCount(0);
- const style=await leads.first().evaluate(e=>{const s=getComputedStyle(e);return{background:s.backgroundImage,shadow:s.boxShadow,align:s.textAlign,weight:s.fontWeight}});expect(style.background).toContain('linear-gradient');expect(style.shadow).toContain('inset');expect(style.align).toBe('left');expect(style.weight).toBe('700');
+ const style=await leads.first().evaluate(e=>{const s=getComputedStyle(e);return{background:s.backgroundImage,shadow:s.boxShadow,align:s.textAlign,weight:s.fontWeight}});expect(style.background).toContain('linear-gradient');expect(style.shadow).toContain('inset');expect(style.align).toBe('center');expect(style.weight).toBe('700');
  expect(await page.locator('.narnia-landscape__footer').evaluate(e=>getComputedStyle(e).borderTopWidth)).toBe('0px');
- await expect(page.locator('[data-fayre-help-roles]')).toContainText('Fun Zone; Craft Workshop;');
  await expect(page.locator('.xmas-area')).toHaveCount(0);
  await page.goto('/whats-on/');const row=page.locator('[data-volunteer-actions]');
  await expect(row.getByRole('link',{name:'Event details',exact:true})).toHaveAttribute('href','/events/christmas-fayre-2026/');

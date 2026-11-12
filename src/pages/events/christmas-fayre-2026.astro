@@ -59,6 +59,7 @@ const eventJsonLd = {
       </div>
     </section>
 
+    
     <section id="donations-day" class="xmas-section" aria-labelledby="xmas-donations-title" data-expires-on={donationRules.expiresOn} hidden={isHidden(donationRules, Date.now())}>
       <div class="site-width">
         <h2 id="xmas-donations-title">Donations Day - <span class="xmas-donations-date">Friday 20th November</span></h2>
@@ -83,6 +84,7 @@ const eventJsonLd = {
     <section class="xmas-section" aria-labelledby="xmas-areas-title">
       <div class="site-width">
         <h2 id="xmas-areas-title">Where we need friendly faces</h2>
+        
         <p class="xmas-section__lead">Instead of assigning stalls to year groups, anyone across the school can join in anywhere. Sign up for a slot alongside your friends and help with whatever you’re best at. Join the helpers at these activities (pairs welcome!):</p>
         <p class="xmas-section__lead xmas-help-roles" data-fayre-help-roles>{helpAreas.map(area => area.name).join('; ')}.</p>
         <p class="xmas-actions xmas-stalls-cta"><a class="button button--large" href={withBase(event.volunteeringPath ?? '/christmas-fayre-volunteering/')}><span class="cta-label">Voluntee<span class="cta-tail">r<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
@@ -201,7 +203,8 @@ const eventJsonLd = {
 </style>
 
 <style is:inline>
-.narnia-event .xmas-help-roles{max-width:none;margin-top:.75rem;line-height:1.65;text-wrap:pretty}
+.narnia-event .xmas-areas{max-width:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr}@media(min-width:40rem){.narnia-event .xmas-areas{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(min-width:62rem){.narnia-event .xmas-areas{grid-template-columns:repeat(4,minmax(0,1fr))}}.narnia-event .xmas-area{display:grid;grid-template-rows:1.7rem auto;justify-items:center;align-content:start;align-items:start;row-gap:.65rem;padding:1rem .5rem;text-align:center}
+.narnia-event .xmas-area svg{grid-row:1}.narnia-event .xmas-area span{grid-row:2;width:100%;min-width:0}
 </style>
 
 <style is:inline>
@@ -212,39 +215,5 @@ const eventJsonLd = {
 @media(min-width:48rem){
 .narnia-event .narnia-landscape__art{width:100%;left:0;right:0;object-position:center center}
 .narnia-event .narnia-landscape:before{background:linear-gradient(90deg,#10232c33,#10232cdd 35%,#10232cdd 62%,#10232c88)}
-}
-</style>
-
-<style is:inline>
-/* The event poster is centred; detailed reading content follows one left edge. */
-.narnia-event .xmas-stage > .xmas-section > .site-width,
-.narnia-event .xmas-stage > div.site-width{max-width:52rem}
-.narnia-event .xmas-stage .xmas-section h2,
-.narnia-event .xmas-stage .xmas-section__lead,
-.narnia-event .xmas-stage .xmas-notes h3,
-.narnia-event .xmas-stage .fayre-leads__card{text-align:left}
-.narnia-event .xmas-stage .xmas-section h2::after{margin-left:0;background:linear-gradient(90deg,var(--xm-gold),transparent)}
-.narnia-event .xmas-stage .xmas-section__lead{max-width:none;margin-inline:0}
-.narnia-event .xmas-stage .xmas-notes{max-width:none;margin-inline:0}
-.narnia-event .xmas-stage .xmas-stalls-cta,
-.narnia-event .xmas-stage .xmas-art-cta{justify-content:flex-start;text-align:left;margin:1.5rem 0}
-.narnia-event .xmas-stage .narnia-event-details{margin-top:1rem}
-.narnia-event .xmas-stage .xmas-section{padding-block:1.5rem}
-.narnia-event .xmas-stage .xmas-section--last{padding-bottom:2.5rem}
-.narnia-event .xmas-stage .button .cta-label{white-space:normal;overflow-wrap:anywhere;min-width:0}
-.narnia-event .xmas-stage .xmas-stalls-cta .cta-tail{white-space:nowrap}
-</style>
-
-<style is:inline>
-/* Reserve the arrow at one side, not two large empty padding columns. */
-.narnia-event .xmas-stage .button .cta-icon{right:.5rem!important}
-</style>
-<style is:inline>
-.narnia-event .xmas-stage .button:has(.cta-icon){padding-inline:.5rem calc(1.05em + .8rem)!important}
-.narnia-event .xmas-contact .button:has(.cta-icon){padding-right:calc(1.05em + .8rem + 2px)!important}
-@container(max-width:20em){
-.narnia-event .narnia-landscape .button:has(.cta-icon){width:calc(100% + .625rem);max-width:calc(100% + .625rem);padding-inline:.4rem calc(1.05em + .4rem)!important}
-.narnia-event .narnia-landscape .button .cta-icon{right:.2rem!important}
-.narnia-event .narnia-landscape .button .cta-word{overflow-wrap:anywhere}
 }
 </style>
