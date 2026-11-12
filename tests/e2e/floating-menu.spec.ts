@@ -39,11 +39,11 @@ for (const width of [320, 390, 768, 1023]) {
         if(route.includes("fireworks"))expect(heading.y, `${route}: retired heading stacks below logo`).toBeGreaterThanOrEqual(logoBox.y+logoBox.height);
         else expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
       }
-      const logoBottom = await page.locator(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route) ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
+      const logoBottom = await page.locator(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(templateRoute) ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
       const panel = page.locator(".view-hero");
       if (await panel.count()) {
         // Identity-bar routes open with the bar flush to the top, so the hero panel starts below it instead of at the usual 16px.
-        const identityBarRoute = ["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route);
+        const identityBarRoute = ["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(templateRoute);
         expect((await panel.boundingBox())!.y, route).toBe(identityBarRoute ? logoBottom : 16);
         const eyebrow = await panel.locator(".eyebrow").boundingBox();
         expect(eyebrow!.y, `${route}: eyebrow should clear the floating controls`).toBeGreaterThanOrEqual(before!.y + before!.height);
@@ -124,7 +124,7 @@ for (const width of [320, 390, 768, 1023]) {
       if (route !== "/") {
         await page.goto(route);
         // Identity-bar routes link home from the bar; standard pages from the mobile hero logo.
-        const homeLink = ["/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route) ? ".homepage-mobile-identity__home" : ".page-logo-home:visible";
+        const homeLink = ["/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(templateRoute) ? ".homepage-mobile-identity__home" : ".page-logo-home:visible";
         await page.locator(homeLink).click();
         await expect(page).toHaveURL(/\/$/);
         await expect(page.locator("body")).toHaveClass("homepage");
