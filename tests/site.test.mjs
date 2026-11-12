@@ -267,7 +267,7 @@ test("the homepage features the chosen Christmas Fayre design without reviving t
   assert.match(homepage, /<section class="narnia-landscape"[^>]*data-homepage-christmas/);
   assert.match(homepage, /<h1[^>]*>Christmas <em>Fayre<\/em><\/h1>/);
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
-  assert.ok(homepage.includes(ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" })(fayre.start)));
+  assert.ok(homepage.includes(new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/London" }).format(new Date(fayre.start)).replace(",", "")));
   assert.ok(homepage.includes(fayre.location));
   assert.ok(homepage.includes(formatEventTimeRange(new Date(fayre.start), new Date(fayre.end)).replace(/(?<=\d)-(?=\d)/g, ' - ')));
   assert.ok(homepage.includes(fayre.entry));
