@@ -61,3 +61,12 @@ for(const width of [320,390,1024,1440])for(const enlarged of [false,true])test(`
  for(const action of [link,uniform]){const lines=await action.locator('.cta-label').evaluate(e=>{const r=document.createRange();const w=document.createTreeWalker(e,NodeFilter.SHOW_TEXT);const ys:number[]=[];let n;while(n=w.nextNode()){if(!n.textContent?.trim()||n.parentElement?.closest('[aria-hidden]'))continue;r.selectNodeContents(n);for(const b of r.getClientRects())ys.push(b.y)}return new Set(ys.map(y=>Math.round(y))).size});expect(lines).toBe(1);}
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(0);
 });
+
+for(const width of [320,390,1440])test(`What's On pill labels align left and arrows right at ${width}px`,async({page})=>{
+ await page.clock.setFixedTime(new Date('2026-11-11T12:00:00Z'));await page.setViewportSize({width,height:1000});await page.goto('/whats-on/');
+ const actions=page.locator('[data-pill-ctas] .event-list-cta--button:visible,[data-pill-ctas] .button:visible');expect(await actions.count()).toBeGreaterThanOrEqual(4);
+ for(const action of await actions.all()){
+  const positions=await action.evaluate(e=>{const rect=e.getBoundingClientRect(),label=e.querySelector('.cta-label')!,walker=document.createTreeWalker(label,NodeFilter.SHOW_TEXT);let n;while(n=walker.nextNode()){if(n.textContent?.trim())break}const range=document.createRange();range.selectNodeContents(n!);const text=range.getBoundingClientRect(),arrow=e.querySelector('.cta-icon')!.getBoundingClientRect();return{left:text.left-rect.left,padding:parseFloat(getComputedStyle(e).paddingLeft),right:rect.right-arrow.right,overlap:arrow.left-text.right}});
+  expect(Math.abs(positions.left-positions.padding)).toBeLessThanOrEqual(2);expect(positions.right).toBeGreaterThanOrEqual(10);expect(positions.right).toBeLessThanOrEqual(20);expect(positions.overlap).toBeGreaterThanOrEqual(5);
+ }
+});

@@ -48,4 +48,8 @@ const Wrapper = wholeRowLink ? "a" : "article";
 
 .event-list-item[data-volunteer-actions] .event-list-cta--button,.event-list-item[data-volunteer-actions] .event-volunteer-link .button{display:flex;box-sizing:border-box;width:min(100%,17rem);justify-content:center;text-decoration:none}
 .event-list-item[data-volunteer-actions] .event-volunteer-link .button{flex-direction:row;flex-wrap:nowrap;gap:.5rem;font-size:.95rem;padding:.6rem 1.17rem;line-height:1.2;min-height:2.75rem}.event-volunteer-link svg{flex:0 0 1.25rem}
+/* List actions share a text edge; arrows keep their existing right-hand anchor. */
+.event-list-item[data-pill-ctas] :is(.event-list-cta--button,.button){justify-content:flex-start;text-align:left;padding-inline:.8em calc(1.05em + 1.2rem)!important}
+.event-list-item[data-pill-ctas] :is(.event-list-cta--button,.button) .cta-label{width:100%;justify-content:flex-start;text-align:left}
+.event-list-item[data-pill-ctas] .event-volunteer-link .cta-tail{width:100%;text-align:left}
 </style>
