@@ -13,21 +13,25 @@ for (const width of [390, 1440]) {
     for (const [route, artwork] of routes) {
       await page.goto(route);
       await page.evaluate(() => document.documentElement.removeAttribute("data-theme"));
-      const logo = page.locator(width < 1024 ? (route === "/" ? ".homepage-mobile-identity img" : ".mobile-page-logo:visible img") : ".site-header .home-introduction img");
+      const identityBar = width < 1024 && (route === "/" || route.includes("christmas-fayre"));
+      const expectedArtwork = identityBar ? "foa-logo-christmas-ivory.svg" : artwork;
+      const logo = page.locator(width < 1024 ? (identityBar ? ".homepage-mobile-identity img" : ".mobile-page-logo:visible img") : ".site-header .home-introduction img");
       await expect(logo).toBeVisible();
-      expect(await logo.getAttribute("src")).toContain(`/brand/${artwork}`);
+      expect(await logo.getAttribute("src")).toContain(`/brand/${expectedArtwork}`);
       await expect(logo).toHaveJSProperty("complete", true);
       expect(await logo.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
       const day = await logo.boundingBox();
       expect(day).not.toBeNull();
-      if (artwork === "foa-logo-ivory.svg") {
+      if (identityBar) {
+        expect(day!.width).toBeCloseTo(48, 0);
+      } else if (artwork === "foa-logo-ivory.svg") {
         await expect(logo).not.toHaveClass(/brand-logo--festive/);
         // Every page's mobile heading logo is the shared 128px, sitting beside the heading.
         expect(day!.width).toBeCloseTo(width < 1024 ? (route === "/" ? 48 : 128) : 112, 0);
       }
       await page.evaluate(() => document.documentElement.setAttribute("data-theme", "night"));
       expect(await logo.boundingBox()).toEqual(day);
-      expect(await logo.getAttribute("src")).toContain(`/brand/${artwork}`);
+      expect(await logo.getAttribute("src")).toContain(`/brand/${expectedArtwork}`);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
       const footer = page.locator("footer img").first();
       // Only the Christmas Fayre page uses its own logo in the footer.

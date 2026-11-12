@@ -24,8 +24,11 @@ const menuEvents = ["christmas-fayre-2026"].flatMap((id) => {
   return [
     { href: event.path, label: event.title },
     { href: event.volunteeringPath, label: "Fayre Volunteering" },
+    { href: "/christmas-fayre-art-competition/", label: "Art Competition" },
   ];
 });
+const mobile = [...desktop.slice(0, 3), menuEvents[0], ...desktop.slice(3)];
+const menuSubEvents = menuEvents.slice(1);
 const mobileOnly = [
   { href: "/contact/", label: "Contact Us" },
 ];
@@ -69,10 +72,10 @@ const isCurrent = (href: string) =>
       <p class="mobile-menu-name"><strong>The Friends of Ashley</strong><span>Ashley C of E Primary School PTA</span></p>
     </div>
     <nav aria-label="Mobile navigation">
-      {desktop.map((item) => <>
+      {mobile.map((item) => <>
         <a href={withBase(item.href)} aria-current={isCurrent(item.href) ? "page" : undefined}><span class="cta-label"><span>{item.label.slice(0,-1)}<span class="cta-tail">{item.label.slice(-1)}<span class="mobile-menu-arrow cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></span></a>
-        {item.href === "/whats-on/" && <div class="mobile-menu-events" role="group" aria-label="Event details">
-          {menuEvents.map((event) => <a href={withBase(event.href)} aria-current={isCurrent(event.href) ? "page" : undefined}><span class="cta-label"><span>{event.label.slice(0,-1)}<span class="cta-tail">{event.label.slice(-1)}<span class="mobile-menu-arrow cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></span></a>)}
+        {item.href === menuEvents[0].href && <div class="mobile-menu-events" role="group" aria-label="Christmas Fayre pages">
+          {menuSubEvents.map((event) => <a href={withBase(event.href)} aria-current={isCurrent(event.href) ? "page" : undefined}><span class="cta-label"><span>{event.label.slice(0,-1)}<span class="cta-tail">{event.label.slice(-1)}<span class="mobile-menu-arrow cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></span></a>)}
         </div>}
       </>)}
       {mobileOnly.map((item) => <a class="button button--primary mobile-menu-cta" href={withBase(item.href)} aria-current={isCurrent(item.href) ? "page" : undefined}>{item.label}</a>)}

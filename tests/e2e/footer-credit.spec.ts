@@ -21,7 +21,7 @@ for (const width of [320, 390, 820, 1440]) {
         if (enlarged) await enlargeText();
         const footer = page.getByRole("contentinfo");
         const credit = footer.getByRole("link", { name: "Made with love by Nick (opens in a new tab)", exact: true });
-        await expect(credit).toHaveAttribute("href", "https://nickcaplan.github.io/websites-by-nick/");
+        await expect(credit).toHaveAttribute("href", "https://websitesbynick.co.uk/");
         await expect(credit).toHaveAttribute("target", "_blank");
         await expect(credit.locator(".credit-name")).toHaveCSS("text-decoration-line", "underline");
         await expect(credit).toHaveCSS("text-decoration-line", "none");

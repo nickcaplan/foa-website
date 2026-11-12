@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import HomepageMobileIdentity from '../components/HomepageMobileIdentity.astro';
+import {withBase} from '../lib/urls';
+import {getEntry} from 'astro:content';
+import {ordinalDateFormatter} from '../lib/dates';
+import '../styles/christmas.css';
+const deadlineEvent=await getEntry('events','christmas-fayre-art-deadline-2026');
+if(!deadlineEvent) throw new Error('Art competition deadline record is missing');
+const deadline=ordinalDateFormatter({weekday:'long',day:'numeric',month:'long',timeZone:'Europe/London'})(deadlineEvent.data.start);
+const deadlineText=deadline;
+---
+<BaseLayout socialTitle="Art Competition | Narnia theme | Ashley School" socialDescription="Show us your lions, witches and snow queens. Any medium welcome. Hand in your entry by Monday 30th November for the Ashley School Christmas Fayre Gallery." image="/social/art-competition-2026-v1.jpg" imageAlt="Art Competition, Narnia theme, deadline Monday 30th November, over the existing Christmas Fayre woodland artwork." imageWidth={1200} imageHeight={630} title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering art-comp">
+ <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
+ <div class="art-comp-banner">
+  <img class="art-comp-banner__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
+  <PageHero eyebrow="Ashley School Christmas Fayre" title="Art Competition" intro="Narnia Theme" noLogo />
+  <div class="site-width"><p class="art-comp-banner__deadline"><span>Deadline</span><strong>{deadlineText}</strong></p></div>
+ </div>
+ <div class="site-width">
+  <p class="art-comp__credit"><svg aria-hidden="true" viewBox="0 0 24 24" width="12" height="12" fill="#c9a65f"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.5-6.3 4.5L8 13.8 2 9.2h7.6z"/></svg><span>Special thanks to Steph Cotela, who is organising the competition for the 10th year.</span><svg aria-hidden="true" viewBox="0 0 24 24" width="12" height="12" fill="#c9a65f"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.5-6.3 4.5L8 13.8 2 9.2h7.6z"/></svg></p>
+ </div>
+ <div class="site-width art-comp">
+  <div class="art-comp__grid">
+  <section class="art-comp__panel" aria-labelledby="art-comp-theme">
+   <h2 id="art-comp-theme">Show us your lions, witches and snow queens!</h2>
+   <p>Winter wonderland and Christmas themes are also welcome.</p>
+   <p>Any and every Ashley student can enter - on your own, or in a group if you fancy. One entry per child. A4 is ideal for displaying at the Christmas Fayre Gallery, but anything is accepted: sculpture, knitting, textiles, drawings, paintings and more.</p>
+  </section>
+  <section class="art-comp__panel" aria-labelledby="art-comp-how">
+   <h2 id="art-comp-how">How to enter</h2>
+   <ul class="art-comp__steps">
+    <li><strong>On the front of your artwork</strong><span>Class and year</span></li>
+    <li><strong>On the back of your artwork</strong><span>Your name, and your consent as Y or N. Consent means you are happy for winning artworks to be displayed on the Ashley noticeboard or in the Martin Flashman window.</span></li>
+    <li><strong>Hand it in by {deadlineText}</strong><span>Pop your entry in the box in the Hall (on the windowsill near the doors to outside), or leave it with the school office.</span></li>
+   </ul>
+  </section>
+  <section class="art-comp__panel art-comp__panel--wide" aria-labelledby="art-comp-next">
+   <h2 id="art-comp-next">Judging, prizes and getting your artwork back</h2>
+   <ul class="art-comp__steps">
+    <li><strong>Judging</strong><span>Steph Cotela is judging. Winners are announced at the Fayre, usually around 1 - 2pm.</span></li>
+    <li><strong>Prizes</strong><span>Prizes will be something arty - think craft sets, colouring books or art sets.</span></li>
+    <li><strong>On display, then back to you</strong><span>Every artwork will be on display at the Fayre, so every child gets to see their work. After the Fayre, pieces go back to the class teachers and can be collected on the next school day.</span></li>
+   </ul>
+  </section>
+  </div>
+  <p class="art-comp__back"><a class="button" href={withBase('/events/christmas-fayre-2026/')}><span class="cta-label"><span class="cta-tail">Back to the Christmas Fayre<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
+ </div>
+</BaseLayout>
+<style>
+.art-comp-banner{position:relative;isolation:isolate;overflow:hidden;width:min(calc(100% - 2rem),var(--max-width));margin:0 auto;border-radius:var(--radius-md);background:#102d38;box-shadow:0 12px 30px #102d3825}
+.art-comp-banner__art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;z-index:-2}
+.art-comp-banner:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(#10232cd9,#10232c80 38%,#10232c26 62%,#10232ccc 100%),linear-gradient(90deg,#10232c99,#10232c00 40%)}
+.art-comp-banner:after{content:"";position:absolute;inset:0;border:1px solid #b99a5b;border-radius:inherit;pointer-events:none}
+.art-comp-banner :global(.view-hero){width:100%;margin:0;background:transparent;border-radius:0;text-shadow:0 1px 3px #000c,0 2px 14px #000e}
+.art-comp-banner :global(.mobile-page-heading--no-logo){display:block;text-align:center}
+.art-comp-banner :global(.mobile-page-heading--no-logo .mobile-page-heading-copy){padding-top:var(--mobile-heading-control-clearance)}
+.art-comp-banner :global(.view-hero-copy){text-align:center}
+.art-comp-banner :global(.view-hero-copy h1){margin-inline:auto}
+.art-comp-banner :global(.view-hero-copy > p){text-align:center}
+.art-comp-banner :global(.view-hero p:not(.eyebrow)){color:#fff3d5}
+.art-comp-banner :global(.view-hero h1){text-shadow:none;filter:drop-shadow(0 2px 6px #000b)}
+.art-comp-banner :global(.view-hero .eyebrow){color:#f4e3b0}
+.art-comp-banner > .site-width{width:100%;padding:0 clamp(1rem,4vw,3rem) 1.5rem}
+.art-comp-banner__deadline{margin:1rem auto 0;display:grid;gap:.15rem;padding:.9rem 1.25rem;width:fit-content;max-width:100%;text-align:center;background:#102d38e6;border:1px solid #c9a65f;border-radius:.6rem;color:#fff3d5;text-shadow:none}
+@media(max-width:59.99rem){.art-comp-banner{display:flex;flex-direction:column}.art-comp-banner :global(.view-hero){order:1}.art-comp-banner__art{order:2;position:static;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;object-position:center 30%}.art-comp-banner:before{display:none}.art-comp-banner > .site-width{order:3}}
+@media(min-width:60rem) and (max-width:63.99rem){.art-comp-banner__art{object-position:88% 40%}}
+@media(min-width:64rem){.art-comp-banner :global(.view-hero p:not(.eyebrow)){text-align:center;margin-inline:auto}}
+@media(min-width:60rem){.art-comp-banner{min-height:28rem;display:flex;flex-direction:column;justify-content:space-between}.art-comp-banner > .site-width{padding-bottom:2rem}}
+@media(max-width:63.99rem){.art-comp-banner > .site-width{padding-inline:var(--mobile-heading-inset,2rem)}}
+.art-comp-banner__deadline span{font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#edcb83}
+.art-comp-banner__deadline strong{font:500 clamp(1.4rem,4vw,2rem)/1.2 Georgia,serif;overflow-wrap:anywhere}
+.art-comp{padding-bottom:2.5rem;color:#fff3d5;container-type:inline-size}
+.art-comp__panel{margin-top:1.25rem;padding:1.5rem;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem}
+.art-comp__panel--wide{grid-column:1/-1}
+.art-comp__panel h2{margin:0 0 1rem;font:500 clamp(1.4rem,2.5vw,1.8rem)/1.25 Georgia,serif;color:#fff3d5}
+.art-comp__panel p{margin:0 0 .75rem;font-size:1.05rem;line-height:1.7;color:#f4ead1}.art-comp__panel p:last-child{margin-bottom:0}
+.art-comp__panel .art-comp__deadline-line{color:#edcb83;margin:0 0 1rem}
+.art-comp__steps{list-style:none;margin:0;padding:0;display:grid;gap:.9rem}
+.art-comp__steps li{display:grid;gap:.2rem;padding-top:.9rem;border-top:1px solid #b99a5b55;line-height:1.6}.art-comp__steps li:first-child{padding-top:0;border-top:0}
+.art-comp__steps strong{color:#edcb83}.art-comp__steps span{color:#fff3d5;overflow-wrap:anywhere}
+.art-comp__grid{display:grid;gap:0}@media(min-width:60rem){.art-comp__grid{grid-template-columns:1fr 1fr;gap:1.25rem;align-items:stretch}.art-comp__grid .art-comp__panel{margin-top:1.25rem}}
+.art-comp__credit{margin:1rem auto 0;display:flex;align-items:center;justify-content:center;gap:.6rem;padding:.75rem 1rem;background:#173844;border:1px solid #c9a65f;border-radius:.65rem;color:#edcb83;font-size:.95rem;line-height:1.5;text-align:center;max-width:36rem}
+.art-comp__back{margin:1.5rem auto 0;text-align:center}
+.art-comp__back .button{display:inline-flex;align-items:center;justify-content:center;gap:1rem;width:min(100%,22rem);min-height:3.5rem;padding:.8rem 1.5rem;background:#742f3c;border:1px solid #c9a65f;color:#fff5e2;font-size:1rem;line-height:1.5;white-space:normal;text-align:left}
+.art-comp__back .cta-label,.art-comp__back .cta-tail{display:inline;white-space:normal;min-width:0}.art-comp__back .cta-tail svg{display:inline-block;vertical-align:middle;margin-left:.5rem}.art-comp__back .button:hover{background:#954052}.art-comp__back .button:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}.art-comp__back svg{flex:none}
+@container(max-width:20em){.art-comp__panel{padding:1rem}}
+.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)){display:flex;align-items:center;justify-content:center;gap:1rem;padding:0;margin-inline:auto;color:#edcb83;font-size:.85rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;text-shadow:none}
+.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)):before,.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)):after{content:"";height:1px;width:3rem;flex:0 1 3rem;min-width:0;background:linear-gradient(90deg,transparent,#c9a65f)}
+.art-comp-banner :global(.view-hero-copy > p:not(.eyebrow)):after{transform:scaleX(-1)}
+
+</style>

@@ -126,7 +126,7 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
       return;
     }
-    if(route.includes("christmas-fayre")){await expect(page.locator(".narnia-mobile-brand .page-logo-home")).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);return;}
+    if(route.includes("christmas-fayre")){await expect(page.locator(".homepage-mobile-identity img")).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);return;}
     await expect(page.locator(".page-logo-home:visible"), route).toBeVisible();
     const layout = await page.locator(".mobile-page-heading:visible").evaluate((element) => {
       const logo = element.querySelector(".page-logo-home")!.getBoundingClientRect();

@@ -308,7 +308,7 @@ test("hero panel keeps visible focus outlines and heading accent in both modes",
     throw new Error(`could not tab to ${selector}`);
   };
   await page.clock.setFixedTime(new Date("2026-11-05T21:00:00Z"));
-  const heroLinks = [".narnia-landscape__copy .button:not(.narnia-landscape__secondary)", ".narnia-landscape__secondary"];
+  const heroLinks = [".narnia-landscape__copy .button:not(.narnia-landscape__secondary)", ".narnia-landscape__secondary[href='/christmas-fayre-volunteering/']", ".narnia-landscape__secondary[href='/christmas-fayre-art-competition/']"];
   for (const width of [390, 1280]) {
     for (const zoom of [false, true]) {
       await page.setViewportSize({ width, height: 844 });
