@@ -7,7 +7,9 @@ const signupUrl = event.signupUrl;
 const volunteerPath = event.volunteeringPath ?? (event.path ? event.path+"#sign-up" : undefined);
 if (!volunteerPath) throw new Error("Christmas Fayre volunteering path is missing");
 if (!signupUrl) throw new Error("Christmas Fayre sign-up URL is missing");
-const date=ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event.start);
+const date=homepage
+  ? new Intl.DateTimeFormat('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'Europe/London'}).format(new Date(event.start)).replace(',', '')
+  : ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event.start);
 ---
 <section class="narnia-landscape" aria-label="Christmas Fayre" id={eventPage ? "sign-up" : undefined} data-homepage-christmas={homepage ? "" : undefined} style={homepage ? `--narnia-woodland:url(${withBase('/brand/narnia-woodland-continuation.jpg')})` : undefined}>
 <img class="narnia-landscape__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
@@ -86,4 +88,11 @@ const date=ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event
 .narnia-donations .fayre-donations-notice__date{font-size:1.4rem}
 .narnia-donations a{font-size:.9rem;text-underline-offset:.2em}
 @media(min-width:48rem){.narnia-landscape[data-homepage-christmas]:has(.narnia-donations) .narnia-landscape__copy{padding-bottom:1.5rem;min-height:29rem}}
+</style>
+
+<style is:inline>
+/* Homepage option A: compact date and time; preserve all three actions. */
+.narnia-landscape[data-homepage-christmas] .narnia-landscape__date{font-size:1rem}
+.narnia-landscape[data-homepage-christmas] .narnia-landscape__time{display:inline}
+.narnia-landscape[data-homepage-christmas] .narnia-landscape__date-divider{display:inline}
 </style>
