@@ -2822,6 +2822,7 @@ svg.cta-icon {
     display: grid;
     grid: repeat(4, auto) / auto-flow max-content;
     align-content: start;
+    padding-top: 2.7rem;
     gap: 0.65rem 2rem;
   }
 
