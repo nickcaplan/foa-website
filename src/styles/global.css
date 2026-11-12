@@ -1271,7 +1271,8 @@ svg.cta-icon {
 }
 
 .sponsor-ribbon img {
-  width: min(75%, 225px);
+  width: min(85%, 268px);
+  height: auto;
 }
 
 .event-hero-sponsor {
