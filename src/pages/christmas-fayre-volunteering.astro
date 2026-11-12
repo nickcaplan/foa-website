@@ -87,3 +87,11 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 
 @media(min-width:64rem) and (max-width:79.99rem){.narnia-volunteering .menu-toggle{top:calc(1rem + var(--introduction-logo-size)*.45 - 1.5rem)}}
 </style>
+<style is:inline>
+/* Keep the event poster and date callout centred; align reading content left. */
+.fayre-volunteer .fayre-volunteer__intro,
+.fayre-volunteer .fayre-volunteer__closing h2,
+.fayre-volunteer .fayre-volunteer__loan h2{text-align:left}
+.fayre-volunteer .fayre-volunteer__closing h2::after,
+.fayre-volunteer .fayre-volunteer__loan h2::after{margin-left:0;background:linear-gradient(90deg,var(--xm-gold),transparent)}
+</style>
