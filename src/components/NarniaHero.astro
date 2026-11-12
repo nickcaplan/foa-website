@@ -11,7 +11,7 @@ const date=homepage
   ? new Intl.DateTimeFormat('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'Europe/London'}).format(new Date(event.start)).replace(',', '')
   : ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event.start);
 ---
-<section class="narnia-landscape" aria-label="Christmas Fayre" id={eventPage ? "sign-up" : undefined} data-homepage-christmas={homepage ? "" : undefined} style={homepage ? `--narnia-woodland:url(${withBase('/brand/narnia-woodland-continuation.jpg')})` : undefined}>
+<section class="narnia-landscape" aria-label="Christmas Fayre" id={eventPage ? "sign-up" : undefined} data-homepage-christmas={homepage ? "" : undefined} style={homepage ? `--narnia-woodland:url(${withBase('/brand/narnia-woodland-continuation.avif')})` : undefined}>
 <img class="narnia-landscape__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
 <div class="narnia-landscape__body">
 <div class="narnia-landscape__copy">
