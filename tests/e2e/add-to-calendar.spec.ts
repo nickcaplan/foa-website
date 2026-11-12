@@ -40,14 +40,18 @@ test.describe("Add to calendar", () => {
   test("What's On offers the service choices for upcoming events and never for past events", async ({ page }) => {
     await page.clock.setFixedTime(new Date("2026-11-04T12:00:00Z"));
     await page.goto("/whats-on/");
-    // Retired Fireworks is excluded; Donations Day, Santa's Grotto and both Happy Bags dates remain upcoming.
-    await expect(googleLink(page)).toHaveCount(4);
+    // All eight upcoming events at this fixture date have calendar choices.
+    await expect(googleLink(page)).toHaveCount(8);
     await expect(page.getByRole("link", { name: /Outlook/ })).toHaveCount(0);
     const downloads = fileLink(page);
-    await expect(downloads).toHaveCount(4);
+    await expect(downloads).toHaveCount(8);
     const hrefs = await downloads.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
     expect(hrefs).toEqual([
+      "/calendar/uniform-november-2026.ics",
       "/calendar/christmas-fayre-donations-day-2026.ics",
+      "/calendar/christmas-fayre-art-deadline-2026.ics",
+      "/calendar/uniform-december-2026.ics",
+      "/calendar/christmas-fayre-2026.ics",
       "/calendar/santas-grotto-2026.ics",
       "/calendar/happy-bags-january-2027.ics",
       "/calendar/happy-bags-april-2027.ics",
@@ -57,7 +61,7 @@ test.describe("Add to calendar", () => {
     const grottoRow = page.locator(".event-list-item", { hasText: "Santa's Grotto" });
     const g = new URL((await grottoRow.getByRole("link", { name: "Google (opens in a new tab)" }).getAttribute("href"))!).searchParams;
     expect(g.get("dates")).toBe("20261214/20261215");
-    // Rows that are one whole link (Christmas Fayre, uniform sales) cannot nest calendar links.
+    // Separate article rows avoid nested links while exposing all calendar choices.
     await expect(page.locator("a.event-list-item", { hasText: "Christmas Fayre" }).getByRole("link", { name: "Google (opens in a new tab)" })).toHaveCount(0);
   });
 

@@ -16,7 +16,7 @@ const date = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" }
 <aside id={details ? "donations-day" : undefined} class="fayre-donations-notice" aria-label="Christmas Fayre Donations Day" data-expires-on={rules.expiresOn} hidden={isHidden(rules, Date.now())}>
   <p class="eyebrow">Christmas Fayre Donations Day</p>
   <p class="fayre-donations-notice__date">{date}</p>
-  {!details && <p><a href={withBase(fayre.path+"#donations-day")}>See Fayre details</a></p>}
+  {!details && <p><a class="button button--amber" href={withBase(fayre.path+"#donations-day")}><span class="cta-label">See Fayre <span class="cta-word">detail<span class="cta-tail">s<svg class="cta-icon" data-cta-arrow="forward" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span></span></a></p>}
 </aside>
 <EventVisibilityInit />
 <script>
@@ -26,8 +26,11 @@ const date = ordinalDateFormatter({ weekday: "long", timeZone: "Europe/London" }
  document.addEventListener("visibilitychange", () => { if (!document.hidden) syncEventVisibility(); });
 </script>
 <style>
-.fayre-donations-notice{margin:1.25rem 0;padding:1.1rem 1.25rem;border:1px solid var(--line);border-left:3px solid var(--logo-gold);border-radius:var(--radius-sm);background:var(--surface);color:var(--ink)}
+.fayre-donations-notice .button{box-sizing:border-box;max-width:100%;padding-inline:12px 44px!important}
+.fayre-donations-notice .button .cta-icon{right:12px!important}
+
+.fayre-donations-notice{margin:1.25rem 0;padding:1.1rem min(1.25rem,20px);border:1px solid var(--line);border-left:3px solid var(--logo-gold);border-radius:var(--radius-sm);background:var(--surface);color:var(--ink)}
 .fayre-donations-notice p{margin:0}.fayre-donations-notice p+p{margin-top:.4rem}.fayre-donations-notice__date{font:600 1.25rem/1.4 var(--font-display)}
 :global(.xmas-theme) .fayre-donations-notice{background:linear-gradient(#17503ab3,#0f3a27b3);border-color:var(--xm-gold);color:var(--xm-cream);box-shadow:inset 0 0 0 4px #08241ae6,inset 0 0 0 5px var(--xm-gold-dim)}
-:global(.xmas-theme) .fayre-donations-notice :is(.eyebrow,a){color:var(--xm-gold-light)}
+:global(.xmas-theme) .fayre-donations-notice :is(.eyebrow,a:not(.button)){color:var(--xm-gold-light)}
 </style>

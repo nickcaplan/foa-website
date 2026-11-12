@@ -38,7 +38,7 @@ for (const route of ['home','fayre'])for(const width of [320,390,768,1023]) {
       return elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&&r.height&&r.left<b.right&&r.right>b.left&&r.top<b.bottom&&r.bottom>b.top}).map(e=>e.textContent);
     });
     expect(overlap).toEqual([]);
-    if(route==='fayre')await expect(page.locator('.narnia-mobile-brand .page-logo-home')).toBeVisible();
+    if(route==='fayre')await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
     await page.evaluate(()=>scrollTo(0,800));
     expect((await trigger.boundingBox())!.y).toBe(before.y);
     await trigger.click();await expect(page.getByRole('button',{name:'Close menu'})).toBeFocused();
@@ -76,4 +76,47 @@ for (const [width, height] of [[390, 844], [412, 915]]) {
     expect(layout.height).toBeLessThan(620);
     expect(layout.size).toContain('cover');
   });
+}
+
+for (const width of [360, 390, 412, 1280, 1366, 1440]) {
+  test(`art competition theme text and equal hairlines are centred at ${width}px`, async ({page}) => {
+    await page.setViewportSize({width, height:900});
+    await page.goto('/christmas-fayre-art-competition/');
+    await page.evaluate(() => document.fonts.ready);
+    const layout = await page.locator('.art-comp-banner').evaluate(panel => {
+      const theme = panel.querySelector('.view-hero-copy > p')!;
+      const title = panel.querySelector('h1')!;
+      const textCentre = (node: Element) => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const r = range.getBoundingClientRect();
+        return r.x + r.width / 2;
+      };
+      const r = panel.getBoundingClientRect();
+      return {
+        themeCentre: textCentre(theme), titleCentre: textCentre(title), panelCentre: r.x + r.width / 2,
+        before: parseFloat(getComputedStyle(theme, '::before').width),
+        after: parseFloat(getComputedStyle(theme, '::after').width),
+      };
+    });
+    expect(Math.abs(layout.themeCentre - layout.titleCentre)).toBeLessThan(1);
+    expect(Math.abs(layout.themeCentre - layout.panelCentre)).toBeLessThan(1);
+    expect(Math.abs(layout.before - layout.after)).toBeLessThan(1);
+    expect(layout.before).toBeGreaterThan(0);
+  });
+}
+
+for (const route of ['/christmas-fayre-art-competition/', '/events/christmas-fayre-2026/', '/christmas-fayre-volunteering/']) {
+  for (const width of [1024, 1280, 1440]) {
+    test(`${route}: full hero outline clears the desktop header at ${width}px`, async ({page}) => {
+      await page.setViewportSize({width, height:900});
+      await page.goto(route);
+      const gap = await page.evaluate(() => {
+        const header = document.querySelector('.site-header')!.getBoundingClientRect();
+        const hero = document.querySelector('.art-comp-banner, .narnia-landscape')!.getBoundingClientRect();
+        return hero.top - header.bottom;
+      });
+      expect(gap).toBeCloseTo(24, 0);
+    });
+  }
 }

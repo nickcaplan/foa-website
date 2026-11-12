@@ -748,3 +748,30 @@ body.xmas-theme::before {
     --bauble-scale: 0.48;
   }
 }
+
+/* Identity bar sits on the night sky, so it takes the cream ink. */
+@media (max-width: 63.99rem) {
+  .xmas-theme .homepage-mobile-identity {
+    color: var(--xm-cream);
+  }
+
+  /* The identity bar anchors at the very top, as on the other Fayre pages. */
+  .art-comp #main-content:has(.view-hero) {
+    padding-top: 0;
+  }
+}
+
+/* Keep the full framed hero outline clear of the desktop header. */
+@media (min-width: 64rem) {
+  :is(.narnia-event, .narnia-volunteering) #main-content {
+    padding-top: 1.5rem;
+  }
+  .narnia-event .xmas-hero > .site-width {
+    padding-top: 0;
+  }
+}
+
+/* Volunteering actions keep a full pill curve as labels wrap or grow. */
+.narnia-volunteering .fayre-volunteer .button {
+  border-radius: 999px;
+}
