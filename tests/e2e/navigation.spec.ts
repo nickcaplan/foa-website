@@ -166,8 +166,8 @@ test.describe("mobile navigation", () => {
 
     const navigation = page.getByRole("navigation", { name: "Mobile navigation" });
     await expect(navigation.getByRole("link"))
-      .toHaveText(["Home", "Newsletter", "What's On", "Christmas Fayre", "Fayre Volunteering", "Fundraising", "Get Involved", "Uniform", "Contact Us"]);
-    await expect(navigation.locator(".mobile-menu-arrow")).toHaveCount(8);
+      .toHaveText(["Home", "Newsletter", "What's On", "Christmas Fayre", "Fayre Volunteering", "Art Competition", "Fundraising", "Get Involved", "Uniform", "Contact Us"]);
+    await expect(navigation.locator(".mobile-menu-arrow")).toHaveCount(9);
     for (const arrow of await navigation.locator(".mobile-menu-arrow").all()) {
       await expect(arrow).toHaveAttribute("aria-hidden", "true");
     }

@@ -24,12 +24,15 @@ test("shared branding uses ivory artwork without giving the standard logo festiv
   for (const [route, logo] of routes) {
     const html = await readFile(new URL(`../dist/${route}`, import.meta.url), "utf8");
     const header = html.match(/<header\b[\s\S]*?<\/header>/)?.[0];
-    const mobile = route === "index.html" ? html.match(/class="homepage-mobile-identity"[\s\S]*?<\/div>/)?.[0] : html.match(/class="mobile-page-logo page-logo-home"[\s\S]*?<\/a>/)?.[0];
+    const usesIdentityBar = route === "index.html" || route.startsWith("events/christmas-fayre-2026/");
+    const mobile = usesIdentityBar ? html.match(/class="homepage-mobile-identity"[\s\S]*?<\/div>/)?.[0] : html.match(/class="mobile-page-logo page-logo-home"[\s\S]*?<\/a>/)?.[0];
     const menu = html.match(/class="mobile-menu-home"[\s\S]*?<\/a>/)?.[0];
-    for (const region of [header, mobile, menu]) {
+    // Approved 11 November 2026: on Christmas pages and the festive homepage the identity bar uses the Christmas wreath logo.
+    const mobileLogo = route === "index.html" || route.startsWith("events/christmas-fayre-2026/") ? "foa-logo-christmas-ivory.svg" : logo;
+    for (const [region, expected] of [[header, logo], [mobile, mobileLogo], [menu, logo]]) {
       assert.ok(region, `${route}: branding region exists`);
-      assert.ok(region.includes(`/brand/${logo}`), `${route}: correct ivory variant`);
-      if (logo === standard) assert.doesNotMatch(region, /brand-logo--festive/);
+      assert.ok(region.includes(`/brand/${expected}`), `${route}: correct ivory variant`);
+      if (expected === standard) assert.doesNotMatch(region, /brand-logo--festive/);
     }
     const footer = html.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];
     // Only the Christmas Fayre page swaps in its own footer logo (30 October 2026).

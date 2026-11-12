@@ -7,8 +7,8 @@ test.describe("Newsletter expansion", () => {
   });
 
   test("the latest newsletter preview shows the opening sections", async ({ page }) => {
-    await expect(page.locator(".newsletter-issue").getByRole("heading", { name: "🎆 Fireworks on the Field", exact: true })).toBeVisible();
-    await expect(page.locator(".newsletter-issue").getByRole("heading", { name: "🎄 Christmas Fayre: Saturday 5th December, 12pm - 3pm", exact: true })).toBeVisible();
+    await expect(page.locator(".newsletter-issue").getByRole("heading", { name: "Fireworks on the Field", exact: true })).toBeVisible();
+    await expect(page.locator(".newsletter-issue").getByRole("heading", { name: "Christmas Fayre: Saturday 5th December, 12pm - 3pm", exact: true })).toBeVisible();
   });
 
   test("every issue ends with the Instagram and Facebook group sign-off", async ({ page }) => {

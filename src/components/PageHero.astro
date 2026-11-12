@@ -1,13 +1,13 @@
 ---
 import MobilePageHeading from "./MobilePageHeading.astro";
-interface Props { eyebrow: string; title: string; intro?: string; wideTitle?: boolean; chip?: string; logo?: string; }
-const { eyebrow, title, intro, wideTitle = false, chip, logo } = Astro.props;
+interface Props { eyebrow: string; title: string; intro?: string; wideTitle?: boolean; chip?: string; logo?: string; noLogo?: boolean; }
+const { eyebrow, title, intro, wideTitle = false, chip, logo, noLogo = false } = Astro.props;
 const hasAction = Astro.slots.has("action");
 ---
 <section class:list={["view-hero", { "view-hero--wide-title": wideTitle }]}>
   <div class:list={["site-width", { "view-hero-inner": hasAction }]}>
     <div class="view-hero-copy">
-      <MobilePageHeading logo={logo}>
+      <MobilePageHeading logo={logo} noLogo={noLogo}>
         <p class="eyebrow">{eyebrow}{chip && <span class="eyebrow-chip"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>{chip}</span>}</p>
         <h1>{title}</h1>
       </MobilePageHeading>

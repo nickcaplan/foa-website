@@ -136,7 +136,7 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
             expect(await strandedIcons(page)).toEqual([]);
             expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
             const overflow = await page.locator(path === "/fireworks-volunteering/" ? ".content-section a:visible" : ".newsletter-more a:visible, .uniform-action").evaluateAll((links) => links.flatMap((link) => {
-              const column = link.closest("p, li, .newsletter-more, .vol-card, .view-hero-action")!.getBoundingClientRect();
+              const column = link.closest("p, li, .newsletter-more, .vol-card, .view-hero-action, .uniform-cta")!.getBoundingClientRect();
               const range = document.createRange();
               const rects = [...link.querySelectorAll(".cta-icon, .external-link-icon")].map((icon) => icon.getBoundingClientRect());
               const walker = document.createTreeWalker(link, NodeFilter.SHOW_TEXT);
@@ -174,7 +174,7 @@ for (const width of [390,1440]) test(`paired CTA consistency and short labels at
 
 for (const width of [320,390]) test(`open menu shares arrow geometry at ${width}`,async({page})=>{
  await page.setViewportSize({width,height:900});await page.goto('/');await page.getByRole('button',{name:'Open menu'}).click();
- await expect(page.locator('.mobile-menu-arrow svg[data-cta-arrow="forward"]')).toHaveCount(8);
+ await expect(page.locator('.mobile-menu-arrow svg[data-cta-arrow="forward"]')).toHaveCount(9);
  expect(await strandedIcons(page)).toEqual([]);
 });
 
@@ -184,6 +184,6 @@ for(const width of [390,1440]) test(`grouped arrow columns at ${width}`,async({p
  await page.goto('/');await aligned('.narnia-landscape .button .cta-icon');
  const rows=await page.locator('.quick-row').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect(),i=e.querySelector('.cta-icon')!.getBoundingClientRect();return{right:r.right,inset:r.right-i.right}}));expect(rows).toHaveLength(2);expect(Math.abs(rows[0].inset-rows[1].inset)).toBeLessThan(1);if(width===390)await aligned('.quick-row .cta-icon');
  if(width===390){await page.getByRole('button',{name:'Open menu'}).click();await aligned('.mobile-menu-arrow');}
- await page.goto('/whats-on/');await aligned('[data-volunteer-actions] .cta-icon');
+ await page.goto('/whats-on/');await aligned('[data-volunteer-actions] [data-cta-arrow="forward"]');
  await page.goto('/christmas-fayre-volunteering/');const insets=await page.locator('.fayre-volunteer__action').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().right-e.querySelector('.cta-icon')!.getBoundingClientRect().right));expect(Math.max(...insets)-Math.min(...insets)).toBeLessThan(1);
 });

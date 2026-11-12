@@ -190,12 +190,13 @@ test("every dedicated event page includes its UK date in sharing metadata", asyn
 test("non-event pages keep their existing metadata without a sale date", async () => {
   for (const route of publicRoutes.filter((route) => !route.startsWith("/events/"))) {
     const html = await read(htmlFor(route));
-    const customTitles = {"/":"The Friends of Ashley | Ashley School PTA","/whats-on/":"What's On at Ashley | The Friends of Ashley","/christmas-fayre-volunteering/":"Volunteer at the Christmas Fayre | Ashley School"};
+    const customTitles = {"/":"The Friends of Ashley | Ashley School PTA","/whats-on/":"What's On at Ashley | The Friends of Ashley","/christmas-fayre-volunteering/":"Volunteer at the Christmas Fayre | Ashley School","/christmas-fayre-art-competition/":"Art Competition | Narnia theme | Ashley School"};
     const expectedTitle=customTitles[route] ?? titleOf(html);
+    const expectedDescription=route==="/christmas-fayre-art-competition/" ? "Show us your lions, witches and snow queens. Any medium welcome. Hand in your entry by Monday 30th November for the Ashley School Christmas Fayre Gallery." : metaContent(html, "name", "description");
     assert.equal(metaContent(html, "property", "og:title"), expectedTitle, route);
-    assert.equal(metaContent(html, "property", "og:description"), metaContent(html, "name", "description"), route);
+    assert.equal(metaContent(html, "property", "og:description"), expectedDescription, route);
     assert.equal(metaContent(html, "name", "twitter:title"), expectedTitle, route);
-    assert.equal(metaContent(html, "name", "twitter:description"), metaContent(html, "name", "description"), route);
+    assert.equal(metaContent(html, "name", "twitter:description"), expectedDescription, route);
   }
 });
 
