@@ -399,9 +399,11 @@ const fireworks = JSON.parse(await readFile(path.resolve("src/content/events/fir
 
 test("the Christmas Fayre page lists every help area from the event record", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  const areas = [...html.matchAll(/<li class="xmas-area"[^>]*>[\s\S]*?<span[^>]*>([^<]*)<\/span>/g)].map((match) => match[1]);
-  assert.deepEqual(areas, christmas.helpAreas.map((area) => escapeHtml(area.name)));
-  assert.equal(areas.length, 10);
+  const roles = html.match(/<p[^>]*data-fayre-help-roles[^>]*>([\s\S]*?)<\/p>/)?.[1];
+  assert.equal(roles, christmas.helpAreas.map(area => escapeHtml(area.name)).join('; ') + '.');
+  assert.doesNotMatch(html, /class="xmas-area"/);
+  assert.ok(html.indexOf('aria-labelledby="xmas-donations-title"') < html.indexOf('aria-labelledby="xmas-areas-title"'));
+
 });
 
 test("the Christmas Fayre page uses a JustSignup click-out and keeps the Fayre inbox for questions", async () => {
