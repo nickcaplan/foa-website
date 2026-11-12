@@ -2,7 +2,8 @@
 /**
  * preview-route.mjs - push this branch so its pull request preview builds on
  * the provider with headroom, splitting preview load between Netlify and
- * Cloudflare Pages.
+ * Cloudflare Pages, and only when the pull request carries the `preview`
+ * label.
  *
  * The split:
  *   - Netlify under threshold: the HEAD commit message carries the prefix
@@ -12,6 +13,10 @@
  *     labelled `cloudflare`, so Netlify's ignore command
  *     (scripts/netlify-ignore.mjs) skips the build and Cloudflare Pages
  *     builds the preview instead.
+ *
+ * Previews are opt in: when the branch's open PR does not carry the
+ * `preview` label, the script keeps the Netlify build skipped, leaves or adds
+ * the skip prefix so Cloudflare Pages also skips, pushes, and stops.
  *
  * Run from the repository root instead of a plain `git push` whenever pushing
  * a pull request branch:
@@ -139,6 +144,13 @@ const prs = await api(`https://api.github.com/repos/${slug}/pulls?head=${owner}:
 const pr = readPreviewPullRequest(prs);
 if (pr) console.log(`Open PR: #${pr.number} (${pr.title})`);
 
+// 2b. Previews are opt in: without the `preview` label, skip both providers.
+const previewRequested = Boolean(pr && (pr.labels || []).some((label) => label.name === 'preview'));
+if (!previewRequested) {
+  if (route === 'cloudflare') route = 'netlify';
+  console.log('No "preview" label on the PR: pushing with both providers skipped. Add the label and re-run to build a preview.');
+}
+
 // 3. A Cloudflare route needs the PR label; without a token or PR, stay on Netlify.
 if (route === 'cloudflare') {
   if (!githubToken) {
@@ -174,7 +186,9 @@ if (headOnMain) {
 }
 
 // 5. Fail closed if the provider label cannot be applied and verified.
-await alignPreviewLabel({api,slug,pr,route,label:LABEL,token:githubToken,dryRun:DRY_RUN});
+if (previewRequested) {
+  await alignPreviewLabel({api,slug,pr,route,label:LABEL,token:githubToken,dryRun:DRY_RUN});
+}
 
 // 6. Push.
 if (!DRY_RUN) {
@@ -197,6 +211,8 @@ if (route === 'cloudflare') {
   } catch (error) {
     console.log(`Could not count Cloudflare deployments (${error.message}).`);
   }
-} else {
+} else if (previewRequested) {
   console.log('The preview builds on Netlify as a deploy preview for the PR.');
+} else {
+  console.log('No preview built for this push (opt in with the `preview` label).');
 }
