@@ -76,6 +76,8 @@ const committee = defineCollection({
     name: z.string(),
     role: z.string(),
     portrait: z.string(),
+    portraitWidth: z.number().int().positive(),
+    portraitHeight: z.number().int().positive(),
     order: z.number(),
     imageClass: z.string().optional(),
   }),
