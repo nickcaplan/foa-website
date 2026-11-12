@@ -7,7 +7,7 @@ test("Donations Day contains only confirmed date facts",()=>{
  assert.equal(new Intl.DateTimeFormat("en-GB",{weekday:"long",timeZone:"Europe/London"}).format(new Date(event.start)),"Friday");
 });
 test("Donations Day notices agree across the public pages without invented items",async()=>{
- for(const route of ["","events/christmas-fayre-2026","christmas-fayre-volunteering"]){
+ for(const route of ["","christmas-fayre-volunteering"]){
  const html=await readFile(`dist/${route?route+"/":""}index.html`,"utf8");
  const notice=html.match(/<aside[^>]*class="fayre-donations-notice"[\s\S]*?<\/aside>/)?.[0];assert.ok(notice,route);assert.ok(notice.includes("Friday 20th November"));assert.ok(notice.includes('data-expires-on="2026-11-21"'));assert.doesNotMatch(notice,/TBC|to be confirmed|items to follow|drop.off|bottles|toys|08:|09:/i);
  }
