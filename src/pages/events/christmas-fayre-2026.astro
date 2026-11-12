@@ -1,4 +1,5 @@
 ---
+import { ordinalDateFormatter } from "../../lib/dates";
 import EventVisibilityInit from "../../components/EventVisibilityInit.astro";
 import { eventVisibilityRules } from "../../lib/event-lifecycle";
 import { isHidden } from "../../lib/event-visibility";
@@ -16,6 +17,7 @@ const event = entry.data;
 const donation = await getEntry("events", "christmas-fayre-donations-day-2026");
 if (!donation) throw new Error("Donations Day content is missing");
 const donationRules = eventVisibilityRules(donation.data);
+const donationDate = ordinalDateFormatter({weekday:"long",timeZone:"Europe/London"})(donation.data.start);
 const helpAreas = event.helpAreas!;
 if (!event.lead) throw new Error("Christmas Fayre leads are missing");
 const leads = event.lead.split(/ and (?=[^()]*\()/);
@@ -62,7 +64,7 @@ const eventJsonLd = {
     <div class="site-width xmas-upcoming"><div class="xmas-upcoming__grid">
     <section id="donations-day" class="xmas-section" aria-labelledby="xmas-donations-title" data-expires-on={donationRules.expiresOn} hidden={isHidden(donationRules, Date.now())}>
       <div>
-        <h2 id="xmas-donations-title">Donations Day - <span class="xmas-donations-date">Friday 20th November</span></h2>
+        <h2 id="xmas-donations-title">Donations Day - <span class="xmas-donations-date">{donationDate}</span></h2>
         <p class="xmas-section__lead">Classes will be assigned items to donate for prizes and the teacher's gift room.</p>
         <ul class="xmas-donations">
           <li><strong>Reception &amp; KS1: Drinks Tombola</strong><span>Bottles (alcohol or non-alcoholic)</span></li>
@@ -137,7 +139,7 @@ const eventJsonLd = {
     import { syncEventVisibility } from "../../lib/event-visibility";
     syncEventVisibility();
     window.setInterval(() => syncEventVisibility(), 60000);
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) syncEventVisibility(); });
+    document.addEventListener("visibilitychange", () => !document.hidden && syncEventVisibility());
   </script>
 </BaseLayout>
 
@@ -258,13 +260,15 @@ const eventJsonLd = {
 .narnia-event .xmas-donations-date{display:inline-block;max-width:100%}
 .narnia-event .xmas-contact__copy{max-width:72ch}
 @container(min-width:56em){
- .narnia-event .xmas-upcoming__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 2.5rem;align-items:start}
- .narnia-event #donations-day{grid-column:1;grid-row:1 / span 2}
- .narnia-event .xmas-help-section{grid-column:2;grid-row:2}
- .narnia-event .xmas-help-section h2{margin-top:0}
- .narnia-event .xmas-upcoming__grid:has(#donations-day[hidden]){display:block}
-
-
+ .narnia-event .xmas-donations{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem}
+ .narnia-event .xmas-donations li{display:block}
+ .narnia-event .xmas-donations strong,.narnia-event .xmas-donations span{display:block}
+ .narnia-event .xmas-donations strong{margin-bottom:.5rem}
+ .narnia-event .xmas-upcoming__grid>section[aria-labelledby="xmas-art-title"]>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 2rem;align-items:center}
+ .narnia-event #xmas-art-title{grid-column:1 / -1}
+ .narnia-event .xmas-art-cta{margin:0!important}
+ .narnia-event .xmas-help-layout{grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:2.5rem;align-items:start}
+ .narnia-event .xmas-help-layout .xmas-notes{padding-top:.8rem;border-top:0}
 }
 @media(max-width:47.99rem){.narnia-event .xmas-donations-date{display:block}}
 </style>

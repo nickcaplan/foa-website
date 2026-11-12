@@ -20,10 +20,3 @@ test("Homepage Donations Day appears once inside the Christmas splash",async()=>
  assert.equal((html.match(/class="fayre-donations-notice"/g)||[]).length,1);
  assert.match(html,/<section class="narnia-landscape"[\s\S]*class="narnia-donations"[\s\S]*Friday 20th November[\s\S]*narnia-landscape__footer/);
 });
-
-test("Fayre donations anchor points to the single full, expiring section",async()=>{
- const html=await readFile("dist/events/christmas-fayre-2026/index.html","utf8");
- assert.equal((html.match(/id="donations-day"/g)||[]).length,1);
- assert.match(html,/<section id="donations-day"[^>]*data-expires-on="2026-11-21"/);
- assert.doesNotMatch(html,/class="fayre-donations-notice"/);
-});

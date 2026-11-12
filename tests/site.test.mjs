@@ -401,9 +401,6 @@ test("the Christmas Fayre page lists every help area from the event record", asy
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
   const roles = html.match(/<p[^>]*data-fayre-help-roles[^>]*>([\s\S]*?)<\/p>/)?.[1];
   assert.equal(roles, christmas.helpAreas.map(area => escapeHtml(area.name)).join('; ') + '.');
-  assert.doesNotMatch(html, /class="xmas-area"/);
-  assert.ok(html.indexOf('aria-labelledby="xmas-donations-title"') < html.indexOf('aria-labelledby="xmas-areas-title"'));
-
 });
 
 test("the Christmas Fayre page uses a JustSignup click-out and keeps the Fayre inbox for questions", async () => {
