@@ -68,5 +68,7 @@ Not tested: Nick's actual device/network/browser, geographic field distribution,
 ## Sources
 
 - Live sitemap: https://www.thefriendsofashley.org/sitemap-index.xml and https://www.thefriendsofashley.org/sitemap-0.xml
-- All route URLs are recorded verbatim in live.csv.
-- Individual local comparison timings are in controlled.csv.
+- All route URLs are recorded verbatim in the PR measurement comment.
+- Individual local comparison timings are in the PR measurement comment.
+
+- Individual measurements: https://github.com/nickcaplan/foa-website/pull/114#issuecomment-6821039154
