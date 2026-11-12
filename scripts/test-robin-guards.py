@@ -47,9 +47,28 @@ class GuardTests(unittest.TestCase):
         self.assertNotIn('pull_request:',WORKFLOW.split('permissions:',1)[0])
         self.assertNotIn('workflow_dispatch:',WORKFLOW)
         self.assertIn('permissions: {}',WORKFLOW)
-        self.assertIn('timeout-minutes: 5',WORKFLOW)
+        self.assertIn('timeout-minutes: 9',WORKFLOW)
+        self.assertEqual(WORKFLOW.count('timeout-minutes: 3'),2)
+        self.assertEqual(WORKFLOW.count("llm-timeout-ms: '60000'"),2)
+        self.assertIn("steps.advisory.outcome == 'failure'",WORKFLOW)
+        self.assertIn('Neither bounded advisory attempt completed',WORKFLOW)
     def test_pinned_free_advisory_configuration(self):
         for value in ['antongulin/robin@808e18045c93f80f917a41be8fa3f80fa03d70a0','model: nvidia/nemotron-3-ultra-550b-a55b:free',"reasoning-effort: 'none'","agent-mode: 'off'","request-changes: 'false'","fail-on-high: 'false'","max-output-tokens: '4000'","max-diff-size: '20000'",'secrets.OPENROUTER_ROBIN_PILOT','EXPECTED_HEAD: ${{ steps.target.outputs.head }}']:
             self.assertIn(value,WORKFLOW)
         self.assertNotIn('openrouter/free',WORKFLOW)
+    def test_bounded_review_steps_keep_identical_safety_inputs(self):
+        sections=WORKFLOW.split('uses: antongulin/robin@')[1:]
+        self.assertEqual(len(sections),2)
+        inputs=[]
+        for section in sections:
+            inputs.append(section.split('        with:\n',1)[1].split('      - name:',1)[0].strip())
+        self.assertEqual(inputs[0],inputs[1])
+        self.assertIn("if: ${{ !cancelled() && steps.target.outcome == 'success' }}",WORKFLOW)
+    def test_no_completed_attempt_is_a_failure(self):
+        import subprocess
+        script=WORKFLOW.split('      - name: Require a completed advisory review',1)[1].split('        run: |\n',1)[1]
+        script='\n'.join(line[10:] for line in script.splitlines())
+        for first,retry,ok in [('success','skipped',True),('failure','success',True),('failure','failure',False),('failure','skipped',False),('skipped','skipped',False),('cancelled','cancelled',False)]:
+            result=subprocess.run(['bash','-c',script],env={'FIRST':first,'RETRY':retry},capture_output=True)
+            self.assertEqual(result.returncode==0,ok,(first,retry))
 if __name__=='__main__':unittest.main()
