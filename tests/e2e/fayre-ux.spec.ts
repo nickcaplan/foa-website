@@ -1,4 +1,6 @@
 import{test,expect}from'@playwright/test';
+// Layout assertions exercise Donations Day while it is still current.
+test.beforeEach(async({page})=>{await page.clock.setFixedTime(new Date('2026-10-11T12:00:00Z'))});
 for(const width of[320,390,768,1024,1280,1440,1920])for(const scale of[1,2])test(`parent reading layout ${width} ${scale}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto('/events/christmas-fayre-2026/');await page.evaluate(s=>document.documentElement.style.fontSize=`${16*s}px`,scale);await page.evaluate(()=>document.fonts.ready);
  const align=await page.locator('.xmas-section h2,.xmas-section__lead,.xmas-notes h3').evaluateAll(es=>es.map(e=>getComputedStyle(e).textAlign));expect(new Set(align)).toEqual(new Set(['left']));
