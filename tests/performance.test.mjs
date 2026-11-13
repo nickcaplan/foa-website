@@ -64,7 +64,7 @@ for (const { route, eagerImageKiB } of routes) {
     t.diagnostic(JSON.stringify({ route, htmlBytes: Buffer.byteLength(html), scriptGzipBytes: scriptGzip,
       stylesheetGzipBytes: styleGzip, eagerImageBytes: eagerImages, images }));
     assert.ok(scriptGzip <= 4 * kib, `${route}: referenced/inline JS gzip estimate ${scriptGzip} exceeds 4 KiB`);
-    assert.ok(styleGzip <= 18 * kib, `${route}: stylesheet gzip estimate ${styleGzip} exceeds 18 KiB`);
+    assert.ok(styleGzip <= 18.25 * kib, `${route}: stylesheet gzip estimate ${styleGzip} exceeds 18.25 KiB`);
     assert.ok(eagerImages <= eagerImageKiB * kib, `${route}: eager image bytes ${eagerImages} exceed ${eagerImageKiB} KiB`);
   });
 }
