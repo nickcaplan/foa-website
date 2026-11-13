@@ -10,6 +10,7 @@ for(const width of [320,390,1440])for(const scale of [1,2])test(`compact Fayre r
  await expect(section.getByRole('heading',{name:'Good to know'})).toBeVisible();
  await expect(section.locator('.xmas-points li')).toHaveCount(3);
  const order=await page.locator('.xmas-stage section[aria-labelledby]').evaluateAll(es=>es.map(e=>e.getAttribute('aria-labelledby')));
- expect(order).toEqual(['xmas-title','xmas-donations-title','xmas-art-title','xmas-areas-title','fayre-leads-title','xmas-contact-title']);
+ await expect(page.locator('.xmas-contact__leads')).toBeVisible();
+ expect(order).toEqual(['xmas-title','xmas-donations-title','xmas-art-title','xmas-areas-title','xmas-contact-title']);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(0);
 });
