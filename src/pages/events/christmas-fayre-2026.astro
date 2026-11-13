@@ -20,7 +20,7 @@ const donationRules = eventVisibilityRules(donation.data);
 const donationDate = ordinalDateFormatter({weekday:"long",timeZone:"Europe/London"})(donation.data.start);
 const helpAreas = event.helpAreas!;
 if (!event.lead) throw new Error("Christmas Fayre leads are missing");
-const leads = event.lead.split(/ and (?=[^()]*\()/);
+const leads = event.lead.split(/ and (?=[^()]*\()/).map((lead) => lead.replace(/\s*\([^)]*\)/g, "").trim());
 const email = event.contactEmail!;
 const mailto = `mailto:${email}?subject=${encodeURIComponent("Helping at the Christmas Fayre")}`;
 
@@ -67,9 +67,9 @@ const eventJsonLd = {
         <h2 id="xmas-donations-title">Donations Day - <span class="xmas-donations-date">{donationDate}</span></h2>
         <p class="xmas-section__lead">Classes will be assigned items to donate for prizes and the teacher's gift room.</p>
         <ul class="xmas-donations">
-          <li><strong>Reception &amp; KS1: Drinks Tombola</strong><span>Bottles (alcohol or non-alcoholic)</span></li>
-          <li><strong>Reception &amp; KS1: Children's Toy Tombola</strong><span>Small cuddly toys/games/toys, max value £5</span></li>
-          <li><strong>KS2: Teacher's 'Socks &amp; Chocs' Gift Room</strong><span>Adult sized, new, socks for men &amp; women; new, sealed, chocolate boxes or boxed biscuits</span></li>
+          <li><strong>Reception &amp; KS1: <br />Drinks Tombola</strong><span>Bottles (alcohol or non-alcoholic)</span></li>
+          <li><strong>Reception &amp; KS1: <br />Children's Toy Tombola</strong><span>Small cuddly toys/games/toys, max value £5</span></li>
+          <li><strong>KS2: Teacher's <br />'Socks &amp; Chocs' Gift Room</strong><span>Adult sized, new, socks for men &amp; women; new, sealed, chocolate boxes or boxed biscuits</span></li>
         </ul>
         <p class="xmas-donations__raffle"><strong>Raffle prizes:</strong> We are on the lookout for more raffle prizes - if your business or employer could donate something suitable, please let your class rep know.</p>
       </div>
@@ -79,7 +79,7 @@ const eventJsonLd = {
       <div>
         <h2 id="xmas-art-title">Art Competition</h2>
         <p class="xmas-section__lead">Show us your lions, witches and snow queens! The theme is Narnia, and any medium is welcome. Deadline: Monday 30th November.</p>
-        <p class="xmas-actions xmas-art-cta"><a class="button button--large" href={withBase('/christmas-fayre-art-competition/')}><span class="cta-label"><span class="cta-tail">Enter the art competition<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
+        <p class="xmas-actions xmas-art-cta"><a class="button button--large" href={withBase('/christmas-fayre-art-competition/')}><span class="cta-label"><span class="cta-tail">Enter the Art Competition<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
       </div>
     </section>
 
@@ -112,20 +112,15 @@ const eventJsonLd = {
 .xmas-donations__raffle{margin:1rem 0 0;line-height:1.6;color:#f4ead1}.xmas-donations__raffle strong{color:#edcb83}
 
 </style>
-    <div class="site-width">
-        <div class="narnia-event-details">
-          <section class="fayre-leads" aria-labelledby="fayre-leads-title">
-            <h2 id="fayre-leads-title">Led by</h2>
-            <div class="fayre-leads__grid">{leads.map(lead=><p class="fayre-leads__card"><span>{lead}</span></p>)}</div>
-          </section>
-        </div>
-    </div>
-
+    <div class="site-width xmas-followup">
     <section class="xmas-section xmas-section--last" aria-labelledby="xmas-contact-title">
-      <div class="site-width xmas-narrow">
+      <div class="xmas-narrow">
         <div class="xmas-frame xmas-contact">
           <div class="xmas-contact__copy">
+            <div class="xmas-contact__heading">
             <h2 id="xmas-contact-title">Get in touch</h2>
+            <p class="xmas-contact__leads"><strong>Led by</strong> {leads.map((lead)=><span class="xmas-contact__lead-person">{lead}{" "}</span>)}</p>
+            </div>
             <p>Email the Christmas Fayre team or chat with the team in the playground if you have any questions about helping. Use the sign-up button above to explore the volunteer activities, then choose your slot on JustSignup.</p>
             <p class="xmas-actions"><a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></span></a></p>
           </div>
@@ -133,6 +128,7 @@ const eventJsonLd = {
         </div>
       </div>
     </section>
+    </div>
   </div>
   <EventVisibilityInit />
   <script>
@@ -281,5 +277,114 @@ const eventJsonLd = {
  .narnia-event .xmas-stage .xmas-donations li{display:grid;grid-row:span 2;grid-template-rows:subgrid;align-content:start;gap:.5rem}
  .narnia-event .xmas-stage .xmas-donations strong,.narnia-event .xmas-stage .xmas-donations span{align-self:start;margin:0;min-width:0}
  .narnia-event .xmas-upcoming__grid>section[aria-labelledby="xmas-art-title"]>div{grid-template-columns:minmax(0,62ch) max-content;justify-content:start}
+}
+</style>
+
+<style is:inline>
+.narnia-event .xmas-stage{container-type:inline-size}
+/* Fayre-only wide shell: shared edges without stretching reading lines. */
+.narnia-event .xmas-stage .site-width{width:min(calc(100% - 2rem),100rem)}
+@media(min-width:64rem){.narnia-event .xmas-stage .site-width{width:min(calc(100% - 4rem),100rem)}}
+.narnia-event .xmas-stage .narnia-landscape:before{background:linear-gradient(90deg,#10232cf2,#10232cd9 35%,#10232c55 70%,#10232c33)}
+.narnia-event .xmas-stage .narnia-landscape__copy{text-align:left;align-items:flex-start;margin-inline:0;padding-inline:1.5rem;max-width:48rem}
+.narnia-event .xmas-stage .narnia-landscape h1{text-align:left!important}
+.narnia-event .xmas-stage .narnia-landscape__footer{justify-content:flex-start;padding-inline:1.5rem}
+.narnia-event .xmas-stage .narnia-landscape__footer .sponsor-ribbon img{margin-inline:0}
+.narnia-event .xmas-stage .xmas-section__lead{max-width:72ch}
+.narnia-event .xmas-stage .xmas-help-roles{max-width:72ch}
+.narnia-event .xmas-stage .xmas-donations__raffle{text-align:left;max-width:100ch}
+.narnia-event .xmas-stage .xmas-points,.narnia-event .xmas-contact__copy p{text-align:left}
+.narnia-event .xmas-stage .xmas-art-cta .button{width:100%;max-width:none;text-align:left;justify-content:flex-start}
+.narnia-event .xmas-stage .xmas-art-cta{width:100%;max-width:none}
+.narnia-event .xmas-followup{container-type:inline-size;display:grid;gap:1.5rem;padding-block:1.5rem 2.5rem}
+.narnia-event .xmas-followup .narnia-event-details{margin:0;max-width:none;text-align:left}
+.narnia-event .xmas-followup .xmas-section{padding:0;min-width:0}
+.narnia-event .xmas-followup .xmas-contact{height:100%;padding:1.5rem}
+.narnia-event .xmas-followup .xmas-contact__copy{max-width:65ch}
+.narnia-event .xmas-followup .xmas-contact .xmas-actions{text-align:left;justify-content:flex-start}
+.narnia-event .xmas-followup .fayre-leads__grid{grid-template-columns:1fr}
+@container(min-width:56em){
+ .narnia-event .xmas-upcoming__grid>section[aria-labelledby="xmas-art-title"]>div{grid-template-columns:minmax(0,1.5fr) minmax(18rem,1fr);gap:0 2.5rem;justify-content:stretch}
+ .narnia-event .xmas-followup:has(.narnia-event-details){grid-template-columns:minmax(0,1fr) minmax(0,2fr);align-items:start}
+}
+@media(max-width:47.99rem){
+ .narnia-event .xmas-stage .narnia-landscape__copy{padding-inline:1rem}
+ .narnia-event .xmas-stage .narnia-landscape__footer{padding-inline:1rem}
+ .narnia-event .xmas-stage .xmas-stalls-cta .button{width:100%;max-width:none}
+}
+</style>
+<style is:inline>
+@media(max-width:47.99rem){
+.narnia-event .xmas-stage .narnia-landscape:before{background:#10232ce6}
+}
+.narnia-event .xmas-stage .narnia-landscape .button:has(.cta-icon){width:100%;max-width:22rem}
+</style>
+<style is:inline>
+/* Keep the art action in the reading flow, beneath its explanation. */
+.narnia-event .xmas-upcoming__grid>section[aria-labelledby="xmas-art-title"]>div{display:block}
+.narnia-event .xmas-stage .xmas-art-cta{margin:1.25rem 0 0!important;max-width:40rem}
+</style>
+<style is:inline>
+/* The poster is a centred invitation; information below stays left-aligned. */
+.narnia-event .xmas-stage .narnia-landscape__copy{text-align:center;align-items:center;margin-inline:auto}
+.narnia-event .xmas-stage .narnia-landscape h1{text-align:center!important}
+.narnia-event .xmas-stage .narnia-landscape__footer{justify-content:center}
+.narnia-event .xmas-stage .narnia-landscape__footer .sponsor-ribbon img{margin-inline:auto}
+@media(min-width:48rem){.narnia-event .xmas-stage .narnia-landscape:before{background:linear-gradient(90deg,#10232c33,#10232cdd 35%,#10232cdd 62%,#10232c88)}}
+</style>
+<style is:inline>
+/* Match the standard site shell; only content-specific pages use wider shells. */
+.narnia-event .xmas-stage .site-width{width:min(calc(100% - 2rem),var(--max-width))}
+@media(min-width:48rem){.narnia-event .xmas-stage .site-width{width:min(calc(100% - 3rem),var(--max-width))}}
+</style>
+<style is:inline>
+/* One action size: scan-friendly labels rather than empty full-row bars. */
+.narnia-event .xmas-stage .xmas-art-cta{max-width:22rem}
+.narnia-event .xmas-stage .xmas-art-cta .button,
+.narnia-event .xmas-stage .xmas-stalls-cta .button,
+.narnia-event .xmas-stage .xmas-contact .button{width:100%;max-width:22rem;min-height:3.5rem;text-align:center;justify-content:center}
+.narnia-event .xmas-stage .xmas-contact .xmas-actions{width:100%;margin-top:1.25rem;margin-bottom:0}
+.narnia-event .xmas-stage .xmas-stalls-cta{margin-top:1.25rem;margin-bottom:0}
+/* Balance short reading units, rather than leaving a stray last word. */
+.narnia-event .xmas-stage h2,
+.narnia-event .xmas-stage .xmas-donations strong,
+.narnia-event .xmas-stage .xmas-donations span,
+.narnia-event .xmas-stage .xmas-donations__raffle,
+.narnia-event .xmas-stage #xmas-art-title + .xmas-section__lead,
+.narnia-event .xmas-stage .xmas-points li,
+.narnia-event .xmas-stage .fayre-leads__card {text-wrap:balance}
+.narnia-event .xmas-stage .xmas-section__lead,
+.narnia-event .xmas-stage .xmas-contact__copy p {text-wrap:pretty}
+.narnia-event .xmas-stage #xmas-art-title + .xmas-section__lead {text-wrap:balance}
+/* Organisers are a byline; contact has its own full-width reading block. */
+.narnia-event .xmas-followup:has(.narnia-event-details){grid-template-columns:minmax(0,1fr);gap:1.5rem}
+.narnia-event .xmas-stage .fayre-leads{display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem 1.5rem}
+.narnia-event .xmas-stage .fayre-leads h2{margin:0}
+.narnia-event .xmas-stage .fayre-leads__grid{display:flex;flex-wrap:wrap;gap:.5rem 2rem}
+.narnia-event .xmas-stage .fayre-leads__card{padding:0;border:0;background:none;box-shadow:none;font-size:1rem;text-wrap:balance}
+.narnia-event .xmas-stage .xmas-followup .xmas-contact{height:auto}
+/* Give each note its own title and sentence, so inline bold text cannot strand a sentence opener. */
+.narnia-event .xmas-stage .xmas-points li{text-wrap:pretty}
+.narnia-event .xmas-stage .xmas-points li strong{display:block;text-wrap:balance}
+.narnia-event .xmas-stage .xmas-contact__copy .xmas-contact__leads{font-size:1rem;line-height:1.5;text-wrap:balance;color:var(--xm-gold-light)}
+.narnia-event .xmas-stage .xmas-contact__lead-person{display:block;max-width:100%;text-wrap:balance}
+.narnia-event .xmas-stage .xmas-contact__copy .xmas-contact__leads{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.25em}
+/* Wide contact heading and team share a top line; narrow views retain reading order. */
+.narnia-event .xmas-stage .xmas-contact__heading h2{margin-top:0}
+@container(min-width:56em){
+ .narnia-event .xmas-stage .xmas-contact{position:relative}
+ .narnia-event .xmas-stage .xmas-contact__heading{display:grid;grid-template-columns:minmax(0,1fr) 23rem;align-items:start;gap:2rem;width:calc(100cqw - 3rem)}
+ .narnia-event .xmas-stage .xmas-contact__heading .xmas-contact__leads{margin:0;display:block;text-align:right;justify-self:end;font-size:.95rem;line-height:1.5}
+ .narnia-event .xmas-stage .xmas-contact__leads strong{display:block}
+ .narnia-event .xmas-stage .xmas-contact__lead-person{display:block}
+}
+/* Team attribution is a deliberate secondary panel, not loose corner copy. */
+.narnia-event .xmas-stage .xmas-contact__heading .xmas-contact__leads{display:block;padding:.75rem 1rem;border-left:2px solid var(--xm-gold);background:#17503a66;border-radius:0 .35rem .35rem 0;text-align:left;font-size:1rem}
+.narnia-event .xmas-stage .xmas-contact__leads strong{display:block;margin-bottom:.2rem;font:700 .8rem/1.4 var(--font-body,system-ui,sans-serif);letter-spacing:.1em;text-transform:uppercase}
+@container(min-width:56em){.narnia-event .xmas-stage .xmas-contact__heading .xmas-contact__leads{margin-top:0}}
+@container(min-width:56em){
+ .narnia-event .xmas-stage .xmas-contact__heading{display:block;width:auto}
+ .narnia-event .xmas-stage .xmas-contact__heading .xmas-contact__leads{position:absolute;top:1.5rem;right:1.5rem;width:23rem;font-size:1.25rem}
+ .narnia-event .xmas-stage .xmas-contact__copy>p:not(.xmas-actions){max-width:min(65ch,calc(100cqw - 29rem))}
 }
 </style>
