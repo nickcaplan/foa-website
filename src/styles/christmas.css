@@ -321,89 +321,24 @@ body.xmas-theme::before {
 
 }
 
-.xmas-facts {
-  display: grid;
-  gap: 0.5rem 2.4rem;
-  margin: 1rem 0 0;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--xm-gold-dim);
-}
-
-.xmas-facts div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  align-items: center;
-}
-
 /* Labels sit on the left and values on the right to save height. The choice follows the
    frame's width in em, so enlarged text (or a very narrow phone) stacks them again. */
 .xmas-hero__frame {
   container: xmas-hero / inline-size;
 }
 
-@container xmas-hero (min-width: 18em) {
-  .xmas-facts {
-    grid-template-columns: auto 1fr;
-    justify-content: center;
-    column-gap: 1.2rem;
-    row-gap: 0.4rem;
-    align-items: baseline;
-    text-align: left;
-  }
-
-  .xmas-facts div {
-    display: contents;
-  }
-}
-
 /* Keep the original single list, with a little more desktop room for the
    date and leads. Phone/tablet composition stays unchanged. */
 @media (min-width: 64rem) {
   .xmas-hero__frame { max-width: 60rem; }
-  @container xmas-hero (min-width: 42em) {
-    .xmas-facts {
-      grid-template-columns: max-content max-content;
-      justify-content: center;
-      column-gap: 2.5rem;
-    }
-  }
 }
 
 /* A little more air on phones while retaining label/value alignment. */
 @media (max-width: 47.99rem) {
-  .xmas-facts { margin-top: 1.25rem; padding-top: 1.15rem; }
-  @container xmas-hero (min-width: 18em) {
-    .xmas-facts { row-gap: 0.75rem; }
-  }
-}
-
-.xmas-facts dt {
-  color: var(--xm-gold-light);
-  font-size: clamp(0.85rem, 2.6vw, 1rem);
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.xmas-facts dd {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.3rem, 4.4vw, 1.85rem);
-  line-height: 1.2;
 }
 
 /* Small Martin Flashman and Co mark. On phones it sits directly below the Christmas logo;
    on wider screens the hero has no logo, so it sits centred under the page title. */
-.xmas-credit {
-  margin: 0.6rem 0 0;
-  line-height: 0;
-}
-
-.xmas-credit img {
-  width: 3rem;
-  height: 3rem;
-}
 
 /* The wide-screen logo is hidden and the heading wrappers use display: contents, so the
    mark would otherwise come before the title. Order it after the title. */
@@ -412,33 +347,6 @@ body.xmas-theme::before {
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-
-  .xmas-theme .mobile-page-heading .xmas-credit {
-    order: 1;
-  }
-}
-
-@media (max-width: 63.99rem) {
-  .xmas-credit {
-    margin: 0.3rem 0 0;
-    text-align: center;
-  }
-
-  .xmas-credit img {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-}
-
-.xmas-nowrap {
-  display: inline-block;
-  max-width: 100%;
-}
-
-@media (max-width: 24rem) {
-  .xmas-facts dd {
-    font-size: clamp(1.1rem, 5.6vw, 1.3rem);
   }
 }
 
@@ -528,17 +436,6 @@ body.xmas-theme::before {
   font-size: clamp(1rem, 3.4vw, 1.15rem);
   line-height: 1.6;
   text-align: center;
-}
-
-.xmas-link {
-  color: var(--xm-gold-light);
-  font-weight: 800;
-  overflow-wrap: normal;
-  text-underline-offset: 0.25rem;
-}
-
-.xmas-link:hover {
-  color: var(--xm-snow);
 }
 
 .xmas-theme :focus-visible {
