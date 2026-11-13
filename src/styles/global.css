@@ -2812,6 +2812,35 @@ svg.cta-icon {
   }
 }
 
+/* Wide footers have room for the link list in three balanced columns of four. */
+@container footer (min-width: 75em) {
+  .site-width {
+    grid-template-columns: minmax(0, 1fr) 1.3fr;
+  }
+
+  .footer-links {
+    display: grid;
+    grid: repeat(4, auto) / auto-flow max-content;
+    align-content: start;
+    padding-top: 2.7rem;
+    gap: 0.65rem 2rem;
+  }
+
+  .footer-link-column {
+    display: contents;
+  }
+
+  /* Every link fits on one line here, so the rows stay even. */
+  .footer-links a {
+    order: var(--footer-order);
+    white-space: nowrap;
+  }
+
+  .footer-donation-link > span:not(.visually-hidden) {
+    display: inline;
+  }
+}
+
 .cookie-banner {
   position: fixed;
   z-index: 70;
@@ -4566,7 +4595,7 @@ body.menu-open .cookie-banner {
 .fundraising-card__cta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem 1.5rem;
+  gap: 0.65rem 2rem;
   margin: 0;
   font-size: 0.95rem;
 }
