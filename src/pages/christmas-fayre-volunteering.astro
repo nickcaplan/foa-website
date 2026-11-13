@@ -30,7 +30,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
    <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+event.loanSignupAnchor} target="_blank" rel="noopener noreferrer"><span class="cta-label">See the loan <span class="cta-tail">list<span class="external-link-icon cta-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></span><span class="visually-hidden"> (opens JustSignup in a new tab)</span></span></a>
   </section>
   <div class="fayre-volunteer__closing">
-   <section class="fayre-volunteer__contact" aria-labelledby="volunteer-questions"><h2 id="volunteer-questions">Questions about helping?</h2><a class="button fayre-volunteer__email" href={'mailto:'+event.contactEmail}>Email the Fayre team</a></section>
+   <section class="fayre-volunteer__contact" aria-labelledby="volunteer-questions"><h2 id="volunteer-questions">Questions about helping?</h2><a class="button fayre-volunteer__email" href={'mailto:'+event.contactEmail}>Email us<span class="visually-hidden"> (the Fayre team)</span></a></section>
   </div>
  </div>
 </BaseLayout>
@@ -111,8 +111,8 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__contact h2{overflow-wrap:anywhere!important}
 .fayre-volunteer .narnia-landscape .button .cta-word{overflow-wrap:anywhere}
 @container(max-width:11rem){.fayre-volunteer .narnia-landscape .button{font-size:.95rem}.fayre-volunteer .fayre-volunteer__contact{padding:.5rem}.fayre-volunteer .fayre-volunteer__contact h2{font-size:1.3rem!important}}
-.fayre-volunteer .narnia-landscape .button:has(.cta-icon){padding-inline:.75rem calc(1.05em + 1.25rem)!important;border-radius:1.75rem}
+.fayre-volunteer .narnia-landscape .button:has(.cta-icon){padding-inline:.5rem calc(1.05em + 1.1rem)!important;border-radius:1.75rem}
 @media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .narnia-landscape h1{font-size:1.75rem!important}}
 @container(max-width:9rem){.narnia-volunteering .fayre-volunteer .narnia-landscape h1{font-size:1.375rem!important}}
-.fayre-volunteer .fayre-volunteer__contact .button{min-width:0;overflow-wrap:anywhere;border-radius:1.75rem}
+.fayre-volunteer .fayre-volunteer__contact .button{min-width:0;padding-inline:.75rem!important;overflow-wrap:anywhere;border-radius:1.75rem}
 </style>
