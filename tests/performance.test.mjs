@@ -13,6 +13,7 @@ const routes = [
   // Raised 11 November 2026 for the approved Christmas wreath identity-bar logo
   // (foa-logo-christmas-ivory.svg, 43 KiB) alongside the Narnia hero artwork.
   { route: "/", eagerImageKiB: 140 },
+  { route: "/christmas-fayre-volunteering/", eagerImageKiB: 140 },
   { route: "/whats-on/", eagerImageKiB: 100 },
   ...["newsletter", "fundraising", "get-involved", "uniform", "contact"].map((name) => ({
     route: `/${name}/`, eagerImageKiB: 100,
