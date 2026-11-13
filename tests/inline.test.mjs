@@ -17,9 +17,11 @@ test("external links open safely in a new tab and announce it", () => {
   assert.match(html, /><span class="cta-word">Donat<span class="cta-tail">e<span class="external-link-icon" aria-hidden="true">/);
 });
 
-test("mailto links are plain links", () => {
+test("mailto links use the shared decorative envelope, without opening a new tab", () => {
   const html = renderInline("[Email us](mailto:hello@example.org)");
   assert.match(html, /href="mailto:hello@example\.org"/);
+  assert.match(html, /class="cta-icon" aria-hidden="true"/);
+  assert.match(html, /m3 7 9 6 9-6/);
   assert.doesNotMatch(html, /target=/);
 });
 

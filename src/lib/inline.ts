@@ -15,7 +15,11 @@ export const renderInline = (value: string, internalHref: (path: string) => stri
         }
       }
       const external = href.startsWith("http");
-      if (!external) return `<a class="text-link" href="${href}">${text}</a>`;
+      if (!external) {
+        const icon = '<svg class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>';
+        const ending = text.includes("@") ? text.replace(/(\.[^.]+)$/u, `<span class="cta-tail">$1${icon}</span>`) : text.replace(/(&[a-z]+;|.)$/u, `<span class="cta-tail">$1${icon}</span>`);
+        return `<a class="text-link" href="${href}">${ending}</a>`;
+      }
       const split = text.lastIndexOf(" ") + 1;
       const prefix = text.slice(0, split);
       const lastWord = text.slice(split);

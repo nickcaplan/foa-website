@@ -4205,3 +4205,11 @@ body.menu-open .cookie-banner {
 /* Text actions in event lists share the same right-edge lane as the pills. */
 .event-list-cta:not(.event-list-cta--button){position:relative;display:block;width:15rem;max-width:100%;padding-inline-end:calc(1.05em + 1.8rem)}
 .event-list-cta:not(.event-list-cta--button) .cta-icon{position:absolute!important;right:.9rem;top:50%;translate:0 -50%;margin:0!important}
+
+/* Mail actions keep their reserved icon lane inside narrow enlarged-text cards. */
+.committee-note{grid-template-columns:minmax(0,1fr)}
+.committee-note>*{min-width:0;max-width:100%;overflow-wrap:anywhere}
+
+/* A consistent, readable envelope size, proportional to the link text. */
+a[href^="mailto:"] .cta-icon svg,a[href^="mailto:"] svg.cta-icon{width:1.3em!important;height:1.3em!important}
+a.button[href^="mailto:"]:has(.cta-icon){padding-inline:calc(1.3em + 1.8rem)!important}

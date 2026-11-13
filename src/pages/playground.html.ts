@@ -63,7 +63,7 @@ export const GET: APIRoute = () => new Response(`<!doctype html>
           <div>
             <h2 class="editorial-heading">Get in touch</h2>
             <p class="section-copy">Use the shared address for The FOA so the right committee member can respond.</p>
-            <a class="button button--primary" href="mailto:thefriendsofashley@gmail.com">Email The Friends of Ashley</a>
+            <a class="button button--primary" href="mailto:thefriendsofashley@gmail.com"><span class="cta-label">Email The Friends of <span class="cta-tail">Ashley<svg class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></span></span></a>
           </div>
           <article class="info-card contact-form-card">
             <h2>Send us a message</h2>
