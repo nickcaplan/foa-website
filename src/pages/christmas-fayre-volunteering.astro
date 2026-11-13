@@ -99,3 +99,20 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__loan .fayre-volunteer__action .cta-label{flex:1 1 auto;text-align:left;overflow-wrap:normal;word-break:normal}
 @media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan{padding:1rem}.narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action{width:100%}}
 </style>
+
+<style is:inline>
+/* Enlarged text must wrap inside the poster and contact grid, never get clipped. */
+.fayre-volunteer .narnia-landscape__copy,
+.fayre-volunteer .narnia-landscape h1,
+.fayre-volunteer__closing,
+.fayre-volunteer__contact,
+.fayre-volunteer__contact > *{min-width:0;max-width:100%}
+.fayre-volunteer .narnia-landscape h1,
+.fayre-volunteer__contact h2{overflow-wrap:anywhere!important}
+.fayre-volunteer .narnia-landscape .button .cta-word{overflow-wrap:anywhere}
+@container(max-width:11rem){.fayre-volunteer .narnia-landscape .button{font-size:.95rem}.fayre-volunteer .fayre-volunteer__contact{padding:.5rem}.fayre-volunteer .fayre-volunteer__contact h2{font-size:1.3rem!important}}
+.fayre-volunteer .narnia-landscape .button:has(.cta-icon){padding-inline:.75rem calc(1.05em + 1.25rem)!important;border-radius:1.625rem}
+@media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .narnia-landscape h1{font-size:1.75rem!important}}
+@container(max-width:9rem){.narnia-volunteering .fayre-volunteer .narnia-landscape h1{font-size:1.375rem!important}}
+.fayre-volunteer .fayre-volunteer__contact .button{min-width:0;overflow-wrap:anywhere;border-radius:1.625rem}
+</style>

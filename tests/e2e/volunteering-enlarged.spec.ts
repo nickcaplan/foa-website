@@ -1,0 +1,9 @@
+import {expect,test} from '@playwright/test';
+for(const width of [320,390,768,1440])for(const theme of ['day','night'])for(const scale of [1,2,3])test(`volunteering content stays inside ${width} ${theme} ${scale===3?'200% element text':scale+'x root'}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.addInitScript(t=>{localStorage.setItem('foa-theme',t);localStorage.setItem('foa-cookie-preferences','essential')},theme);await page.goto('/christmas-fayre-volunteering/');await page.evaluate(s=>{if(s===3){const els=[...document.querySelectorAll<HTMLElement>('body *')],sizes=els.map(e=>parseFloat(getComputedStyle(e).fontSize));els.forEach((e,i)=>e.style.setProperty('font-size',sizes[i]*2+'px','important'))}else document.documentElement.style.fontSize=16*s+'px'},scale);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(0);
+ for(const selector of ['.narnia-landscape h1','.narnia-landscape .button','.fayre-volunteer__contact h2','.fayre-volunteer__contact .button','.fayre-volunteer__loan .button']){
+  const result=await page.locator(selector).first().evaluate(e=>{const parent=e.closest('.narnia-landscape,.fayre-volunteer__contact,.fayre-volunteer__loan')!,r=parent.getBoundingClientRect(),walker=document.createTreeWalker(e,NodeFilter.SHOW_TEXT);let node;const rects=[];while(node=walker.nextNode()){if(node.parentElement?.closest('.visually-hidden,[aria-hidden=true]'))continue;const range=document.createRange();range.selectNodeContents(node);rects.push(...range.getClientRects())}return rects.filter(b=>b.width&&b.height).every(b=>b.left>=r.left-1&&b.right<=r.right+1)});expect(result,selector).toBe(true);
+ }
+ await expect(page.getByRole('link',{name:'Email the Fayre team',exact:true})).toHaveAttribute('href',/^mailto:/);
+});
