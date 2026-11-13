@@ -124,7 +124,7 @@ const eventJsonLd = {
             <p class="xmas-contact__leads"><strong>Led by</strong> {leads.map((lead)=><span class="xmas-contact__lead-person">{lead}{" "}</span>)}</p>
             </div>
             <p>Email the Christmas Fayre team or chat with the team in the playground if you have any questions about helping. Use the sign-up button above to explore the volunteer activities, then choose your slot on JustSignup.</p>
-            <p class="xmas-actions"><a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></span></a></p>
+            <p class="xmas-actions"><a class="button button--amber button--large" href={mailto}><span class="cta-label">Email the Fayre <span class="cta-word">tea<span class="cta-tail">m<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></span></span></span></span></a></p>
           </div>
           <ChristmasTrees />
         </div>
@@ -389,4 +389,10 @@ const eventJsonLd = {
  .narnia-event .xmas-stage .xmas-contact__heading .xmas-contact__leads{position:absolute;top:1.5rem;right:1.5rem;width:23rem;font-size:1.25rem}
  .narnia-event .xmas-stage .xmas-contact__copy>p:not(.xmas-actions){max-width:min(65ch,calc(100cqw - 29rem))}
 }
+</style>
+
+
+<style is:inline>
+.narnia-event .xmas-contact a[href^="mailto:"] .cta-icon svg{width:1.3em!important;height:1.3em!important}
+.narnia-event .xmas-contact .button:has(.cta-icon){padding-right:calc(1.3em + .8rem + 2px)!important}
 </style>
