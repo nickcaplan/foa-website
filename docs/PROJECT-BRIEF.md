@@ -1,6 +1,6 @@
 # The Friends of Ashley Website: Project Brief
 
-**Last updated:** 11 November 2026
+**Last updated:** 13 November 2026
 **Organisation:** Parent Teacher Association for Ashley C of E Primary School, Walton-on-Thames
 **Live site:** <https://www.thefriendsofashley.org/>
 
@@ -161,7 +161,7 @@ These are confirmed unless the project owner explicitly revises them. Edit entri
 
 ### Christmas Fayre Donations Day
 
-- Confirmed 11 November 2026: Donations Day for the Christmas Fayre is Friday 20th November 2026. Donation items, times and drop-off arrangements are not yet supplied and must not be invented. The date is held in one event record and shown in What's On, with short notices on Home, Fayre details and volunteering, plus a matching Reps Hub message. Date-only notices expire after the UK day.
+- Confirmed 11 November 2026: Donations Day for the Christmas Fayre is Friday 20th November 2026. Donation items, times and drop-off arrangements are not yet supplied and must not be invented. The date is held in one event record and shown in What's On, with short notices on Home and Fayre details, plus a matching Reps Hub message. Date-only notices expire after the UK day. Nick removed the volunteering-page notice on 13 November 2026 to keep that page focused on helping; its loan-list action and left-aligned reading headings remain.
 
 ### Notice Board
 

@@ -7,7 +7,7 @@ test("Donations Day contains only confirmed date facts",()=>{
  assert.equal(new Intl.DateTimeFormat("en-GB",{weekday:"long",timeZone:"Europe/London"}).format(new Date(event.start)),"Friday");
 });
 test("Donations Day notices agree across the public pages without invented items",async()=>{
- for(const route of ["","events/christmas-fayre-2026","christmas-fayre-volunteering"]){
+ for(const route of ["","events/christmas-fayre-2026"]){
  const html=await readFile(`dist/${route?route+"/":""}index.html`,"utf8");
  const notice=html.match(/<aside[^>]*class="fayre-donations-notice"[\s\S]*?<\/aside>/)?.[0];assert.ok(notice,route);assert.ok(notice.includes("Friday 20th November"));assert.ok(notice.includes('data-expires-on="2026-11-21"'));assert.doesNotMatch(notice,/TBC|to be confirmed|items to follow|drop.off|bottles|toys|08:|09:/i);
  }
@@ -19,4 +19,10 @@ test("Homepage Donations Day appears once inside the Christmas splash",async()=>
  const html=await readFile("dist/index.html","utf8");
  assert.equal((html.match(/class="fayre-donations-notice"/g)||[]).length,1);
  assert.match(html,/<section class="narnia-landscape"[\s\S]*class="narnia-donations"[\s\S]*Friday 20th November[\s\S]*narnia-landscape__footer/);
+});
+
+test("Volunteering stays focused on helping, without a Donations Day notice",async()=>{
+ const html=await readFile("dist/christmas-fayre-volunteering/index.html","utf8");
+ assert.doesNotMatch(html,/<aside[^>]*class="fayre-donations-notice"|Friday 20th November|Christmas Fayre Donations Day/);
+ assert.match(html,/Lend a little Narnia magic/);assert.match(html,/See the loan/);assert.match(html,/Questions about helping/);
 });
