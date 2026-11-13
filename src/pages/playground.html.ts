@@ -37,7 +37,7 @@ export const GET: APIRoute = () => new Response(`<!doctype html>
       .contact-form { display: block; width: 100%; min-height: 55.2rem; margin-top: 1.5rem; border: 0; }
     </style>
   </head>
-  <body>
+  <body class="playground-page">
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="site-header">
       <div class="site-width header-inner">

@@ -4226,7 +4226,7 @@ a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-
 a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + .9rem)!important}
 .split-layout .button:has(.external-link-icon){padding-inline:calc(1.05em + 1.3rem)!important}
 .committee-note .button,.split-layout>div>.button,.involved-feature__actions .button{width:100%}
-.button .cta-label{overflow-wrap:normal;word-break:normal}
+a.button[href^="mailto:"] .cta-label{overflow-wrap:normal;word-break:normal}
 .involved-feature__actions .involved-action--light{padding-inline:.5rem;overflow-wrap:normal}
 }
 
@@ -4234,4 +4234,17 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.i
 @media(max-width:47.99rem){.involved-closing{padding-inline:12px}.involved-closing .involved-action{width:100%}}
 @media(max-width:47.99rem){.uniform-cta{grid-template-columns:minmax(0,1fr)}.uniform-cta .uniform-action{width:100%;min-width:0}.uniform-cta .cta-word{overflow-wrap:normal}}
 @media(max-width:47.99rem){.uniform-cta.site-width{width:calc(100% - 24px)}}
-@media(max-width:23rem){.split-layout:not(.uniform-details-grid) .info-card{margin-inline:-24px;width:calc(100% + 48px)}.split-layout .button:has(.external-link-icon){padding-inline:calc(1.05em + 1rem)!important}.split-layout .button .cta-word{overflow-wrap:normal}}
+@media(max-width:23rem){
+.committee-note,.involved-feature,.involved-closing{margin-inline:-16px;width:calc(100% + 32px);box-sizing:border-box}
+a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 16px)!important}
+a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!important;inset-inline-end:10px!important}
+.split-layout .button:has(.external-link-icon){padding-inline:calc(1.05em + 16px)!important}
+.split-layout .button .external-link-icon{right:10px!important;inset-inline-end:10px!important}
+.committee-note>.button{width:calc(100% + 16px);max-width:calc(100% + 16px);margin-inline:-8px}
+}
+
+@media(max-width:23rem){
+.contact-page .split-layout .info-card .button{width:calc(100% + 16px);max-width:calc(100% + 16px);margin-inline:-8px}
+.contact-page .split-layout.site-width{width:calc(100% - 24px)}
+.playground-page .split-layout.site-width{width:calc(100% - 24px)}
+}
