@@ -4253,3 +4253,6 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
 .content-section>.site-width:has(>.involved-feature){width:calc(100% - 24px)}
 .involved-feature,.involved-closing{width:100%;margin-inline:0}
 }
+@media(max-width:23rem){
+.content-section>.site-width:has(>.involved-feature) .involved-group{width:calc(100% - 40px);margin-inline:auto}
+}
