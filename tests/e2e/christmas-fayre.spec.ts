@@ -6,8 +6,8 @@ for(const width of [320,390,768,1024,1440])test(`Fayre retains facts and no over
  await expect(page.locator('.xmas-area')).toHaveCount(0);
  await expect(page.locator('.narnia-landscape__date')).toContainText('Saturday 5th December');
  await expect(page.locator('.narnia-landscape__time')).toHaveText('12:00 - 15:00');
- await expect(page.locator('.fayre-leads')).toContainText('Rachel Briscoe');
- await expect(page.locator('.fayre-leads')).toContainText('Sophie Glass');
+ await expect(page.locator('.xmas-contact__leads')).toContainText('Rachel Briscoe');
+ await expect(page.locator('.xmas-contact__leads')).toContainText('Sophie Glass');
  await expect(page.locator('.narnia-landscape__footer img')).toBeVisible();
  await expect(page.locator('.add-calendar')).toHaveCount(0);
  await expect(page.locator('.xmas-stalls-cta a')).toHaveAttribute('href','/christmas-fayre-volunteering/');
