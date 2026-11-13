@@ -4248,3 +4248,8 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
 .contact-page .split-layout.site-width{width:calc(100% - 24px)}
 .playground-page .split-layout.site-width{width:calc(100% - 24px)}
 }
+/* Widen the reading column itself, so feature copy stays inside its parent. */
+@media(max-width:23rem){
+.content-section>.site-width:has(>.involved-feature){width:calc(100% - 24px)}
+.involved-feature,.involved-closing{width:100%;margin-inline:0}
+}
