@@ -23,7 +23,7 @@ for(const width of[320,390,768,1024,1280,1440,1920])for(const scale of[1,2])test
 });
 
 test('reworked Fayre actions complete their public journeys and remain useful without JavaScript',async({page,browser})=>{
- await page.goto('/events/christmas-fayre-2026/');await page.locator('.xmas-art-cta a').click();await expect(page).toHaveURL(/christmas-fayre-art-competition/);await expect(page.getByRole('heading',{level:1})).toBeVisible();await page.goBack();await page.locator('.xmas-stalls-cta a').click();await expect(page).toHaveURL(/christmas-fayre-volunteering/);await expect(page.getByRole('link',{name:/Sign up on JustSignup/})).toHaveAttribute('href',/justsignup/);
+ await page.goto('/events/christmas-fayre-2026/');await page.locator('.xmas-art-cta a').click();await expect(page).toHaveURL(/christmas-fayre-art-competition/);await expect(page.getByRole('heading',{level:1})).toBeVisible();await page.goBack();await page.locator('.xmas-stalls-cta a').click();await expect(page).toHaveURL(/christmas-fayre-volunteering/);await expect(page.getByRole('link',{name:'Sign up (opens JustSignup in a new tab)',exact:true})).toHaveAttribute('href',/justsignup/);
  const context=await browser.newContext({javaScriptEnabled:false});const nojs=await context.newPage();await nojs.goto('/events/christmas-fayre-2026/');await expect(nojs.locator('.xmas-art-cta a')).toHaveAttribute('href','/christmas-fayre-art-competition/');await expect(nojs.locator('.xmas-contact a')).toHaveAttribute('href',/^mailto:/);await context.close();
 });
 
