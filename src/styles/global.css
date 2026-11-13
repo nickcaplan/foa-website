@@ -4219,3 +4219,19 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-in
 
 /* Enough label room in nested feature cards at 200% text, overriding the generic mail lane. */
 a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 1rem)!important}
+
+/* Keep words readable when root text is enlarged inside phone cards. */
+@media(max-width:47.99rem){
+.committee-note,.involved-feature,.split-layout .info-card{padding-inline:12px}
+a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + .9rem)!important}
+.split-layout .button:has(.external-link-icon){padding-inline:calc(1.05em + 1.3rem)!important}
+.committee-note .button,.split-layout>div>.button,.involved-feature__actions .button{width:100%}
+.button .cta-label{overflow-wrap:normal;word-break:normal}
+.involved-feature__actions .involved-action--light{padding-inline:.5rem;overflow-wrap:normal}
+}
+
+@media(max-width:23rem){a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + .5rem)!important}a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:.3rem!important;inset-inline-end:.3rem!important}}
+@media(max-width:47.99rem){.involved-closing{padding-inline:12px}.involved-closing .involved-action{width:100%}}
+@media(max-width:47.99rem){.uniform-cta{grid-template-columns:minmax(0,1fr)}.uniform-cta .uniform-action{width:100%;min-width:0}.uniform-cta .cta-word{overflow-wrap:normal}}
+@media(max-width:47.99rem){.uniform-cta.site-width{width:calc(100% - 24px)}}
+@media(max-width:23rem){.split-layout:not(.uniform-details-grid) .info-card{margin-inline:-24px;width:calc(100% + 48px)}.split-layout .button:has(.external-link-icon){padding-inline:calc(1.05em + 1rem)!important}.split-layout .button .cta-word{overflow-wrap:normal}}
