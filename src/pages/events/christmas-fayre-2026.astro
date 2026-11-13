@@ -1,5 +1,8 @@
 ---
-import FayreDonationsNotice from "../../components/FayreDonationsNotice.astro";
+import { ordinalDateFormatter } from "../../lib/dates";
+import EventVisibilityInit from "../../components/EventVisibilityInit.astro";
+import { eventVisibilityRules } from "../../lib/event-lifecycle";
+import { isHidden } from "../../lib/event-visibility";
 import HomepageMobileIdentity from "../../components/HomepageMobileIdentity.astro";
 import NarniaHero from "../../components/NarniaHero.astro";
 import { getEntry } from "astro:content";
@@ -11,23 +14,15 @@ import { withBase } from "../../lib/urls";
 const entry = await getEntry("events", "christmas-fayre-2026");
 if (!entry?.data.helpAreas || !entry.data.contactEmail) throw new Error("Christmas Fayre content is missing");
 const event = entry.data;
+const donation = await getEntry("events", "christmas-fayre-donations-day-2026");
+if (!donation) throw new Error("Missing Donations Day");
+const donationRules = eventVisibilityRules(donation.data);
+const donationDate = ordinalDateFormatter({weekday:"long",timeZone:"Europe/London"})(donation.data.start);
 const helpAreas = event.helpAreas!;
 if (!event.lead) throw new Error("Christmas Fayre leads are missing");
 const leads = event.lead.split(/ and (?=[^()]*\()/);
 const email = event.contactEmail!;
 const mailto = `mailto:${email}?subject=${encodeURIComponent("Helping at the Christmas Fayre")}`;
-
-const icons = {
-  funzone: "M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8.500 8.500h.01M15.500 8.500h.01M12 12h.01M8.500 15.500h.01M15.500 15.500h.01",
-  craft: "M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM20 4L8.100 15.900M14.500 14.500L20 20M8.100 8.100L12 12",
-  cafe: "M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 2v3M10 2v3M14 2v3",
-  bbq: "M4 10h16a8 8 0 0 1-16 0zM8 17l-2 5M16 17l2 5M7 20h10M8 3v3M12 2v4M16 3v3",
-  bar: "M4 3h16l-8 9zM12 12v9M8 21h8M7 6h10",
-  photo: "M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.500 3.500 0 1 0 0-7 3.500 3.500 0 0 0 0 7z",
-  tombola: "M4 11h16v9H4zM3 7h18v4H3zM12 7v13M12 7c-2 0-4-1-4-2.500S10.500 3 12 7zM12 7c2 0 4-1 4-2.500S13.500 3 12 7z",
-  tokens: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7.500v9M9.500 10h4a1.500 1.500 0 0 1 0 3h-3a1.500 1.500 0 0 0 0 3H15",
-  sparkle: "M12 3l1.800 5.200L19 10l-5.200 1.800L12 17l-1.800-5.200L5 10l5.200-1.800zM19 16l.8 2.200L22 19l-2.200.8L19 22l-.8-2.200L16 19l2.200-.8z",
-};
 
 const flakes = Array.from({ length: 28 }, (_, i) => ({
   side: i % 2,
@@ -63,29 +58,38 @@ const eventJsonLd = {
     <section class="xmas-hero" aria-labelledby="xmas-title">
       <div class="site-width">
         <NarniaHero event={event} eventPage={true} />
-        <FayreDonationsNotice details />
-        <div class="narnia-event-details">
-          <section class="fayre-leads" aria-labelledby="fayre-leads-title">
-            <h2 id="fayre-leads-title">Led by</h2>
-            <div class="fayre-leads__grid">{leads.map(lead=><p class="fayre-leads__card"><span>{lead}</span></p>)}</div>
-          </section>
-        </div>
+      </div>
+    </section>
+
+    
+    <section id="donations-day" class="xmas-section" aria-labelledby="xmas-donations-title" data-expires-on={donationRules.expiresOn} hidden={isHidden(donationRules, Date.now())}>
+      <div class="site-width">
+        <h2 id="xmas-donations-title">Donations Day - <span class="xmas-donations-date">{donationDate}</span></h2>
+        <p class="xmas-section__lead">Classes will be assigned items to donate for prizes and the teacher's gift room.</p>
+        <ul class="xmas-donations">
+          <li><strong>Reception &amp; KS1: Drinks Tombola</strong><span>Bottles (alcohol or non-alcoholic)</span></li>
+          <li><strong>Reception &amp; KS1: Children's Toy Tombola</strong><span>Small cuddly toys/games/toys, max value £5</span></li>
+          <li><strong>KS2: Teacher's 'Socks &amp; Chocs' Gift Room</strong><span>Adult sized, new, socks for men &amp; women; new, sealed, chocolate boxes or boxed biscuits</span></li>
+        </ul>
+        <p class="xmas-donations__raffle"><strong>Raffle prizes:</strong> We are on the lookout for more raffle prizes - if your business or employer could donate something suitable, please let your class rep know.</p>
+      </div>
+    </section>
+
+    <section class="xmas-section" aria-labelledby="xmas-art-title">
+      <div class="site-width">
+        <h2 id="xmas-art-title">Art Competition</h2>
+        <p class="xmas-section__lead">Show us your lions, witches and snow queens! The theme is Narnia, and any medium is welcome. Deadline: Monday 30th November.</p>
+        <p class="xmas-actions xmas-art-cta"><a class="button button--large" href={withBase('/christmas-fayre-art-competition/')}><span class="cta-label"><span class="cta-tail">Enter the art competition<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
       </div>
     </section>
 
     <section class="xmas-section" aria-labelledby="xmas-areas-title">
       <div class="site-width">
         <h2 id="xmas-areas-title">Where we need friendly faces</h2>
+        
         <p class="xmas-section__lead">Instead of assigning stalls to year groups, anyone across the school can join in anywhere. Sign up for a slot alongside your friends and help with whatever you’re best at. Join the helpers at these activities (pairs welcome!):</p>
-        <ul class="xmas-areas">
-          {helpAreas.map((area) => (
-            <li class="xmas-area">
-              <svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={icons[area.icon]}></path></svg>
-              <span>{area.name}</span>
-            </li>
-          ))}
-        </ul>
-        <p class="xmas-actions xmas-stalls-cta"><a class="button button--large" href={withBase(event.volunteeringPath ?? '/christmas-fayre-volunteering/')}><span class="cta-label"><span class="cta-tail">Volunteer<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
+        <p class="xmas-section__lead xmas-help-roles" data-fayre-help-roles>{helpAreas.map(area => area.name).join('; ')}.</p>
+        <p class="xmas-actions xmas-stalls-cta"><a class="button button--large" href={withBase(event.volunteeringPath ?? '/christmas-fayre-volunteering/')}><span class="cta-label">Voluntee<span class="cta-tail">r<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
         <div class="xmas-notes">
           <h3>Good to know</h3>
           <ul class="xmas-points">
@@ -97,7 +101,6 @@ const eventJsonLd = {
       </div>
     </section>
 
-
 <style>
 @media(max-width:47.99rem){.xmas-donations-date{display:block}}
 .xmas-donations{list-style:none;margin:1.25rem 0 0;padding:1.25rem 1.5rem;display:grid;gap:.9rem;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem}
@@ -108,27 +111,14 @@ const eventJsonLd = {
 .xmas-donations__raffle{margin:1rem 0 0;line-height:1.6;color:#f4ead1}.xmas-donations__raffle strong{color:#edcb83}
 
 </style>
-    <section class="xmas-section" aria-labelledby="xmas-donations-title">
-      <div class="site-width">
-        <h2 id="xmas-donations-title">Donations Day - <span class="xmas-donations-date">Friday 20th November</span></h2>
-        <p class="xmas-section__lead">Classes will be assigned items to donate for prizes and the teacher's gift room.</p>
-        <ul class="xmas-donations">
-          <li><strong>Reception &amp; KS1: Drinks Tombola</strong><span>Bottles (alcohol or non-alcoholic)</span></li>
-          <li><strong>Reception &amp; KS1: Children's Toy Tombola</strong><span>Small cuddly toys/games/toys, max value £5</span></li>
-          <li><strong>KS2: Teacher's 'Socks &amp; Chocs' Gift Room</strong><span>Adult sized, new, socks for men &amp; women; new, sealed, chocolate boxes or boxed biscuits</span></li>
-        </ul>
-        <p class="xmas-donations__raffle"><strong>Raffle prizes:</strong> We are on the lookout for more raffle prizes - if your business or employer could donate something suitable, please let your class rep know.</p>
-      </div>
-    </section>
-
-
-    <section class="xmas-section" aria-labelledby="xmas-art-title">
-      <div class="site-width">
-        <h2 id="xmas-art-title">Art Competition</h2>
-        <p class="xmas-section__lead">Show us your lions, witches and snow queens! The theme is Narnia, and any medium is welcome. Deadline: Monday 30th November.</p>
-        <p class="xmas-actions xmas-art-cta"><a class="button button--large" href={withBase('/christmas-fayre-art-competition/')}><span class="cta-label"><span class="cta-tail">Enter the art competition<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
-      </div>
-    </section>
+    <div class="site-width">
+        <div class="narnia-event-details">
+          <section class="fayre-leads" aria-labelledby="fayre-leads-title">
+            <h2 id="fayre-leads-title">Led by</h2>
+            <div class="fayre-leads__grid">{leads.map(lead=><p class="fayre-leads__card"><span>{lead}</span></p>)}</div>
+          </section>
+        </div>
+    </div>
 
     <section class="xmas-section xmas-section--last" aria-labelledby="xmas-contact-title">
       <div class="site-width xmas-narrow">
@@ -143,6 +133,13 @@ const eventJsonLd = {
       </div>
     </section>
   </div>
+  <EventVisibilityInit />
+  <script>
+    import { syncEventVisibility } from "../../lib/event-visibility";
+    syncEventVisibility();
+    setInterval(syncEventVisibility, 60000);
+    document.addEventListener("visibilitychange", () => !document.hidden && syncEventVisibility());
+  </script>
 </BaseLayout>
 
 <style is:inline>

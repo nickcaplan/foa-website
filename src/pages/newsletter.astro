@@ -19,9 +19,11 @@ const latestRest = latestSections.slice(previewSectionCount);
 const latestBodyId = "newsletter-latest-more";
 const previous = newsletters.filter(({ id }) => id !== latestIssue.id);
 const formatDateWithOrdinal = ordinalDateFormatter({ weekday: "long", timeZone: "UTC" });
+if (!latest.published) throw new Error("Latest newsletter publication date is missing");
+const socialTitle = `${formatDateWithOrdinal(latest.published)} Newsletter | The Friends of Ashley`;
 const issueName = latest.title.replace(/\s+News$/, "").trim();
 ---
-<BaseLayout title="Newsletter" description="The latest news from The Friends of Ashley and previous newsletters.">
+<BaseLayout title="Newsletter" description="The latest news from The Friends of Ashley and previous newsletters." socialTitle={socialTitle} socialDescription={latest.summary}>
   <PageHero eyebrow="The FOA updates" title={`${issueName} Newsletter`} intro="The latest news from the FOA." />
   <section class="content-section content-section--compact content-section--desktop-snug newsletter-reader-container"><div class="site-width newsletter-page">
     <section class="newsletter-section newsletter-board newsletter-reading-board" aria-label="Newsletter reading board">

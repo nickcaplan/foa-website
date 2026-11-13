@@ -4,9 +4,7 @@ for(const width of[320,390,768,1440])test(`Fayre information and CTA widths ${wi
  const leads=page.locator('.fayre-leads__card');await expect(leads).toHaveCount(2);await expect(leads.locator('svg[aria-hidden="true"]')).toHaveCount(0);
  const style=await leads.first().evaluate(e=>{const s=getComputedStyle(e);return{background:s.backgroundImage,shadow:s.boxShadow,align:s.textAlign,weight:s.fontWeight}});expect(style.background).toContain('linear-gradient');expect(style.shadow).toContain('inset');expect(style.align).toBe('center');expect(style.weight).toBe('700');
  expect(await page.locator('.narnia-landscape__footer').evaluate(e=>getComputedStyle(e).borderTopWidth)).toBe('0px');
- const heights=await page.locator('.xmas-area').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().height));expect(Math.max(...heights)-Math.min(...heights)).toBeLessThan(1);
- const paths=await page.locator('.xmas-area').evaluateAll(els=>Object.fromEntries(els.map(e=>[e.textContent?.trim(),e.querySelector('path')?.getAttribute('d')])));
- expect(paths.BBQ).not.toBe(paths['Café']);expect(paths.Bar).not.toBe(paths['Café']);expect(paths.Bar).not.toBe(paths.BBQ);
+ await expect(page.locator('.xmas-area')).toHaveCount(0);
  await page.goto('/whats-on/');const row=page.locator('[data-volunteer-actions]');
  await expect(row.getByRole('link',{name:'Event details',exact:true})).toHaveAttribute('href','/events/christmas-fayre-2026/');
  await expect(row.getByRole('link',{name:'Volunteer',exact:true})).toHaveAttribute('href','/christmas-fayre-volunteering/');
