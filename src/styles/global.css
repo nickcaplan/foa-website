@@ -4212,7 +4212,7 @@ body.menu-open .cookie-banner {
 
 /* A consistent, readable envelope size, proportional to the link text. */
 a[href^="mailto:"] .cta-icon svg,a[href^="mailto:"] svg.cta-icon{width:1.3em!important;height:1.3em!important}
-a.button[href^="mailto:"]:has(.cta-icon){padding-inline:calc(1.3em + 1.8rem)!important}
+a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 1.8rem)!important}
 /* Feature-card buttons remain usable at enlarged text instead of shrinking to a word-width. */
 .involved-feature__actions{min-width:0}.involved-feature__actions .involved-action{width:100%;min-width:0}
-@media(max-width:47.99rem){.involved-feature__actions{display:grid;grid-template-columns:minmax(0,1fr)}.involved-feature__actions .involved-action{padding-inline:calc(1.3em + 1.2rem)!important}}
+@media(max-width:47.99rem){.involved-feature__actions{display:grid;grid-template-columns:minmax(0,1fr)}.involved-feature__actions .involved-action{padding-inline:calc(1.3em + 1rem)!important}}

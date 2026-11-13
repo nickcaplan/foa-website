@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 const routes=['/contact/','/committee/','/get-involved/','/uniform/','/newsletter/','/playground.html'];
 for(const width of [320,390,1440])for(const scale of [1,2])for(const theme of ['day','night'])test(`mail icons ${width} ${scale} ${theme}`,async({page})=>{
  test.setTimeout(90000);await page.setViewportSize({width,height:1000});await page.addInitScript(t=>{localStorage.setItem('foa-theme',t);localStorage.setItem('foa-cookie-preferences','essential')},theme);
- for(const route of routes){await page.goto(route);await page.evaluate(s=>document.documentElement.style.fontSize=16*s+'px',scale);
+ for(const route of routes){await page.goto(route);await page.evaluate(()=>document.fonts.ready);await page.evaluate(s=>document.documentElement.style.fontSize=16*s+'px',scale);
  const links=page.locator('a[href^="mailto:"]');expect(await links.count()).toBeGreaterThan(0);
  for(const a of await links.all()){
   await expect(a.locator('svg')).toHaveCount(1);await expect(a.locator('svg')).toHaveAttribute('aria-hidden','true');await expect(a.locator('[data-cta-arrow]')).toHaveCount(0);
