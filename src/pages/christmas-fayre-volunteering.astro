@@ -140,3 +140,10 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 /* Narrow enlarged-text columns need reading room, not oversized nested gutters. */
 @media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan{padding-inline:min(1rem,12px)}}
 </style>
+<style is:inline>
+/* The external icon has its own lane; its old final-word wrapper must not affect label wrapping. */
+.narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action .cta-tail{display:inline!important;white-space:normal}
+</style>
+<style is:inline>
+@media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan .fayre-volunteer__action{width:calc(100% + 16px);max-width:calc(100% + 16px);margin-inline:-8px;padding-inline:calc(1.3em + 1rem)!important}}
+</style>
