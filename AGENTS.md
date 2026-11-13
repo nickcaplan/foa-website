@@ -1,5 +1,7 @@
 # Agent Instructions
 
+If CodeRabbit is rate-limited or skipped, run Robin straight away (/review comment or workflow run).
+
 Durable working rules for AI agents contributing to The Friends of Ashley website. Read this first, then follow the pointers below. This file is about **how to behave**; product detail lives in the brief.
 
 ## Start Here
