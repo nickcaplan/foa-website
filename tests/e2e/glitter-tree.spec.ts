@@ -12,7 +12,7 @@ for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(cons
   const link=credit.getByRole('link');await expect(link).toHaveAttribute('href','https://theglittertree.com/');await expect(link).toHaveAttribute('rel','noopener noreferrer');await expect(link).toHaveAttribute('target','_blank');
   await expect(page.locator('.xmas-area img,.fayre-volunteer__card img')).toHaveCount(0);
   if(path.includes('/events/'))await expect(page.locator('.narnia-landscape img[alt="Martin Flashman and Co"]')).toHaveCount(1);
-  const preceding=path.includes('/events/')?page.getByRole('link',{name:'Volunteer',exact:true}):page.getByRole('link',{name:/See the loan list/});
+  const preceding=path.includes('/events/')?page.getByRole('region',{name:'Where we need friendly faces'}).getByRole('link',{name:'Volunteer',exact:true}):page.getByRole('link',{name:/See the loan list/});
   const a=await preceding.boundingBox(),b=await credit.boundingBox();expect(b!.y).toBeGreaterThanOrEqual(a!.y+a!.height);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
   const bounds=await link.evaluate(n=>({width:n.clientWidth,scroll:n.scrollWidth}));expect(bounds.scroll).toBeLessThanOrEqual(bounds.width+1);
