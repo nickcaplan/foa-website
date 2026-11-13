@@ -21,6 +21,12 @@ const linkColumns = [
     ["/about/", "About The FOA"],
   ],
 ];
+// Reading order for the three-column desktop footer (column by column). Phones keep the two columns above.
+const desktopOrder: Record<string, number> = {
+  "/whats-on/": 1, "/get-involved/": 2, "/newsletter/": 3, "/reps/": 4,
+  "/uniform/": 5, "/committee/": 6, "/meeting-minutes/": 7, "/about/": 8,
+  "/contact/": 9, "/privacy/#cookie-settings": 10,
+};
 ---
 
 <footer class="site-footer">
@@ -35,12 +41,12 @@ const linkColumns = [
       </div>
       <nav class="footer-links" aria-label="Footer navigation">
         <div class="footer-link-column">
-          {linkColumns[0].map(([href, label]) => <a href={withBase(href)}>{label}</a>)}
-          <a href="https://www.ashleyschool.org.uk/" target="_blank" rel="noopener noreferrer" aria-label="Visit Ashley School website (opens in a new tab)">Ashley School <span class="footer-link-tail">website <span class="external-link-icon" aria-hidden="true"><svg data-cta-arrow="external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span></span></a>
+          {linkColumns[0].map(([href, label]) => <a href={withBase(href)} style={`--footer-order: ${desktopOrder[href]}`}>{label}</a>)}
+          <a style="--footer-order: 11" href="https://www.ashleyschool.org.uk/" target="_blank" rel="noopener noreferrer" aria-label="Visit Ashley School website (opens in a new tab)">Ashley School <span class="footer-link-tail">website <span class="external-link-icon" aria-hidden="true"><svg data-cta-arrow="external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span></span></a>
         </div>
         <div class="footer-link-column">
-          {linkColumns[1].map(([href, label]) => <a href={withBase(href)}>{label}</a>)}
-          <a class="footer-donation-link" href="https://www.justgiving.com/charity/Friends-of-Ashley" target="_blank" rel="noopener noreferrer" aria-label="Donate via JustGiving (opens in a new tab)"><span>Donate</span><span>via <span class="footer-link-tail">JustGiving <span class="external-link-icon" aria-hidden="true"><svg data-cta-arrow="external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span></span></span></a>
+          {linkColumns[1].map(([href, label]) => <a href={withBase(href)} style={`--footer-order: ${desktopOrder[href]}`}>{label}</a>)}
+          <a class="footer-donation-link" style="--footer-order: 12" href="https://www.justgiving.com/charity/Friends-of-Ashley" target="_blank" rel="noopener noreferrer" aria-label="Donate via JustGiving (opens in a new tab)"><span>Donate</span> <span>via <span class="footer-link-tail">JustGiving <span class="external-link-icon" aria-hidden="true"><svg data-cta-arrow="external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span></span></span></a>
         </div>
       </nav>
     </div>

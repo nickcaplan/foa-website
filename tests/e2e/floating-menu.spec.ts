@@ -10,7 +10,6 @@ for (const width of [320, 390, 768, 1023]) {
     await page.emulateMedia({ reducedMotion: "reduce" });
     for (const route of routes.filter(route => !["/preview/christmas/", "/preview/narnia-home/", "/preview/narnia-fayre/"].includes(route))) {
       await page.goto(route);
-      const templateRoute = route === "/preview/glitter-tree-details-b/" ? "/events/christmas-fayre-2026/" : route === "/preview/glitter-tree-volunteering-b/" ? "/christmas-fayre-volunteering/" : route;
       const header = page.locator(".site-header");
       const trigger = page.getByRole("button", { name: "Open menu" });
       await expect(header, route).toBeHidden();
@@ -20,11 +19,10 @@ for (const width of [320, 390, 768, 1023]) {
       expect(before!.width).toBe(48);
       expect(before!.height).toBe(48);
       expect(before!.x + before!.width).toBeLessThanOrEqual(width);
-      if(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(templateRoute)) {
+      if(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route)) {
         // Approved: these pages open with the homepage identity bar on mobile.
-        if(templateRoute !== "/christmas-fayre-art-competition/")await expect(page.locator('.narnia-landscape h1')).toHaveText(templateRoute === '/christmas-fayre-volunteering/' ? 'Christmas Fayre Volunteering' : 'Christmas Fayre');
+        if(route !== "/christmas-fayre-art-competition/")await expect(page.locator('.narnia-landscape h1')).toHaveText(route === '/christmas-fayre-volunteering/' ? 'Christmas Fayre Volunteering' : 'Christmas Fayre');
         await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
-
       } else {
         const logo = page.locator(".page-logo-home:visible");
         await expect(logo, route).toBeVisible();
@@ -39,11 +37,11 @@ for (const width of [320, 390, 768, 1023]) {
         if(route.includes("fireworks"))expect(heading.y, `${route}: retired heading stacks below logo`).toBeGreaterThanOrEqual(logoBox.y+logoBox.height);
         else expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
       }
-      const logoBottom = await page.locator(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(templateRoute) ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
+      const logoBottom = await page.locator(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route) ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
       const panel = page.locator(".view-hero");
       if (await panel.count()) {
         // Identity-bar routes open with the bar flush to the top, so the hero panel starts below it instead of at the usual 16px.
-        const identityBarRoute = ["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(templateRoute);
+        const identityBarRoute = ["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route);
         expect((await panel.boundingBox())!.y, route).toBe(identityBarRoute ? logoBottom : 16);
         const eyebrow = await panel.locator(".eyebrow").boundingBox();
         expect(eyebrow!.y, `${route}: eyebrow should clear the floating controls`).toBeGreaterThanOrEqual(before!.y + before!.height);
@@ -60,7 +58,7 @@ for (const width of [320, 390, 768, 1023]) {
         }
       }
       const stage = page.locator(".fw-stage, .xmas-stage");
-      if (await stage.count() && templateRoute !== "/events/christmas-fayre-2026/") {
+      if (await stage.count() && route !== "/events/christmas-fayre-2026/") {
         expect((await stage.boundingBox())!.y, `${route}: artwork starts at the top without a logo strip`).toBe(0);
         await expect(stage.locator(".page-logo-home"), route).toBeVisible();
         await expect(page.locator("#main-content")).toHaveCSS("padding-top", "0px");
@@ -80,7 +78,7 @@ for (const width of [320, 390, 768, 1023]) {
           await expect(page.locator("main h1 span")).toHaveCSS("display", "block");
           await expect(page.locator(".event-hero-intro")).toHaveCSS("margin-top", "12px");
         }
-        if (templateRoute === "/events/christmas-fayre-2026/") {
+        if (route === "/events/christmas-fayre-2026/") {
           await expect(page.locator(".xmas-baubles--desktop")).toBeHidden();
           await expect(page.locator(".xmas-baubles--mobile")).toBeVisible();
           const baubles = (await page.locator(".xmas-baubles--mobile").boundingBox())!;
@@ -124,7 +122,7 @@ for (const width of [320, 390, 768, 1023]) {
       if (route !== "/") {
         await page.goto(route);
         // Identity-bar routes link home from the bar; standard pages from the mobile hero logo.
-        const homeLink = ["/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(templateRoute) ? ".homepage-mobile-identity__home" : ".page-logo-home:visible";
+        const homeLink = ["/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route) ? ".homepage-mobile-identity__home" : ".page-logo-home:visible";
         await page.locator(homeLink).click();
         await expect(page).toHaveURL(/\/$/);
         await expect(page.locator("body")).toHaveClass("homepage");

@@ -3,7 +3,7 @@ import {expect,test} from '@playwright/test';
 for (const route of ['home','fayre']) {
   for (const width of [320,390,768,1440]) {
     for (const scale of [1,2]) {
-      test(`${route}: centred readable hero at ${width}px with ${scale * 100}% text`, async ({page}) => {
+      test(`${route}: readable aligned hero at ${width}px with ${scale * 100}% text`, async ({page}) => {
         await page.setViewportSize({width,height:1000});
         await page.goto(route==='home'?'/':'/events/christmas-fayre-2026/');
         await page.evaluate(scale=>{document.documentElement.style.fontSize=`${16 * scale}px`;},scale);
@@ -52,7 +52,7 @@ for (const route of ['fayre', 'volunteer']) for (const width of [320, 390, 768, 
     await page.setViewportSize({width, height:1000});
     await page.goto(route === 'fayre' ? '/events/christmas-fayre-2026/' : '/christmas-fayre-volunteering/');
     await page.evaluate(scale => {document.documentElement.style.fontSize = `${16 * scale}px`;}, scale);
-    const selectors = route === 'fayre' ? ['.narnia-landscape', '.xmas-areas'] : ['.narnia-landscape', '.fayre-volunteer__intro', '.fayre-volunteer__grid'];
+    const selectors = route === 'fayre' ? ['.narnia-landscape', '.xmas-upcoming', '.xmas-followup'] : ['.narnia-landscape', '.fayre-volunteer__intro', '.fayre-volunteer__grid'];
     const edges = await page.evaluate(selectors => selectors.map(selector => {
       const r = document.querySelector(selector)!.getBoundingClientRect();
       return {left:r.left, right:r.right};

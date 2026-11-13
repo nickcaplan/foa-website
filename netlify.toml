@@ -1,6 +1,4 @@
-# Netlify is used for pull request deploy previews only.
-# Production hosting stays on GitHub Pages at https://www.thefriendsofashley.org/.
-# The ignore command skips PR builds labelled `cloudflare`: those previews
-# build on Cloudflare Pages instead (see AGENTS.md and scripts/preview-route.mjs).
+# Netlify is only for explicitly requested PR previews.
+# preview + netlify labels select Netlify; missing context/API failures skip.
 [build]
   ignore = "node scripts/netlify-ignore.mjs"

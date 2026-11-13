@@ -1,0 +1,25 @@
+name: Opt-in preview branch
+
+# Provider prerequisite: Cloudflare preview branches Custom, include preview/*;
+# production remains disabled. Never check out or execute pull-request code here.
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, labeled, unlabeled, synchronize, reopened, closed]
+permissions:
+  contents: write
+  pull-requests: read
+concurrency:
+  group: preview-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  preview-branch:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            await require('./scripts/preview-branch.cjs')({github, context, core});

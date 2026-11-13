@@ -22,8 +22,10 @@ for(const width of [390,1440])for(const theme of ['day','night']){
    }
    expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(0);
   }
-  await expect(page.getByRole('link',{name:'See Fayre details'})).toHaveClass(/button--amber/);
-  const contrast=await page.getByRole('link',{name:'See Fayre details'}).evaluate(e=>{const c=getComputedStyle(e);const lum=(s:string)=>{const rgb=s.match(/[\d.]+/g)!.slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4});return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2]};const a=lum(c.color),b=lum(c.backgroundColor);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05)});expect(contrast).toBeGreaterThanOrEqual(4.5);
+  await expect(page.getByRole('link',{name:'See Fayre details'})).toHaveCount(0);
+  await expect(page.locator('.fayre-donations-notice')).toHaveCount(0);
+  await expect(page.locator('.fayre-volunteer__loan .button')).toBeVisible();
+  const contrast=await page.locator('.fayre-volunteer__loan .button').evaluate(e=>{const c=getComputedStyle(e);const lum=(s:string)=>{const rgb=s.match(/[\d.]+/g)!.slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4});return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2]};const a=lum(c.color),b=lum(c.backgroundColor);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05)});expect(contrast).toBeGreaterThanOrEqual(4.5);
  });
 }
 test('art deadline remains upcoming through its UK day and archives after it',async({page})=>{

@@ -187,8 +187,9 @@ test("every dedicated event page includes its UK date in sharing metadata", asyn
   assert.deepEqual(eventRoutes.sort(), publicRoutes.filter((route) => route.startsWith("/events/")), "every dedicated event route must have a canonical event record");
 });
 
-test("non-event pages keep their existing metadata without a sale date", async () => {
-  for (const route of publicRoutes.filter((route) => !route.startsWith("/events/"))) {
+test("non-event pages keep their configured metadata without a sale date", async () => {
+  // The newsletter has a content-derived issue title, checked in newsletter-social.test.mjs.
+  for (const route of publicRoutes.filter((route) => !route.startsWith("/events/") && route !== "/newsletter/")) {
     const html = await read(htmlFor(route));
     const customTitles = {"/":"The Friends of Ashley | Ashley School PTA","/whats-on/":"What's On at Ashley | The Friends of Ashley","/christmas-fayre-volunteering/":"Volunteer at the Christmas Fayre | Ashley School","/christmas-fayre-art-competition/":"Art Competition | Narnia theme | Ashley School"};
     const expectedTitle=customTitles[route] ?? titleOf(html);

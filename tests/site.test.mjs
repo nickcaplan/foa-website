@@ -131,13 +131,14 @@ test("Reps Hub shareable messages follow build-time expiry and preserve active l
   assert.doesNotMatch(html, /class leads for the Christmas Fayre/);
 });
 
-test("Christmas Fayre organisers include approved surnames and class names across the site", async () => {
+test("Christmas Fayre organisers retain surnames; only the detail panel omits class names", async () => {
   const christmas = JSON.parse(await readFile(path.resolve("src/content/events/christmas-fayre-2026.json"), "utf8"));
   assert.equal(christmas.lead, "Rachel Briscoe (Squirrel and Otter) and Sophie Glass (Fox)");
   for (const route of ["newsletter", "events/christmas-fayre-2026", "get-involved", "reps"]) {
     const html = await readFile(path.join(dist, route, "index.html"), "utf8");
     for (const lead of christmas.lead.split(/(?<=\)) and /)) {
-      assert.ok(html.includes(lead), `${route} should include the approved organiser names and classes`);
+      const expected = route === "events/christmas-fayre-2026" ? lead.replace(/\s*\([^)]*\)/g, "") : lead;
+      assert.ok(html.includes(expected), `${route} should include the approved organiser text`);
     }
   }
 });
@@ -355,7 +356,7 @@ test("external links communicate their destination and open safely in a new tab"
   assert.ok(externalLinkTags.length > 0);
   for (const link of externalLinkTags) {
     assert.match(link, /target="_blank"/);
-    assert.match(link, /rel="(?=[^"]*\bnoopener\b)(?=[^"]*\bnoreferrer\b)[^"]*"/);
+    assert.match(link, /rel="noopener noreferrer"/);
   }
   // The shared footer/menu social links are exempt from the visible arrow: the brand
   // icon plus service name already makes the destination obvious (approved
@@ -399,9 +400,8 @@ const fireworks = JSON.parse(await readFile(path.resolve("src/content/events/fir
 
 test("the Christmas Fayre page lists every help area from the event record", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  const areas = [...html.matchAll(/<li class="xmas-area"[^>]*>[\s\S]*?<span[^>]*>([^<]*)<\/span>/g)].map((match) => match[1]);
-  assert.deepEqual(areas, christmas.helpAreas.map((area) => escapeHtml(area.name)));
-  assert.equal(areas.length, 10);
+  const roles = html.match(/<p[^>]*data-fayre-help-roles[^>]*>([\s\S]*?)<\/p>/)?.[1];
+  assert.equal(roles, christmas.helpAreas.map(area => escapeHtml(area.name)).join('; ') + '.');
 });
 
 test("the Christmas Fayre page uses a JustSignup click-out and keeps the Fayre inbox for questions", async () => {
@@ -427,8 +427,12 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
   assert.match(html, /class="narnia-landscape__date">Saturday 5th December[\s\S]*?class="narnia-landscape__time">12:00 - 15:00/);
   assert.ok(html.includes(christmas.location));
-  for (const lead of christmas.lead.split(/ and (?=[^()]*\()/)) assert.ok(html.includes(escapeHtml(lead)));
-  assert.equal([...html.matchAll(/class="fayre-leads__card"/g)].length, 2);
+  for (const lead of christmas.lead.split(/ and (?=[^()]*\()/)) assert.ok(html.includes(escapeHtml(lead.replace(/\s*\([^)]*\)/g, ""))));
+  assert.equal([...html.matchAll(/class="xmas-contact__lead-person"/g)].length, 2);
+  assert.equal([...html.matchAll(/class="fayre-leads__card"/g)].length, 0);
+  const team = html.match(/<p[^>]*class="xmas-contact__leads"[^>]*>([\s\S]*?)<\/p>/)?.[1];
+  assert.ok(team, "Team panel is present");
+  assert.doesNotMatch(team, /Squirrel|Otter|Fox|\(|\)/);
   assert.ok(html.includes(escapeHtml(christmas.entry)));
   assert.ok(!html.includes(christmas.whatsOn.map(escapeHtml).join(' · ')), 'Stalls are not repeated above the activity cards');
   assert.ok(!html.includes('class="add-calendar"'), 'Calendar choices are hidden on Fayre details');
