@@ -414,13 +414,12 @@ test("the Christmas Fayre page uses a JustSignup click-out and keeps the Fayre i
   assert.equal([...html.matchAll(/>Email the Fayre <span class="cta-word"[^>]*>tea<span class="cta-tail"[^>]*>m<span/g)].length, 1);
 });
 
-test("the Christmas Fayre page keeps reminders in a plain list, separate from the help areas", async () => {
+test("the Christmas Fayre page omits the redundant Good to know panel", async () => {
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
-  const notes = html.match(/<div class="xmas-notes"[^>]*>([\s\S]*?)<\/div>/)?.[1] ?? "";
-  assert.match(notes, /<h3[^>]*>Good to know<\/h3>/);
-  assert.equal([...notes.matchAll(/<li(?:\s[^>]*)?>/g)].length, 3);
-  for (const reminder of ["Join in anywhere", "Bring a friend", "No experience needed"]) assert.match(notes, new RegExp(reminder));
-  assert.doesNotMatch(notes, /xmas-area/);
+  assert.doesNotMatch(html, /Good to know|class="xmas-notes"|No experience needed/);
+  assert.match(html, /anyone across the school can join in anywhere/);
+  assert.match(html, /pairs welcome/);
+  assert.match(html, /data-fayre-help-roles/);
 });
 
 test("the Christmas Fayre page shows the date, place and lead from the event record, with decoration hidden from assistive technology", async () => {
