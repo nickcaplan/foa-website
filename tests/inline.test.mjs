@@ -85,3 +85,5 @@ test("bold and italic are rendered, including inside link text", () => {
 test("plain text is unchanged", () => {
   assert.equal(renderInline("Doors open at 3:25pm."), "Doors open at 3:25pm.");
 });
+
+ test("mail labels preserve entities, punctuation and local addresses",()=>{for(const label of ["Email us!","Contact us &","Contact us ","user@localhost","test@sub.example.org"]){const html=renderInline(`[${label}](mailto:user@localhost?subject=Hi)`);assert.match(html,/aria-hidden="true"/);assert.doesNotMatch(html,/target=/);assert.equal(html.replace(/<[^>]*>/g, "").replace(/&amp;/g,"&"),label);}});

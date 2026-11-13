@@ -1,3 +1,5 @@
+import { MAIL_ICON_SVG } from "./icons.ts";
+
 const escapeHtml = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -16,8 +18,15 @@ export const renderInline = (value: string, internalHref: (path: string) => stri
       }
       const external = href.startsWith("http");
       if (!external) {
-        const icon = '<svg class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>';
-        const ending = text.includes("@") ? text.replace(/(\.[^.]+)$/u, `<span class="cta-tail">$1${icon}</span>`) : text.replace(/(&[a-z]+;|.)$/u, `<span class="cta-tail">$1${icon}</span>`);
+        const icon = MAIL_ICON_SVG;
+        const split = text.lastIndexOf(" ") + 1;
+        const prefix = text.slice(0, split);
+        const lastWord = text.slice(split);
+        // Email-address labels may wrap before the final domain suffix.
+        // Other labels keep their final word with the decorative envelope.
+        const ending = lastWord.includes("@") && /\.[^.@]+$/.test(lastWord)
+          ? prefix + lastWord.replace(/(\.[^.@]+)$/u, `<span class="cta-tail">$1${icon}</span>`)
+          : `${prefix}<span class="cta-tail">${lastWord}${icon}</span>`;
         return `<a class="text-link" href="${href}">${ending}</a>`;
       }
       const split = text.lastIndexOf(" ") + 1;
