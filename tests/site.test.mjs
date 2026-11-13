@@ -131,13 +131,14 @@ test("Reps Hub shareable messages follow build-time expiry and preserve active l
   assert.doesNotMatch(html, /class leads for the Christmas Fayre/);
 });
 
-test("Christmas Fayre organisers include approved surnames and class names across the site", async () => {
+test("Christmas Fayre organisers retain surnames; only the detail panel omits class names", async () => {
   const christmas = JSON.parse(await readFile(path.resolve("src/content/events/christmas-fayre-2026.json"), "utf8"));
   assert.equal(christmas.lead, "Rachel Briscoe (Squirrel and Otter) and Sophie Glass (Fox)");
   for (const route of ["newsletter", "events/christmas-fayre-2026", "get-involved", "reps"]) {
     const html = await readFile(path.join(dist, route, "index.html"), "utf8");
     for (const lead of christmas.lead.split(/(?<=\)) and /)) {
-      assert.ok(html.includes(lead), `${route} should include the approved organiser names and classes`);
+      const expected = route === "events/christmas-fayre-2026" ? lead.replace(/\s*\([^)]*\)/g, "") : lead;
+      assert.ok(html.includes(expected), `${route} should include the approved organiser text`);
     }
   }
 });
@@ -426,8 +427,12 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   const html = await readFile(path.join(dist, "events/christmas-fayre-2026/index.html"), "utf8");
   assert.match(html, /class="narnia-landscape__date">Saturday 5th December[\s\S]*?class="narnia-landscape__time">12:00 - 15:00/);
   assert.ok(html.includes(christmas.location));
-  for (const lead of christmas.lead.split(/ and (?=[^()]*\()/)) assert.ok(html.includes(escapeHtml(lead)));
-  assert.equal([...html.matchAll(/class="fayre-leads__card"/g)].length, 2);
+  for (const lead of christmas.lead.split(/ and (?=[^()]*\()/)) assert.ok(html.includes(escapeHtml(lead.replace(/\s*\([^)]*\)/g, ""))));
+  assert.equal([...html.matchAll(/class="xmas-contact__lead-person"/g)].length, 2);
+  assert.equal([...html.matchAll(/class="fayre-leads__card"/g)].length, 0);
+  const team = html.match(/<p[^>]*class="xmas-contact__leads"[^>]*>([\s\S]*?)<\/p>/)?.[1];
+  assert.ok(team, "Team panel is present");
+  assert.doesNotMatch(team, /Squirrel|Otter|Fox|\(|\)/);
   assert.ok(html.includes(escapeHtml(christmas.entry)));
   assert.ok(!html.includes(christmas.whatsOn.map(escapeHtml).join(' · ')), 'Stalls are not repeated above the activity cards');
   assert.ok(!html.includes('class="add-calendar"'), 'Calendar choices are hidden on Fayre details');
