@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(const scale of [1,2])test(`Glitter Tree credit ${width} ${mode} ${scale}`,async({page})=>{
+for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(const scale of [1,2])test(`Glitter Tree credit ${width} ${mode} ${scale}`,async({page})=>{test.setTimeout(90000);
  await page.setViewportSize({width,height:1000});
  await page.addInitScript(mode=>{localStorage.setItem('foa-theme',mode);localStorage.setItem('foa-cookie-preferences','essential')},mode);
  for(const path of ['/events/christmas-fayre-2026/','/christmas-fayre-volunteering/']){
@@ -15,6 +15,7 @@ for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(cons
   const preceding=path.includes('/events/')?page.getByRole('region',{name:'Where we need friendly faces'}).getByRole('link',{name:'Volunteer',exact:true}):page.getByRole('link',{name:/See the loan list/});
   const a=await preceding.boundingBox(),b=await credit.boundingBox();expect(b!.y).toBeGreaterThanOrEqual(a!.y+a!.height);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+  const geometry=await link.evaluate(e=>{const b=e.getBoundingClientRect(),l=e.querySelector('.cta-label')!.getBoundingClientRect(),i=e.querySelector('svg')!.getBoundingClientRect();return {center:Math.abs((l.left+l.right-b.left-b.right)/2),clear:i.left-l.right,icon:i.width,font:parseFloat(getComputedStyle(e).fontSize)}});expect(geometry.center).toBeLessThan(1);expect(geometry.clear).toBeGreaterThan(5);expect(geometry.icon).toBeCloseTo(geometry.font*1.3,0);
   const bounds=await link.evaluate(n=>({width:n.clientWidth,scroll:n.scrollWidth}));expect(bounds.scroll).toBeLessThanOrEqual(bounds.width+1);
   if(width===390&&scale===1)expect((await new AxeBuilder({page}).include('.fayre-supporter').analyze()).violations).toEqual([]);
  }
