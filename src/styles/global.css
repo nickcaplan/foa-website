@@ -4216,3 +4216,6 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-in
 /* Feature-card buttons remain usable at enlarged text instead of shrinking to a word-width. */
 .involved-feature__actions{min-width:0}.involved-feature__actions .involved-action{width:100%;min-width:0}
 @media(max-width:47.99rem){.involved-feature__actions{display:grid;grid-template-columns:minmax(0,1fr)}.involved-feature__actions .involved-action{padding-inline:calc(1.3em + 1rem)!important}}
+
+/* Enough label room in nested feature cards at 200% text, overriding the generic mail lane. */
+a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 1rem)!important}
