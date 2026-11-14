@@ -189,3 +189,36 @@ Review this checklist weekly and after a missed regression, a significant archit
 - Check narrow columns as well as whole-page width with normal and enlarged text, including 200% text and both Day/Night modes. Verify the actual new content is exercised by tests, not just an older card with shorter copy.
 - Inspect paired/stacked CTA widths, shared column edges, centred labels and right-edge icon lanes across all affected controls. Inline prose-link icons remain beside the final word. Check `tests/e2e/cta-icon-wrap.spec.ts`, `tests/e2e/cta-slot-centre.spec.ts` and `tests/e2e/volunteering-enlarged.spec.ts` where relevant, plus the current regression tests for the changed component. Never weaken assertions just to fit a regression.
 - Use `npm run verify` for the full gate and inspect the exact-head CI shards. Keep the existing cold-cache and warm-cache verification rule for workflow changes.
+
+## Production QA agents
+
+Two standing QA prompts run against the live production site. The post-merge prompt runs after every merge to main; the general prompt runs twice a day. QA findings are advice, not permission to change code: fixes still go through a PR with independent review and Nick's explicit merge approval.
+
+### Post-merge production QA prompt (runs after every merge)
+
+> A change has just merged to main and reached production. Test the live site thoroughly. First read the merged PR and its complete diff: the agreed requirements, the intended behaviour and the exact code paths changed. Then exercise the changed functionality in production with varied data and realistic mutations: empty, partial and full states; minimum, typical and extreme values; invalid and unexpected input; repeated actions; and interrupted flows such as navigating away mid-task. Follow each code path the change can take, not only the happy path. Check neighbouring pages, shared components and shared formatters for regressions. Inspect rendered phone, tablet and desktop layouts in every supported theme, with normal and enlarged text where the site supports it. Report only verified results and mark anything not exercised as not checked.
+
+Post the result as a comment on the merged PR:
+
+1. Start with **Passed**, **Issues found** or **Not checked**. Identify the merge commit SHA and PR number tested.
+2. Number each finding with severity (critical, high, medium or low), reproduction steps, expected versus actual behaviour and the environment (device class, viewport, theme, text size).
+3. List what was checked and how, and what was not checked and why. A blocked check is not a pass.
+
+Open a GitHub issue for each reproducible defect and link it from the comment. Do not commit fixes directly.
+
+### General production QA prompt (runs twice a day)
+
+> Explore the live production site as an adversarial visitor and try to break it. Do not follow a fixed script: probe forms, navigation, state and media with sequences a real user could produce. Try rapid repeated clicks, double submission, back and forward navigation mid-flow, deep links, stale or hand-edited local state, malformed and over-long input, special characters, boundary viewport sizes, slow or interrupted network and theme or text-size changes mid-task. Cross the boundaries the site relies on: signed-in versus signed-out state, filters and pagination at their edges, players and modals opened in unusual orders, empty and over-full content. Check complete journeys, not isolated components. Never enter real personal data, never trigger real purchases, bookings, emails or external form submissions and never attempt to access or modify another user's data. Report only verified, reproduced results; mark suspected but unreproduced issues as unconfirmed.
+
+Report the result through the agent's normal channel:
+
+1. Start with **No issues found**, **Issues found** or **Not checked**.
+2. For each reproducible defect, open a GitHub issue with severity, reproduction steps, expected versus actual behaviour and the environment. Check open issues first and update an existing issue instead of filing a duplicate.
+3. List the areas covered and the areas not covered. State clearly when a run was cut short.
+
+### The Friends of Ashley QA focus
+
+- The live site is `www.thefriendsofashley.org`, an Astro static site on GitHub Pages. Cover Home, What's On, Fundraising, Get Involved, Uniform and Newsletter, plus the class reps page.
+- Exercise Day/Night mode and enlarged text up to 200% on every run: buttons, CTAs and cards must wrap, keep equal paired widths and stay readable. Check the header, mobile menu and footer links.
+- Ticket purchases leave the site for Ticket Tailor. Verify the button and link only; never start or complete a purchase.
+- Treat stale or inconsistent event dates, times and prices across pages as content bugs. Do not invent replacement facts; report the inconsistency.
