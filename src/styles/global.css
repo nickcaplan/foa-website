@@ -4338,4 +4338,5 @@ main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-
    cannot balloon the em/rem spacing and squeeze buttons into breaking. */
 main .site-width{width:calc(100% - 32px)!important}
 main :is(.fundraising-card,.xmas-stage,.message-card,.info-card,.committee-note,.involved-feature,.involved-closing,.newsletter-expansion-actions,.impact-callout,.newsletter-issue,.narnia-landscape){padding-inline:12px!important}
+main .newsletter-issue{width:100%!important;max-width:100%!important}
 }
