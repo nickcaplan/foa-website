@@ -7,8 +7,8 @@ for(const width of [320,390,1440])for(const scale of [1,2])test(`compact Fayre r
  const roles=section.locator('[data-fayre-help-roles]');
  for(const name of ['Fun Zone','Craft Workshop','Café','Photo booth + Trail prizes','Kids Tombola','Bottle Tombola','Entrance & Tokens','Glitter Tattoos','BBQ','Bar'])await expect(roles).toContainText(name);
  await expect(section.getByRole('link',{name:'Volunteer',exact:true})).toHaveAttribute('href','/christmas-fayre-volunteering/');
- await expect(section.getByRole('heading',{name:'Good to know'})).toBeVisible();
- await expect(section.locator('.xmas-points li')).toHaveCount(3);
+ await expect(section.getByRole('heading',{name:'Good to know'})).toHaveCount(0);
+ await expect(section.locator('.xmas-points li')).toHaveCount(0);
  const order=await page.locator('.xmas-stage section[aria-labelledby]').evaluateAll(es=>es.map(e=>e.getAttribute('aria-labelledby')));
  await expect(page.locator('.xmas-contact__leads')).toBeVisible();
  expect(order).toEqual(['xmas-title','xmas-donations-title','xmas-art-title','xmas-areas-title','xmas-contact-title']);
