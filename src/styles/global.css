@@ -4256,3 +4256,23 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
 @media(max-width:23rem){
 .content-section>.site-width:has(>.involved-feature) .involved-group{width:calc(100% - 40px);margin-inline:auto}
 }
+
+/* Enlarged text: when the vacancy content no longer fits the 4/5 box,
+   grow the box and bring the pill in flow instead of clipping.
+   The class is added by the committee page script only on overflow. */
+.member-vacancy.member-vacancy--grown {
+  overflow: visible;
+  aspect-ratio: auto;
+}
+
+.member-vacancy.member-vacancy--grown .member-vacancy-label {
+  position: static;
+  order: -1;
+  align-self: flex-end;
+  margin: 0 0 0.75rem;
+}
+
+/* When the pill alone would be wider than a grid column, give the cards one column. */
+.committee-grid.committee-grid--roomy {
+  grid-template-columns: 1fr;
+}
