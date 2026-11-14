@@ -5,7 +5,10 @@ for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy car
   await page.setViewportSize({width,height:1000});
   await page.goto('/committee/');
   await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
-  const card=page.locator('.member-card--vacancy');
+  const cards=page.locator('.member-card--vacancy');
+  expect(await cards.count()).toBeGreaterThan(0);
+  for(const card of await cards.all()){
+  if(!(await card.isVisible()))continue;
   await card.scrollIntoViewIfNeeded();
   const link=card.getByRole('link',{name:/Ask us about the role/});
   await expect(link).toBeVisible();
@@ -29,4 +32,5 @@ for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy car
   expect(m.pillOverlapsName,'pill over name').toBe(false);
   expect(m.pillOverlapsLink,'pill over link').toBe(false);
   if(scale===1)expect(m.grown,'growth must stay off at normal text').toBe(false);
+  }
 });
