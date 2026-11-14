@@ -4353,9 +4353,4 @@ main .newsletter-read-more{padding-inline:16px!important}
 @media(max-width:23rem){
 main .newsletter-issue{padding-inline:8px!important}
 }
-/* Non-mail button icons stay px-fixed on phone so enlarged text cannot
-   balloon them and push the label over the line. Mail icons keep their
-   proportional 1.3em envelope by design. */
-main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not([href^="mailto:"]):has(svg) :is(.cta-icon,.external-link-icon) svg,
-main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not([href^="mailto:"]):has(svg) svg.cta-icon{width:21px!important;height:21px!important}
 }
