@@ -1,3 +1,4 @@
+import { MAIL_ICON_SVG } from "../lib/icons.ts";
 import type { APIRoute } from "astro";
 import stylesheet from "../styles/global.css?inline";
 import { withBase } from "../lib/urls";
@@ -36,7 +37,7 @@ export const GET: APIRoute = () => new Response(`<!doctype html>
       .contact-form { display: block; width: 100%; min-height: 55.2rem; margin-top: 1.5rem; border: 0; }
     </style>
   </head>
-  <body>
+  <body class="playground-page">
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="site-header">
       <div class="site-width header-inner">
@@ -63,7 +64,7 @@ export const GET: APIRoute = () => new Response(`<!doctype html>
           <div>
             <h2 class="editorial-heading">Get in touch</h2>
             <p class="section-copy">Use the shared address for The FOA so the right committee member can respond.</p>
-            <a class="button button--primary" href="mailto:thefriendsofashley@gmail.com">Email The Friends of Ashley</a>
+            <a class="button button--primary" href="mailto:thefriendsofashley@gmail.com"><span class="cta-label">Email The Friends of <span class="cta-tail">Ashley${MAIL_ICON_SVG}</span></span></a>
           </div>
           <article class="info-card contact-form-card">
             <h2>Send us a message</h2>
