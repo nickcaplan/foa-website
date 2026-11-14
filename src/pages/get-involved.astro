@@ -69,7 +69,7 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
     <div class="site-width involved-content">
       <article class="involved-feature">
         <div class="involved-feature__copy"><p class="eyebrow">Role vacancy</p><h2 id="volunteering-title">Could you be our <span class="co-secretary">Co-Secretary?</span></h2><p>A light, termly role that one person can do or two can share: agendas, minutes and keeping our paperwork in order. Sarah Parish and Katy Furber, who previously held this role, are happy to have a quick chat first.</p></div>
-        <div class="involved-feature__actions"><a class="button button--amber involved-action" href={enquiry("The FOA Co-Secretary role")}><span class="cta-label">Get in touch<MailIcon /></span></a><a class="button involved-action involved-action--light" href={withBase("/committee/")}>Meet the committee</a></div>
+        <div class="involved-feature__actions"><a class="button button--amber involved-action" href={enquiry("The FOA Co-Secretary role")}><span class="cta-label">Get in touch<MailIcon /></span></a><a class="button involved-action involved-action--light" href={withBase("/committee/")}><span class="cta-label">Meet the <span class="cta-tail">committee<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></div>
       </article>
       <div class="involved-groups" style={`--involved-paired-tracks: ${pairedGroupTracks}`}>
         {groups.map((group) => (
@@ -80,7 +80,7 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
                 <li class="involved-row">
                   <span class="involved-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d={icons[role.icon]} /></svg></span>
                   <div class="involved-text"><h3>{role.name}{role.badge && <span class="involved-badge">{role.badge}</span>}</h3><p>{role.text}</p></div>
-                  <div class="involved-actions">{role.actions.map((action) => <a class="button button--secondary involved-action" href={action.href}><span class="cta-label">{action.label}{action.href.startsWith("mailto:") && <MailIcon />}</span></a>)}</div>
+                  <div class="involved-actions">{role.actions.map((action) => action.href.startsWith("mailto:") ? <a class="button button--secondary involved-action" href={action.href}><span class="cta-label">{action.label}<MailIcon /></span></a> : <a class="button button--secondary involved-action" href={action.href}><span class="cta-label">{(() => { const split = action.label.lastIndexOf(" ") + 1; return <>{action.label.slice(0, split)}<span class="cta-tail">{action.label.slice(split)}<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></>; })()}</span></a>)}</div>
                 </li>
               ))}
             </ul>
