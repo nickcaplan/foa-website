@@ -21,11 +21,17 @@ const members = (await getCollection("committee")).sort((a, b) => a.data.order -
     const fs = parseFloat(getComputedStyle(document.documentElement).fontSize);
     if (!force && fs === lastFS && innerWidth === lastW) return;
     lastFS = fs; lastW = innerWidth;
+    // Reset the shared grid class once per grid, not per box: with two
+    // vacancy cards in one grid, a per-box reset lets a later (hidden) card
+    // wipe the roomy class an earlier card just added.
+    document.querySelectorAll('.committee-grid').forEach((grid) => grid.classList.remove('committee-grid--roomy'));
     document.querySelectorAll('.member-vacancy').forEach((box) => {
+      // Hidden cards (pre/post the vacancy date flip) have no layout;
+      // measuring them would read 0s and corrupt the shared grid state.
+      if (box.offsetParent === null) { box.classList.remove('member-vacancy--grown'); return; }
       const grid = box.closest('.committee-grid');
       const pill = box.querySelector('.member-vacancy-label');
       box.classList.remove('member-vacancy--grown');
-      if (grid) grid.classList.remove('committee-grid--roomy');
       void box.offsetHeight;
       let grown = box.scrollHeight > box.clientHeight + 1;
       const pillW = pill ? pill.scrollWidth : 0;
