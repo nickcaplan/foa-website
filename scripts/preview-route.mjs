@@ -9,5 +9,5 @@ if (branch === 'main' || branch === 'master' || branch.startsWith('preview/')) {
 if (!git('log', '-1', '--pretty=%B').startsWith('[CF-Pages-Skip]')) {
   throw new Error('Commit must begin [CF-Pages-Skip]. No amendment or push performed.');
 }
-console.log('No automatic preview consent or provider changes. preview = Cloudflare; preview + netlify = Netlify.');
+console.log('No automatic preview consent or provider changes. preview = Cloudflare; preview + netlify = Netlify; render-preview = Render (manual PR previews).');
 if (!process.argv.includes('--dry-run')) git('push', '-u', 'origin', `HEAD:${branch}`);
