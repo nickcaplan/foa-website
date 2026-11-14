@@ -4187,13 +4187,13 @@ body.menu-open .cookie-banner {
   justify-content: center;
 }
 
-/* Inline prose links keep their icon beside the final word. Structured
-   controls reserve one right-edge lane, independent of label length. */
+/* Inline prose links and buttons keep their icon beside the final word.
+   List-structured controls reserve one right-edge lane, independent of label length. */
 .cta-icon,.external-link-icon{display:inline-block;margin-inline:.3em 0!important;font-size:1em!important;vertical-align:-.15em;line-height:1}
 .cta-icon svg,svg.cta-icon,.external-link-icon svg{width:1.05em!important;height:1.05em!important;vertical-align:-.15em}
-.button:has(.cta-icon),.event-list-cta--button:has(.cta-icon){position:relative;padding-inline:calc(1.05em + 1.8rem)!important}
-.button .cta-icon,.event-list-cta--button .cta-icon{position:absolute!important;inset:auto .9rem auto auto!important;top:50%!important;translate:0 -50%!important;margin:0!important}
-.button .cta-label,.event-list-cta--button .cta-label{overflow-wrap:anywhere}
+.event-list-cta--button:has(.cta-icon){position:relative;padding-inline:min(calc(1.05em + 1.8rem),3.5rem)!important}
+.event-list-cta--button .cta-icon{position:absolute!important;inset:auto .9rem auto auto!important;top:50%!important;translate:0 -50%!important;margin:0!important}
+.event-list-cta--button .cta-label{overflow-wrap:break-word;word-break:normal}
 .quick-row{position:relative;padding-inline-end:calc(1.05em + 1.8rem)}
 .quick-row .cta-icon{position:absolute!important;right:.9rem;top:50%;translate:0 -50%;margin:0!important}
 .mobile-menu nav a:not(.mobile-menu-cta){position:relative;padding-inline-end:calc(1.05em + 1.8rem);justify-content:flex-start}
@@ -4249,7 +4249,7 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.i
 a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!important;inset-inline-end:10px!important}
 .split-layout .button:has(.external-link-icon){padding-inline:calc(1.05em + 16px)!important}
 .split-layout .button .external-link-icon{right:10px!important;inset-inline-end:10px!important}
-.committee-note>.button{width:auto;max-width:100%;margin-inline:4px}
+.committee-note>.button{width:auto;max-width:calc(100% - 8px);margin-inline:4px}
 }
 
 @media(max-width:23rem){
@@ -4317,8 +4317,8 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)}
    the get-involved icon pills (.involved-action) on their own inline-icon
    system above. Component-scoped twins of this rule live in
    FayreSupporter.astro and EventRow.astro (scoped styles beat globals). */
+main :is(a.button,.button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):has(svg){padding-inline:24px!important}
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
-  padding-inline:24px!important;
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;column-gap:0!important;
   overflow-wrap:break-word!important;word-break:normal!important;
@@ -4329,7 +4329,7 @@ main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-
   justify-content:center!important;text-align:center;
   overflow-wrap:break-word!important;word-break:normal!important;
 }
-main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){
+main :is(a.button,.button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){
   position:static!important;inset:auto!important;inset-inline-end:auto!important;right:auto!important;top:auto!important;transform:none!important;translate:none!important;margin:0!important;margin-inline-start:6px!important;flex:none;
 }
 main :is(a.button,.button,.event-list-cta--button) :is(.cta-label,.cta-word,.cta-tail){overflow-wrap:break-word!important;word-break:normal!important}
@@ -4340,7 +4340,7 @@ main :is(a.button,.button,.event-list-cta--button) .cta-word{display:inline!impo
    wraps onto a line of its own instead of sitting after the last word. */
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg) .cta-label{width:auto!important;flex:0 1 auto!important;min-width:0}
 @media(max-width:47.99rem){
-main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action){width:100%!important}
+main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.committee-note>.button){width:100%!important}
 /* Fixed 16px gutters and 12px card padding on phone, so enlarged text
    cannot balloon the em/rem spacing and squeeze buttons into breaking. */
 main .site-width{width:calc(100% - 32px)!important}
@@ -4354,3 +4354,10 @@ main .newsletter-read-more{padding-inline:16px!important}
 main .newsletter-issue{padding-inline:8px!important}
 }
 }
+
+/* Stacked action columns (Christmas hero, Fayre volunteering, What's On
+   volunteer links) keep icons in one right-edge lane. The rem-free floor
+   stops enlarged text ballooning the lane shut; icons still scale at 1.05em
+   per the shared geometry. */
+main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action):has(svg),main .event-volunteer-link .button:has(svg){position:relative;padding-inline:max(3.5rem,calc(1.05em + 1.8rem))!important}
+main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon),main .event-volunteer-link .button:has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){position:absolute!important;inset:auto .9rem auto auto!important;top:50%!important;translate:0 -50%!important;margin:0!important}

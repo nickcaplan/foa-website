@@ -64,11 +64,11 @@ for(const width of [320,390,1024,1440])for(const enlarged of [false,true])test(`
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(0);
 });
 
-for(const width of [320,390,1440])test(`What's On pill labels align left and arrows right at ${width}px`,async({page})=>{
+for(const width of [320,390,1440])test(`What's On pill labels centre with arrows right at ${width}px`,async({page})=>{
  await page.clock.setFixedTime(new Date('2026-11-11T12:00:00Z'));await page.setViewportSize({width,height:1000});await page.goto('/whats-on/');
  const actions=page.locator('[data-pill-ctas] .event-list-cta--button:visible,[data-pill-ctas] .button:visible');expect(await actions.count()).toBeGreaterThanOrEqual(4);
  for(const action of await actions.all()){
-  const positions=await action.evaluate(e=>{const rect=e.getBoundingClientRect(),label=e.querySelector('.cta-label')!,walker=document.createTreeWalker(label,NodeFilter.SHOW_TEXT);let n;while(n=walker.nextNode()){if(n.textContent?.trim())break}const range=document.createRange();range.selectNodeContents(n!);const text=range.getBoundingClientRect(),arrow=e.querySelector('.cta-icon')!.getBoundingClientRect();return{left:text.left-rect.left,padding:parseFloat(getComputedStyle(e).paddingLeft),right:rect.right-arrow.right,overlap:arrow.left-text.right}});
-  expect(Math.abs(positions.left-positions.padding)).toBeLessThanOrEqual(2);expect(positions.right).toBeGreaterThanOrEqual(10);expect(positions.right).toBeLessThanOrEqual(20);expect(positions.overlap).toBeGreaterThanOrEqual(5);
+  const positions=await action.evaluate(e=>{const rect=e.getBoundingClientRect(),label=e.querySelector('.cta-label')!,walker=document.createTreeWalker(label,NodeFilter.SHOW_TEXT);let n;let left=Infinity,right=-Infinity;const range=document.createRange();while(n=walker.nextNode()){if(!n.textContent?.trim()||n.parentElement?.closest('[aria-hidden]'))continue;range.selectNodeContents(n);const r=range.getBoundingClientRect();left=Math.min(left,r.left);right=Math.max(right,r.right)}const arrow=e.querySelector('.cta-icon')!.getBoundingClientRect();return{left:left-rect.left,padding:parseFloat(getComputedStyle(e).paddingLeft),right:rect.right-arrow.right,overlap:arrow.left-right,centre:(left+right)/2,boxCentre:(rect.left+rect.right)/2}});
+  expect(Math.abs(positions.centre-positions.boxCentre)).toBeLessThanOrEqual(2);expect(positions.right).toBeGreaterThanOrEqual(10);expect(positions.right).toBeLessThanOrEqual(20);expect(positions.overlap).toBeGreaterThanOrEqual(5);
  }
 });
