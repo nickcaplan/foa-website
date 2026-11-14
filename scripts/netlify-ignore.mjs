@@ -16,7 +16,7 @@ export async function shouldBuild(env, request = fetch) {
         pr.base?.repo?.full_name !== 'nickcaplan/foa-website' || pr.base.ref !== 'main' ||
         pr.head?.repo?.full_name !== 'nickcaplan/foa-website' || !Array.isArray(pr.labels)) return false;
     const names = pr.labels.map(label => label.name);
-    return names.includes('preview') && names.includes('netlify') && !names.includes('cloudflare');
+    return names.includes('preview') && names.includes('netlify') && !names.includes('cloudflare') && !names.includes('render-preview');
   } catch { return false; }
 }
 if (import.meta.url === new URL(process.argv[1], 'file:').href) {
