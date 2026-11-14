@@ -4269,8 +4269,6 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
    em/rem lanes compute at 1x) keep label room at 200% text, so long words
    never break mid-word and icons never cover letters. */
 @media(max-width:47.99rem){
-.uniform-cta a.button:not(.fayre-volunteer__email):has(.cta-icon),.contact-page .split-layout a.button:not(.fayre-volunteer__email):has(.cta-icon),.fayre-supporter a.button:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:36px!important}
-.uniform-cta .button .cta-icon,.contact-page .split-layout .button .cta-icon,.fayre-supporter .button .cta-icon{right:11px!important;inset-inline-end:11px!important}
 .uniform-cta .cta-icon svg,.uniform-cta svg.cta-icon,.contact-page .split-layout .cta-icon svg,.contact-page .split-layout svg.cta-icon,.fayre-supporter .cta-icon svg,.fayre-supporter svg.cta-icon{width:17px!important;height:17px!important}
 .uniform-cta a[href^="mailto:"] .cta-icon svg,.uniform-cta a[href^="mailto:"] svg.cta-icon,.contact-page .split-layout a[href^="mailto:"] .cta-icon svg,.contact-page .split-layout a[href^="mailto:"] svg.cta-icon{width:21px!important;height:21px!important}
 .uniform-cta .cta-label,.contact-page .split-layout .cta-label,.fayre-supporter .cta-label{overflow-wrap:normal;word-break:normal}
@@ -4303,4 +4301,41 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
 /* When the pill alone would be wider than a grid column, give the cards one column. */
 .committee-grid.committee-grid--roomy {
   grid-template-columns: 1fr;
+}
+
+/* One button system (Nick 20:54, audit scope A): centred label, icon
+   inline right after the label with a fixed 6px gap, px-fixed padding so
+   200% text cannot balloon the padding and squeeze words into breaking, and
+   labels wrap whole words only (a single word breaks solely when it cannot
+   fit a line at all, so nothing ever scrolls sideways). It applies at
+   every width so enlarged desktop text gets the same treatment; the phone
+   block below adds full width in the 16px gutters. The :not() chain keeps
+   the get-involved icon pills (.involved-action) on their own inline-icon
+   system above. Component-scoped twins of this rule live in
+   FayreSupporter.astro and EventRow.astro (scoped styles beat globals). */
+main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
+  padding-inline:24px!important;
+  max-width:100%;box-sizing:border-box;
+  justify-content:center!important;text-align:center;column-gap:0!important;
+  overflow-wrap:break-word!important;word-break:normal!important;
+}
+main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(:has(svg)){
+  padding-inline:24px!important;
+  max-width:100%;box-sizing:border-box;
+  justify-content:center!important;text-align:center;
+  overflow-wrap:break-word!important;word-break:normal!important;
+}
+main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){
+  position:static!important;inset:auto!important;inset-inline-end:auto!important;right:auto!important;top:auto!important;transform:none!important;translate:none!important;margin:0!important;margin-inline-start:6px!important;flex:none;
+}
+main :is(a.button,.button,.event-list-cta--button) :is(.cta-label,.cta-word,.cta-tail){overflow-wrap:break-word!important;word-break:normal!important}
+/* The label must size to its text, not the full line, or a direct-child icon
+   wraps onto a line of its own instead of sitting after the last word. */
+main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg) .cta-label{width:auto!important;flex:0 1 auto!important;min-width:0}
+@media(max-width:47.99rem){
+main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action){width:100%!important}
+/* Fixed 16px gutters and 12px card padding on phone, so enlarged text
+   cannot balloon the em/rem spacing and squeeze buttons into breaking. */
+main .site-width{width:calc(100% - 32px)!important}
+main :is(.fundraising-card,.xmas-stage,.message-card,.info-card,.committee-note,.involved-feature,.involved-closing,.newsletter-expansion-actions,.impact-callout,.newsletter-issue,.narnia-landscape){padding-inline:12px!important}
 }

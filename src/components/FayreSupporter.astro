@@ -8,7 +8,7 @@ import {withBase} from "../lib/urls";
   <h2>The Glitter Tree</h2>
   <p>Thank you to The Glitter Tree for supporting our Christmas Fayre. They will match our spend with a donation.</p>
  </div>
- <a class="button" href="https://theglittertree.com/" target="_blank" rel="noopener noreferrer"><span class="cta-label">Visit The Glitter Tree</span><svg class="external-link-icon cta-icon supporter-icon" style="transform:none!important;translate:0 -50%!important" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg><span class="visually-hidden"> (opens in a new tab)</span></a>
+ <a class="button" href="https://theglittertree.com/" target="_blank" rel="noopener noreferrer"><span class="cta-label">Visit The Glitter Tree</span><svg class="external-link-icon cta-icon supporter-icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg><span class="visually-hidden"> (opens in a new tab)</span></a>
 </aside>
 <style>
 .fayre-supporter{margin:2rem 0;padding:1.5rem;border-block:1px solid #b99a5b88;display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;color:#fff3d5}
@@ -31,13 +31,9 @@ import {withBase} from "../lib/urls";
 @media(max-width:47.99rem){
 .fayre-supporter{padding-inline:12px;margin-inline:-16px;width:calc(100% + 32px);box-sizing:border-box}
 .fayre-supporter__eyebrow{font-size:.65rem;letter-spacing:.06em}
-.fayre-supporter a.button{width:calc(100% - 8px);max-width:100%;margin-inline:4px;padding-left:36px!important;padding-right:36px!important}
-.fayre-supporter a.button svg.supporter-icon{right:11px!important;width:21px!important;height:21px!important}
-}
-</style>
-<style>
-@media(max-width:23rem){
-:global(.narnia-event .xmas-stage .fayre-supporter a.button),.fayre-supporter a.button{padding-inline:36px!important;border-radius:32px}
-:global(.narnia-event .xmas-stage .fayre-supporter a.button svg.supporter-icon),.fayre-supporter a.button svg.supporter-icon{right:11px!important;width:21px!important;height:21px!important}
+.fayre-supporter a.button{width:calc(100% - 8px);max-width:100%;box-sizing:border-box;margin-inline:4px;padding-left:24px!important;padding-right:24px!important;overflow-wrap:break-word!important;word-break:normal!important}
+.fayre-supporter a.button svg.supporter-icon{position:static!important;inset:auto!important;right:auto!important;top:auto!important;transform:none!important;translate:none!important;margin:0 0 0 6px!important;width:21px!important;height:21px!important}
+:global(.narnia-event .xmas-stage .fayre-supporter a.button){padding-left:24px!important;padding-right:24px!important}
+:global(.narnia-event .xmas-stage .fayre-supporter a.button svg.supporter-icon){position:static!important;inset:auto!important;top:auto!important;transform:none!important;translate:none!important;margin:0 0 0 6px!important}
 }
 </style>
