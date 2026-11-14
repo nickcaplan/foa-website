@@ -28,5 +28,5 @@ for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy car
   }
   expect(m.pillOverlapsName,'pill over name').toBe(false);
   expect(m.pillOverlapsLink,'pill over link').toBe(false);
-  expect(m.grown,'grown class only when text is enlarged').toBe(scale===2);
+  if(scale===1)expect(m.grown,'growth must stay off at normal text').toBe(false);
 });

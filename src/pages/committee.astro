@@ -28,9 +28,10 @@ const members = (await getCollection("committee")).sort((a, b) => a.data.order -
       void box.offsetHeight;
       let grown = box.scrollHeight > box.clientHeight + 1;
       const pillW = pill ? pill.scrollWidth : 0;
-      if (!grown && pill) {
+      const name = box.querySelector('.member-vacancy-name');
+      if (!grown && pill && name) {
         const pb = pill.getBoundingClientRect();
-        const nb = box.querySelector('.member-vacancy-name').getBoundingClientRect();
+        const nb = name.getBoundingClientRect();
         grown = pb.bottom > nb.top + 2 && pb.right > nb.left + 2;
       }
       const pad = parseFloat(getComputedStyle(box).paddingLeft) * 2 + 4;
