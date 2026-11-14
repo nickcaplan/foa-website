@@ -4280,8 +4280,12 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
    as one unit with a fixed .3em gap, and no lane arithmetic can squeeze the
    pair at 200% text. Feature-card and closing CTAs (full-width) keep the
    right-edge lane. */
-.involved-actions a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),.involved-actions .involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:20px!important}
-.involved-actions .involved-action .cta-icon,.involved-actions .involved-action svg.cta-icon{position:static!important;inset:auto!important;right:auto!important;translate:none!important;margin-inline:.3em 0!important}
+:is(.involved-actions,.involved-closing,.involved-feature__actions) a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:20px!important}
+:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action .cta-icon,:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action svg.cta-icon{position:static!important;inset:auto!important;right:auto!important;translate:none!important;margin-inline:.3em 0!important}
+/* Hero buttons: cap the font by viewport so enlarged text still fits the
+   narrowest phones without breaking a long word. */
+main .narnia-landscape .button{font-size:min(1rem,7vw)}
+main .xmas-actions .button{font-size:min(1.05rem,7.5vw)}
 
 /* Enlarged text: when the vacancy content no longer fits the 4/5 box,
    grow the box and bring the pill in flow instead of clipping.
@@ -4329,6 +4333,9 @@ main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-
   position:static!important;inset:auto!important;inset-inline-end:auto!important;right:auto!important;top:auto!important;transform:none!important;translate:none!important;margin:0!important;margin-inline-start:6px!important;flex:none;
 }
 main :is(a.button,.button,.event-list-cta--button) :is(.cta-label,.cta-word,.cta-tail){overflow-wrap:break-word!important;word-break:normal!important}
+/* An inline-block word box can squeeze its nowrap icon tail onto a line of
+   its own; flowing the word inline keeps the icon right after the text. */
+main :is(a.button,.button,.event-list-cta--button) .cta-word{display:inline!important}
 /* The label must size to its text, not the full line, or a direct-child icon
    wraps onto a line of its own instead of sitting after the last word. */
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg) .cta-label{width:auto!important;flex:0 1 auto!important;min-width:0}
@@ -4337,6 +4344,18 @@ main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-
 /* Fixed 16px gutters and 12px card padding on phone, so enlarged text
    cannot balloon the em/rem spacing and squeeze buttons into breaking. */
 main .site-width{width:calc(100% - 32px)!important}
-main :is(.fundraising-card,.xmas-stage,.message-card,.info-card,.committee-note,.involved-feature,.involved-closing,.newsletter-expansion-actions,.impact-callout,.newsletter-issue,.narnia-landscape){padding-inline:12px!important}
+main :is(.fundraising-card,.xmas-stage,.message-card,.info-card,.committee-note,.involved-feature,.involved-closing,.newsletter-expansion-actions,.impact-callout,.newsletter-issue,.narnia-landscape__copy){padding-inline:12px!important}
 main .newsletter-issue{width:100%!important;max-width:100%!important}
+main .newsletter-board{padding-inline:8px!important;border-width:4px!important}
+main .newsletter-expansion-actions{padding-inline:0!important}
+main .newsletter-read-more{padding-inline:16px!important}
+/* Very narrow phones need the sheet's last few px for the longest word. */
+@media(max-width:23rem){
+main .newsletter-issue{padding-inline:8px!important}
+}
+/* Non-mail button icons stay px-fixed on phone so enlarged text cannot
+   balloon them and push the label over the line. Mail icons keep their
+   proportional 1.3em envelope by design. */
+main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not([href^="mailto:"]):has(svg) :is(.cta-icon,.external-link-icon) svg,
+main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not([href^="mailto:"]):has(svg) svg.cta-icon{width:21px!important;height:21px!important}
 }
