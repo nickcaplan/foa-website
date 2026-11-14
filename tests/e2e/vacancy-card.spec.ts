@@ -1,9 +1,10 @@
 import {test,expect} from '@playwright/test';
 // The committee vacancy card must stay fully readable at enlarged text:
 // link visible, pill not overlapping, nothing clipped by the 4/5 box.
-// The two vacancy cards are date-bound: the Co-Secretary card shows until
-// 2026-11-28T00:00:00Z, the Co-Comms card from then on. Test both regimes so
-// each card is actually exercised (invisible cards are skipped by assertion).
+// Co-Secretary vacancy always shows; the Co-Comms vacancy card is added from
+// 2026-11-28T00:00:00Z (and the departing Co-Comms member card hides then).
+// Test both regimes so each card is actually exercised (invisible cards are
+// skipped by assertion).
 for(const flip of [{label:'pre-flip',time:null as string|null},{label:'post-flip',time:'2026-11-29T12:00:00Z'}])
 for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy card readable ${width} @${scale}x ${flip.label}`,async({page})=>{
   await page.setViewportSize({width,height:1000});
@@ -12,6 +13,16 @@ for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy car
   await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
   const cards=page.locator('.member-card--vacancy');
   expect(await cards.count()).toBeGreaterThan(0);
+  // The flip itself: the departing member card must hide and the Co-Comms
+  // vacancy card must appear, post-flip only.
+  const datedMember=page.locator('.member-card[data-show-before]');
+  if(flip.time){
+    await expect(datedMember).toBeHidden();
+    expect(await cards.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).length),'both vacancy cards visible post-flip').toBe(2);
+  }else{
+    await expect(datedMember).toBeVisible();
+    expect(await cards.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).length),'one vacancy card visible pre-flip').toBe(1);
+  }
   let tested=0;
   for(const card of await cards.all()){
   if(!(await card.isVisible()))continue;
