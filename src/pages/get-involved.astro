@@ -1,6 +1,7 @@
 ---
 import MailIcon from "../components/MailIcon.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import EventVisibilityInit from "../components/EventVisibilityInit.astro";
 import PageHero from "../components/PageHero.astro";
 import { withBase } from "../lib/urls";
 import { getEntry } from "astro:content";
@@ -71,6 +72,10 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
         <div class="involved-feature__copy"><p class="eyebrow">Role vacancy</p><h2 id="volunteering-title">Could you be our <span class="co-secretary">Co-Secretary?</span></h2><p>A light, termly role that one person can do or two can share: agendas, minutes and keeping our paperwork in order. Sarah Parish and Katy Furber, who previously held this role, are happy to have a quick chat first.</p></div>
         <div class="involved-feature__actions"><a class="button button--amber involved-action" href={enquiry("The FOA Co-Secretary role")}><span class="cta-label">Get in touch<MailIcon /></span></a><a class="button involved-action involved-action--light" href={withBase("/committee/")}>Meet the committee</a></div>
       </article>
+      <article class="involved-feature" hidden data-show-from="2026-11-28T00:00:00+00:00">
+        <div class="involved-feature__copy"><p class="eyebrow">Role vacancy</p><h2 id="co-comms-title">Could you be our <span class="co-secretary">Co-Comms?</span></h2><p>A light role that one person can do or two can share: newsletters, the website and keeping families up to date. Nick Caplan, who also holds this role, is happy to have a quick chat first.</p></div>
+        <div class="involved-feature__actions"><a class="button button--amber involved-action" href={enquiry("The FOA Co-Comms role")}><span class="cta-label">Get in touch<MailIcon /></span></a><a class="button involved-action involved-action--light" href={withBase("/committee/")}>Meet the committee</a></div>
+      </article>
       <div class="involved-groups" style={`--involved-paired-tracks: ${pairedGroupTracks}`}>
         {groups.map((group) => (
           <section class={`involved-group involved-group--${group.tone}`} aria-labelledby={`group-${group.tone}`}>
@@ -93,4 +98,5 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
       </section>
     </div>
   </section>
+<EventVisibilityInit />
 </BaseLayout>
