@@ -220,7 +220,7 @@ Report the result through the agent's normal channel:
 
 - The live site is `www.thefriendsofashley.org`, an Astro static site on GitHub Pages. Cover Home, What's On, Fundraising, Get Involved, Uniform and Newsletter, plus the class reps page.
 - Exercise Day/Night mode and enlarged text up to 200% on every run: buttons, CTAs and cards must wrap, keep equal paired widths and stay readable. Check the header, mobile menu and footer links.
-- Ticket purchases leave the site for Ticket Tailor. Verify the button and link only; never start or complete a purchase.
+- Ticket purchases leave the site for the external ticket provider (buytickets.at). Verify the button and link only; never start or complete a purchase.
 - Treat stale or inconsistent event dates, times and prices across pages as content bugs. Do not invent replacement facts; report the inconsistency.
 
 ## Standing maintenance agents
@@ -246,6 +246,6 @@ Four further standing prompts keep the site healthy between merges. Suggested ca
 ### The Friends of Ashley maintenance focus
 
 - Enlarged text and phone: mid-word button wraps and unequal paired-CTA widths have recurred here; check every CTA, card and the mobile menu at 200% text in Day and Night modes.
-- Link and content: verify event dates and times against the content collections, fundraising totals against their stated source, Ticket Tailor links and the freshness of the newsletter page and class reps messages.
+- Link and content: verify event dates and times against the content collections, fundraising totals against their stated source, the buytickets.at ticket links and the freshness of the newsletter page and class reps messages.
 - Dependency and security: the site is a public repo with consent-controlled analytics; check the Privacy Notice still matches anything optional that loads.
 - Page speed: posters and event images are the usual weight; check the heaviest event page as well as the homepage.
