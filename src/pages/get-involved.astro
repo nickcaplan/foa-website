@@ -80,7 +80,7 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
                 <li class="involved-row">
                   <span class="involved-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d={icons[role.icon]} /></svg></span>
                   <div class="involved-text"><h3>{role.name}{role.badge && <span class="involved-badge">{role.badge}</span>}</h3><p>{role.text}</p></div>
-                  <div class="involved-actions">{role.actions.map((action) => <a class="button button--secondary involved-action" href={action.href}><span class="cta-label">{action.label}{action.href.startsWith("mailto:") && <MailIcon />}</span></a>)}</div>
+                  <div class="involved-actions">{role.actions.map((action) => action.href.startsWith("mailto:") ? <a class="button button--secondary involved-action" href={action.href}><span class="cta-label">{action.label}<MailIcon /></span></a> : <a class="button button--secondary involved-action" href={action.href}><span class="cta-label">{(() => { const split = action.label.lastIndexOf(" ") + 1; return <>{action.label.slice(0, split)}<span class="cta-tail">{action.label.slice(split)}<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></>; })()}</span></a>)}</div>
                 </li>
               ))}
             </ul>

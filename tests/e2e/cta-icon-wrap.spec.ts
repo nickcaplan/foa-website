@@ -187,3 +187,15 @@ for(const width of [390,1440]) test(`grouped arrow columns at ${width}`,async({p
  await page.goto('/whats-on/');await aligned('[data-volunteer-actions] [data-cta-arrow="forward"]');
  await page.goto('/christmas-fayre-volunteering/');const insets=await page.locator('.fayre-volunteer__action').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().right-e.querySelector('.cta-icon')!.getBoundingClientRect().right));expect(Math.max(...insets)-Math.min(...insets)).toBeLessThan(1);
 });
+
+// Every button CTA on Get involved carries a trailing icon (arrow for page
+// links, mail icon for mailto) - Nick, 14 Nov 2026.
+test("get-involved buttons all carry a trailing icon", async ({ page }) => {
+  await page.goto("/get-involved/");
+  const buttons = await page.locator("main a.button").all();
+  expect(buttons.length).toBeGreaterThan(0);
+  for (const button of buttons) {
+    const label = (await button.textContent())?.trim().slice(0, 40);
+    expect(await button.locator("svg.cta-icon").count(), label).toBeGreaterThan(0);
+  }
+});
