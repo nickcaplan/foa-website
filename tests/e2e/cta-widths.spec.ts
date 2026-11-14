@@ -6,7 +6,7 @@ const routes=['/','/committee/','/get-involved/','/contact/','/uniform/','/newsl
 for(const width of [320,390])for(const route of routes)test(`CTA widths ${width} ${route}`,async({page})=>{
   await page.setViewportSize({width,height:1000});
   await page.goto(route);
-  const boxes=await page.evaluate(()=>[...document.querySelectorAll('a.button')].filter(e=>e.getBoundingClientRect().width>0).map(e=>{const b=e.getBoundingClientRect();return {x:b.x,right:b.right,w:b.width,t:e.textContent!.trim().slice(0,30)}}));
+  const boxes=await page.evaluate(()=>[...document.querySelectorAll('a.button, button.button')].filter(e=>e.getBoundingClientRect().width>0).map(e=>{const b=e.getBoundingClientRect();return {x:b.x,right:b.right,w:b.width,t:e.textContent!.trim().slice(0,30)}}));
   expect(boxes.length,'page has buttons').toBeGreaterThan(0);
   for(const b of boxes){
     expect(b.x,`${route} "${b.t}" left edge inside gutter`).toBeGreaterThanOrEqual(14.5);
