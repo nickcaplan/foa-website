@@ -4233,19 +4233,19 @@ a.button[href^="mailto:"] .cta-label{overflow-wrap:normal;word-break:normal}
 @media(max-width:23rem){a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + .5rem)!important}a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:.3rem!important;inset-inline-end:.3rem!important}}
 @media(max-width:47.99rem){.involved-closing{padding-inline:12px}.involved-closing .involved-action{width:100%}}
 @media(max-width:47.99rem){.uniform-cta{grid-template-columns:minmax(0,1fr)}.uniform-cta .uniform-action{width:100%;min-width:0}.uniform-cta .cta-word{overflow-wrap:normal}}
-@media(max-width:47.99rem){.uniform-cta.site-width{width:calc(100% - 24px)}}
+@media(max-width:47.99rem){}
 @media(max-width:23rem){
 .committee-note,.involved-feature,.involved-closing{margin-inline:-16px;width:calc(100% + 32px);box-sizing:border-box}
 a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 16px)!important}
 a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!important;inset-inline-end:10px!important}
 .split-layout .button:has(.external-link-icon){padding-inline:calc(1.05em + 16px)!important}
 .split-layout .button .external-link-icon{right:10px!important;inset-inline-end:10px!important}
-.committee-note>.button{width:calc(100% + 16px);max-width:calc(100% + 16px);margin-inline:-8px}
+.committee-note>.button{width:auto;max-width:100%;margin-inline:4px}
 }
 
 @media(max-width:23rem){
-.contact-page .split-layout .info-card .button{width:calc(100% + 16px);max-width:calc(100% + 16px);margin-inline:-8px}
-.contact-page .split-layout.site-width{width:calc(100% - 24px)}
+.contact-page .split-layout .info-card .button{width:auto;max-width:100%;margin-inline:4px}
+
 .playground-page .split-layout.site-width{width:calc(100% - 24px)}
 }
 /* Widen the reading column itself, so feature copy stays inside its parent. */
