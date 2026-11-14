@@ -4336,9 +4336,6 @@ main :is(a.button,.button,.event-list-cta--button) :is(.cta-label,.cta-word,.cta
 /* An inline-block word box can squeeze its nowrap icon tail onto a line of
    its own; flowing the word inline keeps the icon right after the text. */
 main :is(a.button,.button,.event-list-cta--button) .cta-word{display:inline!important}
-/* An icon tail is an atomic flex row: the final characters and the icon are
-   flex items, so their boxes can never overlap whatever the font metrics. */
-main :is(a.button,.button,.event-list-cta--button) .cta-tail{display:inline-flex!important;align-items:center;white-space:nowrap}
 /* The label must size to its text, not the full line, or a direct-child icon
    wraps onto a line of its own instead of sitting after the last word. */
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg) .cta-label{width:auto!important;flex:0 1 auto!important;min-width:0}
