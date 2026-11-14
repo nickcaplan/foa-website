@@ -4264,3 +4264,23 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
 @media(max-width:23rem){
 .content-section>.site-width:has(>.involved-feature) .involved-group{width:calc(100% - 40px);margin-inline:auto}
 }
+
+/* Enlarged text on phone strips: px-fixed icon lanes (the same size the
+   em/rem lanes compute at 1x) keep label room at 200% text, so long words
+   never break mid-word and icons never cover letters. */
+@media(max-width:47.99rem){
+.uniform-cta a.button:not(.fayre-volunteer__email):has(.cta-icon),.contact-page .split-layout a.button:not(.fayre-volunteer__email):has(.cta-icon),.fayre-supporter a.button:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:36px!important}
+.uniform-cta .button .cta-icon,.contact-page .split-layout .button .cta-icon,.fayre-supporter .button .cta-icon{right:11px!important;inset-inline-end:11px!important}
+.uniform-cta .cta-icon svg,.uniform-cta svg.cta-icon,.contact-page .split-layout .cta-icon svg,.contact-page .split-layout svg.cta-icon,.fayre-supporter .cta-icon svg,.fayre-supporter svg.cta-icon{width:17px!important;height:17px!important}
+.uniform-cta a[href^="mailto:"] .cta-icon svg,.uniform-cta a[href^="mailto:"] svg.cta-icon,.contact-page .split-layout a[href^="mailto:"] .cta-icon svg,.contact-page .split-layout a[href^="mailto:"] svg.cta-icon{width:21px!important;height:21px!important}
+.uniform-cta .cta-label,.contact-page .split-layout .cta-label,.fayre-supporter .cta-label{overflow-wrap:normal;word-break:normal}
+}
+
+/* Get involved icon pills: at phone widths the reserved lane left the label
+   off-centre and let the icon touch the label (Nick, 14:30). The icon now
+   sits inline right after the label text, so the label+icon group centres
+   as one unit with a fixed .3em gap, and no lane arithmetic can squeeze the
+   pair at 200% text. Feature-card and closing CTAs (full-width) keep the
+   right-edge lane. */
+.involved-actions a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),.involved-actions .involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:20px!important}
+.involved-actions .involved-action .cta-icon,.involved-actions .involved-action svg.cta-icon{position:static!important;inset:auto!important;right:auto!important;translate:none!important;margin-inline:.3em 0!important}
