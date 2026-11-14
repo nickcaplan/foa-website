@@ -4220,6 +4220,12 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-in
 /* Enough label room in nested feature cards at 200% text, overriding the generic mail lane. */
 a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 1rem)!important}
 
+/* Page-link pills in the role rows share the mail pills' tighter icon lane
+   (icon width + .9rem inset), so adjacent pills keep the same rhythm and
+   long labels do not over-wrap at phone widths. */
+.involved-actions .involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:calc(1.05em + .9rem)!important}
+@media(max-width:23rem){.involved-actions .involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:calc(1.05em + .5rem)!important}}
+
 /* Keep words readable when root text is enlarged inside phone cards. */
 @media(max-width:47.99rem){
 .committee-note,.involved-feature,.split-layout .info-card{padding-inline:12px}
@@ -4233,7 +4239,10 @@ a.button[href^="mailto:"] .cta-label{overflow-wrap:normal;word-break:normal}
 @media(max-width:23rem){a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + .5rem)!important}a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:.3rem!important;inset-inline-end:.3rem!important}}
 @media(max-width:47.99rem){.involved-closing{padding-inline:12px}.involved-closing .involved-action{width:100%}}
 @media(max-width:47.99rem){.uniform-cta{grid-template-columns:minmax(0,1fr)}.uniform-cta .uniform-action{width:100%;min-width:0}.uniform-cta .cta-word{overflow-wrap:normal}}
-@media(max-width:47.99rem){}
+/* Phone strips keep a FIXED 16px gutter (matching the standard 2rem gutter at
+   1x) so enlarged text does not balloon the gutter and squeeze the CTA into
+   its icon lane. */
+@media(max-width:47.99rem){.uniform-cta.site-width,.contact-page .split-layout.site-width{width:calc(100% - 32px)}}
 @media(max-width:23rem){
 .committee-note,.involved-feature,.involved-closing{margin-inline:-16px;width:calc(100% + 32px);box-sizing:border-box}
 a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 16px)!important}
@@ -4245,7 +4254,6 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
 
 @media(max-width:23rem){
 .contact-page .split-layout .info-card .button{width:auto;max-width:100%;margin-inline:4px}
-
 .playground-page .split-layout.site-width{width:calc(100% - 24px)}
 }
 /* Widen the reading column itself, so feature copy stays inside its parent. */
