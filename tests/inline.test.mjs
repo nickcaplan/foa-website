@@ -87,3 +87,23 @@ test("plain text is unchanged", () => {
 });
 
  test("mail labels preserve entities, punctuation and local addresses",()=>{for(const label of ["Email us!","Contact us &","Contact us ","user@localhost","test@sub.example.org"]){const html=renderInline(`[${label}](mailto:user@localhost?subject=Hi)`);assert.match(html,/aria-hidden="true"/);assert.doesNotMatch(html,/target=/);assert.equal(html.replace(/<[^>]*>/g, "").replace(/&amp;/g,"&"),label);}});
+
+test('emphasized mail labels keep balanced markup and their final icon tail', () => {
+  for (const marker of ['**', '*']) {
+    const tag = marker === '**' ? 'strong' : 'em';
+    for (const label of ['Email us', 'hello@example.org', 'user@localhost']) {
+      const html = renderInline(`[${marker}${label}${marker}](mailto:hello@example.org)`);
+      assert.ok(html.includes(`<${tag}>`));
+      assert.ok(html.indexOf('</span>') < html.indexOf(`</${tag}>`), html);
+      const stack = [];
+      for (const match of html.matchAll(/<(\/?)(a|span|strong|em|svg|rect|path)\b[^>]*>/g)) {
+        const [full, close, name] = match;
+        if (full.endsWith('/>')) continue;
+        if (close) assert.equal(stack.pop(), name, html);
+        else stack.push(name);
+      }
+      assert.deepEqual(stack, [], html);
+      assert.equal(html.replace(/<[^>]*>/g, ''), label);
+    }
+  }
+});

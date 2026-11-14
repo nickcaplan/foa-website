@@ -19,14 +19,18 @@ export const renderInline = (value: string, internalHref: (path: string) => stri
       const external = href.startsWith("http");
       if (!external) {
         const icon = MAIL_ICON_SVG;
-        const split = text.lastIndexOf(" ") + 1;
-        const prefix = text.slice(0, split);
-        const lastWord = text.slice(split);
-        // Email-address labels may wrap before the final domain suffix.
-        // Other labels keep their final word with the decorative envelope.
-        const ending = lastWord.includes("@") && /\.[^.@]+$/.test(lastWord)
-          ? prefix + lastWord.replace(/(\.[^.@]+)$/u, `<span class="cta-tail">$1${icon}</span>`)
-          : `${prefix}<span class="cta-tail">${lastWord}${icon}</span>`;
+        // Render supported emphasis first, then insert only inside the final
+        // text segment. Opening/closing emphasis tags never cross the tail.
+        const formatted = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>");
+        const ending = formatted.replace(/([^<>]+)((?:<\/(?:strong|em)>)*)$/u, (_segment, finalText: string, closingTags: string) => {
+          const split = finalText.lastIndexOf(" ") + 1;
+          const prefix = finalText.slice(0, split);
+          const lastWord = finalText.slice(split);
+          const tail = lastWord.includes("@") && /\.[^.@]+$/.test(lastWord)
+            ? lastWord.replace(/(\.[^.@]+)$/u, `<span class="cta-tail">$1${icon}</span>`)
+            : `<span class="cta-tail">${lastWord}${icon}</span>`;
+          return prefix + tail + closingTags;
+        });
         return `<a class="text-link" href="${href}">${ending}</a>`;
       }
       const split = text.lastIndexOf(" ") + 1;
