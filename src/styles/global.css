@@ -4343,8 +4343,7 @@ main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.committee-note>.button){width:100%!important}
 /* Fixed 16px gutters and 12px card padding on phone, so enlarged text
    cannot balloon the em/rem spacing and squeeze buttons into breaking. */
-main .site-width{width:calc(100% - 32px)!important}
-main :is(.fundraising-card,.xmas-stage,.message-card,.info-card,.committee-note,.involved-feature,.involved-closing,.newsletter-expansion-actions,.impact-callout,.newsletter-issue,.narnia-landscape__copy){padding-inline:12px!important}
+main :is(.fundraising-card,.message-card,.info-card,.committee-note,.involved-feature,.involved-closing,.newsletter-expansion-actions,.impact-callout,.newsletter-issue,.narnia-landscape__copy){padding-inline:12px!important}
 main .newsletter-issue{width:100%!important;max-width:100%!important}
 main .newsletter-board{padding-inline:8px!important;border-width:4px!important}
 main .newsletter-expansion-actions{padding-inline:0!important}
@@ -4359,5 +4358,5 @@ main .newsletter-issue{padding-inline:8px!important}
    volunteer links) keep icons in one right-edge lane. The rem-free floor
    stops enlarged text ballooning the lane shut; icons still scale at 1.05em
    per the shared geometry. */
-main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action):has(svg),main .event-volunteer-link .button:has(svg){position:relative;padding-inline:max(3.5rem,calc(1.05em + 1.8rem))!important}
+main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action):has(svg),main .event-volunteer-link .button:has(svg){position:relative;padding-inline:min(max(56px,calc(1.05em + 1.8rem)),3.5rem)!important}
 main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon),main .event-volunteer-link .button:has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){position:absolute!important;inset:auto .9rem auto auto!important;top:50%!important;translate:0 -50%!important;margin:0!important}
