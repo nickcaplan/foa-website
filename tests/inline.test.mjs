@@ -17,9 +17,11 @@ test("external links open safely in a new tab and announce it", () => {
   assert.match(html, /><span class="cta-word">Donat<span class="cta-tail">e<span class="external-link-icon" aria-hidden="true">/);
 });
 
-test("mailto links are plain links", () => {
+test("mailto links use the shared decorative envelope, without opening a new tab", () => {
   const html = renderInline("[Email us](mailto:hello@example.org)");
   assert.match(html, /href="mailto:hello@example\.org"/);
+  assert.match(html, /class="cta-icon" aria-hidden="true"/);
+  assert.match(html, /m3 7 9 6 9-6/);
   assert.doesNotMatch(html, /target=/);
 });
 
@@ -82,4 +84,26 @@ test("bold and italic are rendered, including inside link text", () => {
 
 test("plain text is unchanged", () => {
   assert.equal(renderInline("Doors open at 3:25pm."), "Doors open at 3:25pm.");
+});
+
+ test("mail labels preserve entities, punctuation and local addresses",()=>{for(const label of ["Email us!","Contact us &","Contact us ","user@localhost","test@sub.example.org"]){const html=renderInline(`[${label}](mailto:user@localhost?subject=Hi)`);assert.match(html,/aria-hidden="true"/);assert.doesNotMatch(html,/target=/);assert.equal(html.replace(/<[^>]*>/g, "").replace(/&amp;/g,"&"),label);}});
+
+test('emphasized mail labels keep balanced markup and their final icon tail', () => {
+  for (const marker of ['**', '*']) {
+    const tag = marker === '**' ? 'strong' : 'em';
+    for (const label of ['Email us', 'hello@example.org', 'user@localhost']) {
+      const html = renderInline(`[${marker}${label}${marker}](mailto:hello@example.org)`);
+      assert.ok(html.includes(`<${tag}>`));
+      assert.ok(html.indexOf('</span>') < html.indexOf(`</${tag}>`), html);
+      const stack = [];
+      for (const match of html.matchAll(/<(\/?)(a|span|strong|em|svg|rect|path)\b[^>]*>/g)) {
+        const [full, close, name] = match;
+        if (full.endsWith('/>')) continue;
+        if (close) assert.equal(stack.pop(), name, html);
+        else stack.push(name);
+      }
+      assert.deepEqual(stack, [], html);
+      assert.equal(html.replace(/<[^>]*>/g, ''), label);
+    }
+  }
 });
