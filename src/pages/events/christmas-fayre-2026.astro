@@ -1,4 +1,5 @@
 ---
+import FayreSupporter from "../../components/FayreSupporter.astro";
 import { ordinalDateFormatter } from "../../lib/dates";
 import EventVisibilityInit from "../../components/EventVisibilityInit.astro";
 import { eventVisibilityRules } from "../../lib/event-lifecycle";
@@ -105,6 +106,7 @@ const eventJsonLd = {
 .xmas-donations__raffle{margin:1rem 0 0;line-height:1.6;color:#f4ead1}.xmas-donations__raffle strong{color:#edcb83}
 
 </style>
+    <div class="site-width"><FayreSupporter /></div>
     <div class="site-width xmas-followup">
     <section class="xmas-section xmas-section--last" aria-labelledby="xmas-contact-title">
       <div class="xmas-narrow">

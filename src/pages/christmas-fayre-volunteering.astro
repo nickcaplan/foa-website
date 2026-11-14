@@ -1,4 +1,5 @@
 ---
+import FayreSupporter from "../components/FayreSupporter.astro";
 import {getEntry} from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import NarniaHero from '../components/NarniaHero.astro';
@@ -29,6 +30,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
    <div><h2 id="loan-props">Lend a little Narnia magic</h2><p>Have fairy lights, faux Christmas trees or props to lend? See the props and decor list on JustSignup for what's needed, drop-off details and return information.</p></div>
    <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+event.loanSignupAnchor} target="_blank" rel="noopener noreferrer"><span class="cta-label">See the loan <span class="cta-tail">list<span class="external-link-icon cta-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></span><span class="visually-hidden"> (opens JustSignup in a new tab)</span></span></a>
   </section>
+  <FayreSupporter />
   <div class="fayre-volunteer__closing">
    <section class="fayre-volunteer__contact" aria-labelledby="volunteer-questions"><h2 id="volunteer-questions">Questions about helping?</h2><a class="button fayre-volunteer__email" href={'mailto:'+event.contactEmail}><span class="cta-label">Email <span class="cta-tail">us<svg class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></span></span><span class="visually-hidden"> (the Fayre team)</span></a></section>
   </div>
@@ -127,5 +129,31 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 <style is:inline>
 /* Envelope artwork is shallower than a forward arrow: give it a readable 1.3em box. */
 .fayre-volunteer__email svg.cta-icon{width:1.3em!important;height:1.3em!important}
-.fayre-volunteer .fayre-volunteer__contact .button{padding-right:calc(1.3em + 1.8rem)!important}
+.fayre-volunteer .fayre-volunteer__contact .button{padding-right:calc(1.3em + 1.3rem)!important}
+</style>
+
+<style is:inline>
+/* Same external CTA geometry as the supporting-business button. */
+.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan .fayre-volunteer__action{position:relative;min-height:3.5rem;padding-left:calc(1.3em + 1.3rem)!important;padding-right:calc(1.3em + 1.3rem)!important;justify-content:center;text-align:center}
+.narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action .cta-label{text-align:center;overflow-wrap:anywhere}
+.narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action .cta-icon{position:absolute;right:.9rem!important;top:50%;transform:translateY(-50%)!important;translate:none!important;width:1.3em!important;height:1.3em!important;margin:0!important}
+.narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action svg{width:1.3em!important;height:1.3em!important}
+</style>
+<style is:inline>
+/* Narrow enlarged-text columns need reading room, not oversized nested gutters. */
+@media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan{padding-inline:min(1rem,12px)}}
+</style>
+<style is:inline>
+/* The external icon has its own lane; its old final-word wrapper must not affect label wrapping. */
+.narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action .cta-tail{display:inline!important;white-space:normal}
+</style>
+<style is:inline>
+@media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan .fayre-volunteer__action{width:calc(100% + 16px);max-width:calc(100% + 16px);margin-inline:-8px;padding-inline:calc(1.3em + .75rem)!important}}
+</style>
+<style is:inline>
+@media(max-width:23rem){
+.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan .fayre-volunteer__action{padding-inline:calc(1.3em + 12px)!important;border-radius:32px}
+.narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action .cta-icon{right:6px!important;width:1.3em!important;height:1.3em!important}
+.narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action svg{width:1.3em!important;height:1.3em!important}
+}
 </style>
