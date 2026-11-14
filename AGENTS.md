@@ -222,3 +222,30 @@ Report the result through the agent's normal channel:
 - Exercise Day/Night mode and enlarged text up to 200% on every run: buttons, CTAs and cards must wrap, keep equal paired widths and stay readable. Check the header, mobile menu and footer links.
 - Ticket purchases leave the site for Ticket Tailor. Verify the button and link only; never start or complete a purchase.
 - Treat stale or inconsistent event dates, times and prices across pages as content bugs. Do not invent replacement facts; report the inconsistency.
+
+## Standing maintenance agents
+
+Four further standing prompts keep the site healthy between merges. Suggested cadences are marked on each; scheduling lives outside the repo. Findings are advice, not permission to change code: fixes still go through a PR with independent review and Nick's explicit merge approval. Each prompt reports verdict first (**No issues found**, **Issues found** or **Not checked**), then numbered findings with severity, reproduction or evidence and environment, then what was and was not checked. Open a GitHub issue for each actionable finding, after checking for duplicates.
+
+### Enlarged text and phone checker (suggested: after every UI merge)
+
+> Check the live site at phone widths and at enlarged text sizes, up to 200% where the site supports it, in every supported theme. Look for the defects this kind of site keeps having: text overflowing its container, buttons or pills that clip, wrap mid-word or lose equal widths, icons drifting out of alignment, columns becoming unreadably narrow and controls overlapping or becoming unreachable. Exercise interactive controls at these settings: menus, dropdowns, forms, modals and media players. Judge actual rendered layouts from DOM measurements and screenshots, not source or test output alone. Use Android/Pixel 8 as the phone reference where practical and distinguish emulation from a real device. Report viewport, theme and text size for every finding.
+
+### Link and content checker (suggested: weekly)
+
+> Crawl the live site and check every internal and external link, button and asset: broken links, redirects to dead ends, wrong anchors and missing images, audio, video or documents. Then read the visible copy for content problems: placeholder or TBC text, stale dates, expired events still presented as upcoming, totals or counts that no longer match their source and pages that contradict each other. Do not invent replacement facts: report the stale or inconsistent content and its location, with the correct source when one exists in the repository or its linked references. Never submit forms or complete external flows while checking.
+
+### Dependency and security watcher (suggested: weekly)
+
+> Review the repository's dependencies and automation for risk: known vulnerabilities (run the repository's audit tooling, such as `npm audit`, and read the dependency-scan results in CI), outdated packages with security fixes, new or unexpected dependencies in recent PRs, secrets or tokens in any committed file, workflow permissions broader than needed and unpinned or unsafe third-party actions. On the live site, check security headers and any exposed endpoints where applicable. Never expose a credential in a finding: describe its location and type only. Rank findings by severity with a suggested fix and open an issue for anything actionable.
+
+### Page speed check (suggested: weekly, and after merges that touch loading, media or scripts)
+
+> Measure the live site's speed like-for-like and compare it with the previous recorded baseline: cold and warm loads on phone and desktop class connections, covering the main pages and the heaviest page. Record the numbers, method and date so the next run can compare. Flag regressions with the likely cause from recent changes, such as new images, scripts, fonts or embeds. Check that media players and other embeds do not block first render. Report measured results only; if a baseline is missing, say the change is unmeasured rather than zero impact.
+
+### The Friends of Ashley maintenance focus
+
+- Enlarged text and phone: mid-word button wraps and unequal paired-CTA widths have recurred here; check every CTA, card and the mobile menu at 200% text in Day and Night modes.
+- Link and content: verify event dates and times against the content collections, fundraising totals against their stated source, Ticket Tailor links and the freshness of the newsletter page and class reps messages.
+- Dependency and security: the site is a public repo with consent-controlled analytics; check the Privacy Notice still matches anything optional that loads.
+- Page speed: posters and event images are the usual weight; check the heaviest event page as well as the homepage.
