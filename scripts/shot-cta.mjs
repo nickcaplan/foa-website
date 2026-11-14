@@ -1,0 +1,16 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 390, height: 700 } });
+await page.addInitScript(() => localStorage.setItem('foa-cookie-preferences', 'essential'));
+await page.goto('http://localhost:8917/events/christmas-fayre-2026/');
+await page.addStyleTag({ content: 'html{scroll-behavior:auto!important}' });
+await page.locator('.xmas-stalls-cta .button').scrollIntoViewIfNeeded();
+await page.evaluate(() => scrollBy(0, -140));
+await page.waitForTimeout(300);
+await page.screenshot({ path: '/tmp/cta-390-pair.png' });
+await page.goto('http://localhost:8917/christmas-fayre-volunteering/');
+await page.locator('.fayre-supporter a.button').scrollIntoViewIfNeeded();
+await page.evaluate(() => scrollBy(0, -160));
+await page.waitForTimeout(300);
+await page.screenshot({ path: '/tmp/cta-390-volpage.png' });
+await browser.close();
