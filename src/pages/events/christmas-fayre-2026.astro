@@ -91,13 +91,6 @@ const eventJsonLd = {
         <p class="xmas-section__lead">Instead of assigning stalls to year groups, anyone across the school can join in anywhere. Sign up for a slot alongside your friends and help with whatever you’re best at. Join the helpers at these activities (pairs welcome!):</p>
         <p class="xmas-section__lead xmas-help-roles" data-fayre-help-roles>{helpAreas.map(area => area.name).join('; ')}.</p>
         <p class="xmas-actions xmas-stalls-cta"><a class="button button--large" href={withBase(event.volunteeringPath ?? '/christmas-fayre-volunteering/')}><span class="cta-label">Voluntee<span class="cta-tail">r<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
-        </div><div class="xmas-notes">
-          <h3>Good to know</h3>
-          <ul class="xmas-points">
-            <li><strong>Join in anywhere.</strong> Open to everyone at school.</li>
-            <li><strong>Bring a friend.</strong> Friendly faces wanted; pairs welcome.</li>
-            <li><strong>No experience needed.</strong> You won’t be doing it alone. We’ll help with everything on the day.</li>
-          </ul>
         </div></div>
       </div>
     </section>
@@ -252,7 +245,7 @@ const eventJsonLd = {
 
 <style is:inline>
 .narnia-event .xmas-upcoming,.narnia-event .xmas-section>.site-width{container-type:inline-size}
-.narnia-event .xmas-help-layout{display:grid;gap:1.5rem}
+.narnia-event .xmas-help-layout{display:block}.narnia-event .xmas-help-section>div{max-width:48rem;margin-inline:auto}.narnia-event .xmas-help-copy{max-width:none}
 .narnia-event .xmas-help-layout .xmas-notes{margin-top:0}
 .narnia-event .xmas-help-copy .xmas-section__lead:first-child{margin-top:.8rem}
 .narnia-event .xmas-donations-date{display:inline-block;max-width:100%}
@@ -265,7 +258,6 @@ const eventJsonLd = {
  .narnia-event .xmas-upcoming__grid>section[aria-labelledby="xmas-art-title"]>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 2rem;align-items:center}
  .narnia-event #xmas-art-title{grid-column:1 / -1}
  .narnia-event .xmas-art-cta{margin:0!important}
- .narnia-event .xmas-help-layout{grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:2.5rem;align-items:start}
  .narnia-event .xmas-help-layout .xmas-notes{padding-top:.8rem;border-top:0}
 }
 @media(max-width:47.99rem){.narnia-event .xmas-donations-date{display:block}}
