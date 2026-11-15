@@ -4301,6 +4301,11 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
    right-edge lane. */
 :is(.involved-actions,.involved-closing,.involved-feature__actions) a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:20px!important}
 :is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action .cta-icon,:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action svg.cta-icon{position:static!important;inset:auto!important;right:auto!important;translate:none!important;margin-inline:.3em 0!important}
+/* The 1.3em envelope is taller than the label line box, so at enlarged text
+   its top edge can brush the metric box of the wrapped line above (a 0.5px
+   overlap in CI font metrics). Nudge it 2px down: imperceptible beside the
+   text, and the wrap above stays clear. */
+:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action[href^="mailto:"] .cta-icon,:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action[href^="mailto:"] svg.cta-icon{translate:0 2px!important}
 /* Hero buttons: cap the font by viewport so enlarged text still fits the
    narrowest phones without breaking a long word. */
 main .narnia-landscape .button{font-size:min(1rem,7vw)}
