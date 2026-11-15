@@ -131,7 +131,7 @@ test.describe("Wrapping stays inside the neighbouring content column", () => {
             }
             if (path === "/newsletter/") {
               await page.locator("#newsletter-issue-autumn-term-2026 .newsletter-read-more").click();
-              await expect(page.locator('.newsletter-more a[href="https://ashleyschool.org.uk/calendar"]')).toBeVisible();
+              await expect(page.locator('.newsletter-more a[href="https://www.ashleyschool.org.uk/practical-information/term-dates-and-calendar"]')).toBeVisible();
             }
             expect(await strandedIcons(page)).toEqual([]);
             expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
