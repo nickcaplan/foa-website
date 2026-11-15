@@ -3864,7 +3864,9 @@ body.menu-open .cookie-banner {
 }
 
 .involved-badge {
+  display: inline-block;
   margin-left: 0.6rem;
+  white-space: nowrap;
   padding: 0.15rem 0.6rem;
   border-radius: 999px;
   color: #6b3a00;

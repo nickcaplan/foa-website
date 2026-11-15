@@ -133,5 +133,20 @@ for (const theme of ["day", "night"] as const) {
       });
       expect(fundraising).toBe(true);
     });
+
+    test("Get involved vacancy badges never split mid-word", async ({ page }) => {
+      await page.goto("/get-involved/");
+      await useLargeText(page);
+      const badges = page.locator(".involved-badge");
+      expect(await badges.count()).toBeGreaterThan(0);
+      for (const badge of await badges.all()) {
+        const fragments = await badge.evaluate((element) => {
+          const range = document.createRange();
+          range.selectNodeContents(element);
+          return range.getClientRects().length;
+        });
+        expect(fragments, "a vacancy badge splits across lines").toBe(1);
+      }
+    });
   });
 }
