@@ -1,4 +1,7 @@
 :root {
+  /* Cap for display headings at text zoom: past 11vw the rem clamp floors
+     outgrow a phone viewport and whole words split. */
+  --heading-zoom-cap: 11vw;
   --ink: #193127;
   --ink-soft: #4f6358;
   --paper: #f6f1e7;
@@ -1876,7 +1879,7 @@ svg.cta-icon {
 .pillars-grid {
   display: grid;
   gap: 1rem;
-  container-type: inline-size;
+  container: pillars / inline-size;
 }
 
 .pillar {
@@ -1914,7 +1917,7 @@ svg.cta-icon {
 /* At enlarged text sizes the number column leaves too little room for whole
    words, so stack the number above the copy once the grid is narrower than
    about 14em. */
-@container (max-width: 14em) {
+@container pillars (max-width: 14em) {
   .pillar {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -2626,7 +2629,7 @@ body.menu-open .cookie-banner {
   border-radius: var(--radius-md);
   flex-direction: column;
   background: var(--surface);
-  container-type: inline-size;
+  container: member-card / inline-size;
 }
 
 .member-photo {
@@ -3039,9 +3042,9 @@ body.menu-open .cookie-banner {
 
   .section-heading h2,
   .editorial-heading {
-    /* Cap at 11vw too: at text zoom the rem clamp floor outgrows the
-       viewport, and overflow-wrap would split long words mid-word. */
-    font-size: min(clamp(2.15rem, 11vw, 2.75rem), 11vw);
+    /* The var cap keeps whole words fitting at text zoom, where the rem
+       clamp floor outgrows the viewport. */
+    font-size: min(clamp(2.15rem, 11vw, 2.75rem), var(--heading-zoom-cap));
   }
 
   .event-hero h1 {
@@ -3070,7 +3073,7 @@ body.menu-open .cookie-banner {
   }
 
   .newsletter-section > .section-heading h2 {
-    font-size: min(2.25rem, 11vw);
+    font-size: min(2.25rem, var(--heading-zoom-cap));
   }
 
   .committee-grid {
@@ -3091,7 +3094,7 @@ body.menu-open .cookie-banner {
 
   /* At enlarged text sizes a single name outgrows the one-line ellipsis, so
      let names wrap whole words at a viewport-capped size. */
-  @container (max-width: 14em) {
+  @container member-card (max-width: 14em) {
     .member-details h2 {
       overflow: visible;
       font-size: min(clamp(0.95rem, 4vw, 1.05rem), 5vw);
@@ -3194,9 +3197,9 @@ body.menu-open .cookie-banner {
   }
 
   .view-hero .mobile-page-heading-copy h1 {
-    /* Cap at 11vw too: at text zoom the rem clamp floor outgrows the
-       stacked copy frame, and overflow-wrap would split long words. */
-    font-size: min(clamp(1.5rem, 15cqi, 2.65rem), 11vw);
+    /* The var cap keeps whole words fitting at text zoom, where the rem
+       clamp floor outgrows the stacked copy frame. */
+    font-size: min(clamp(1.5rem, 15cqi, 2.65rem), var(--heading-zoom-cap));
   }
 
   .content-section.not-found-page {
@@ -3449,7 +3452,7 @@ body.menu-open .cookie-banner {
 }
 
 .fundraising-page .section-heading h2 {
-  font-size: min(clamp(1.8rem, 4vw, 2.6rem), 11vw);
+  font-size: min(clamp(1.8rem, 4vw, 2.6rem), var(--heading-zoom-cap));
   line-height: 1.1;
 }
 

@@ -13,6 +13,7 @@ const splitWords = () => {
     const range = document.createRange();
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       for (const match of (node.textContent ?? "").matchAll(/[^\s-]+-?/g)) {
+        // matchAll always sets index, so the non-null assertions are safe.
         range.setStart(node, match.index!);
         range.setEnd(node, match.index! + match[0].length);
         if (range.getClientRects().length > 1) broken.push(`${heading.tagName} "${match[0]}" in ${heading.textContent?.trim().slice(0, 40)}`);
@@ -40,6 +41,8 @@ for (const theme of ["day", "night"] as const) {
             await page.goto(route);
             await page.evaluate(() => document.fonts.ready);
             if (scale === 2) await page.evaluate(() => { document.documentElement.style.fontSize = "32px"; });
+    // Doubling the root em mirrors iOS text-size zoom: every rem-based length
+    // (type, padding, grid gaps) grows together, which is what splits words.
             expect(await page.evaluate(splitWords), "heading words split across lines").toEqual([]);
             expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "page scrolls sideways").toBe(true);
           });
