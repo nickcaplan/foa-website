@@ -58,6 +58,9 @@ const deadlineText=deadline;
 .art-comp-banner :global(.mobile-page-heading--no-logo .mobile-page-heading-copy){padding-top:var(--mobile-heading-control-clearance)}
 .art-comp-banner :global(.view-hero-copy){text-align:center}
 .art-comp-banner :global(.view-hero-copy h1){margin-inline:auto}
+/* Uppercase COMPETITION is ~6.9em wide; cap the size against the hero copy
+   container so the word always fits whole, at any text zoom (cqw is zoom-proof). */
+@media(max-width:63.99rem){.art-comp-banner :global(.view-hero h1){font-size:min(clamp(2.35rem,11vw,2.8rem),13cqw)}}
 .art-comp-banner :global(.view-hero-copy > p){text-align:center}
 .art-comp-banner :global(.view-hero p:not(.eyebrow)){color:#fff3d5}
 .art-comp-banner :global(.view-hero h1){text-shadow:none;filter:drop-shadow(0 2px 6px #000b)}
