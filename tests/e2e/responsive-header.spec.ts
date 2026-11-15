@@ -134,14 +134,10 @@ for (const route of ["/", "/newsletter/", "/uniform/", "/events/christmas-fayre-
       const burger = document.querySelector(".menu-toggle")!.getBoundingClientRect();
       return { logoLeft: logo.left, logoRight: logo.right, logoTop: logo.top, logoBottom: logo.bottom, burgerLeft: burger.left, burgerBottom: burger.bottom, copyLeft: copy.left, copyRight: copy.right, copyTop: copy.top, viewport: innerWidth, overflow: document.documentElement.scrollWidth - innerWidth };
     });
-    if (route.includes("fireworks")) {
-      // The retired landing wraps the heading below the logo once enlarged
-      // text leaves no room beside it, so every word stays whole (pinned by
-      // the "scales with enlarged text and stays whole" test).
-      expect(layout.copyLeft >= layout.logoRight || layout.copyTop >= layout.logoBottom, route).toBe(true);
-    } else {
-      expect(layout.copyLeft, route).toBeGreaterThanOrEqual(layout.logoRight);
-    }
+    // Once enlarged text leaves no room beside the logo, the heading wraps
+    // below it so every word stays whole (the fireworks landing led, and the
+    // view heroes now follow; pinned by the "wraps between words" tests).
+    expect(layout.copyLeft >= layout.logoRight || layout.copyTop >= layout.logoBottom, route).toBe(true);
     expect(layout.copyRight, route).toBeLessThanOrEqual(layout.viewport);
     expect(layout.overflow, route).toBeLessThanOrEqual(0);
   });

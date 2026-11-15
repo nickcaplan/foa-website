@@ -586,6 +586,23 @@ a {
     overflow-wrap: anywhere;
   }
 
+  /* The hero copy frames the heading grid. At enlarged text sizes the logo
+     column leaves too little room for whole words, so stack the logo above
+     the copy once the frame is narrower than about 14em. */
+  .view-hero-copy {
+    container: view-hero-copy / inline-size;
+  }
+
+  @container view-hero-copy (max-width: 14em) {
+    .view-hero .mobile-page-heading {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .view-hero .mobile-page-heading-brand {
+      max-width: var(--mobile-page-logo-size);
+    }
+  }
+
   .page-logo-home {
     display: block;
     width: 100%;

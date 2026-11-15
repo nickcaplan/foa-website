@@ -148,5 +148,28 @@ for (const theme of ["day", "night"] as const) {
         expect(fragments, "a vacancy badge splits across lines").toBe(1);
       }
     });
+
+    for (const route of ["/whats-on/", "/fundraising/"]) {
+      test(`${route} hero heading wraps between words, never inside one`, async ({ page }) => {
+        await page.goto(route);
+        await useLargeText(page);
+        const broken = await page.locator(".view-hero h1").evaluateAll((headings) =>
+          headings.flatMap((heading) => {
+            const range = document.createRange();
+            const found: string[] = [];
+            const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
+            for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+              const text = node.textContent ?? "";
+              for (const match of text.matchAll(/\S+/g)) {
+                range.setStart(node, match.index!);
+                range.setEnd(node, match.index! + match[0].length);
+                if (range.getClientRects().length > 1) found.push(match[0]);
+              }
+            }
+            return found;
+          }));
+        expect(broken, "heading words split across lines").toEqual([]);
+      });
+    }
   });
 }
