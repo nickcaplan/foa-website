@@ -4244,35 +4244,32 @@ a[href^="mailto:"] .cta-icon svg,a[href^="mailto:"] svg.cta-icon{width:1.3em!imp
 /* ...and centred on the line box, so the icon cannot dip into the line above
    or below when the label wraps at enlarged text. */
 main a.button.involved-action .cta-icon svg,main a.button.involved-action svg.cta-icon{vertical-align:middle!important}
-main a.button[href^="mailto:"]:not(.fayre-volunteer__email):not(.involved-action):has(.cta-icon){position:relative}
-main a.button[href^="mailto:"]:not(.fayre-volunteer__email):not(.involved-action) .cta-icon{position:absolute!important;top:50%!important;translate:0 -50%!important;margin:0!important;right:.9rem!important}
-@media(max-width:47.99rem){main a.button[href^="mailto:"]:not(.fayre-volunteer__email):not(.involved-action) .cta-icon{right:.5rem!important}}
-@media(max-width:23rem){main a.button[href^="mailto:"]:not(.fayre-volunteer__email):not(.involved-action) .cta-icon{right:10px!important}}
-a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 1.8rem)!important}
+/* Every pill CTA's trailing icon (envelope, arrow or external link) sits in a
+   right-edge lane, vertically centred on the button, with matching lane
+   padding on both sides so the label centres between the lanes and can never
+   run under the icon. */
+main :is(a.button,button.button):has(:is(.cta-icon,.external-link-icon)){position:relative}
+main :is(a.button,button.button) :is(.cta-icon,.external-link-icon){position:absolute!important;top:50%!important;translate:0 -50%!important;margin:0!important;right:.9rem!important;inset-inline-end:.9rem!important}
+@media(max-width:47.99rem){main :is(a.button,button.button) :is(.cta-icon,.external-link-icon){right:.5rem!important;inset-inline-end:.5rem!important}}
+@media(max-width:23rem){main :is(a.button,button.button) :is(.cta-icon,.external-link-icon){right:10px!important;inset-inline-end:10px!important}}
+main :is(a.button,button.button):has(:is(.cta-icon,.external-link-icon)){padding-inline:calc(1.05em + 1.8rem)!important}
+a.button[href^="mailto:"]:has(.cta-icon){padding-inline:calc(1.3em + 1.8rem)!important}
 /* Feature-card buttons remain usable at enlarged text instead of shrinking to a word-width. */
 .involved-feature__actions{min-width:0}.involved-feature__actions .involved-action{width:100%;min-width:0}
-@media(max-width:47.99rem){.involved-feature__actions{display:grid;grid-template-columns:minmax(0,1fr)}.involved-feature__actions .involved-action{padding-inline:calc(1.3em + 1rem)!important}}
-
-/* Enough label room in nested feature cards at 200% text, overriding the generic mail lane. */
-a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 1rem)!important}
-
-/* Page-link pills in the role rows share the mail pills' tighter icon lane
-   (icon width + .9rem inset), so adjacent pills keep the same rhythm and
-   long labels do not over-wrap at phone widths. */
-.involved-actions .involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:calc(1.05em + .9rem)!important}
-@media(max-width:23rem){.involved-actions .involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:calc(1.05em + .5rem)!important}}
+@media(max-width:47.99rem){.involved-feature__actions{display:grid;grid-template-columns:minmax(0,1fr)}}
 
 /* Keep words readable when root text is enlarged inside phone cards. */
 @media(max-width:47.99rem){
 .committee-note,.involved-feature,.split-layout .info-card{padding-inline:12px}
-a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + .9rem)!important}
+a.button[href^="mailto:"]:has(.cta-icon){padding-inline:calc(1.3em + .9rem)!important}
+main :is(a.button,button.button):not([href^="mailto:"]):has(:is(.cta-icon,.external-link-icon)){padding-inline:calc(1.05em + .9rem)!important}
 .split-layout .button:has(.external-link-icon){padding-inline:calc(1.05em + 1.3rem)!important}
 .committee-note .button,.split-layout>div>.button,.involved-feature__actions .button{width:100%}
 a.button[href^="mailto:"] .cta-label{overflow-wrap:normal;word-break:normal}
 .involved-feature__actions .involved-action--light{padding-inline:.5rem;overflow-wrap:normal}
 }
 
-@media(max-width:23rem){a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + .5rem)!important}a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:.3rem!important;inset-inline-end:.3rem!important}}
+@media(max-width:23rem){a.button[href^="mailto:"]:has(.cta-icon){padding-inline:56px!important}main :is(a.button,button.button):not([href^="mailto:"]):has(:is(.cta-icon,.external-link-icon)){padding-inline:calc(1.05em + 16px)!important}}
 @media(max-width:47.99rem){.involved-closing{padding-inline:12px}.involved-closing .involved-action{width:100%}}
 @media(max-width:47.99rem){.uniform-cta{grid-template-columns:minmax(0,1fr)}.uniform-cta .uniform-action{width:100%;min-width:0}.uniform-cta .cta-word{overflow-wrap:normal}}
 /* Phone strips keep a FIXED 16px gutter (matching the standard 2rem gutter at
@@ -4312,19 +4309,6 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
 .uniform-cta .cta-label,.contact-page .split-layout .cta-label,.fayre-supporter .cta-label{overflow-wrap:normal;word-break:normal}
 }
 
-/* Get involved icon pills: at phone widths the reserved lane left the label
-   off-centre and let the icon touch the label (Nick, 14:30). The icon now
-   sits inline right after the label text, so the label+icon group centres
-   as one unit with a fixed .3em gap, and no lane arithmetic can squeeze the
-   pair at 200% text. Feature-card and closing CTAs (full-width) keep the
-   right-edge lane. */
-:is(.involved-actions,.involved-closing,.involved-feature__actions) a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:20px!important}
-:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action .cta-icon,:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action svg.cta-icon{position:static!important;inset:auto!important;right:auto!important;translate:none!important;margin-inline:.3em 0!important}
-/* The 1.3em envelope is taller than the label line box, so at enlarged text
-   its top edge can brush the metric box of the wrapped line above (a 0.5px
-   overlap in CI font metrics). Nudge it 2px down: imperceptible beside the
-   text, and the wrap above stays clear. */
-:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action[href^="mailto:"] .cta-icon,:is(.involved-actions,.involved-closing,.involved-feature__actions) .involved-action[href^="mailto:"] svg.cta-icon{translate:0 2px!important}
 /* Hero buttons: cap the font by viewport so enlarged text still fits the
    narrowest phones without breaking a long word. */
 main .narnia-landscape .button{font-size:min(1rem,7vw)}
@@ -4350,17 +4334,18 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)}
   grid-template-columns: 1fr;
 }
 
-/* One button system (Nick 20:54, audit scope A): centred label, icon
-   inline right after the label with a fixed 6px gap, px-fixed padding so
-   200% text cannot balloon the padding and squeeze words into breaking, and
-   labels wrap whole words only (a single word breaks solely when it cannot
-   fit a line at all, so nothing ever scrolls sideways). It applies at
-   every width so enlarged desktop text gets the same treatment; the phone
-   block below adds full width in the 16px gutters. The :not() chain keeps
-   the get-involved icon pills (.involved-action) on their own inline-icon
-   system above. Component-scoped twins of this rule live in
-   FayreSupporter.astro and EventRow.astro (scoped styles beat globals). */
-main :is(a.button,.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):has(svg){padding-inline:24px!important}
+/* One button system (Nick 20:54, audit scope A; trailing-icon lane 15 Nov):
+   centred label between matching lanes, the trailing icon pinned to the
+   right edge and centred on the button (see the lane rules above), so the
+   icon never drifts with the label length. Padding reserves the icon lane
+   so 200% text cannot squeeze words into breaking, and labels wrap whole
+   words only (a single word breaks solely when it cannot fit a line at
+   all, so nothing ever scrolls sideways). It applies at every width so
+   enlarged desktop text gets the same treatment; the phone block below
+   adds full width in the 16px gutters. Component-scoped twins of this
+   rule live in FayreSupporter.astro and EventRow.astro (scoped styles
+   beat globals). */
+main :is(a.button,.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):has(svg){padding-inline:calc(1.05em + 1.8rem)!important}
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;column-gap:0!important;
@@ -4371,9 +4356,6 @@ main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;
   overflow-wrap:break-word!important;word-break:normal!important;
-}
-main :is(a.button,.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){
-  position:static!important;inset:auto!important;inset-inline-end:auto!important;right:auto!important;top:auto!important;transform:none!important;translate:none!important;margin:0!important;margin-inline-start:6px!important;flex:none;
 }
 main :is(a.button,.button,.event-list-cta--button) :is(.cta-label,.cta-word,.cta-tail){overflow-wrap:break-word!important;word-break:normal!important}
 /* An inline-block word box can squeeze its nowrap icon tail onto a line of

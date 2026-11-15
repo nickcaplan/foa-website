@@ -90,7 +90,7 @@ const eventJsonLd = {
         <div class="xmas-help-layout"><div class="xmas-help-copy">
         <p class="xmas-section__lead">Instead of assigning stalls to year groups, anyone across the school can join in anywhere. Sign up for a slot alongside your friends and help with whatever you’re best at. Join the helpers at these activities (pairs welcome!):</p>
         <p class="xmas-section__lead xmas-help-roles" data-fayre-help-roles>{helpAreas.map(area => area.name).join('; ')}.</p>
-        <p class="xmas-actions xmas-stalls-cta"><a class="button button--large" href={withBase(event.volunteeringPath ?? '/christmas-fayre-volunteering/')}><span class="cta-label">Voluntee<span class="cta-tail">r<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
+        <p class="xmas-actions xmas-stalls-cta"><a class="button button--large xmas-stalls-cta__button" href={withBase(event.volunteeringPath ?? '/christmas-fayre-volunteering/')}><span class="cta-label">Voluntee<span class="cta-tail">r<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></p>
         </div></div>
       </div>
     </section>
@@ -103,6 +103,8 @@ const eventJsonLd = {
 .xmas-donations strong{color:#edcb83;flex:1 1 12rem;min-width:0}
 .xmas-donations span{color:#fff3d5;overflow-wrap:anywhere;flex:2 1 16rem;min-width:0}
 @container(max-width:20em){.xmas-donations{padding:1rem}}
+/* At enlarged text the lane reservation cannot hold next to a one-line label, so the stalls CTA icon rejoins the label flow (the pre-lane geometry the layout tests enshrine). The 14em threshold only fires when the stage is narrow relative to the root font size, i.e. text zoom on phones. */
+@container(max-width:14em){.xmas-stalls-cta .button{padding:10px!important}.xmas-stalls-cta .button .cta-icon{position:static!important;translate:none!important;margin-left:.25rem!important}}
 .xmas-donations__raffle{margin:1rem 0 0;line-height:1.6;color:#f4ead1}.xmas-donations__raffle strong{color:#edcb83}
 
 </style>
