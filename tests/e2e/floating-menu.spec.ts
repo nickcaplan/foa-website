@@ -157,6 +157,25 @@ for (const width of [1280, 1440]) {
   });
 }
 
+// Enlarged text must not grow the floating burger over page content: it keeps
+// its physical 48px size at 200% text, on every route shape.
+for (const width of [320, 390]) {
+  test(`${width}px at 200% text: the burger keeps its 48px size`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/christmas-fayre-volunteering/");
+    await page.evaluate(() => document.documentElement.style.fontSize = "32px");
+    const trigger = page.getByRole("button", { name: "Open menu" });
+    await expect(trigger).toBeVisible();
+    const box = (await trigger.boundingBox())!;
+    expect(box.width).toBe(48);
+    expect(box.height).toBe(48);
+    expect(box.x + box.width).toBeLessThanOrEqual(width);
+    await page.evaluate(() => window.scrollTo(0, 800));
+    await expect(trigger).toBeInViewport();
+    expect((await trigger.boundingBox())!.width).toBe(48);
+  });
+}
+
 for (const route of ["/", "/newsletter/", "/uniform/"]) {
   test(`${route}: 1024px shows the burger instead of navigation links, with no wrapping`, async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 900 });
