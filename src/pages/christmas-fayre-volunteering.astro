@@ -56,6 +56,8 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
    const output=card.querySelector<HTMLElement>(".fayre-volunteer__availability");
    if(!output)continue;
    const state=ended()?"ended":count===null?"unavailable":`${count}/${total?.capacity??""}`;
+   const hide=!ended()&&count===0;
+   if(card.hidden!==hide)card.hidden=hide;
    const changed=output.dataset.state!==state;
    output.dataset.state=state;
    if(ended()){if(changed)output.textContent="Finished";}
@@ -70,7 +72,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
      label.textContent=" slots remaining";
      output.replaceChildren(number,label);
     }
-    ranked.push({name:card.dataset.activityName!,count});
+    if(count>0)ranked.push({name:card.dataset.activityName!,count});
    }
   }
   const updated=document.querySelector<HTMLElement>("[data-availability-updated]");
@@ -137,8 +139,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__priority{display:block;padding:0;margin:1.1rem 0 .4rem;font-size:.95rem;line-height:1.5;color:#f4ead1}
 .fayre-volunteer__updated{font-size:.8rem;margin:0 0 1.25rem;color:#f3dfae}
 .fayre-volunteer__updated:empty{display:none}
-
-.fayre-volunteer__heading{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.35rem .8rem;margin-bottom:1rem}
+.fayre-volunteer__heading{display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem}
 .fayre-volunteer__card .fayre-volunteer__heading h3{margin:0}
 .fayre-volunteer__availability{margin:0;font-size:.85rem;line-height:1.25;min-width:0}
 .fayre-volunteer__schedule{margin:0 0 1.5rem;border-top:1px solid #b99a5b55;font-size:.9rem;line-height:1.6}.fayre-volunteer__schedule>div{display:flex;justify-content:space-between;gap:.4rem 1rem;flex-wrap:wrap;padding-top:.5rem}.fayre-volunteer__schedule dt{color:#edcb83}.fayre-volunteer__schedule dd{margin:0;white-space:nowrap;color:#fff3d5}.fayre-volunteer__schedule dd span{white-space:nowrap}
