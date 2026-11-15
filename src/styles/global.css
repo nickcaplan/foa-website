@@ -3887,6 +3887,12 @@ body.menu-open .cookie-banner {
   max-width: 100%;
 }
 
+@media (max-width: 47.99rem) {
+  .involved-actions .involved-action {
+    width: 100%;
+  }
+}
+
 .involved-closing {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
