@@ -27,7 +27,7 @@ test('mail CTA envelopes are one consistent size site-wide', async ({ page }) =>
       if (!r.width) return null;
       const em = parseFloat(getComputedStyle(e).fontSize);
       return { px: r.height, ratio: r.height / em, label: e.textContent?.trim().slice(0, 24) };
-    }).filter(Boolean));
+    }).filter((x): x is { px: number; ratio: number; label: string } => x !== null));
     for (const s of sizes) {
       // The shared convention is a ~21px envelope: 1.3em where it scales with
       // the button font (20.8-21.8px), pinned at 21px on uniform/contact.
