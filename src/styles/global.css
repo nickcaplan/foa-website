@@ -28,6 +28,7 @@
   --radius-lg: 2rem;
   --max-width: 75rem;
   --menu-touch-target: 2.75rem;
+  --menu-toggle-size: 48px;
   --menu-logo-size: 6.5rem;
   --menu-link-size: 1.375rem;
   --menu-event-link-size: 1.3125rem;
@@ -318,7 +319,7 @@ a {
 
 .menu-toggle {
   /* Fixed physical size: enlarged text must not grow the floating burger over page content. */
-  min-height: min(3rem, 48px);
+  min-height: min(3rem, var(--menu-toggle-size));
   border: 1px solid var(--action-background);
   border-radius: 999px;
   color: var(--action-foreground);
@@ -327,7 +328,7 @@ a {
 
 .menu-toggle {
   display: grid;
-  width: min(3rem, 48px);
+  width: min(3rem, var(--menu-toggle-size));
   flex-shrink: 0;
   padding: 0;
   cursor: pointer;
@@ -335,7 +336,7 @@ a {
 }
 
 .menu-toggle svg {
-  width: min(1.35rem, 21.6px);
+  width: min(1.35rem, calc(var(--menu-toggle-size) * 0.45));
 }
 
 .menu-toggle:hover {
