@@ -317,7 +317,8 @@ a {
 }
 
 .menu-toggle {
-  min-height: 3rem;
+  /* Fixed physical size: enlarged text must not grow the floating burger over page content. */
+  min-height: min(3rem, 48px);
   border: 1px solid var(--action-background);
   border-radius: 999px;
   color: var(--action-foreground);
@@ -326,7 +327,7 @@ a {
 
 .menu-toggle {
   display: grid;
-  width: 3rem;
+  width: min(3rem, 48px);
   flex-shrink: 0;
   padding: 0;
   cursor: pointer;
@@ -334,7 +335,7 @@ a {
 }
 
 .menu-toggle svg {
-  width: 1.35rem;
+  width: min(1.35rem, 21.6px);
 }
 
 .menu-toggle:hover {
