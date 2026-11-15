@@ -325,6 +325,13 @@ const eventJsonLd = {
 .narnia-event .xmas-stage .xmas-contact .button{width:100%;max-width:22rem!important;min-height:3.5rem;text-align:center;justify-content:center}
 .narnia-event .xmas-stage .xmas-contact .xmas-actions{width:100%;margin-top:1.25rem;margin-bottom:0}
 .narnia-event .xmas-stage .xmas-stalls-cta{margin-top:1.25rem;margin-bottom:0}
+/* At phone widths the Fayre CTAs run gutter to gutter like every other
+   main-content CTA; the 22rem action cap only applies on wider screens. */
+@media(max-width:47.99rem){
+.narnia-event .xmas-stage .xmas-art-cta{max-width:none}
+.narnia-event .xmas-stage .xmas-art-cta .button,
+.narnia-event .xmas-stage .xmas-stalls-cta .button{max-width:none!important}
+}
 /* Balance short reading units, rather than leaving a stray last word. */
 .narnia-event .xmas-stage h2,
 .narnia-event .xmas-stage .xmas-donations strong,

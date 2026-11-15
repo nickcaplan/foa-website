@@ -36,3 +36,22 @@ test.describe('without JavaScript',()=>{test.use({javaScriptEnabled:false});test
 });});
 
 test('What’s On Fayre item keeps details and links to volunteering',async({page})=>{await page.goto('/whats-on/');const row=page.locator('[data-event-title="Christmas Fayre"][data-past="false"]');await expect(row.getByRole('link',{name:'Christmas Fayre',exact:true})).toHaveAttribute('href',route);await expect(row.getByRole('link',{name:'Volunteer',exact:true})).toHaveAttribute('href','/christmas-fayre-volunteering/');await expect(row.locator('a a')).toHaveCount(0);});
+
+for (const width of [320, 390]) {
+  test(`Glitter Tree, Volunteer and Art Competition CTAs share one width at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto(route);
+    const widths = await page.evaluate(() => {
+      const widths_of = (selector: string) => [...document.querySelectorAll(selector)].map((e) => e.getBoundingClientRect().width);
+      return {
+        supporter: widths_of('.fayre-supporter a.button'),
+        volunteer: widths_of('.xmas-stalls-cta .button'),
+        art: widths_of('.xmas-art-cta .button'),
+      };
+    });
+    for (const [name, list] of Object.entries(widths)) expect(list.length, `${name} CTA present`).toBeGreaterThan(0);
+    const all = [...widths.supporter, ...widths.volunteer, ...widths.art];
+    expect(Math.max(...all) - Math.min(...all), 'all three CTAs span the same width').toBeLessThanOrEqual(1);
+    expect(Math.min(...all), 'CTAs reach the standard 16px gutter').toBeGreaterThanOrEqual(width - 33);
+  });
+}
