@@ -103,8 +103,6 @@ const eventJsonLd = {
 .xmas-donations strong{color:#edcb83;flex:1 1 12rem;min-width:0}
 .xmas-donations span{color:#fff3d5;overflow-wrap:anywhere;flex:2 1 16rem;min-width:0}
 @container(max-width:20em){.xmas-donations{padding:1rem}}
-/* At enlarged text the lane reservation cannot hold next to a one-line label, so the stalls CTA icon rejoins the label flow (the pre-lane geometry the layout tests enshrine). The 14em threshold only fires when the stage is narrow relative to the root font size, i.e. text zoom on phones. */
-@container(max-width:14em){.xmas-stalls-cta .button{padding:10px!important}.xmas-stalls-cta .button .cta-icon{position:static!important;translate:none!important;margin-left:.25rem!important}}
 .xmas-donations__raffle{margin:1rem 0 0;line-height:1.6;color:#f4ead1}.xmas-donations__raffle strong{color:#edcb83}
 
 </style>
