@@ -4212,6 +4212,10 @@ body.menu-open .cookie-banner {
 
 /* A consistent, readable envelope size, proportional to the link text. */
 a[href^="mailto:"] .cta-icon svg,a[href^="mailto:"] svg.cta-icon{width:1.3em!important;height:1.3em!important}
+main a.button[href^="mailto:"]:not(.fayre-volunteer__email):not(.involved-action):has(.cta-icon){position:relative}
+main a.button[href^="mailto:"]:not(.fayre-volunteer__email):not(.involved-action) .cta-icon{position:absolute!important;top:50%!important;translate:0 -50%!important;margin:0!important;right:.9rem!important}
+@media(max-width:47.99rem){main a.button[href^="mailto:"]:not(.fayre-volunteer__email):not(.involved-action) .cta-icon{right:.5rem!important}}
+@media(max-width:23rem){main a.button[href^="mailto:"]:not(.fayre-volunteer__email):not(.involved-action) .cta-icon{right:10px!important}}
 a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 1.8rem)!important}
 /* Feature-card buttons remain usable at enlarged text instead of shrinking to a word-width. */
 .involved-feature__actions{min-width:0}.involved-feature__actions .involved-action{width:100%;min-width:0}
@@ -4245,7 +4249,9 @@ a.button[href^="mailto:"] .cta-label{overflow-wrap:normal;word-break:normal}
 @media(max-width:47.99rem){.uniform-cta.site-width,.contact-page .split-layout.site-width{width:calc(100% - 32px)}}
 @media(max-width:23rem){
 .committee-note,.involved-feature,.involved-closing{margin-inline:-16px;width:calc(100% + 32px);box-sizing:border-box}
-a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:calc(1.3em + 16px)!important}
+/* Fixed lane at 23rem and below: an em-based lane grows with enlarged text
+   and squeezes long label words (e.g. "Preloved") into mid-word breaks. */
+a.button[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon),a.button.involved-action[href^="mailto:"]:not(.fayre-volunteer__email):has(.cta-icon){padding-inline:56px!important}
 a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!important;inset-inline-end:10px!important}
 .split-layout .button:has(.external-link-icon){padding-inline:calc(1.05em + 16px)!important}
 .split-layout .button .external-link-icon{right:10px!important;inset-inline-end:10px!important}
@@ -4317,7 +4323,7 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)}
    the get-involved icon pills (.involved-action) on their own inline-icon
    system above. Component-scoped twins of this rule live in
    FayreSupporter.astro and EventRow.astro (scoped styles beat globals). */
-main :is(a.button,.button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):has(svg){padding-inline:24px!important}
+main :is(a.button,.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):has(svg){padding-inline:24px!important}
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;column-gap:0!important;
@@ -4329,7 +4335,7 @@ main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-
   justify-content:center!important;text-align:center;
   overflow-wrap:break-word!important;word-break:normal!important;
 }
-main :is(a.button,.button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){
+main :is(a.button,.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){
   position:static!important;inset:auto!important;inset-inline-end:auto!important;right:auto!important;top:auto!important;transform:none!important;translate:none!important;margin:0!important;margin-inline-start:6px!important;flex:none;
 }
 main :is(a.button,.button,.event-list-cta--button) :is(.cta-label,.cta-word,.cta-tail){overflow-wrap:break-word!important;word-break:normal!important}
@@ -4338,7 +4344,7 @@ main :is(a.button,.button,.event-list-cta--button) :is(.cta-label,.cta-word,.cta
 main :is(a.button,.button,.event-list-cta--button) .cta-word{display:inline!important}
 /* The label must size to its text, not the full line, or a direct-child icon
    wraps onto a line of its own instead of sitting after the last word. */
-main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.fayre-supporter .button):has(svg) .cta-label{width:auto!important;flex:0 1 auto!important;min-width:0}
+main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.fayre-supporter .button):has(svg) .cta-label{width:auto!important;flex:0 1 auto!important;min-width:0}
 @media(max-width:47.99rem){
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.committee-note>.button){width:100%!important}
 /* Fixed 16px gutters and 12px card padding on phone, so enlarged text
@@ -4358,5 +4364,5 @@ main .newsletter-issue{padding-inline:8px!important}
    volunteer links) keep icons in one right-edge lane. The rem-free floor
    stops enlarged text ballooning the lane shut; icons still scale at 1.05em
    per the shared geometry. */
-main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action):has(svg),main .event-volunteer-link .button:has(svg){position:relative;padding-inline:min(max(56px,calc(1.05em + 1.8rem)),3.5rem)!important}
-main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon),main .event-volunteer-link .button:has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){position:absolute!important;inset:auto .9rem auto auto!important;top:50%!important;translate:0 -50%!important;margin:0!important}
+main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action,.fayre-volunteer__email):has(svg),main .event-volunteer-link .button:has(svg){position:relative;padding-inline:min(max(56px,calc(1.05em + 1.8rem)),64px)!important}
+main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action,.fayre-volunteer__email):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon),main .event-volunteer-link .button:has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){position:absolute!important;inset:auto 14px auto auto!important;top:50%!important;translate:0 -50%!important;margin:0!important}
