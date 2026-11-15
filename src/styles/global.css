@@ -1,4 +1,7 @@
 :root {
+  /* Cap for display headings at text zoom: past 11vw the rem clamp floors
+     outgrow a phone viewport and whole words split. */
+  --heading-zoom-cap: 11vw;
   --ink: #193127;
   --ink-soft: #4f6358;
   --paper: #f6f1e7;
@@ -1543,14 +1546,16 @@ svg.cta-icon {
   margin: 0;
   color: var(--green);
   font-family: var(--font-display);
-  font-size: 1.8rem;
+  /* The vw cap keeps whole words fitting at text zoom. */
+  font-size: min(1.8rem, 10vw);
 }
 
 .newsletter-summary-section h3 {
   margin: 1.6rem 0 0.45rem;
   color: var(--heading);
   font-family: var(--font-display);
-  font-size: 1.45rem;
+  /* The vw cap keeps whole words fitting at text zoom. */
+  font-size: min(1.45rem, 8vw);
   font-weight: 500;
 }
 
@@ -1874,6 +1879,7 @@ svg.cta-icon {
 .pillars-grid {
   display: grid;
   gap: 1rem;
+  container: pillars / inline-size;
 }
 
 .pillar {
@@ -1896,7 +1902,8 @@ svg.cta-icon {
   grid-column: 2;
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.8rem;
+  /* The vw cap keeps whole words fitting at text zoom. */
+  font-size: min(1.8rem, 9vw);
   font-weight: 500;
   overflow-wrap: anywhere;
 }
@@ -1905,6 +1912,20 @@ svg.cta-icon {
   grid-column: 2;
   margin: 0.5rem 0 0;
   color: var(--ink-soft);
+}
+
+/* At enlarged text sizes the number column leaves too little room for whole
+   words, so stack the number above the copy once the grid is narrower than
+   about 14em. */
+@container pillars (max-width: 14em) {
+  .pillar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pillar h3,
+  .pillar p {
+    grid-column: 1;
+  }
 }
 
 .site-footer {
@@ -2476,7 +2497,8 @@ body.menu-open .cookie-banner {
 .info-card h2 {
   margin-top: 0;
   font-family: var(--font-display);
-  font-size: 2rem;
+  /* The vw cap keeps whole words fitting at text zoom. */
+  font-size: min(2rem, 10vw);
   font-weight: 500;
   line-height: 1.15;
 }
@@ -2607,6 +2629,7 @@ body.menu-open .cookie-banner {
   border-radius: var(--radius-md);
   flex-direction: column;
   background: var(--surface);
+  container: member-card / inline-size;
 }
 
 .member-photo {
@@ -3019,7 +3042,9 @@ body.menu-open .cookie-banner {
 
   .section-heading h2,
   .editorial-heading {
-    font-size: clamp(2.15rem, 11vw, 2.75rem);
+    /* The var cap keeps whole words fitting at text zoom, where the rem
+       clamp floor outgrows the viewport. */
+    font-size: min(clamp(2.15rem, 11vw, 2.75rem), var(--heading-zoom-cap));
   }
 
   .event-hero h1 {
@@ -3048,7 +3073,7 @@ body.menu-open .cookie-banner {
   }
 
   .newsletter-section > .section-heading h2 {
-    font-size: 2.25rem;
+    font-size: min(2.25rem, var(--heading-zoom-cap));
   }
 
   .committee-grid {
@@ -3065,6 +3090,17 @@ body.menu-open .cookie-banner {
     letter-spacing: -0.02em;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  /* At enlarged text sizes a single name outgrows the one-line ellipsis, so
+     let names wrap whole words at a viewport-capped size. */
+  @container member-card (max-width: 14em) {
+    .member-details h2 {
+      overflow: visible;
+      font-size: min(clamp(0.95rem, 4vw, 1.05rem), 5vw);
+      text-overflow: clip;
+      white-space: normal;
+    }
   }
 
   .member-details p {
@@ -3161,7 +3197,9 @@ body.menu-open .cookie-banner {
   }
 
   .view-hero .mobile-page-heading-copy h1 {
-    font-size: clamp(1.5rem, 15cqi, 2.65rem);
+    /* The var cap keeps whole words fitting at text zoom, where the rem
+       clamp floor outgrows the stacked copy frame. */
+    font-size: min(clamp(1.5rem, 15cqi, 2.65rem), var(--heading-zoom-cap));
   }
 
   .content-section.not-found-page {
@@ -3414,7 +3452,7 @@ body.menu-open .cookie-banner {
 }
 
 .fundraising-page .section-heading h2 {
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-size: min(clamp(1.8rem, 4vw, 2.6rem), var(--heading-zoom-cap));
   line-height: 1.1;
 }
 
@@ -3683,6 +3721,8 @@ body.menu-open .cookie-banner {
 }
 
 .fundraising-help h3 {
+  /* The vw cap keeps whole words fitting at text zoom. */
+  font-size: min(1.7rem, 10vw);
   overflow-wrap: anywhere;
 }
 

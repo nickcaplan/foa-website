@@ -75,6 +75,28 @@ const normalDescription = "Find pre-loved uniform from The Friends of Ashley, pl
   .christmas-sale .sale-time { background: transparent; border-color: var(--logo-gold); color: var(--christmas-sale-cream); }
   .christmas-sale .sale-time :is(h3, p, strong, svg) { color: var(--christmas-sale-cream); }
 
+  /* At enlarged text sizes the knit column leaves too little room for whole
+     words, so stack it under the heading once the frame is narrower than
+     about 14em, and let the sale-time row use the full width. */
+  @container uniform-details (max-width: 14em) {
+    .christmas-sale-top {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .christmas-sale .editorial-heading {
+      font-size: min(clamp(2rem, 4vw, 3rem), var(--heading-zoom-cap));
+    }
+    .christmas-sale .sale-time {
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .christmas-sale .sale-time > div {
+      flex: 1 1 9em;
+    }
+    .christmas-sale .sale-time-title {
+      font-size: min(1.05rem, 8vw);
+    }
+  }
+
   .uniform-cta {
     display: grid;
     grid-auto-rows: 1fr;
