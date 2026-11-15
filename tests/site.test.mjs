@@ -512,14 +512,18 @@ test("Fireworks recruitment copy invites every year group on the event page and 
 });
 
 
-test("Christmas volunteering lists the source activities and safe click-outs without stale counts", async () => {
+test("Christmas volunteering lists the source activities and safe click-outs, with counts rendered client-side", async () => {
  const html=await readFile(path.join(dist,"christmas-fayre-volunteering/index.html"),"utf8");
  assert.equal([...html.matchAll(/class="fayre-volunteer__card"/g)].length,christmas.signupActivities.length);
  for(const activity of christmas.signupActivities){
   assert.ok(html.includes(escapeHtml(activity.name)));
   assert.ok(html.includes(`href="${christmas.signupUrl}#${activity.anchor}" target="_blank" rel="noopener noreferrer"`));
+  assert.ok(html.includes(`data-availability-code="${activity.anchor}"`));
+  assert.ok(html.includes(`data-activity-name="${escapeHtml(activity.name)}"`));
  }
- assert.doesNotMatch(html, /<iframe|places left|of \d+ open|data-availability/);
+ // Counts load client-side from the published snapshot; no count is ever baked into static HTML.
+ assert.match(html,/data-availability-url="[^"]*\/fayre-availability\.json"/);
+ assert.doesNotMatch(html, /<iframe|\d+ places? left|of \d+ open/);
  assert.ok(html.includes(`href="${basePath}${christmas.path}"`));
 });
 
