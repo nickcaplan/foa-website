@@ -11,14 +11,21 @@ def page(slots=None,anchor=ANCHOR,name=NAME):
 class ParserTests(unittest.TestCase):
     def test_open_count_and_no_personal_data(self):
         """Verify open count and no personal data."""
-        rows=m.parse(page(),ANCHOR);self.assertEqual(rows,[{'endsAt':'2026-12-05T14:30:00+00:00','open':3}]);self.assertNotIn('PRIVATE',str(rows))
+        rows=m.parse(page(),ANCHOR);self.assertEqual(rows,[{'endsAt':'2026-12-05T14:30:00+00:00','open':3,'capacity':6}]);self.assertNotIn('PRIVATE',str(rows))
     def test_full_waitlist_is_zero(self):
         """Verify full waitlist is zero."""
-        self.assertEqual(m.parse(page([slot('Full · waitlist')]),ANCHOR)[0]['open'],0)
+        row=m.parse(page([slot('Full · waitlist')]),ANCHOR)[0];self.assertEqual(row['open'],0);self.assertIsNone(row['capacity'])
+    def test_full_slot_capacity_carried_forward(self):
+        """Verify a newly full slot keeps its last published capacity."""
+        previous={'activities':{ANCHOR:{'name':NAME,'checkedAt':'2026-12-01T08:00:00+00:00','rows':[{'endsAt':'2026-12-05T14:30:00+00:00','open':2,'capacity':6}]}}}
+        with patch.object(m,'urlopen',return_value=Response(page([slot('Full · waitlist')]).encode())):
+            data=m.fetch(datetime(2026,12,1,9,0,tzinfo=timezone.utc),previous)
+        row=data['activities'][ANCHOR]['rows'][0]
+        self.assertEqual(row['open'],0);self.assertEqual(row['capacity'],6)
     def test_multiple_slots(self):
         """Verify multiple slots."""
         rows=m.parse(page([slot('2 of 3 open','Sat, Dec 5 · 12:00 PM – 12:30 PM'),slot('8 of 8 open','Sat, Dec 5 · 12:30 PM – 1:00 PM')]),ANCHOR)
-        self.assertEqual(rows,[{'endsAt':'2026-12-05T12:30:00+00:00','open':2},{'endsAt':'2026-12-05T13:00:00+00:00','open':8}])
+        self.assertEqual(rows,[{'endsAt':'2026-12-05T12:30:00+00:00','open':2,'capacity':3},{'endsAt':'2026-12-05T13:00:00+00:00','open':8,'capacity':8}])
     def test_noon_and_midnight_boundaries(self):
         """Verify noon and midnight boundaries."""
         self.assertEqual(m.parse(page([slot(time='Sat, Dec 5 · 12:00 AM – 12:30 AM')]),ANCHOR)[0]['endsAt'],'2026-12-05T00:30:00+00:00')
@@ -45,7 +52,7 @@ class ParserTests(unittest.TestCase):
             self.assertEqual(m.in_window(datetime.fromisoformat(stamp)),expected,stamp)
     def test_overnight_fetch_keeps_previous_without_provider_read(self):
         """Verify overnight fetch keeps previous without provider read."""
-        previous={'schema':1,'checkedAt':'2026-11-30T20:47:00+00:00','eventEndsAt':m.END.isoformat(),'activities':{ANCHOR:{'name':NAME,'checkedAt':'2026-11-30T20:47:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':4}]}}}
+        previous={'schema':1,'checkedAt':'2026-11-30T20:47:00+00:00','eventEndsAt':m.END.isoformat(),'activities':{ANCHOR:{'name':NAME,'checkedAt':'2026-11-30T20:47:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':4,'capacity':4}]}}}
         with patch.object(m,'urlopen',side_effect=AssertionError('provider read attempted')):
             self.assertEqual(m.fetch(datetime(2026,12,1,3,0,tzinfo=timezone.utc),previous),previous)
         self.assertEqual(m.fetch(datetime(2026,12,1,3,0,tzinfo=timezone.utc))['activities'],{})
@@ -66,7 +73,7 @@ class FetchTests(unittest.TestCase):
         self.assertTrue(all(not a.get('unavailable') for a in data['activities'].values()))
     def test_failed_fetch_marks_unavailable_and_keeps_previous(self):
         """Verify failed fetch marks unavailable and keeps previous."""
-        previous={'activities':{ANCHOR:{'name':NAME,'checkedAt':'2026-12-01T08:00:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':2}]}}}
+        previous={'activities':{ANCHOR:{'name':NAME,'checkedAt':'2026-12-01T08:00:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':2,'capacity':2}]}}}
         with patch.object(m,'urlopen',side_effect=HTTPError('url',500,'down',{},None)):
             data=m.fetch(datetime(2026,12,1,9,0,tzinfo=timezone.utc),previous)
         self.assertEqual(data['activities'][ANCHOR]['rows'][0]['open'],2)
@@ -76,7 +83,7 @@ class PreservationTests(unittest.TestCase):
     def test_bootstrap_uses_only_fresh_validated_seed(self):
         """Verify bootstrap uses only fresh validated seed."""
         now=datetime(2026,12,1,9,0,tzinfo=timezone.utc)
-        seed={'schema':1,'preview':True,'eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':'2026-12-01T08:37:50+00:00','rows':[{'endsAt':m.END.isoformat(),'open':3}]} for code,name in m.SHEETS.items()}}
+        seed={'schema':1,'preview':True,'eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':'2026-12-01T08:37:50+00:00','rows':[{'endsAt':m.END.isoformat(),'open':3,'capacity':6}]} for code,name in m.SHEETS.items()}}
         with patch.object(m,'urlopen',side_effect=HTTPError('url',404,'missing',{},None)):
             result=m.preserve('https://example.test/counts.json',now,seed)
             self.assertNotIn('preview',result);self.assertEqual(len(result['activities']),len(m.SHEETS))
@@ -84,7 +91,7 @@ class PreservationTests(unittest.TestCase):
     def test_published_snapshot_salvaged_per_activity(self):
         """Verify published snapshot salvaged per activity."""
         now=datetime(2026,12,1,9,0,tzinfo=timezone.utc)
-        good={'name':NAME,'checkedAt':'2026-12-01T08:58:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':5}]}
+        good={'name':NAME,'checkedAt':'2026-12-01T08:58:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':5,'capacity':5}]}
         raw={'schema':1,'eventEndsAt':m.END.isoformat(),'activities':{ANCHOR:good,next(c for c in m.SHEETS if c!=ANCHOR):{'name':'tampered','checkedAt':'bad','rows':[]}}}
         with patch.object(m,'urlopen',return_value=Response(json.dumps(raw).encode())):
             result=m.preserve('https://example.test/counts.json',now)
@@ -92,11 +99,11 @@ class PreservationTests(unittest.TestCase):
         self.assertEqual(len(result['activities']),1)
     def test_validation_rejects_unknown_fields_and_personal_data(self):
         """Verify validation rejects unknown fields and personal data."""
-        row={'endsAt':m.END.isoformat(),'open':3}
+        row={'endsAt':m.END.isoformat(),'open':3,'capacity':6}
         activity={'name':NAME,'checkedAt':'2026-12-01T08:00:00+00:00','rows':[row]}
         base={'schema':1,'checkedAt':'2026-12-01T09:00:00+00:00','eventEndsAt':m.END.isoformat(),'activities':{ANCHOR:activity}}
         self.assertEqual(m.validate_snapshot(dict(base)),dict(base))
-        for bad in [dict(base,extra=1),dict(base,eventEndsAt='2026-11-05T19:00:00+00:00'),dict(base,activities={ANCHOR:dict(activity,volunteers=['PRIVATE'])}),dict(base,activities={ANCHOR:dict(activity,rows=[dict(row,names='PRIVATE')])}),dict(base,activities={ANCHOR:dict(activity,rows=[{'endsAt':m.END.isoformat(),'open':21}])}),dict(base,activities={'s-unknown':activity}),dict(base,activities={ANCHOR:dict(activity,name='Other')})]:
+        for bad in [dict(base,extra=1),dict(base,eventEndsAt='2026-11-05T19:00:00+00:00'),dict(base,activities={ANCHOR:dict(activity,volunteers=['PRIVATE'])}),dict(base,activities={ANCHOR:dict(activity,rows=[dict(row,names='PRIVATE')])}),dict(base,activities={ANCHOR:dict(activity,rows=[{'endsAt':m.END.isoformat(),'open':21,'capacity':21}])}),dict(base,activities={ANCHOR:dict(activity,rows=[{'endsAt':m.END.isoformat(),'open':3,'capacity':2}])}),dict(base,activities={ANCHOR:dict(activity,rows=[{'endsAt':m.END.isoformat(),'open':3,'capacity':'6'}])}),dict(base,activities={'s-unknown':activity}),dict(base,activities={ANCHOR:dict(activity,name='Other')})]:
             with self.assertRaises(ValueError): m.validate_snapshot(bad)
 if __name__=='__main__':
     unittest.main()
