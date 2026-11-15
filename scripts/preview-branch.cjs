@@ -6,7 +6,7 @@ module.exports = async ({github, context, core}) => {
   const labels = pr.labels.map(x => x.name);
   const selected = pr.state === 'open' && pr.base.ref === 'main' &&
     pr.head.repo?.full_name === `${owner}/${repo}` &&
-    labels.includes('preview') && !labels.includes('netlify');
+    labels.includes('preview') && !labels.includes('netlify') && !labels.includes('render-preview');
   const prefix = `heads/preview/pr-${number}/`;
   const refs = await github.paginate(github.rest.git.listMatchingRefs, {owner, repo, ref: prefix});
   const valid = refs.filter(x => new RegExp(`^refs/${prefix}[a-f0-9]{40}$`).test(x.ref));
@@ -20,7 +20,7 @@ module.exports = async ({github, context, core}) => {
     const {data: latest} = await github.rest.pulls.get({owner, repo, pull_number: number});
     const names = latest.labels.map(x => x.name);
     if (latest.state !== 'open' || latest.head.sha !== pr.head.sha ||
-        !names.includes('preview') || names.includes('netlify')) {
+        !names.includes('preview') || names.includes('netlify') || names.includes('render-preview')) {
       core.info('Preview request changed; no branch published.'); return;
     }
     await github.rest.git.createRef({owner, repo, ref: `refs/${wanted}`, sha: commit.sha});

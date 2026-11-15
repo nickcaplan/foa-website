@@ -8,7 +8,7 @@ const route = createRequire(import.meta.url)('../scripts/preview-branch.cjs');
 const sha = 'a'.repeat(40), old = 'b'.repeat(40), repo = 'nickcaplan/foa-website';
 function pr(labels = [], extra = {}) {return {number: 12, state: 'open', base: {ref: 'main', repo: {full_name: repo}}, head: {sha, repo: {full_name: repo}}, labels: labels.map(name => ({name})), ...extra};}
 const env = {CONTEXT:'deploy-preview', PULL_REQUEST:'true', REVIEW_ID:'12'};
-for (const labels of [[], ['preview'], ['netlify'], ['preview','cloudflare'], ['preview','netlify','cloudflare'], ['preview','netlify']]) {
+for (const labels of [[], ['preview'], ['netlify'], ['preview','cloudflare'], ['preview','netlify','cloudflare'], ['preview','netlify','render-preview'], ['preview','netlify']]) {
   test(`Netlify only accepts explicit provider: ${labels}`, async () => {
     assert.equal(await shouldBuild(env, async () => ({ok:true, json:async()=>pr(labels)})), labels.length === 2 && labels.includes('netlify'));
   });
@@ -29,7 +29,7 @@ function harness(p = pr(), refs = [], latest = p) {
   }}};
   return {writes, run:()=>route({github,context:{repo:{owner:'nickcaplan',repo:'foa-website'},payload:{pull_request:{number:12}}},core:{info(){}}})};
 }
-for (const p of [pr(), pr(['netlify']), pr(['preview','netlify']), pr(['preview'],{state:'closed'}), pr(['preview'],{head:{sha,repo:{full_name:'other/fork'}}}), pr(['preview'],{base:{ref:'other'}})]) {
+for (const p of [pr(), pr(['netlify']), pr(['preview','netlify']), pr(['preview','render-preview']), pr(['preview'],{state:'closed'}), pr(['preview'],{head:{sha,repo:{full_name:'other/fork'}}}), pr(['preview'],{base:{ref:'other'}})]) {
   test('no consent, alternate provider, closed or fork: no build',async()=>{const h=harness(p);await h.run();assert.deepEqual(h.writes,[]);});
 }
 test('label: exactly one wrapper and ref, original tree and parent unchanged',async()=>{
@@ -45,7 +45,7 @@ test('new head builds once, then deletes only old controlled ref',async()=>{
 test('unlabel removes controlled refs without creating a preview',async()=>{
   const h=harness(pr(),[{ref:`refs/heads/preview/pr-12/${old}`}]);await h.run();assert.deepEqual(h.writes.map(x=>x[0]),['delete']);
 });
-for (const latest of [pr(),pr(['preview','netlify']),pr(['preview'],{state:'closed'}),pr(['preview'],{head:{sha:old,repo:{full_name:repo}}})]) {
+for (const latest of [pr(),pr(['preview','netlify']),pr(['preview','render-preview']),pr(['preview'],{state:'closed'}),pr(['preview'],{head:{sha:old,repo:{full_name:repo}}})]) {
  test('consent/head changes during API calls prevent publication',async()=>{const h=harness(pr(['preview']),[],latest);await h.run();assert.deepEqual(h.writes.map(x=>x[0]),['commit']);});
 }
 test('workflow uses trusted code, pinned actions and serial per-PR execution',()=>{
