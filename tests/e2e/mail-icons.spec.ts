@@ -13,3 +13,26 @@ for(const width of [320,390,1440])for(const scale of [1,2])for(const theme of ['
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),route).toBeLessThanOrEqual(0);
  }
 });
+
+test('mail CTA envelopes are one consistent size site-wide', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await page.addInitScript(() => localStorage.setItem('foa-cookie-preferences', 'essential'));
+  for (const route of routes.filter(r => r !== '/playground.html')) {
+    await page.goto(route);
+    await page.evaluate(() => document.fonts.ready);
+    const sizes = await page.locator('a.button[href^="mailto:"]').evaluateAll((els) => els.map((e) => {
+      const svg = e.querySelector('svg');
+      if (!svg) return null;
+      const r = svg.getBoundingClientRect();
+      if (!r.width) return null;
+      const em = parseFloat(getComputedStyle(e).fontSize);
+      return { px: r.height, ratio: r.height / em, label: e.textContent?.trim().slice(0, 24) };
+    }).filter(Boolean));
+    for (const s of sizes) {
+      // The shared convention is a ~21px envelope: 1.3em where it scales with
+      // the button font (20.8-21.8px), pinned at 21px on uniform/contact.
+      expect(s.px, `${route} "${s.label}" envelope ${s.px}px, want ~21px like every other mail CTA`).toBeGreaterThan(20.4);
+      expect(s.px, `${route} "${s.label}" envelope ${s.px}px, want ~21px like every other mail CTA`).toBeLessThan(22.1);
+    }
+  }
+});

@@ -89,7 +89,9 @@ for (const width of [320, 390, 768, 1024, 1440]) {
         for (const group of layout.groups) {
           for (const row of group.rows) {
             expect(row.action.top).toBeGreaterThanOrEqual(row.text.bottom - 1);
-            expect(row.action.left).toBeCloseTo(row.text.left, 0);
+            // Phone widths (< 768px): buttons span the full card row from the
+            // icon's left edge; wider viewports keep them under the text column.
+            expect(row.action.left).toBeCloseTo(width < 768 ? row.left : row.text.left, 0);
             expect(row.action.right).toBeLessThanOrEqual(row.right + 1);
           }
         }

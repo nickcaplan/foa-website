@@ -3888,6 +3888,10 @@ body.menu-open .cookie-banner {
 }
 
 @media (max-width: 47.99rem) {
+  .involved-actions {
+    grid-column: 1 / -1;
+  }
+
   .involved-actions .involved-action {
     width: 100%;
   }
@@ -4218,9 +4222,6 @@ body.menu-open .cookie-banner {
 
 /* A consistent, readable envelope size, proportional to the link text. */
 a[href^="mailto:"] .cta-icon svg,a[href^="mailto:"] svg.cta-icon{width:1.3em!important;height:1.3em!important}
-/* Pill rows keep the shared 1.05em icon so the inline envelope cannot spill
-   over wrapped label lines at enlarged text. */
-main a.button.involved-action[href^="mailto:"] .cta-icon svg,main a.button.involved-action[href^="mailto:"] svg.cta-icon{width:1.05em!important;height:1.05em!important}
 /* ...and centred on the line box, so the icon cannot dip into the line above
    or below when the label wraps at enlarged text. */
 main a.button.involved-action .cta-icon svg,main a.button.involved-action svg.cta-icon{vertical-align:middle!important}
