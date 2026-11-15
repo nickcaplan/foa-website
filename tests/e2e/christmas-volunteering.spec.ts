@@ -7,7 +7,7 @@ for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(cons
  await expect(page.getByRole('heading',{level:1})).toHaveText('Christmas Fayre Volunteering');
  await expect(page.locator('.fayre-volunteer__card')).toHaveCount(12);
  await expect(page.locator('.fayre-volunteer__card[data-availability-code]')).toHaveCount(12);
- await expect(page.locator('.fayre-volunteer__availability').first()).toContainText('places left');
+ await expect(page.locator('.fayre-volunteer__availability').first()).toHaveText(/\d+ \/ \d+ slots remaining/);
  await expect(page.locator('.fayre-volunteer__priority')).toContainText('Most help needed');
  await expect(page.locator('.fayre-volunteer__number')).toHaveCount(0);
  await expect(page.locator('.fayre-volunteer__schedule').first()).toContainText('08:30 - 10:30');

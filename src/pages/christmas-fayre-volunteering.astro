@@ -40,7 +40,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
  </div>
 </BaseLayout>
 <script>
- import{remaining,isSnapshot,retainValid,type Snapshot}from"../lib/fireworks-availability";
+ import{remaining,totals,isSnapshot,retainValid,type Snapshot}from"../lib/fireworks-availability";
  let snapshot:Snapshot={};
  const ended=()=>Date.now()>=Date.parse("2026-12-05T15:30:00+00:00");
  /** Render validated counts without repeated announcements. */
@@ -51,10 +51,11 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
   let allFresh=cards.length>0;
   for(const card of cards){
    const activity=snapshot.schema===1?snapshot.activities?.[card.dataset.availabilityCode!]:undefined;
-   const count=ended()?0:remaining(activity,now);
+   const total=ended()?{open:0,capacity:null}:totals(activity,now);
+   const count=total===null?null:total.open;
    const output=card.querySelector<HTMLElement>(".fayre-volunteer__availability");
    if(!output)continue;
-   const state=ended()?"ended":count===null?"unavailable":String(count);
+   const state=ended()?"ended":count===null?"unavailable":`${count}/${total?.capacity??""}`;
    const changed=output.dataset.state!==state;
    output.dataset.state=state;
    if(ended()){if(changed)output.textContent="Finished";}
@@ -63,10 +64,10 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
     if(changed){
      const number=document.createElement("strong");
      number.className=count>0?"fayre-volunteer__count":"fayre-volunteer__count fayre-volunteer__count--zero";
-     number.textContent=String(count);
+     number.textContent=total?.capacity!=null?`${count} / ${total.capacity}`:String(count);
      const label=document.createElement("span");
      label.className="fayre-volunteer__count-label";
-     label.textContent=` ${count===1?"place":"places"} left`;
+     label.textContent=" slots remaining";
      output.replaceChildren(number,label);
     }
     ranked.push({name:card.dataset.activityName!,count});
