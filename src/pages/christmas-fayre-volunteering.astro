@@ -119,7 +119,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer .narnia-landscape .button:has(.cta-icon){padding-inline:.5rem calc(1.05em + 1.1rem)!important;border-radius:1.75rem}
 @media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .narnia-landscape h1{font-size:1.75rem!important}}
 @container(max-width:9rem){.narnia-volunteering .fayre-volunteer .narnia-landscape h1{font-size:1.375rem!important}}
-.fayre-volunteer .fayre-volunteer__contact .button{min-width:0;padding-inline:.75rem calc(1.05em + 1.8rem)!important;overflow-wrap:anywhere;border-radius:1.75rem}
+.fayre-volunteer .fayre-volunteer__contact .button{min-width:0;padding-inline:min(max(56px,calc(1.05em + 1.8rem)),64px)!important;overflow-wrap:anywhere;border-radius:1.75rem;position:relative}
 </style>
 <style>
 @media(max-width:47.99rem){.fayre-volunteer .fayre-volunteer__contact .fayre-volunteer__email{width:100%;min-height:3.5rem;display:flex;align-items:center;justify-content:center;text-align:center}}
@@ -130,6 +130,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 /* Envelope artwork is shallower than a forward arrow: give it a readable 1.3em box. */
 .fayre-volunteer__email svg.cta-icon{width:1.3em!important;height:1.3em!important}
 .fayre-volunteer .fayre-volunteer__contact .button{padding-right:calc(1.3em + 1.3rem)!important}
+@media(max-width:23rem){.fayre-volunteer .fayre-volunteer__contact .fayre-volunteer__email{width:calc(100% + 16px);max-width:calc(100% + 16px);margin-inline:-8px;padding-inline:calc(1.3em + 12px)!important}}
 </style>
 
 <style is:inline>
