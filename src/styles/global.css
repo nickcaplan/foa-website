@@ -4317,7 +4317,7 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)}
    the get-involved icon pills (.involved-action) on their own inline-icon
    system above. Component-scoped twins of this rule live in
    FayreSupporter.astro and EventRow.astro (scoped styles beat globals). */
-main :is(a.button,.button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):has(svg){padding-inline:24px!important}
+main :is(a.button,.button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):has(svg){padding-inline:24px!important}
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;column-gap:0!important;
@@ -4329,7 +4329,7 @@ main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-
   justify-content:center!important;text-align:center;
   overflow-wrap:break-word!important;word-break:normal!important;
 }
-main :is(a.button,.button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){
+main :is(a.button,.button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){
   position:static!important;inset:auto!important;inset-inline-end:auto!important;right:auto!important;top:auto!important;transform:none!important;translate:none!important;margin:0!important;margin-inline-start:6px!important;flex:none;
 }
 main :is(a.button,.button,.event-list-cta--button) :is(.cta-label,.cta-word,.cta-tail){overflow-wrap:break-word!important;word-break:normal!important}
@@ -4338,7 +4338,7 @@ main :is(a.button,.button,.event-list-cta--button) :is(.cta-label,.cta-word,.cta
 main :is(a.button,.button,.event-list-cta--button) .cta-word{display:inline!important}
 /* The label must size to its text, not the full line, or a direct-child icon
    wraps onto a line of its own instead of sitting after the last word. */
-main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg) .cta-label{width:auto!important;flex:0 1 auto!important;min-width:0}
+main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.fayre-supporter .button):has(svg) .cta-label{width:auto!important;flex:0 1 auto!important;min-width:0}
 @media(max-width:47.99rem){
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(.committee-note>.button){width:100%!important}
 /* Fixed 16px gutters and 12px card padding on phone, so enlarged text
