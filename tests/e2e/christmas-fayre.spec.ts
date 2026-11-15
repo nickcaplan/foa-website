@@ -42,7 +42,7 @@ for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(route);
     const widths = await page.evaluate(() => {
-      const widths_of = (selector) => [...document.querySelectorAll(selector)].map((e) => e.getBoundingClientRect().width);
+      const widths_of = (selector: string) => [...document.querySelectorAll(selector)].map((e) => e.getBoundingClientRect().width);
       return {
         supporter: widths_of('.fayre-supporter a.button'),
         volunteer: widths_of('.xmas-stalls-cta .button'),
