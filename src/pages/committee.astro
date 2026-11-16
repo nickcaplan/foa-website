@@ -56,8 +56,18 @@ const members = (await getCollection("committee")).sort((a, b) => a.data.order -
       const pad = parseFloat(getComputedStyle(box).paddingLeft) * 2 + 4;
       const cardW = box.clientWidth;
       box.classList.toggle('member-vacancy--grown', anyGrown);
+      box.style.minHeight = '';
       if (anyGrown && grid && pillW > cardW - pad) grid.classList.add('committee-grid--roomy');
     });
+    // The grown boxes drop aspect-ratio and size to their own copy, which
+    // differs in length: equalise the visible pair on the tallest content
+    // height so the two cards stay level at any font metrics (CI fonts
+    // wrap differently from local fonts and exposed the mismatch).
+    if (anyGrown) {
+      const visible = states.filter((st) => st);
+      const maxH = Math.max(...visible.map((st) => st.box.offsetHeight));
+      visible.forEach((st) => { st.box.style.minHeight = maxH + 'px'; });
+    }
   };
   new ResizeObserver(() => update(false)).observe(document.documentElement);
   addEventListener('resize', () => update(false));
