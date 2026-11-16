@@ -16,7 +16,7 @@ const snapshot = (counts: Record<string, number>) => ({
   ])),
 });
 
-for (const width of [390, 768, 1440]) {
+for (const width of [320, 390, 768, 1440]) {
   for (const scale of [1, 2]) {
     test(`slots line sits below the title on every card at ${width}px with ${scale * 100}% text`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -95,5 +95,36 @@ test(`slots line has no single-word last line at ${width}px with 200% text`, asy
       return [...orphan, ...overflow];
     }));
   expect(orphans).toEqual([]);
+});
+}
+
+for (const width of [320, 390, 768]) {
+test(`no mid-word breaks in card titles or buttons at ${width}px with 200% text`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto("/christmas-fayre-volunteering/");
+  await page.evaluate(() => { document.documentElement.style.fontSize = "32px"; });
+  await page.waitForFunction(() => document.querySelectorAll(".fayre-volunteer__count").length > 0);
+  const split = await page.evaluate(() => {
+    const targets = [...document.querySelectorAll<HTMLElement>("[data-availability-code] h3, [data-availability-code] .fayre-volunteer__action .cta-label, .fayre-volunteer__loan .fayre-volunteer__action .cta-label, .fayre-volunteer__contact .cta-label")];
+    const bad: string[] = [];
+    const range = document.createRange();
+    for (const el of targets) {
+      const texts: Text[] = [];
+      (function walk(n: Node) { for (const c of n.childNodes) { if (c.nodeType === 3 && !(c.parentElement?.closest(".visually-hidden,[aria-hidden=true]"))) texts.push(c as Text); else walk(c); } })(el);
+      for (const t of texts) {
+        let offset = 0;
+        for (const part of t.textContent!.split(/(\s+)/)) {
+          const i = t.textContent!.indexOf(part, offset);
+          offset = i + part.length;
+          if (!part.trim()) continue;
+          range.setStart(t, i); range.setEnd(t, i + part.length);
+          const tops = new Set([...range.getClientRects()].filter((r) => r.width).map((r) => Math.round(r.top)));
+          if (tops.size > 1) bad.push(`${el.tagName}.${el.className}: word "${part}" split across lines`);
+        }
+      }
+    }
+    return bad;
+  });
+  expect(split).toEqual([]);
 });
 }
