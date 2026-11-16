@@ -43,6 +43,7 @@ body.xmas-theme::before {
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  /* 42rem matches .narnia-landscape__copy max-width so flakes fall beside the hero copy, not over it. */
   --gutter: max(.5rem, calc((100% - min(100% - 2rem, 42rem)) / 2));
 }
 .xmas-snow__bank {
