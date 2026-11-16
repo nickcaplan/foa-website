@@ -109,7 +109,7 @@ for (const route of ['/christmas-fayre-art-competition/', '/events/christmas-fay
       await page.goto(route);
       const gap = await page.evaluate(() => {
         const header = document.querySelector('.site-header')!.getBoundingClientRect();
-        const hero = document.querySelector('.art-comp-banner, .narnia-landscape')!.getBoundingClientRect();
+        const hero = document.querySelector('.art-comp-banner, .fayre-art-hero, .narnia-landscape')!.getBoundingClientRect();
         return hero.top - header.bottom;
       });
       expect(gap).toBeCloseTo(24, 0);

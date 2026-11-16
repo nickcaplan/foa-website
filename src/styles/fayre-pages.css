@@ -75,4 +75,9 @@ body.narnia-event .xmas-stage .xmas-hero {padding-bottom:0;}
  .art-comp .fayre-art-hero__deadline span {font-size:.65rem;}
  .art-comp .fayre-art-hero__deadline strong {font-size:1.05rem;}
 }
-@media(min-width:768px){.art-comp .fayre-art-hero__copy{padding-block:1.25rem;}}
+@media(min-width:768px){
+ .art-comp .fayre-art-hero__copy{padding-block:1.25rem;}
+ /* Keep the single-word title inside its column when the root font size grows. */
+ .art-comp .fayre-art-hero{container-type:inline-size;}
+ .art-comp .fayre-art-hero h1{font-size:clamp(1.5rem,7cqi,2.5rem);}
+}
