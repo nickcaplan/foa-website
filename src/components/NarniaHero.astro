@@ -5,11 +5,11 @@ import {ordinalDateFormatter,formatEventTimeRange} from '../lib/dates';
 const {event,eventPage=false,homepage=false,volunteerPage=false,snowfall=false}=Astro.props;
 // Fixed pseudo-random spread (prime-number strides) so the gutters look uneven but stay deterministic.
 const SNOWFLAKE_COUNT = 20;
-const flakes = Array.from({ length: SNOWFLAKE_COUNT }, (_, i) => ({
+const flakes = snowfall ? Array.from({ length: SNOWFLAKE_COUNT }, (_, i) => ({
   side: i % 2, lane: ((i * 37 + 11) % 100) / 100,
   size: 6 + ((i * 5) % 7), duration: 10 + ((i * 7) % 9),
   delay: -((i * 3.3) % 18), y: (i * 29 + 7) % 95, alpha: .45 + ((i * 11) % 4) * .12,
-}));
+})) : [];
 const signupUrl = event.signupUrl;
 const volunteerPath = event.volunteeringPath ?? (event.path ? event.path+"#sign-up" : undefined);
 if (!volunteerPath) throw new Error("Christmas Fayre volunteering path is missing");
