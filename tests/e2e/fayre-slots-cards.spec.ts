@@ -69,16 +69,16 @@ test("a full stall leaves the page and returns when a slot frees up on refresh",
 });
 
 for (const width of [320, 390, 768]) {
-test(`slots line has no single-word last line at ${width}px with 200% text`, async ({ page }) => {
+test(`slots line and card button have no single-word last line at ${width}px with 200% text`, async ({ page }) => {
   await page.setViewportSize({ width, height: 700 });
   await page.goto("/christmas-fayre-volunteering/");
   await page.evaluate(() => { document.documentElement.style.fontSize = "32px"; });
   await page.waitForFunction(() => document.querySelectorAll(".fayre-volunteer__count").length > 0);
   const orphans = await page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>(".fayre-volunteer__availability")].flatMap((el) => {
-      // Collect every rendered word with its rect, walking text nodes in order.
+    [...document.querySelectorAll<HTMLElement>(".fayre-volunteer__availability, .fayre-volunteer__action")].flatMap((el) => {
+      // Collect every rendered word with its rect, walking text nodes in order (skip visually-hidden text).
       const texts: Text[] = [];
-      (function walk(n: Node) { for (const c of n.childNodes) { if (c.nodeType === 3) texts.push(c as Text); else walk(c); } })(el);
+      (function walk(n: Node) { for (const c of n.childNodes) { if (c.nodeType === 3) texts.push(c as Text); else if (!(c as HTMLElement).classList?.contains("visually-hidden")) walk(c); } })(el);
       const range = document.createRange();
       const words: { w: string; top: number; bottom: number; right: number }[] = [];
       for (const t of texts) {
@@ -101,11 +101,13 @@ test(`slots line has no single-word last line at ${width}px with 200% text`, asy
         else lines.push({ top: word.top, bottom: word.bottom, count: 1 });
       }
       const last = lines[lines.length - 1];
-      const card = el.closest("[data-availability-code]")!;
-      const cardBox = card.getBoundingClientRect();
-      const spill = words.filter((word) => word.right > cardBox.right - 1).map((word) => word.w);
-      const orphan = lines.length > 1 && last.count === 1 ? [`${el.closest("[data-activity-name]")?.getAttribute("data-activity-name")}: last line is a single word`] : [];
-      const overflow = spill.length ? [`${card.getAttribute("data-activity-name")}: text spills past the card right edge (${spill.join(" ")})`] : [];
+      const card = el.closest("[data-availability-code]");
+      const box = (card ?? el).getBoundingClientRect();
+      const name = el.closest("[data-activity-name]")?.getAttribute("data-activity-name") ?? el.textContent!.trim().replace(/\s+/g, " ").slice(0, 30);
+      const spill = words.filter((word) => word.right > box.right - 1).map((word) => word.w);
+      const what = el.classList.contains("fayre-volunteer__action") ? "card button" : "slots line";
+      const orphan = lines.length > 1 && last.count === 1 ? [`${name}: ${what} last line is a single word`] : [];
+      const overflow = card && spill.length ? [`${name}: text spills past the card right edge (${spill.join(" ")})`] : [];
       return [...orphan, ...overflow];
     }));
   expect(orphans).toEqual([]);

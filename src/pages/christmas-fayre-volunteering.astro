@@ -25,7 +25,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
     <div class="fayre-volunteer__heading"><h3>{activity.name}</h3><p class="fayre-volunteer__availability" aria-live="polite"></p></div>
     <p>{activity.description}</p>
     <dl class="fayre-volunteer__schedule">{activity.schedule.map(shift=><div><dt>{shift.label}</dt><dd>{shift.when.split('-').map((time,index)=><>{index>0 && ' - '}<span>{time}</span></>)}</dd></div>)}</dl>
-    <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+activity.anchor} target="_blank" rel="noopener noreferrer"><span class="cta-label">Choose a <span class="cta-tail">slot<span class="external-link-icon cta-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></span><span class="visually-hidden"> for {activity.name} (opens JustSignup in a new tab)</span></span></a>
+    <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+activity.anchor} target="_blank" rel="noopener noreferrer"><span class="cta-label">Choose a&nbsp;<span class="cta-tail">slot<span class="external-link-icon cta-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></span><span class="visually-hidden"> for {activity.name} (opens JustSignup in a new tab)</span></span></a>
    </li>)}
   </ul>
   <p class="fayre-volunteer__updated" data-availability-updated role="status" aria-live="polite"></p>
@@ -138,6 +138,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 /* Under enlarged text, rem padding would squeeze the card content below the width of "slots remaining"; cap horizontal padding by viewport so the phrase always fits whole. */
 /* Same for the page gutter: 2rem of rem gutter leaves too little room at 200% text. */
 .site-width.fayre-volunteer{width:min(calc(100% - min(2rem,10vw)),var(--max-width))}
+@media(min-width:64rem){.site-width.fayre-volunteer{width:min(calc(100% - min(3rem,10vw)),var(--max-width))}}
 @media(max-width:47.99rem){.fayre-volunteer__card{padding-inline:min(1.5rem,5vw)}}
 .fayre-volunteer__card h3{font:500 min(1.6rem,13vw)/1.2 Georgia,serif;margin:0 0 1rem;color:#fff3d5;overflow-wrap:anywhere}
 .fayre-volunteer__priority{display:block;padding:0;margin:1.1rem 0 .4rem;font-size:.95rem;line-height:1.5;color:#f4ead1}
