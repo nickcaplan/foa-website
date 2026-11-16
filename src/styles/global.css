@@ -4371,6 +4371,35 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)}
   margin: 0 0 0.75rem;
 }
 
+/* In the 3-column band (48-64rem) the 4/5 box is too short for the
+   absolutely-placed pill to stay clear of the vertically centred content
+   at normal text, which falsely tripped the overflow growth. Bring the
+   pill in flow at the top of the stack and tighten the rhythm so the
+   content still fits the box. At enlarged text this rem query is false
+   and the script-driven grown layout takes over. */
+@media (min-width: 48rem) and (max-width: 63.99rem) {
+  .member-vacancy {
+    padding: 0.9rem;
+  }
+
+  .member-vacancy-label {
+    position: static;
+    order: -1;
+    align-self: flex-end;
+    margin: 0 0 0.5rem;
+  }
+
+  .member-vacancy-name {
+    margin-bottom: 0.6rem;
+    font-size: 1.75rem;
+  }
+
+  .member-vacancy-copy {
+    margin-bottom: 0.5rem;
+    line-height: 1.35;
+  }
+}
+
 /* When the pill alone would be wider than a grid column, give the cards one column. */
 .committee-grid.committee-grid--roomy {
   grid-template-columns: 1fr;
