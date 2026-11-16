@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 // The Fayre event page CTAs must wrap at word boundaries at 200% text: no word
 // splits across lines. A short last line ("team" or "slot") is an intended wrap -
 // the icon stays in its reserved right lane, so it cannot be stranded.
-for (const width of [320, 390, 768]) {
+for (const width of [320, 390, 448, 768]) {
   for (const theme of ["day", "night"]) {
     test(`event CTAs wrap at word boundaries at ${width}px with 200% text (${theme})`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -39,7 +39,7 @@ for (const width of [320, 390, 768]) {
 // Regression (reviewer): the Art and Email CTAs at 200% text must keep every
 // line clear of the icon lane by a real margin, and no line may hold a single
 // word (orphan). Measured from rendered rects, not from intent comments.
-for (const width of [320, 390, 768]) {
+for (const width of [320, 390, 448, 768]) {
   for (const theme of ["day", "night"]) {
     test(`event CTAs keep icon clearance and have no orphan lines at ${width}px with 200% text (${theme})`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
