@@ -1,11 +1,32 @@
 import {test,expect} from '@playwright/test';
 // The committee vacancy card must stay fully readable at enlarged text:
 // link visible, pill not overlapping, nothing clipped by the 4/5 box.
-for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy card readable ${width} @${scale}x`,async({page})=>{
+// Co-Secretary vacancy always shows; the Co-Comms vacancy card is added from
+// 2026-11-28T00:00:00Z (and the departing Co-Comms member card hides then).
+// Test both regimes so each card is actually exercised (invisible cards are
+// skipped by assertion).
+for(const flip of [{label:'pre-flip',time:'2026-11-27T12:00:00Z'},{label:'post-flip',time:'2026-11-29T12:00:00Z'}])
+for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy card readable ${width} @${scale}x ${flip.label}`,async({page})=>{
   await page.setViewportSize({width,height:1000});
+  {const t=new Date(flip.time).getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
   await page.goto('/committee/');
   await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
-  const card=page.locator('.member-card--vacancy');
+  const cards=page.locator('.member-card--vacancy');
+  expect(await cards.count()).toBeGreaterThan(0);
+  // The flip itself: the departing member card must hide and the Co-Comms
+  // vacancy card must appear, post-flip only.
+  const datedMember=page.locator('.member-card[data-show-before]');
+  if(flip.label==='post-flip'){
+    await expect(datedMember).toBeHidden();
+    expect(await cards.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).length),'both vacancy cards visible post-flip').toBe(2);
+  }else{
+    await expect(datedMember).toBeVisible();
+    expect(await cards.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).length),'one vacancy card visible pre-flip').toBe(1);
+  }
+  let tested=0;
+  for(const card of await cards.all()){
+  if(!(await card.isVisible()))continue;
+  tested++;
   await card.scrollIntoViewIfNeeded();
   const link=card.getByRole('link',{name:/Ask us about the role/});
   await expect(link).toBeVisible();
@@ -29,4 +50,41 @@ for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy car
   expect(m.pillOverlapsName,'pill over name').toBe(false);
   expect(m.pillOverlapsLink,'pill over link').toBe(false);
   if(scale===1)expect(m.grown,'growth must stay off at normal text').toBe(false);
+  }
+  expect(tested,'at least one vacancy card visible and asserted').toBeGreaterThan(0);
+});
+
+// Consistency: post-flip both vacancy cards are visible together, so they
+// must use the SAME layout mode (both grown or both fixed) at every width
+// and text scale - a grown card next to a fixed one is visibly uneven.
+for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy cards share one layout mode ${width} @${scale}x`,async({page})=>{
+  await page.setViewportSize({width,height:1000});
+  {const t=new Date('2026-11-29T12:00:00Z').getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
+  await page.goto('/committee/');
+  await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
+  const boxes=page.locator('.member-vacancy');
+  const states=await boxes.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).map(e=>e.classList.contains('member-vacancy--grown')));
+  expect(states.length,'both vacancy cards visible post-flip').toBe(2);
+  expect(new Set(states).size,`mixed layout modes at ${width}px @${scale}x: ${states}`).toBe(1);
+  // And the grown cards must actually be the same height (equal-height grid).
+  const heights=await boxes.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).map(e=>Math.round(e.getBoundingClientRect().height)));
+  expect(Math.abs(heights[0]-heights[1]),`uneven vacancy card heights at ${width}px @${scale}x: ${heights}`).toBeLessThanOrEqual(2);
+});
+// Alignment: the two vacancy cards sit side by side, so pill, title and CTA
+// must land at the same offsets in both cards at every width and text
+// scale. Measured from rendered rects, relative to each card's top.
+for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy cards align pill, title and CTA ${width} @${scale}x`,async({page})=>{
+  await page.setViewportSize({width,height:1000});
+  {const t=new Date('2026-11-29T12:00:00Z').getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
+  await page.goto('/committee/');
+  await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
+  await page.waitForTimeout(400);
+  const boxes=page.locator('.member-vacancy');
+  const offsets=await boxes.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).map(b=>{
+    const br=b.getBoundingClientRect();
+    const top=(sel:string)=>{const r=(b as HTMLElement).querySelector(sel)!.getBoundingClientRect();return r.top-br.top};
+    return {pill:top('.member-vacancy-label'),name:top('.member-vacancy-name'),link:top('.member-vacancy a')};
+  }));
+  expect(offsets.length,'both vacancy cards visible post-flip').toBe(2);
+  for(const part of ['pill','name','link'] as const)expect(Math.abs(offsets[0][part]-offsets[1][part]),`misaligned ${part} at ${width}px @${scale}x: ${offsets[0][part]} vs ${offsets[1][part]}`).toBeLessThanOrEqual(1);
 });

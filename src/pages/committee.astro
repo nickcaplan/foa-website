@@ -4,11 +4,12 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/PageHero.astro";
 import { withBase } from "../lib/urls";
+import EventVisibilityInit from "../components/EventVisibilityInit.astro";
 const members = (await getCollection("committee")).sort((a, b) => a.data.order - b.data.order);
 ---
 <BaseLayout title="Committee" description="Meet the committee of The Friends of Ashley for 2026/27.">
   <PageHero eyebrow="The FOA team" title="Meet the committee." intro="Meet the 2026/27 committee and find out how to get involved." />
-  <section class="content-section content-section--compact content-section--desktop-snug"><div class="site-width"><div class="committee-grid">{members.map(({ data }) => <article class:list={["member-card", data.imageClass]}><div class="member-photo"><img src={withBase(`/${data.portrait}`)} alt={data.name} width={data.portraitWidth} height={data.portraitHeight} loading="lazy"></div><div class="member-details"><h2>{data.name}</h2><p>{data.role}</p></div></article>)}<article class="member-card member-card--vacancy"><div class="member-vacancy"><p class="member-vacancy-label">A seat is waiting</p><div class="member-vacancy-name"><span>Join</span><strong>the team</strong></div><p class="member-vacancy-copy">Bring your ideas, share the role and help keep The FOA organised.</p><a href="mailto:thefriendsofashley@gmail.com?subject=The%20FOA%20Co-Secretary%20role&amp;body=Hello%20The%20FOA%20team%2C%0A%0AI%20would%20like%20to%20ask%20about%20the%20Co-Secretary%20role.%0A%0AThanks%2C"><span class="cta-label">Ask us about the <span class="cta-tail">role<MailIcon /></span></span></a></div><div class="member-details"><h2>Vacancy</h2><p>Co-Secretary</p></div></article></div><div class="committee-note"><div><h2>There is room for you too.</h2><p>The FOA welcomes help from parents, carers and staff. The Co-Secretary role is currently vacant.</p></div><a class="button button--amber" href="mailto:thefriendsofashley@gmail.com?subject=The%20FOA%20Co-Secretary%20role&amp;body=Hello%20The%20FOA%20team%2C%0A%0AI%20would%20like%20to%20ask%20about%20the%20Co-Secretary%20role.%0A%0AThanks%2C"><span class="cta-label">Ask about the <span class="cta-tail">role<MailIcon /></span></span></a></div></div></section>
+  <section class="content-section content-section--compact content-section--desktop-snug"><div class="site-width"><div class="committee-grid">{members.map(({ id, data }) => <><article class:list={["member-card", data.imageClass]} data-show-before={id === "cristy-amponsah" ? "2026-11-28T00:00:00+00:00" : undefined}><div class="member-photo"><img src={withBase(`/${data.portrait}`)} alt={data.name} width={data.portraitWidth} height={data.portraitHeight} loading="lazy"></div><div class="member-details"><h2>{data.name}</h2><p>{data.role}</p></div></article>{id === "nick-caplan" ? <article class="member-card member-card--vacancy" hidden data-show-from="2026-11-28T00:00:00+00:00"><div class="member-vacancy"><p class="member-vacancy-label">A seat is waiting</p><div class="member-vacancy-name"><span>Join</span><strong>the team</strong></div><p class="member-vacancy-copy">You look after our newsletters, Instagram and Facebook, helping spread the word about our events.</p><a href="mailto:thefriendsofashley@gmail.com?subject=The%20FOA%20Co-Comms%20role&amp;body=Hello%20The%20FOA%20team%2C%0A%0AI%20would%20like%20to%20ask%20about%20the%20Co-Comms%20role.%0A%0AThanks%2C"><span class="cta-label">Ask us about the&nbsp;<span class="cta-tail">role<MailIcon /></span></span></a></div><div class="member-details"><h2>Vacancy</h2><p>Co-Comms</p></div></article> : null}</>)}<article class="member-card member-card--vacancy"><div class="member-vacancy"><p class="member-vacancy-label">A seat is waiting</p><div class="member-vacancy-name"><span>Join</span><strong>the team</strong></div><p class="member-vacancy-copy">You prepare agendas, write up minutes and keep our paperwork in order.</p><a href="mailto:thefriendsofashley@gmail.com?subject=The%20FOA%20Secretary%20role&amp;body=Hello%20The%20FOA%20team%2C%0A%0AI%20would%20like%20to%20ask%20about%20the%20Secretary%20role.%0A%0AThanks%2C"><span class="cta-label">Ask us about the&nbsp;<span class="cta-tail">role<MailIcon /></span></span></a></div><div class="member-details"><h2>Vacancy</h2><p>Secretary</p></div></article></div><div class="committee-note" data-show-before="2026-11-28T00:00:00+00:00"><div><h2>There is room for you too.</h2><p>The FOA welcomes help from parents, carers and staff. The Secretary role is currently&nbsp;vacant.</p></div><a class="button button--amber" href="mailto:thefriendsofashley@gmail.com?subject=The%20FOA%20Secretary%20role&amp;body=Hello%20The%20FOA%20team%2C%0A%0AI%20would%20like%20to%20ask%20about%20the%20Secretary%20role.%0A%0AThanks%2C"><span class="cta-label">Ask about the&nbsp;<span class="cta-tail">role<MailIcon /></span></span></a></div><div class="committee-note" hidden data-show-from="2026-11-28T00:00:00+00:00"><div><h2>There is room for you too.</h2><p>The FOA welcomes help from parents, carers and staff. The Co-Comms and Secretary roles are currently&nbsp;vacant.</p></div><a class="button button--amber" href="mailto:thefriendsofashley@gmail.com?subject=The%20FOA%20committee%20roles&amp;body=Hello%20The%20FOA%20team%2C%0A%0AI%20would%20like%20to%20ask%20about%20a%20committee%20role.%0A%0AThanks%2C"><span class="cta-label">Ask about a&nbsp;<span class="cta-tail">role<MailIcon /></span></span></a></div></div></section>
 <script is:inline>
 (() => {
   /* At enlarged text the fixed-ratio vacancy box can no longer hold its
@@ -20,11 +21,22 @@ const members = (await getCollection("committee")).sort((a, b) => a.data.order -
     const fs = parseFloat(getComputedStyle(document.documentElement).fontSize);
     if (!force && fs === lastFS && innerWidth === lastW) return;
     lastFS = fs; lastW = innerWidth;
-    document.querySelectorAll('.member-vacancy').forEach((box) => {
-      const grid = box.closest('.committee-grid');
+    // Reset the shared grid class once per grid, not per box: with two
+    // vacancy cards in one grid, a per-box reset lets a later (hidden) card
+    // wipe the roomy class an earlier card just added.
+    document.querySelectorAll('.committee-grid').forEach((grid) => grid.classList.remove('committee-grid--roomy'));
+    // Two passes over the visible vacancy cards: first measure every card
+    // in its base (ungrown) mode, then apply the grown mode to ALL of them
+    // if ANY overflows. The vacancy cards sit side by side, so a per-card
+    // decision leaves one card grown and its neighbour fixed - visibly
+    // inconsistent at enlarged text.
+    const boxes = [...document.querySelectorAll('.member-vacancy')];
+    const states = boxes.map((box) => {
+      // Hidden cards (pre/post the vacancy date flip) have no layout;
+      // measuring them would read 0s and corrupt the shared grid state.
+      if (box.offsetParent === null) { box.classList.remove('member-vacancy--grown'); return null; }
       const pill = box.querySelector('.member-vacancy-label');
       box.classList.remove('member-vacancy--grown');
-      if (grid) grid.classList.remove('committee-grid--roomy');
       void box.offsetHeight;
       let grown = box.scrollHeight > box.clientHeight + 1;
       const pillW = pill ? pill.scrollWidth : 0;
@@ -34,11 +46,28 @@ const members = (await getCollection("committee")).sort((a, b) => a.data.order -
         const nb = name.getBoundingClientRect();
         grown = pb.bottom > nb.top + 2 && pb.right > nb.left + 2;
       }
+      return { box, grown, pillW };
+    });
+    const anyGrown = states.some((st) => st && st.grown);
+    states.forEach((st) => {
+      if (!st) return;
+      const { box, pillW } = st;
+      const grid = box.closest('.committee-grid');
       const pad = parseFloat(getComputedStyle(box).paddingLeft) * 2 + 4;
       const cardW = box.clientWidth;
-      box.classList.toggle('member-vacancy--grown', grown);
-      if (grown && grid && pillW > cardW - pad) grid.classList.add('committee-grid--roomy');
+      box.classList.toggle('member-vacancy--grown', anyGrown);
+      box.style.minHeight = '';
+      if (anyGrown && grid && pillW > cardW - pad) grid.classList.add('committee-grid--roomy');
     });
+    // The grown boxes drop aspect-ratio and size to their own copy, which
+    // differs in length: equalise the visible pair on the tallest content
+    // height so the two cards stay level at any font metrics (CI fonts
+    // wrap differently from local fonts and exposed the mismatch).
+    if (anyGrown) {
+      const visible = states.filter((st) => st);
+      const maxH = Math.max(...visible.map((st) => st.box.offsetHeight));
+      visible.forEach((st) => { st.box.style.minHeight = maxH + 'px'; });
+    }
   };
   new ResizeObserver(() => update(false)).observe(document.documentElement);
   addEventListener('resize', () => update(false));
@@ -46,4 +75,5 @@ const members = (await getCollection("committee")).sort((a, b) => a.data.order -
   update(true);
 })();
 </script>
+<EventVisibilityInit />
 </BaseLayout>
