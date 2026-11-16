@@ -87,7 +87,12 @@ test(`slots line has no single-word last line at ${width}px with 200% text`, asy
         else lines.push({ top: word.top, bottom: word.bottom, count: 1 });
       }
       const last = lines[lines.length - 1];
-      return lines.length > 1 && last.count === 1 ? [`${el.closest("[data-activity-name]")?.getAttribute("data-activity-name")}: last line is a single word`] : [];
+      const card = el.closest("[data-availability-code]")!;
+      const cardBox = card.getBoundingClientRect();
+      const spill = words.filter((word) => word.right > cardBox.right - 1).map((word) => word.w);
+      const orphan = lines.length > 1 && last.count === 1 ? [`${el.closest("[data-activity-name]")?.getAttribute("data-activity-name")}: last line is a single word`] : [];
+      const overflow = spill.length ? [`${card.getAttribute("data-activity-name")}: text spills past the card right edge (${spill.join(" ")})`] : [];
+      return [...orphan, ...overflow];
     }));
   expect(orphans).toEqual([]);
 });
