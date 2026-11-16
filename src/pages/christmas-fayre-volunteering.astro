@@ -133,7 +133,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1.25rem}
 .fayre-volunteer__card{position:relative;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem;padding:1.5rem;display:flex;flex-direction:column;min-width:0}
 .fayre-volunteer__card h3{font:500 min(1.6rem,13vw)/1.2 Georgia,serif;margin:0 0 1rem;color:#fff3d5;overflow-wrap:anywhere}
-.fayre-volunteer__priority{display:block;background:#f8df9b;border:2px solid #c99b35;border-left:.5rem solid #742f3c;border-radius:.35rem;padding:1rem 1.25rem;margin:0 0 .75rem}
+.fayre-volunteer__priority{display:block;padding:0;margin:1.1rem 0 .4rem;font-size:.95rem;line-height:1.5;color:#f4ead1}
 .fayre-volunteer__updated{font-size:.8rem;margin:0 0 1.25rem;color:#f3dfae}
 .fayre-volunteer__updated:empty{display:none}
 
@@ -170,11 +170,10 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 </style>
 <style is:global>
 /* Availability counts are created client-side, so they carry no scoped-style attribute. */
-.fayre-volunteer__priority strong{display:block;color:#742f3c;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}
-.fayre-volunteer__priority span{display:block;color:#362b15;font-size:1.3rem;line-height:1.3;font-weight:800;margin-top:.3rem}
-.narnia-landscape .fayre-volunteer__priority{margin:1.25rem 0 .5rem}
-@media(max-width:47.99rem){.narnia-landscape .fayre-volunteer__priority{padding:.85rem 1rem}.narnia-landscape .fayre-volunteer__priority span{font-size:1.15rem}}
-@media(min-width:48rem){.narnia-volunteering .narnia-landscape .button{width:fit-content;padding-inline:2.5rem}}
+.fayre-volunteer__priority strong{display:inline;color:#edcb83;font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;margin-right:.55em}
+.fayre-volunteer__priority span{display:inline;color:#f4ead1;font-size:.95rem;line-height:1.5;font-weight:600;margin:0}
+/* The volunteering hero copy runs wider (48rem) than the standard 42rem hero copy, so the CTA would stretch past the standard hero button width. Cap it to the same 39rem content width the other heroes give their CTAs; min() keeps it full-width on phones and at 200% text. */
+.narnia-volunteering .narnia-landscape .button{max-width:min(39rem,100%)!important}
 .fayre-volunteer__count{display:inline;color:#edcb83;font-size:1.25rem;line-height:1.25;font-weight:800;font-variant-numeric:tabular-nums}
 .fayre-volunteer__count--zero{color:#9fb8a4}
 .fayre-volunteer__count-label{display:inline;font-size:1rem;line-height:1.25;color:#f4ead1}
