@@ -43,11 +43,15 @@ for (const width of [320, 390, 640, 768, 820, 900, 1024, 1280, 1440]) {
           const gap = parseFloat(getComputedStyle(heading).rowGap || getComputedStyle(heading).gap);
           if (Math.abs(count.top - title.bottom - gap) > 1) bad.push(`${card.dataset.activityName}: title-to-slots gap ${Math.round(count.top - title.bottom)}px, expected ${Math.round(gap)}px`);
           // Description rows stay aligned across a visual row (extra title height lands before it).
-          const desc = card.querySelector(".fayre-volunteer__availability + p")!.getBoundingClientRect().top - cardTop;
+          const desc = card.querySelector(".fayre-volunteer__heading + p")!.getBoundingClientRect().top - cardTop;
+          // Slots-to-description gap is the heading's controlled bottom margin, never less; a same-row
+          // two-line title may only push the description down further, not shrink this gap.
+          const headMargin = parseFloat(getComputedStyle(heading).marginBottom);
+          if (count.bottom + headMargin - 1 > cardTop + desc) bad.push(`${card.dataset.activityName}: slots-to-description gap ${Math.round(cardTop + desc - count.bottom)}px, expected at least ${Math.round(headMargin)}px`);
           const rowCards = rows.get(Math.round(cardTop))!;
           for (const other of rowCards) {
             if (other === card) continue;
-            const otherDesc = other.querySelector(".fayre-volunteer__availability + p")!.getBoundingClientRect().top - other.getBoundingClientRect().top;
+            const otherDesc = other.querySelector(".fayre-volunteer__heading + p")!.getBoundingClientRect().top - other.getBoundingClientRect().top;
             if (Math.abs(otherDesc - desc) > 1) bad.push(`${card.dataset.activityName}: description sits at a different offset than a same-row card (${Math.round(desc)} vs ${Math.round(otherDesc)})`);
           }
           const icon = card.querySelector(".fayre-volunteer__action .cta-icon")!.getBoundingClientRect();
