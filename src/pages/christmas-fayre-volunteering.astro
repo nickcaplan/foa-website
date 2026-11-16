@@ -16,7 +16,6 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
  <div class="site-width fayre-volunteer">
   <NarniaHero event={event} eventPage={true} volunteerPage={true}>
    <p slot="priority" class="fayre-volunteer__priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")}>Check JustSignup for available places.</p>
-   <p slot="priority" class="fayre-volunteer__updated" data-availability-updated role="status" aria-live="polite"></p>
   </NarniaHero>
   <section class="fayre-volunteer__intro" aria-label="Choose your volunteer activity">
    <p>Choose an activity below. Buttons open JustSignup in a new tab to pick your slot. Event helper slots are 30 minutes; setup and clear-up vary.</p>
@@ -29,6 +28,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
     <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+activity.anchor} target="_blank" rel="noopener noreferrer"><span class="cta-label">Choose a <span class="cta-tail">slot<span class="external-link-icon cta-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></span><span class="visually-hidden"> for {activity.name} (opens JustSignup in a new tab)</span></span></a>
    </li>)}
   </ul>
+  <p class="fayre-volunteer__updated" data-availability-updated role="status" aria-live="polite"></p>
   <section class="fayre-volunteer__loan" aria-labelledby="loan-props">
    <div><h2 id="loan-props">Lend a little Narnia magic</h2><p>Have fairy lights, faux Christmas trees or props to lend? See the props and decor list on JustSignup for what's needed, drop-off details and return information.</p></div>
    <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+event.loanSignupAnchor} target="_blank" rel="noopener noreferrer"><span class="cta-label">See the loan <span class="cta-tail">list<span class="external-link-icon cta-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></span><span class="visually-hidden"> (opens JustSignup in a new tab)</span></span></a>
@@ -173,8 +173,8 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__priority strong{display:block;color:#742f3c;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}
 .fayre-volunteer__priority span{display:block;color:#362b15;font-size:1.3rem;line-height:1.3;font-weight:800;margin-top:.3rem}
 .narnia-landscape .fayre-volunteer__priority{margin:1.25rem 0 .5rem}
-.narnia-landscape .fayre-volunteer__updated{text-align:center;margin:0}
 @media(max-width:47.99rem){.narnia-landscape .fayre-volunteer__priority{padding:.85rem 1rem}.narnia-landscape .fayre-volunteer__priority span{font-size:1.15rem}}
+@media(min-width:48rem){.narnia-volunteering .narnia-landscape .button{width:fit-content;padding-inline:2.5rem}}
 .fayre-volunteer__count{display:inline;color:#edcb83;font-size:1.25rem;line-height:1.25;font-weight:800;font-variant-numeric:tabular-nums}
 .fayre-volunteer__count--zero{color:#9fb8a4}
 .fayre-volunteer__count-label{display:inline;font-size:1rem;line-height:1.25;color:#f4ead1}
