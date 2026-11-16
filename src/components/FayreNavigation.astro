@@ -8,13 +8,14 @@ const pages = [
   { key: 'volunteer', label: 'Volunteer', breadcrumbLabel: 'Volunteering', path: '/christmas-fayre-volunteering/' },
   { key: 'art', label: 'Art competition', breadcrumbLabel: 'Art competition', path: '/christmas-fayre-art-competition/' },
 ];
+const eventPage = pages.find(page => page.key === 'event')!;
 const currentPage = pages.find(page => page.key === current);
 if (!currentPage) throw new Error(`FayreNavigation: unknown current "${current}"`);
 ---
 <div class="fayre-navigation">
   <nav aria-label="Breadcrumb" class="fayre-navigation__breadcrumb">
     <ol>
-      <li>{current === 'event' ? <span aria-current="page">{pages[0].breadcrumbLabel}</span> : <a href={withBase(pages[0].path)}>{pages[0].breadcrumbLabel}</a>}</li>
+      <li>{current === 'event' ? <span aria-current="page">{eventPage.breadcrumbLabel}</span> : <a href={withBase(eventPage.path)}>{eventPage.breadcrumbLabel}</a>}</li>
       {current !== 'event' && <li><span aria-hidden="true">/</span> <span aria-current="page">{currentPage.breadcrumbLabel}</span></li>}
     </ol>
   </nav>
