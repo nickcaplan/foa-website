@@ -16,11 +16,11 @@ const deadlineText=deadline;
  <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
  <div class="site-width fayre-hero-shell">
   <section class="fayre-art-hero" aria-labelledby="fayre-art-title">
-   <img class="fayre-art-hero__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
    <div class="fayre-art-hero__copy">
     <p class="fayre-art-hero__eyebrow">Ashley School Christmas Fayre</p>
     <h1 id="fayre-art-title">Art Competition</h1>
     <p class="fayre-art-hero__theme">Narnia Theme</p>
+    <div class="fayre-art-picture" aria-hidden="true"><img src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" loading="eager" fetchpriority="high" /></div>
     <p class="fayre-art-hero__deadline"><span>Deadline</span><strong>{deadlineText}</strong></p>
    </div>
   </section>
