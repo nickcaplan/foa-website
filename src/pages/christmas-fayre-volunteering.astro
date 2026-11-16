@@ -89,7 +89,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
    const leaders=ranked.filter(a=>a.count===highest).map(a=>a.name).join(" & ");
    if(highest){
     const title=document.createElement("strong");title.textContent="Most help needed";
-    const detail=document.createElement("span");detail.textContent=`${leaders} - ${highest} ${highest===1?"place":"places"} left`;
+    const detail=document.createElement("span");detail.textContent=`${leaders} - ${highest}\u00A0${highest===1?"place":"places"}\u00A0left`;
     if(summary.textContent!==title.textContent+detail.textContent)summary.replaceChildren(title,detail);
    }else{const text="All slots filled. Thank you!";if(summary.textContent!==text)summary.textContent=text;}
   }
