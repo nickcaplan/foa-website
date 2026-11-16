@@ -4354,7 +4354,7 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
 /* Hero buttons: cap the font by viewport so enlarged text still fits the
    narrowest phones without breaking a long word. */
 main .narnia-landscape .button{font-size:min(1rem,7vw)}
-main .xmas-actions .button{font-size:min(1.05rem,7.5vw)}
+main .xmas-actions .button{font-size:min(1.05rem,7.5vw)!important}
 
 /* Enlarged text: when the vacancy content no longer fits the 4/5 box,
    grow the box and bring the pill in flow instead of clipping.
@@ -4416,7 +4416,7 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)}
    adds full width in the 16px gutters. Component-scoped twins of this
    rule live in FayreSupporter.astro and EventRow.astro (scoped styles
    beat globals). */
-main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):has(svg){padding-inline:calc(1.05em + 1.8rem)!important}
+main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):has(svg){padding-inline:calc(1.05em + 1.8rem)!important}
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;column-gap:0!important;
