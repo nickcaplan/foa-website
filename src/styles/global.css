@@ -2653,17 +2653,16 @@ body.menu-open .cookie-banner {
   padding: clamp(1rem, 3vw, 1.5rem);
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
   background:
     radial-gradient(circle at 1px 1px, rgb(95 53 5 / 16%) 1px, transparent 1.2px) 0 0 / 16px 16px,
     var(--amber-light);
 }
 
 .member-vacancy-label {
-  position: absolute;
-  top: clamp(1rem, 2vw, 1.5rem);
-  right: clamp(1rem, 2vw, 1.5rem);
-  margin: 0;
+  align-self: flex-end;
+  order: -1;
+  margin: 0 0 0.75rem;
   padding: 0.4rem 0.7rem;
   border: 1px solid var(--green);
   border-radius: 999px;
@@ -2705,6 +2704,7 @@ body.menu-open .cookie-banner {
   display: inline-flex;
   min-height: 2.75rem;
   align-items: center;
+  margin-top: auto;
   color: var(--heading);
   font-size: 0.82rem;
   font-weight: 850;

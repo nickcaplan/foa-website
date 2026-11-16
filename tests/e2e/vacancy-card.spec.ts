@@ -70,3 +70,21 @@ for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy car
   const heights=await boxes.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).map(e=>Math.round(e.getBoundingClientRect().height)));
   expect(Math.abs(heights[0]-heights[1]),`uneven vacancy card heights at ${width}px @${scale}x: ${heights}`).toBeLessThanOrEqual(2);
 });
+// Alignment: the two vacancy cards sit side by side, so pill, title and CTA
+// must land at the same offsets in both cards at every width and text
+// scale. Measured from rendered rects, relative to each card's top.
+for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy cards align pill, title and CTA ${width} @${scale}x`,async({page})=>{
+  await page.setViewportSize({width,height:1000});
+  {const t=new Date('2026-11-29T12:00:00Z').getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
+  await page.goto('/committee/');
+  await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
+  await page.waitForTimeout(400);
+  const boxes=page.locator('.member-vacancy');
+  const offsets=await boxes.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).map(b=>{
+    const br=b.getBoundingClientRect();
+    const top=(sel:string)=>{const r=(b as HTMLElement).querySelector(sel)!.getBoundingClientRect();return r.top-br.top};
+    return {pill:top('.member-vacancy-label'),name:top('.member-vacancy-name'),link:top('.member-vacancy a')};
+  }));
+  expect(offsets.length,'both vacancy cards visible post-flip').toBe(2);
+  for(const part of ['pill','name','link'] as const)expect(Math.abs(offsets[0][part]-offsets[1][part]),`misaligned ${part} at ${width}px @${scale}x: ${offsets[0][part]} vs ${offsets[1][part]}`).toBeLessThanOrEqual(1);
+});
