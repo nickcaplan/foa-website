@@ -34,17 +34,21 @@ for (const width of [320, 390, 640, 768, 820, 900, 1024, 1280, 1440]) {
           rows.set(top, [...(rows.get(top) ?? []), card]);
         }
         for (const card of cards) {
+          const heading = card.querySelector<HTMLElement>(".fayre-volunteer__heading")!;
           const title = card.querySelector("h3")!.getBoundingClientRect();
           const count = card.querySelector(".fayre-volunteer__availability")!.getBoundingClientRect();
           const cardTop = card.getBoundingClientRect().top;
           if (count.top < title.bottom - 1) bad.push(`${card.dataset.activityName}: count overlaps the title row`);
+          // The slots line sits directly under its own title at the tight flex gap on every card.
+          const gap = parseFloat(getComputedStyle(heading).rowGap || getComputedStyle(heading).gap);
+          if (Math.abs(count.top - title.bottom - gap) > 1) bad.push(`${card.dataset.activityName}: title-to-slots gap ${Math.round(count.top - title.bottom)}px, expected ${Math.round(gap)}px`);
+          // Description rows stay aligned across a visual row (extra title height lands before it).
+          const desc = card.querySelector(".fayre-volunteer__availability + p")!.getBoundingClientRect().top - cardTop;
           const rowCards = rows.get(Math.round(cardTop))!;
-          const expectedTop = count.top - cardTop;
           for (const other of rowCards) {
             if (other === card) continue;
-            const otherCount = other.querySelector(".fayre-volunteer__availability")!.getBoundingClientRect();
-            const otherTop = other.getBoundingClientRect().top;
-            if (Math.abs(otherCount.top - otherTop - expectedTop) > 1) bad.push(`${card.dataset.activityName}: count sits at a different offset than a same-row card (${Math.round(expectedTop)} vs ${Math.round(otherCount.top - otherTop)})`);
+            const otherDesc = other.querySelector(".fayre-volunteer__availability + p")!.getBoundingClientRect().top - other.getBoundingClientRect().top;
+            if (Math.abs(otherDesc - desc) > 1) bad.push(`${card.dataset.activityName}: description sits at a different offset than a same-row card (${Math.round(desc)} vs ${Math.round(otherDesc)})`);
           }
           const icon = card.querySelector(".fayre-volunteer__action .cta-icon")!.getBoundingClientRect();
           const label = card.querySelector(".fayre-volunteer__action .cta-label")!;
