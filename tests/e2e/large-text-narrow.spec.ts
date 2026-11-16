@@ -22,16 +22,10 @@ const overflowing = (page: Page) =>
     const range = document.createRange();
     for (const element of document.querySelectorAll<HTMLElement>("body *")) {
       if (element.closest(".visually-hidden, [aria-hidden='true'], [class*='fw-torch'], [class*='sparkle']")) continue;
-      // Content inside a horizontal scroller (e.g. the Fayre navigation row at 200% text) is clipped on
-      // purpose and reachable by scrolling or keyboard focus, so it is not "running off the screen".
-      let scroller = element.parentElement;
-      let clippedByScroller = false;
-      while (scroller) {
-        const overflowX = getComputedStyle(scroller).overflowX;
-        if (overflowX === "auto" || overflowX === "scroll") { clippedByScroller = true; break; }
-        scroller = scroller.parentElement;
-      }
-      if (clippedByScroller) continue;
+      // The Fayre navigation row scrolls sideways inside its own box at 200% text (approved design). Its
+      // links stay reachable by scrolling and keyboard focus, so they are not "running off the screen".
+      // Scoped to that one component so a new unintended scroller elsewhere still fails this check.
+      if (element.closest(".fayre-navigation__pages")) continue;
       if (getComputedStyle(element).position === "fixed") continue;
       const box = element.getBoundingClientRect();
       if (box.width > 0 && box.right > limit) found.push(`${element.tagName.toLowerCase()}.${element.className} ends at ${Math.round(box.right)}px`);
