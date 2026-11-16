@@ -411,7 +411,7 @@ test("the Christmas Fayre page uses a JustSignup click-out and keeps the Fayre i
   for (const link of links) {
     assert.equal(link, `mailto:${christmas.contactEmail}?subject=Helping%20at%20the%20Christmas%20Fayre`);
   }
-  assert.equal([...html.matchAll(/>Email the Fayre&nbsp;<span class="cta-tail"[^>]*>team<span/g)].length, 1);
+  assert.equal([...html.matchAll(/>Email the Fayre <span class="cta-tail"[^>]*>team<span/g)].length, 1);
 });
 
 test("the Christmas Fayre page omits the redundant Good to know panel", async () => {

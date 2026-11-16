@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-// The Fayre event page CTAs must wrap at word boundaries at 200% text:
-// no word splits across lines, and no single-word last line.
+// The Fayre event page CTAs must wrap at word boundaries at 200% text: no word
+// splits across lines. A short last line ("team" or "slot") is an intended wrap -
+// the icon stays in its reserved right lane, so it cannot be stranded.
 for (const width of [320, 390, 768]) {
   for (const theme of ["day", "night"]) {
     test(`event CTAs wrap at word boundaries at ${width}px with 200% text (${theme})`, async ({ page }) => {
