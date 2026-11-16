@@ -11,10 +11,10 @@ if(!deadlineEvent) throw new Error('Art competition deadline record is missing')
 const deadline=ordinalDateFormatter({weekday:'long',day:'numeric',month:'long',timeZone:'Europe/London'})(deadlineEvent.data.start);
 const deadlineText=deadline;
 ---
-<BaseLayout socialTitle="Art Competition | Narnia theme | Ashley School" socialDescription="Show us your lions, witches and snow queens. Any medium welcome. Hand in your entry by Monday 30th November for the Ashley School Christmas Fayre Gallery." image="/social/art-competition-2026-v1.jpg" imageAlt="Art Competition, Narnia theme, deadline Monday 30th November, over the existing Christmas Fayre woodland artwork." imageWidth={1200} imageHeight={630} title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering art-comp">
+<BaseLayout socialTitle="Art Competition | Narnia theme | Ashley School" socialDescription="Show us your lions, witches and snow queens. Any medium welcome. Hand in your entry by Monday 30th November for the Ashley School Christmas Fayre Gallery." image="/social/art-competition-2026-v2.jpg" imageAlt="Art Competition, Narnia theme, deadline Monday 30th November, next to the Christmas Fayre woodland artwork framed on an easel." imageWidth={1200} imageHeight={630} title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering art-comp">
  <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
  <div class="art-comp-banner">
-  <img class="art-comp-banner__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
+  <div class="art-comp-banner__canvas"><img class="art-comp-banner__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" /></div>
   <PageHero eyebrow="Ashley School Christmas Fayre" title="Art Competition" intro="Narnia Theme" noLogo />
   <div class="site-width"><p class="art-comp-banner__deadline"><span>Deadline</span><strong>{deadlineText}</strong></p></div>
  </div>
@@ -49,9 +49,11 @@ const deadlineText=deadline;
  </div>
 </BaseLayout>
 <style>
-.art-comp-banner{position:relative;isolation:isolate;overflow:hidden;width:min(calc(100% - 2rem),var(--max-width));margin:0 auto;border-radius:var(--radius-md);background:#102d38;box-shadow:0 12px 30px #102d3825}
-.art-comp-banner__art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;z-index:-2}
-.art-comp-banner:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(#10232cd9,#10232c80 38%,#10232c26 62%,#10232ccc 100%),linear-gradient(90deg,#10232c99,#10232c00 40%)}
+.art-comp-banner{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;width:min(calc(100% - 2rem),var(--max-width));margin:0 auto;border-radius:var(--radius-md);background:#102d38;box-shadow:0 12px 30px #102d3825}
+.art-comp-banner__canvas{order:2;position:relative;width:min(100% - 2rem,38rem);margin:0 auto;padding:clamp(.6rem,1.6vw,.9rem);background:#f3e6c8;border:3px solid #8a5a2b;box-shadow:inset 0 0 0 3px #c9a65f,inset 0 0 0 6px #5d3d1e,0 14px 28px #0009;border-radius:2px}
+.art-comp-banner__art{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;object-position:center 30%}
+/* Easel legs under the canvas, desktop only where there is room. */
+@media(min-width:60rem){.art-comp-banner__canvas{margin-bottom:3.4rem}.art-comp-banner__canvas:before,.art-comp-banner__canvas:after{content:"";position:absolute;top:100%;width:.7rem;height:3.2rem;background:linear-gradient(#6b4a2f,#4a2f1c);border-radius:0 0 2px 2px;transform-origin:top center}.art-comp-banner__canvas:before{left:16%;transform:rotate(9deg)}.art-comp-banner__canvas:after{right:16%;transform:rotate(-9deg)}}
 .art-comp-banner:after{content:"";position:absolute;inset:0;border:1px solid #b99a5b;border-radius:inherit;pointer-events:none}
 .art-comp-banner :global(.view-hero){width:100%;margin:0;background:transparent;border-radius:0;text-shadow:0 1px 3px #000c,0 2px 14px #000e}
 .art-comp-banner :global(.mobile-page-heading--no-logo){display:block;text-align:center}
@@ -67,10 +69,10 @@ const deadlineText=deadline;
 .art-comp-banner :global(.view-hero .eyebrow){color:#f4e3b0}
 .art-comp-banner > .site-width{width:100%;padding:0 clamp(1rem,4vw,3rem) 1.5rem}
 .art-comp-banner__deadline{margin:1rem auto 0;display:grid;gap:.15rem;padding:.9rem 1.25rem;width:fit-content;max-width:100%;text-align:center;background:#102d38e6;border:1px solid #c9a65f;border-radius:.6rem;color:#fff3d5;text-shadow:none}
-@media(max-width:59.99rem){.art-comp-banner{display:flex;flex-direction:column}.art-comp-banner :global(.view-hero){order:1}.art-comp-banner__art{order:2;position:static;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;object-position:center 30%}.art-comp-banner:before{display:none}.art-comp-banner > .site-width{order:3}}
-@media(min-width:60rem) and (max-width:63.99rem){.art-comp-banner__art{object-position:88% 40%}}
+.art-comp-banner :global(.view-hero){order:1}.art-comp-banner > .site-width{order:3}
+@media(max-width:59.99rem){.art-comp-banner__canvas{width:min(100% - 1.5rem,38rem)}}
 @media(min-width:64rem){.art-comp-banner :global(.view-hero p:not(.eyebrow)){text-align:center;margin-inline:auto}}
-@media(min-width:60rem){.art-comp-banner{min-height:28rem;display:flex;flex-direction:column;justify-content:space-between}.art-comp-banner > .site-width{padding-bottom:2rem}}
+
 @media(max-width:63.99rem){.art-comp-banner > .site-width{padding-inline:var(--mobile-heading-inset,2rem)}}
 .art-comp-banner__deadline span{font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#edcb83}
 .art-comp-banner__deadline strong{font:500 clamp(1.4rem,4vw,2rem)/1.2 Georgia,serif;overflow-wrap:anywhere}
