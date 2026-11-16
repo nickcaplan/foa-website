@@ -45,6 +45,9 @@ body.narnia-volunteering .site-width.fayre-volunteer {width:min(calc(100% - 32px
  body.narnia-event .xmas-stage .xmas-hero .narnia-landscape h1 {font-size:1.65rem!important;}
 }
 
+/* Same hero-to-nav gap on all three Fayre pages: the event wrapper's bottom padding would add ~41px at desktop. */
+body.narnia-event .xmas-stage .xmas-hero {padding-bottom:0;}
+
 /* Keep the first volunteer activity close: reclaim space between nav and activity list. */
 .narnia-volunteering .fayre-volunteer .fayre-volunteer__intro {margin:.65rem auto;}
 @media(min-width:768px){
