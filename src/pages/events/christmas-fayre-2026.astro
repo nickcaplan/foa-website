@@ -27,16 +27,6 @@ const leads = event.lead.split(/ and (?=[^()]*\()/).map((lead) => lead.replace(/
 const email = event.contactEmail!;
 const mailto = `mailto:${email}?subject=${encodeURIComponent("Helping at the Christmas Fayre")}`;
 
-const flakes = Array.from({ length: 28 }, (_, i) => ({
-  side: i % 2,
-  lane: ((i * 37 + 11) % 100) / 100,
-  size: 10 + ((i * 5) % 9),
-  duration: 11 + ((i * 7) % 10),
-  delay: -((i * 3.300) % 20),
-  y: (i * 29 + 7) % 100,
-  alpha: 0.55 + ((i * 11) % 4) * 0.1,
-}));
-
 const eventJsonLd = {
   "@context": "https://schema.org",
   "@type": "Event",
@@ -54,13 +44,9 @@ const eventJsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(eventJsonLd)} />
   <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
   <div class="xmas-stage">
-    <div class="xmas-snow" aria-hidden="true">
-      {flakes.map((f) => <i style={`--side:${f.side};--lane:${f.lane};--y:${f.y}%;--size:${f.size}px;--dur:${f.duration}s;--delay:${f.delay}s;--alpha:${f.alpha}`}></i>)}
-    </div>
-
     <section class="xmas-hero" aria-labelledby="xmas-title">
       <div class="site-width fayre-hero-shell">
-        <NarniaHero event={event} eventPage={true} />
+        <NarniaHero event={event} eventPage={true} snowfall={true} />
       </div>
     </section>
 

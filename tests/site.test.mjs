@@ -437,7 +437,9 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   assert.ok(!html.includes('class="add-calendar"'), 'Calendar choices are hidden on Fayre details');
   assert.ok(html.includes('/sponsors/martin-flashman.png'), 'Landscape sponsor logo is used');
   assert.match(html, /<div class="xmas-snow" aria-hidden="true"[^>]*>/);
-  assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
+  assert.equal([...html.matchAll(/<i style="--side:/g)].length, 20);
+  assert.ok(html.indexOf('class="xmas-snow"') > html.indexOf('data-hero-snow'), 'Snow is inside the opt-in hero');
+  assert.match(html, /class="xmas-snow__bank"/);
   assert.match(html, /martin-flashman\.png" alt="Martin Flashman and Co"/);
   assert.ok(html.includes(`href="${basePath}${christmas.volunteeringPath}"`));
   assert.doesNotMatch(html, /<iframe|Design preview only|Compare sign-up/);

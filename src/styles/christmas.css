@@ -34,20 +34,29 @@ body.xmas-theme::before {
     linear-gradient(#0c2f20 0%, #08241a 55%, #061c14 100%);
 }
 
-/* Snowfall: a viewport-height layer that stays in view while scrolling */
+/* Event hero only. Its body grows with copy; decoration cannot reach the page sides. */
+.narnia-landscape[data-hero-snow] .narnia-landscape__body { position: relative; isolation: isolate; }
+.narnia-landscape[data-hero-snow] .narnia-landscape__footer { padding-bottom: 48px; }
 .xmas-snow {
-  position: sticky;
+  position: absolute;
   z-index: 1;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
-  margin-bottom: -100vh;
-  margin-bottom: -100svh;
+  inset: 0;
   overflow: hidden;
   pointer-events: none;
-  /* Width of the empty margin either side of the page content */
-  --gutter: calc((100% - min(100% - 2rem, 62rem)) / 2);
+  --gutter: max(.5rem, calc((100% - min(100% - 2rem, 42rem)) / 2));
 }
+.xmas-snow__bank {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30px;
+  background: linear-gradient(#fffef9, #dbe9ec);
+  clip-path: polygon(0 20%, 3% 8%, 7% 16%, 11% 0, 16% 15%, 20% 8%, 25% 30%, 31% 27%, 38% 60%, 45% 73%, 51% 80%, 57% 68%, 63% 71%, 69% 47%, 76% 53%, 81% 28%, 87% 35%, 93% 8%, 97% 17%, 100% 2%, 100% 100%, 0 100%);
+  transform-origin: center bottom;
+  animation: xmas-settle 45s ease-out both;
+}
+@keyframes xmas-settle { from { transform: scaleY(.08); } to { transform: scaleY(1); } }
 
 .xmas-snow i {
   --flake: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%221.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath transform=%22rotate%280 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3Cpath transform=%22rotate%2860 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3Cpath transform=%22rotate%28120 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3Cpath transform=%22rotate%28180 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3Cpath transform=%22rotate%28240 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3Cpath transform=%22rotate%28300 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3C/svg%3E");
@@ -61,7 +70,7 @@ body.xmas-theme::before {
   height: var(--w);
   opacity: var(--alpha);
   animation: xmas-fall var(--dur) linear var(--delay) infinite;
-  will-change: transform;
+
 }
 
 .xmas-snow i::before {
@@ -84,11 +93,11 @@ body.xmas-theme::before {
 
 @keyframes xmas-fall {
   from {
-    transform: translate3d(0, 0, 0);
+    top: -20px;
   }
 
   to {
-    transform: translate3d(0, 110vh, 0);
+    top: calc(100% - 12px);
   }
 }
 
@@ -671,4 +680,8 @@ body.xmas-theme::before {
 /* Volunteering actions keep a full pill curve as labels wrap or grow. */
 .narnia-volunteering .fayre-volunteer .button {
   border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xmas-snow__bank { animation: none; transform: none; }
 }
