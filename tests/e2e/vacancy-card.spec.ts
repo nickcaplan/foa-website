@@ -5,10 +5,10 @@ import {test,expect} from '@playwright/test';
 // 2026-11-28T00:00:00Z (and the departing Co-Comms member card hides then).
 // Test both regimes so each card is actually exercised (invisible cards are
 // skipped by assertion).
-for(const flip of [{label:'pre-flip',time:'2026-11-27T12:00:00Z' as string|null},{label:'post-flip',time:'2026-11-29T12:00:00Z'}])
+for(const flip of [{label:'pre-flip',time:'2026-11-27T12:00:00Z'},{label:'post-flip',time:'2026-11-29T12:00:00Z'}])
 for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy card readable ${width} @${scale}x ${flip.label}`,async({page})=>{
   await page.setViewportSize({width,height:1000});
-  if(flip.time){const t=new Date(flip.time).getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
+  {const t=new Date(flip.time).getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
   await page.goto('/committee/');
   await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
   const cards=page.locator('.member-card--vacancy');
@@ -16,7 +16,7 @@ for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy car
   // The flip itself: the departing member card must hide and the Co-Comms
   // vacancy card must appear, post-flip only.
   const datedMember=page.locator('.member-card[data-show-before]');
-  if(flip.time){
+  if(flip.label==='post-flip'){
     await expect(datedMember).toBeHidden();
     expect(await cards.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).length),'both vacancy cards visible post-flip').toBe(2);
   }else{
