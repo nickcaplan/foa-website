@@ -87,12 +87,7 @@ for (const width of [360, 390, 412, 1280, 1366, 1440]) {
     const layout = await page.locator('.fayre-art-hero').evaluate(panel => {
       const theme = panel.querySelector('.fayre-art-hero__theme')!;
       const title = panel.querySelector('h1')!;
-      const rect = (node: Element) => {
-        const range = document.createRange();
-        range.selectNodeContents(node);
-        return range.getBoundingClientRect();
-      };
-      const t = rect(theme); const h = rect(title); const r = panel.getBoundingClientRect();
+      const t = theme.getBoundingClientRect(); const h = title.getBoundingClientRect(); const r = panel.getBoundingClientRect();
       return {
         themeCentre: t.x + t.width / 2, titleCentre: h.x + h.width / 2, panelCentre: r.x + r.width / 2,
         themeLeft: t.x, titleLeft: h.x,

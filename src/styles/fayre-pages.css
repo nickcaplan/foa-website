@@ -28,14 +28,13 @@
   .art-comp .fayre-art-hero h1 {font-size:1.65rem;}
 }
 
-/* Match the header's outer gutters, which scale with the root font size. */
+/* Match the header's outer gutters, which scale with the root font size.
+   The event page sizes its own .xmas-stage .site-width; do not override it here. */
 .xmas-theme .site-width.fayre-hero-shell,
-body.xmas-theme.narnia-event .xmas-stage .site-width.fayre-hero-shell,
 body.narnia-volunteering .site-width.fayre-volunteer {width:min(calc(100% - 2rem),var(--max-width));}
 .art-comp .fayre-art-hero h1 {text-transform:none;}
 @media(min-width:64rem){
  .xmas-theme .site-width.fayre-hero-shell,
- body.xmas-theme.narnia-event .xmas-stage .site-width.fayre-hero-shell,
  body.narnia-volunteering .site-width.fayre-volunteer {width:min(calc(100% - 3rem),var(--max-width));}
 }
 @media(max-width:767px){
