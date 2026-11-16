@@ -74,7 +74,7 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
       </article>
       <article class="involved-feature" hidden data-show-from="2026-11-28T00:00:00+00:00">
         <div class="involved-feature__copy"><p class="eyebrow">Role vacancy</p><h2 id="co-comms-title">Could you be our <span class="co-secretary">Co-Comms?</span></h2><p>You look after our newsletters, Instagram and Facebook, helping spread the word about our events. Nick Caplan, who also holds this role, is happy to have a quick chat first.</p></div>
-        <div class="involved-feature__actions"><a class="button button--amber involved-action" href={enquiry("The FOA Co-Comms role")}><span class="cta-label">Get in touch<MailIcon /></span></a><a class="button involved-action involved-action--light" href={withBase("/committee/")}>Meet the committee</a></div>
+        <div class="involved-feature__actions"><a class="button button--amber involved-action" href={enquiry("The FOA Co-Comms role")}><span class="cta-label">Get in <span class="cta-tail">touch<MailIcon /></span></span></a><a class="button involved-action involved-action--light" href={withBase("/committee/")}><span class="cta-label">Meet the <span class="cta-tail">committee<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></div>
       </article>
       <div class="involved-groups" style={`--involved-paired-tracks: ${pairedGroupTracks}`}>
         {groups.map((group) => (
