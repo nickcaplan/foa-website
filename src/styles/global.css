@@ -4354,7 +4354,7 @@ a.button[href^="mailto:"]:not(.fayre-volunteer__email) .cta-icon{right:10px!impo
 /* Hero buttons: cap the font by viewport so enlarged text still fits the
    narrowest phones without breaking a long word. */
 main .narnia-landscape .button{font-size:min(1rem,7vw)}
-main .xmas-actions .button{font-size:min(1.05rem,7.5vw)}
+main .xmas-actions .button{font-size:min(1.05rem,7.5vw)!important}
 
 /* Enlarged text: when the vacancy content no longer fits the 4/5 box,
    grow the box and bring the pill in flow instead of clipping.
