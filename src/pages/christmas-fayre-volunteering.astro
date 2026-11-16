@@ -135,6 +135,8 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 @media(max-width:47.99rem){.fayre-volunteer :global(.narnia-landscape__art){position:absolute;inset:0;height:100%;aspect-ratio:auto;object-fit:cover}.fayre-volunteer :global(.narnia-landscape:before){display:block;background:linear-gradient(90deg,#10232ccc,#10232cdd 35%,#10232ccc)}.fayre-volunteer :global(.narnia-landscape h1){font-size:2rem!important}.fayre-volunteer :global(.narnia-landscape__copy){padding:1.25rem 1rem}}
 .fayre-volunteer__grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1.25rem}
 .fayre-volunteer__card{position:relative;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem;padding:1.5rem;display:flex;flex-direction:column;min-width:0}
+/* Under enlarged text, rem padding would squeeze the card content below the width of "slots remaining"; cap horizontal padding by viewport so the phrase always fits whole. */
+@media(max-width:47.99rem){.fayre-volunteer__card{padding-inline:min(1.5rem,6vw)}}
 .fayre-volunteer__card h3{font:500 min(1.6rem,13vw)/1.2 Georgia,serif;margin:0 0 1rem;color:#fff3d5;overflow-wrap:anywhere}
 .fayre-volunteer__priority{display:block;padding:0;margin:1.1rem 0 .4rem;font-size:.95rem;line-height:1.5;color:#f4ead1}
 .fayre-volunteer__updated{font-size:.8rem;margin:0 0 1.25rem;color:#f3dfae}
@@ -181,7 +183,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .narnia-volunteering .narnia-landscape .button{max-width:min(39rem,100%)!important}
 .fayre-volunteer__count{display:inline;color:#edcb83;font-size:1.25rem;line-height:1.25;font-weight:800;font-variant-numeric:tabular-nums}
 .fayre-volunteer__count--zero{color:#9fb8a4}
-.fayre-volunteer__count-label{display:inline;font-size:min(1rem,5.5vw);line-height:1.25;color:#f4ead1}
+.fayre-volunteer__count-label{display:inline;font-size:1rem;line-height:1.25;color:#f4ead1}
 </style>
 
 <style is:inline>
