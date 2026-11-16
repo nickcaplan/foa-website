@@ -54,6 +54,24 @@ for (const width of [320, 390, 640, 768, 820, 900, 1024, 1280, 1440]) {
             const otherDesc = other.querySelector(".fayre-volunteer__heading + p")!.getBoundingClientRect().top - other.getBoundingClientRect().top;
             if (Math.abs(otherDesc - desc) > 1) bad.push(`${card.dataset.activityName}: description sits at a different offset than a same-row card (${Math.round(desc)} vs ${Math.round(otherDesc)})`);
           }
+          // Words joined by a non-breaking space in the title must stay on one line (Nick: no orphaned "+ Trail").
+          const h3 = card.querySelector("h3")!;
+          const nbRange = document.createRange();
+          (function walkNb(n: Node) {
+            for (const c of n.childNodes) {
+              if (c.nodeType === 3) {
+                const t = c.textContent ?? "";
+                let m; const re = /(\S+)\u00a0(\S+)/g;
+                while ((m = re.exec(t))) {
+                  nbRange.setStart(c, m.index); nbRange.setEnd(c, m.index + m[1].length);
+                  const a = nbRange.getBoundingClientRect();
+                  nbRange.setStart(c, m.index + m[0].length - m[2].length); nbRange.setEnd(c, m.index + m[0].length);
+                  const b2 = nbRange.getBoundingClientRect();
+                  if (Math.abs(a.top - b2.top) > 1) bad.push(`${card.dataset.activityName}: non-breaking pair "${m[1]} ${m[2]}" split across lines`);
+                }
+              } else walkNb(c);
+            }
+          })(h3);
           const icon = card.querySelector(".fayre-volunteer__action .cta-icon")!.getBoundingClientRect();
           const label = card.querySelector(".fayre-volunteer__action .cta-label")!;
           const range = document.createRange();
