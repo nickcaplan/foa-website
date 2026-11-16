@@ -1,0 +1,39 @@
+---
+import { withBase } from '../lib/urls';
+interface Props { current: 'event' | 'volunteer' | 'art' }
+const { current } = Astro.props;
+const pages = [
+  { key: 'event', label: 'Fayre', path: '/events/christmas-fayre-2026/' },
+  { key: 'volunteer', label: 'Volunteer', path: '/christmas-fayre-volunteering/' },
+  { key: 'art', label: 'Art competition', path: '/christmas-fayre-art-competition/' },
+];
+const currentPage = pages.find(page => page.key === current)!;
+---
+<div class="fayre-navigation">
+  <nav aria-label="Breadcrumb" class="fayre-navigation__breadcrumb">
+    <ol>
+      <li>{current === 'event' ? <span aria-current="page">Christmas Fayre</span> : <a href={withBase(pages[0].path)}>Christmas Fayre</a>}</li>
+      {current !== 'event' && <li><span aria-hidden="true">/</span> <span aria-current="page">{current === 'volunteer' ? 'Volunteering' : currentPage.label}</span></li>}
+    </ol>
+  </nav>
+  <nav aria-label="Christmas Fayre pages" class="fayre-navigation__pages">
+    <ul>
+      {pages.map(page => <li><a href={withBase(page.path)} aria-current={page.key === current ? 'page' : undefined}>{page.label}</a></li>)}
+    </ul>
+  </nav>
+</div>
+<style>
+.fayre-navigation { margin: 1rem 0 1.5rem; color: var(--xm-cream); min-width: 0; }
+.fayre-navigation__breadcrumb ol { display: flex; flex-wrap: wrap; gap: 0 .5em; margin: 0; padding: 0; list-style: none; font-size: .8rem; line-height: 1.5; color: var(--xm-gold-light); }
+.fayre-navigation__breadcrumb li { display: flex; align-items: center; gap: .5em; }
+.fayre-navigation__breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; color: inherit; text-decoration: underline; text-underline-offset: .2em; }
+.fayre-navigation__breadcrumb span[aria-current] { display: inline-flex; align-items: center; min-height: 44px; }
+.fayre-navigation__pages { overflow-x: auto; padding: 4px; border: 1px solid var(--xm-gold-dim); border-radius: .5rem; background: var(--xm-green); scrollbar-width: thin; scrollbar-color: var(--xm-gold-light) var(--xm-night); }
+.fayre-navigation__pages ul { display: flex; flex-wrap: nowrap; width: max-content; min-width: 100%; gap: .25rem; padding: 0; margin: 0; list-style: none; }
+.fayre-navigation__pages li { display: flex; flex: 1 0 auto; }
+.fayre-navigation__pages a { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: .5em .4em; border-radius: .25rem; border-bottom: 2px solid transparent; color: var(--xm-cream); font-size: .8125rem; line-height: 1.4; text-decoration: none; white-space: nowrap; font-weight: 600; }
+.fayre-navigation__pages a[aria-current="page"] { background: var(--xm-night); border-bottom-color: var(--xm-gold-light); color: var(--xm-gold-light); font-weight: 700; }
+.fayre-navigation__pages a:hover { text-decoration: underline; text-underline-offset: .25em; background: var(--xm-night); }
+.fayre-navigation a:focus-visible { outline: 2px solid var(--xm-gold-light); outline-offset: 1px; }
+@media (forced-colors: active) { .fayre-navigation__pages a[aria-current="page"] { border-bottom-color: Highlight; } }
+</style>
