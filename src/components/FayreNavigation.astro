@@ -2,18 +2,20 @@
 import { withBase } from '../lib/urls';
 interface Props { current: 'event' | 'volunteer' | 'art' }
 const { current } = Astro.props;
+// label is the short tab text; breadcrumbLabel is the full page name shown in the breadcrumb trail.
 const pages = [
-  { key: 'event', label: 'Fayre', path: '/events/christmas-fayre-2026/' },
-  { key: 'volunteer', label: 'Volunteer', path: '/christmas-fayre-volunteering/' },
-  { key: 'art', label: 'Art competition', path: '/christmas-fayre-art-competition/' },
+  { key: 'event', label: 'Fayre', breadcrumbLabel: 'Christmas Fayre', path: '/events/christmas-fayre-2026/' },
+  { key: 'volunteer', label: 'Volunteer', breadcrumbLabel: 'Volunteering', path: '/christmas-fayre-volunteering/' },
+  { key: 'art', label: 'Art competition', breadcrumbLabel: 'Art competition', path: '/christmas-fayre-art-competition/' },
 ];
-const currentPage = pages.find(page => page.key === current)!;
+const currentPage = pages.find(page => page.key === current);
+if (!currentPage) throw new Error(`FayreNavigation: unknown current "${current}"`);
 ---
 <div class="fayre-navigation">
   <nav aria-label="Breadcrumb" class="fayre-navigation__breadcrumb">
     <ol>
-      <li>{current === 'event' ? <span aria-current="page">Christmas Fayre</span> : <a href={withBase(pages[0].path)}>Christmas Fayre</a>}</li>
-      {current !== 'event' && <li><span aria-hidden="true">/</span> <span aria-current="page">{current === 'volunteer' ? 'Volunteering' : currentPage.label}</span></li>}
+      <li>{current === 'event' ? <span aria-current="page">{pages[0].breadcrumbLabel}</span> : <a href={withBase(pages[0].path)}>{pages[0].breadcrumbLabel}</a>}</li>
+      {current !== 'event' && <li><span aria-hidden="true">/</span> <span aria-current="page">{currentPage.breadcrumbLabel}</span></li>}
     </ol>
   </nav>
   <nav aria-label="Christmas Fayre pages" class="fayre-navigation__pages">

@@ -22,7 +22,7 @@ const overflowing = (page: Page) =>
     const range = document.createRange();
     for (const element of document.querySelectorAll<HTMLElement>("body *")) {
       if (element.closest(".visually-hidden, [aria-hidden='true'], [class*='fw-torch'], [class*='sparkle']")) continue;
-      // The Fayre navigation row scrolls sideways inside its own box at 200% text (approved design). Its
+      // The Fayre navigation row scrolls sideways inside its own box at 200% text (approved design, see PR #170). Its
       // links stay reachable by scrolling and keyboard focus, so they are not "running off the screen".
       // Scoped to that one component so a new unintended scroller elsewhere still fails this check.
       if (element.closest(".fayre-navigation__pages")) continue;
