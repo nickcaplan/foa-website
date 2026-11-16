@@ -14,12 +14,13 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 <BaseLayout socialTitle="Volunteer at the Christmas Fayre | Ashley School" socialDescription="Help bring Narnia to life on Saturday 5 December. Choose an activity, join friends and pick a helper, setup or clear-up slot on JustSignup." image="/social/fayre-volunteering-2026-v2.jpg" imageAlt="Volunteer at the Fayre, Saturday 5 December 2026, 12:00 - 15:00 at Ashley School." imageWidth={1200} imageHeight={630} title="Christmas Fayre Volunteering" description="Help bring Narnia to life at Ashley School. Choose a Christmas Fayre activity and pick your volunteer slot on JustSignup." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering">
  <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
  <div class="site-width fayre-volunteer">
-  <NarniaHero event={event} eventPage={true} volunteerPage={true}/>
+  <NarniaHero event={event} eventPage={true} volunteerPage={true}>
+   <p slot="priority" class="fayre-volunteer__priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")}>Check JustSignup for available places.</p>
+   <p slot="priority" class="fayre-volunteer__updated" data-availability-updated role="status" aria-live="polite"></p>
+  </NarniaHero>
   <section class="fayre-volunteer__intro" aria-label="Choose your volunteer activity">
    <p>Choose an activity below. Buttons open JustSignup in a new tab to pick your slot. Event helper slots are 30 minutes; setup and clear-up vary.</p>
   </section>
-  <p class="fayre-volunteer__priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")}>Check JustSignup for available places.</p>
-  <p class="fayre-volunteer__updated" data-availability-updated role="status" aria-live="polite"></p>
   <ul class="fayre-volunteer__grid" aria-label="Volunteer activities">
    {event.signupActivities.map(activity=><li class="fayre-volunteer__card" data-availability-code={activity.anchor} data-activity-name={activity.name}>
     <div class="fayre-volunteer__heading"><h3>{activity.name}</h3><p class="fayre-volunteer__availability" aria-live="polite"></p></div>
@@ -135,7 +136,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 .fayre-volunteer__priority{display:block;background:#f8df9b;border:2px solid #c99b35;border-left:.5rem solid #742f3c;border-radius:.35rem;padding:1rem 1.25rem;margin:0 0 .75rem}
 .fayre-volunteer__updated{font-size:.8rem;margin:0 0 1.25rem;color:#f3dfae}
 .fayre-volunteer__updated:empty{display:none}
-@media(min-width:48rem){.fayre-volunteer__priority{width:fit-content;max-width:100%;margin-inline:auto}.fayre-volunteer__updated{text-align:center}}
+
 .fayre-volunteer__heading{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.35rem .8rem;margin-bottom:1rem}
 .fayre-volunteer__card .fayre-volunteer__heading h3{margin:0}
 .fayre-volunteer__availability{margin:0;font-size:.85rem;line-height:1.25;min-width:0}
@@ -171,6 +172,9 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 /* Availability counts are created client-side, so they carry no scoped-style attribute. */
 .fayre-volunteer__priority strong{display:block;color:#742f3c;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}
 .fayre-volunteer__priority span{display:block;color:#362b15;font-size:1.3rem;line-height:1.3;font-weight:800;margin-top:.3rem}
+.narnia-landscape .fayre-volunteer__priority{margin:1.25rem 0 .5rem}
+.narnia-landscape .fayre-volunteer__updated{text-align:center;margin:0}
+@media(max-width:47.99rem){.narnia-landscape .fayre-volunteer__priority{padding:.85rem 1rem}.narnia-landscape .fayre-volunteer__priority span{font-size:1.15rem}}
 .fayre-volunteer__count{display:inline;color:#edcb83;font-size:1.25rem;line-height:1.25;font-weight:800;font-variant-numeric:tabular-nums}
 .fayre-volunteer__count--zero{color:#9fb8a4}
 .fayre-volunteer__count-label{display:inline;font-size:1rem;line-height:1.25;color:#f4ead1}
