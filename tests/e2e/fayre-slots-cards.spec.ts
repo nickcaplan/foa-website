@@ -23,12 +23,26 @@ for (const width of [320, 390, 768, 1440]) {
       await page.goto("/christmas-fayre-volunteering/");
       if (scale === 2) await page.evaluate(() => { document.documentElement.style.fontSize = "32px"; });
       await page.waitForFunction(() => document.querySelectorAll(".fayre-volunteer__count").length > 0);
-      const misaligned = await page.evaluate(() =>
-        [...document.querySelectorAll<HTMLElement>("[data-availability-code]")].flatMap((card) => {
+      const misaligned = await page.evaluate(() => {
+        const cards = [...document.querySelectorAll<HTMLElement>("[data-availability-code]")];
+        const bad: string[] = [];
+        let expectedTop: number | null = null;
+        for (const card of cards) {
           const title = card.querySelector("h3")!.getBoundingClientRect();
           const count = card.querySelector(".fayre-volunteer__availability")!.getBoundingClientRect();
-          return count.top >= title.bottom - 1 ? [] : [`${card.dataset.activityName}: count overlaps the title row`];
-        }));
+          const cardTop = card.getBoundingClientRect().top;
+          if (count.top < title.bottom - 1) bad.push(`${card.dataset.activityName}: count overlaps the title row`);
+          if (expectedTop === null) expectedTop = count.top - cardTop;
+          else if (Math.abs(count.top - cardTop - expectedTop) > 1) bad.push(`${card.dataset.activityName}: count sits at a different offset (${Math.round(count.top - cardTop)} vs ${Math.round(expectedTop)})`);
+          const icon = card.querySelector(".fayre-volunteer__action .cta-icon")!.getBoundingClientRect();
+          const label = card.querySelector(".fayre-volunteer__action .cta-label")!;
+          const range = document.createRange();
+          const texts: Text[] = [];
+          (function walk(n: Node) { for (const c of n.childNodes) { if (c.nodeType === 3 && !c.parentElement?.closest(".visually-hidden")) texts.push(c as Text); else walk(c); } })(label);
+          for (const t of texts) { range.selectNodeContents(t); for (const r of range.getClientRects()) { if (r.width && !(r.right <= icon.left || r.left >= icon.right)) bad.push(`${card.dataset.activityName}: icon overlaps button text`); } }
+        }
+        return bad;
+      });
       expect(misaligned).toEqual([]);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "page scrolls sideways").toBe(true);
     });
@@ -66,7 +80,7 @@ test(`slots line has no single-word last line at ${width}px with 200% text`, asy
       const texts: Text[] = [];
       (function walk(n: Node) { for (const c of n.childNodes) { if (c.nodeType === 3) texts.push(c as Text); else walk(c); } })(el);
       const range = document.createRange();
-      const words: { w: string; top: number; bottom: number }[] = [];
+      const words: { w: string; top: number; bottom: number; right: number }[] = [];
       for (const t of texts) {
         let offset = 0;
         for (const part of t.textContent!.split(/(\s+)/)) {
@@ -75,7 +89,7 @@ test(`slots line has no single-word last line at ${width}px with 200% text`, asy
           if (!part.trim()) continue;
           range.setStart(t, i); range.setEnd(t, i + part.length);
           const r = range.getBoundingClientRect();
-          words.push({ w: part, top: r.top, bottom: r.bottom });
+          words.push({ w: part, top: r.top, bottom: r.bottom, right: r.right });
         }
       }
       if (words.length < 2) return [];
