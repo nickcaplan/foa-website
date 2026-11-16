@@ -43,6 +43,8 @@ body.xmas-theme::before {
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  /* container-type so flakes can fall with translateY(100cqh) on the compositor, no per-frame layout. */
+  container-type: size;
   /* 42rem matches .narnia-landscape__copy max-width so flakes fall beside the hero copy, not over it. */
   --gutter: max(.5rem, calc((100% - min(100% - 2rem, 42rem)) / 2));
 }
@@ -95,10 +97,12 @@ body.xmas-theme::before {
 @keyframes xmas-fall {
   from {
     top: -20px;
+    transform: translateY(0);
   }
 
   to {
-    top: calc(100% - 12px);
+    top: -20px;
+    transform: translateY(calc(100cqh + 8px));
   }
 }
 
