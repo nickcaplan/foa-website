@@ -613,7 +613,7 @@ body.xmas-theme::before {
   }
 
   .xmas-trees {
-    width: 11rem;
+    width: min(11rem, 28vw);
     margin-right: 0;
   }
 
