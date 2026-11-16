@@ -77,7 +77,7 @@ for (const width of [320, 390, 448, 768]) {
           for (const [idx, line] of rows.entries()) {
             if (rows.length > 1 && line.words.length < 2) out.push(`${name}: orphan line ${idx + 1} "${line.words.join(" ")}"`);
             const clearance = icon.left - line.right;
-            if (clearance < 2) out.push(`${name}: line "${line.words.join(" ")}" ends ${Math.round(line.right - icon.left)}px into the icon lane`);
+            if (clearance < 6) out.push(`${name}: line "${line.words.join(" ")}" ends ${Math.round(line.right - icon.left)}px into the icon lane`);
           }
         }
         return out;
