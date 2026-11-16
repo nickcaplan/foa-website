@@ -172,6 +172,9 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 /* Availability counts are created client-side, so they carry no scoped-style attribute. */
 .fayre-volunteer__priority strong{display:inline;color:#edcb83;font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;margin-right:.55em}
 .fayre-volunteer__priority span{display:inline;color:#f4ead1;font-size:.95rem;line-height:1.5;font-weight:600;margin:0}
+/* On narrow screens (and at enlarged text) stack the label above the value
+   so the line never wraps mid-phrase ("55 / places left"). */
+@media(max-width:47.99rem){.fayre-volunteer__priority strong{display:block;margin:0 0 .1rem}}
 /* The volunteering hero copy runs wider (48rem) than the standard 42rem hero copy, so the CTA would stretch past the standard hero button width. Cap it to the same 39rem content width the other heroes give their CTAs; min() keeps it full-width on phones and at 200% text. */
 .narnia-volunteering .narnia-landscape .button{max-width:min(39rem,100%)!important}
 .fayre-volunteer__count{display:inline;color:#edcb83;font-size:1.25rem;line-height:1.25;font-weight:800;font-variant-numeric:tabular-nums}
