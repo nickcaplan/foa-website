@@ -53,3 +53,20 @@ for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy car
   }
   expect(tested,'at least one vacancy card visible and asserted').toBeGreaterThan(0);
 });
+
+// Consistency: post-flip both vacancy cards are visible together, so they
+// must use the SAME layout mode (both grown or both fixed) at every width
+// and text scale - a grown card next to a fixed one is visibly uneven.
+for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy cards share one layout mode ${width} @${scale}x`,async({page})=>{
+  await page.setViewportSize({width,height:1000});
+  {const t=new Date('2026-11-29T12:00:00Z').getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
+  await page.goto('/committee/');
+  await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
+  const boxes=page.locator('.member-vacancy');
+  const states=await boxes.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).map(e=>e.classList.contains('member-vacancy--grown')));
+  expect(states.length,'both vacancy cards visible post-flip').toBe(2);
+  expect(new Set(states).size,`mixed layout modes at ${width}px @${scale}x: ${states}`).toBe(1);
+  // And the grown cards must actually be the same height (equal-height grid).
+  const heights=await boxes.evaluateAll(els=>els.filter(e=>(e as HTMLElement).offsetParent!==null).map(e=>Math.round(e.getBoundingClientRect().height)));
+  expect(Math.abs(heights[0]-heights[1]),`uneven vacancy card heights at ${width}px @${scale}x: ${heights}`).toBeLessThanOrEqual(2);
+});
