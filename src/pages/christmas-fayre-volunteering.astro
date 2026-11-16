@@ -39,7 +39,7 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
  <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
  <div class="site-width fayre-volunteer">
   <NarniaHero event={event} eventPage={true} volunteerPage={true}>
-   <p slot="priority" class="fayre-volunteer__priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")}>{heroSummary===null?<><strong>MOST HELP NEEDED</strong> <span>{`${ranked[0]!.name} - ${ranked[0]!.count} ${ranked[0]!.count===1?"place":"places"} left`}</span></>:heroSummary}</p>
+   <p slot="priority" class="fayre-volunteer__priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")}>{heroSummary===null?<><strong>Most help needed</strong><span>{`${ranked.filter(r=>r.count===ranked[0]!.count).map(r=>r.name).join(" & ")} - ${ranked[0]!.count} ${ranked[0]!.count===1?"place":"places"} left`}</span></>:heroSummary}</p>
   </NarniaHero>
   <FayreNavigation current="volunteer" />
   <section class="fayre-volunteer__intro" aria-label="Choose your volunteer activity">
