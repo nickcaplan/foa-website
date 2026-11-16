@@ -215,9 +215,6 @@ a {
   .site-header .site-width {
     width: min(calc(100% - 3rem), var(--max-width));
   }
-  .art-comp .site-header .site-width {
-    width: min(calc(100% - 2rem), var(--max-width));
-  }
 }
 
 .site-header .home-introduction {
