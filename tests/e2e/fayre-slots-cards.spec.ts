@@ -16,7 +16,7 @@ const snapshot = (counts: Record<string, number>) => ({
   ])),
 });
 
-for (const width of [320, 390, 768, 1440]) {
+for (const width of [320, 390, 640, 768, 820, 900, 1024, 1280, 1440]) {
   for (const scale of [1, 2]) {
     test(`slots line sits below the title on every card at ${width}px with ${scale * 100}% text`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
