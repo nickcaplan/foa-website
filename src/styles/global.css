@@ -3662,6 +3662,9 @@ body.menu-open .cookie-banner {
   /* #179: the amount stays whole; if the screen ends up narrower than the
      amount (text enlarged beyond 200%), the banner scrolls inside its box. */
   overflow-x: auto;
+  /* #179: side padding tapers (24px at 100%, 12px at 200%) so the amount
+     still fits inside the banner at 200% text. Pixel-equal at a 16px root. */
+  padding-inline: max(8px, calc(36px - 0.75rem));
   gap: 0.4rem;
   padding: 1rem 1.5rem;
   border: 1px solid var(--line);
@@ -4434,11 +4437,14 @@ a.button[href^="mailto:"] .cta-label{overflow-wrap:normal;word-break:normal}
    .cta-tail - the padding tapers with text size (1.15rem at a 16px root), and
    the label font eases from 0.95rem to 26px at 200% so the longest word fits. */
 @media(max-width:26rem){
-  main .fundraising-card__cta a.button .cta-icon{position:static!important;inset:auto!important;translate:none!important;margin:0 0 0 0.25em!important}
-  main .fundraising-card__cta.fundraising-card__cta a.button:has(.cta-icon){padding-inline-start:max(0.6rem, calc(50px - 0.625rem))!important;padding-inline-end:max(0.6rem, calc(50px - 0.625rem))!important}
+  /* #171: the arrow stays in the right-edge lane at every text size (Nick's
+     convention). At enlarged text the lanes taper to 30px and the label to
+     23px, so "Fundraising" (153px) ends ~11px before the arrow's zone and can
+     never run under it. Pixel-equal to the base rules at a 16px root. */
+  main .fundraising-card__cta.fundraising-card__cta a.button:has(.cta-icon){padding-inline-start:max(0.6rem, calc(63.52px - 1.1725rem))!important;padding-inline-end:max(0.6rem, calc(43.52px + 0.0775rem))!important}
   main .fundraising-card__cta .cta-word{overflow-wrap:break-word}
 }
-main .fundraising-card__cta{font-size:min(0.95rem, calc(5.4px + 0.6125rem))}
+main .fundraising-card__cta{font-size:min(0.95rem, calc(7.4px + 0.4875rem))}
 /* #171: view-hero intro copy tapers (12px at 100%, 19px at 200%) so words like
    "opportunities" stay whole beside the hero logo on phones. Equal at 16px root. */
 .view-hero-copy p{font-size:min(0.75rem, calc(5px + 0.4375rem));overflow-wrap:break-word}

@@ -26,15 +26,14 @@ const overflowing = (page: Page) =>
       // links stay reachable by scrolling and keyboard focus, so they are not "running off the screen".
       // Scoped to that one component so a new unintended scroller elsewhere still fails this check.
       if (element.closest(".fayre-navigation__pages")) continue;
-      // #171: the fundraising sources table keeps whole words at enlarged text
-      // instead of breaking them; when the doubled text makes the table wider
-      // than the phone it scrolls sideways inside its own frame (same pattern
-      // as the Fayre navigation row above), so it is not "running off the screen".
-      if (element.closest(".fundraising-sources-frame")) continue;
-      // #179: the fundraising total banner keeps the amount on one line; when
-      // doubled text makes the amount wider than the phone it scrolls inside
-      // its own box, so it is not "running off the screen".
-      if (element.closest(".fundraising-last-total")) continue;
+      // #171/#179: the fundraising sources table and total banner keep whole
+      // words at enlarged text; when doubled text outgrows the phone they
+      // scroll sideways inside their own boxes (PR #170 pattern). Only their
+      // CONTENTS are skipped here - the boxes themselves stay bounds-checked
+      // below, and the scroller test asserts they are keyboard-focusable with
+      // an accessible name.
+      const scroller = element.closest(".fundraising-sources-frame, .fundraising-last-total");
+      if (scroller && scroller !== element) continue;
       if (getComputedStyle(element).position === "fixed") continue;
       const box = element.getBoundingClientRect();
       if (box.width > 0 && box.right > limit) found.push(`${element.tagName.toLowerCase()}.${element.className} ends at ${Math.round(box.right)}px`);
@@ -66,6 +65,31 @@ for (const theme of ["day", "night"] as const) {
         expect(await overflowing(page)).toEqual([]);
       });
     }
+
+    test("fundraising scroll boxes stay on screen and are keyboard reachable", async ({ page }) => {
+      await page.goto("/fundraising/");
+      await useLargeText(page);
+      const boxes = await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>(".fundraising-sources-frame, .fundraising-last-total")].map((el) => {
+          const box = el.getBoundingClientRect();
+          return {
+            cls: el.className,
+            left: box.left,
+            right: box.right,
+            tabindex: el.getAttribute("tabindex"),
+            name: el.getAttribute("aria-label") ?? el.getAttribute("aria-labelledby") ?? "",
+            scrolls: el.scrollWidth > el.clientWidth + 1,
+          };
+        }),
+      );
+      expect(boxes.length).toBe(2);
+      for (const box of boxes) {
+        expect(box.left, `${box.cls} starts on screen`).toBeGreaterThanOrEqual(0);
+        expect(box.right, `${box.cls} ends on screen`).toBeLessThanOrEqual(320.5);
+        expect(box.tabindex, `${box.cls} is keyboard focusable`).toBe("0");
+        expect(box.name.length, `${box.cls} has an accessible name`).toBeGreaterThan(0);
+      }
+    });
 
     test("footer links stay on screen and the columns stack when they cannot sit side by side", async ({ page }) => {
       await page.goto("/");

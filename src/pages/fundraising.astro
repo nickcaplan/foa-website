@@ -23,7 +23,7 @@ const updated = ordinalDateFormatter({ year: "numeric", timeZone: "Europe/London
       <div class="section-heading"><p class="eyebrow">This year · 2026/27</p><h2 id="this-year-title">Every contribution adds up.</h2><p>Thank you to everyone who has supported The FOA so far this academic year.</p></div>
       <div class="split-layout split-layout--snug fundraising-current">
         <div><FundraisingSummary appeal={appeal} detailed /><p class="fundraising-updated">Figures updated on <time datetime={appeal.updated.toISOString().slice(0, 10)}>{updated}</time>.</p></div>
-        <div class="fundraising-sources-frame"><table class="fundraising-sources">
+        <div class="fundraising-sources-frame" tabindex="0" role="region" aria-label="Fundraising sources and totals table"><table class="fundraising-sources">
           <caption>Where this year's fundraising has come from</caption>
           <thead><tr><th scope="col">Fundraising source</th><th scope="col">Raised</th></tr></thead>
           <tbody>{appeal.sources.map(({ label, amount }) => <tr><th scope="row">{label}</th><td>{money(amount)}</td></tr>)}</tbody>
@@ -44,7 +44,7 @@ const updated = ordinalDateFormatter({ year: "numeric", timeZone: "Europe/London
     <div class="site-width">
       <div class="section-heading"><p class="eyebrow">Last year · {appeal.previousYear.year}</p><h2 id="last-year-title">A lasting difference.</h2></div>
       <div class="split-layout fundraising-last-year">
-        <div class="fundraising-last-impact"><p class="fundraising-last-total"><strong>{money(appeal.previousYear.raised)}</strong><span>raised together in {appeal.previousYear.year}</span></p><p>{appeal.previousYear.impact}</p></div>
+        <div class="fundraising-last-impact"><p class="fundraising-last-total" tabindex="0" aria-label="Total raised last year"><strong>{money(appeal.previousYear.raised)}</strong><span>raised together in {appeal.previousYear.year}</span></p><p>{appeal.previousYear.impact}</p></div>
         <div class="fundraising-last-sources"><h3>Made possible together</h3><ul class="fundraising-support-list">{appeal.previousYear.sources.map((source) => <li>{source}</li>)}</ul><p>Thank you to everyone who organised, attended, donated prizes or gave their time.</p></div>
       </div>
     </div>
