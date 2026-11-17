@@ -3731,6 +3731,40 @@ body.menu-open .cookie-banner {
   overflow-wrap: anywhere;
 }
 
+/* Enlarged-text guards (#179, #180, #181). Media queries cannot see an enlarged root
+   font size, so these taper with rem arithmetic like the christmas.css snow rules:
+   identical results at a 16px root, adjusted as text enlarges. */
+
+/* #179: keep the amount on one line. The clamp floor is 32px + 1rem: 48px (= 3rem,
+   unchanged) at a 16px root, 64px at 200% text, where 96px digits no longer fit a
+   phone card. break-word only ever engages if the amount itself would overflow. */
+.fundraising-last-total strong {
+  font-size: clamp(calc(32px + 1rem), 8vw, 4.5rem);
+  overflow-wrap: break-word;
+}
+
+/* #180: columns need at least max(7rem + 16px, 45%) each. At a 16px root the 45%
+   leg wins, so the list keeps its two columns everywhere it has them today; at
+   200% text the rem leg (240px) is wider than half a phone, so the list falls to
+   one column and activity names wrap as whole words. */
+.fundraising-page .fundraising-support-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(calc(7rem + 16px), 45%)), 1fr));
+}
+
+/* #181: icon lane is 24px + 1rem: 40px (= 2.5rem, unchanged) at a 16px root, 56px
+   at 200% text, and the label may wrap onto its own line when the lane gets tight
+   (flex-wrap changes nothing while everything fits). break-word still protects
+   against a word longer than the line. */
+.fundraising-support-shapes li {
+  flex-wrap: wrap;
+  row-gap: 0.4rem;
+  overflow-wrap: break-word;
+}
+.fundraising-support-shapes .support-icon {
+  width: calc(24px + 1rem);
+  height: calc(24px + 1rem);
+}
+
 .support-icon {
   display: grid;
   flex: none;
