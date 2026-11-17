@@ -28,7 +28,8 @@ test('click-out matches Fireworks volunteering safety and loads no third-party b
 });
 test('snow stays outside the reading area and honours reduced motion',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});await page.goto(route);
- await expect(page.locator('.xmas-snow')).toHaveAttribute('aria-hidden','true');
+ await expect(page.locator('.narnia-landscape[data-hero-snow] .xmas-snow')).toHaveAttribute('aria-hidden','true');
+ expect(await page.locator('.xmas-snow__bank').evaluate(el=>getComputedStyle(el).animationName)).toBe('none');
  expect(await page.locator('.xmas-snow i').evaluateAll(els=>els.filter(e=>getComputedStyle(e).animationName!=='none').length)).toBe(0);
 });
 test.describe('without JavaScript',()=>{test.use({javaScriptEnabled:false});test('sign-up link and contact remain available',async({page})=>{
@@ -55,3 +56,14 @@ for (const width of [320, 390]) {
     expect(Math.min(...all), 'CTAs reach the standard 16px gutter').toBeGreaterThanOrEqual(width - 33);
   });
 }
+
+for(const width of [320,390,1024]) for(const scale of [1,2]) test(`hero snow stays clear of sponsor at ${width}/${scale}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(route);
+ await page.evaluate(scale=>document.documentElement.style.fontSize=`${16*scale}px`,scale);
+ const geometry=await page.evaluate(()=>{
+  const box=(s:string)=>document.querySelector(s)!.getBoundingClientRect();
+  const hero=box('.narnia-landscape'),snow=box('.xmas-snow'),bank=box('.xmas-snow__bank'),logo=box('.sponsor-ribbon img');
+  return {contained:snow.top>=hero.top&&snow.bottom<=hero.bottom,gap:bank.top-logo.bottom};
+ });
+ expect(geometry.contained).toBe(true);expect(geometry.gap).toBeGreaterThanOrEqual(12);
+});

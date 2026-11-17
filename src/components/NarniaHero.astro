@@ -2,7 +2,14 @@
 import FayreDonationsNotice from './FayreDonationsNotice.astro';
 import {withBase} from '../lib/urls';
 import {ordinalDateFormatter,formatEventTimeRange} from '../lib/dates';
-const {event,eventPage=false,homepage=false,volunteerPage=false}=Astro.props;
+const {event,eventPage=false,homepage=false,volunteerPage=false,snowfall=false}=Astro.props;
+// Fixed pseudo-random spread (prime-number strides) so the gutters look uneven but stay deterministic.
+const SNOWFLAKE_COUNT = 20;
+const flakes = snowfall ? Array.from({ length: SNOWFLAKE_COUNT }, (_, i) => ({
+  side: i % 2, lane: ((i * 37 + 11) % 100) / 100,
+  size: 6 + ((i * 5) % 7), duration: 10 + ((i * 7) % 9),
+  delay: -((i * 3.3) % 18), y: (i * 29 + 7) % 95, alpha: .45 + ((i * 11) % 4) * .12,
+})) : [];
 const signupUrl = event.signupUrl;
 const volunteerPath = event.volunteeringPath ?? (event.path ? event.path+"#sign-up" : undefined);
 if (!volunteerPath) throw new Error("Christmas Fayre volunteering path is missing");
@@ -11,9 +18,13 @@ const date=homepage
   ? new Intl.DateTimeFormat('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'Europe/London'}).format(new Date(event.start)).replace(',', '')
   : ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event.start);
 ---
-<section class="narnia-landscape" aria-label="Christmas Fayre" id={eventPage ? "sign-up" : undefined} data-homepage-christmas={homepage ? "" : undefined} style={homepage ? `--narnia-woodland:url(${withBase('/brand/narnia-woodland-continuation.avif')})` : undefined}>
+<section class="narnia-landscape" aria-label="Christmas Fayre" id={eventPage ? "sign-up" : undefined} data-homepage-christmas={homepage ? "" : undefined} data-hero-snow={snowfall ? "" : undefined} style={homepage ? `--narnia-woodland:url(${withBase('/brand/narnia-woodland-continuation.avif')})` : undefined}>
 <img class="narnia-landscape__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
 <div class="narnia-landscape__body">
+{snowfall && <div class="xmas-snow" aria-hidden="true">
+  {flakes.map(f => <i style={`--side:${f.side};--lane:${f.lane};--size:${f.size}px;--dur:${f.duration}s;--delay:${f.delay}s;--y:${f.y}%;--alpha:${f.alpha}`} />)}
+  <div class="xmas-snow__bank" />
+</div>}
 <div class="narnia-landscape__copy">
 <h1 id="xmas-title">Christmas <em>Fayre</em>{volunteerPage && <> <span class="narnia-landscape__subtitle">Volunteering</span></>}</h1>
 <p class="narnia-landscape__date">{date}<span class="narnia-landscape__date-divider"> · </span><span class="narnia-landscape__time">{formatEventTimeRange(event.start,event.end).replace(/(?<=\d)-(?=\d)/g,' - ')}</span></p>
