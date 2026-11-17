@@ -1,0 +1,29 @@
+---
+import { withBase } from '../lib/urls';
+interface Props { current: 'event' | 'volunteer' | 'art' }
+const { current } = Astro.props;
+const pages = [
+  { key: 'event', label: 'Fayre', path: '/events/christmas-fayre-2026/' },
+  { key: 'volunteer', label: 'Volunteer', path: '/christmas-fayre-volunteering/' },
+  { key: 'art', label: 'Art competition', path: '/christmas-fayre-art-competition/' },
+];
+if (!pages.some(page => page.key === current)) throw new Error(`FayreNavigation: unknown current "${current}"`);
+---
+<div class="fayre-navigation">
+  <nav aria-label="Christmas Fayre pages" class="fayre-navigation__pages">
+    <ul>
+      {pages.map(page => <li><a href={withBase(page.path)} aria-current={page.key === current ? 'page' : undefined}>{page.label}</a></li>)}
+    </ul>
+  </nav>
+</div>
+<style>
+.fayre-navigation { margin: .25rem 0 .75rem; color: var(--xm-cream); min-width: 0; }
+.fayre-navigation__pages { overflow-x: auto; padding: 3px 0; scrollbar-width: thin; scrollbar-color: var(--xm-gold-light) var(--xm-night); }
+.fayre-navigation__pages ul { display: flex; flex-wrap: nowrap; width: max-content; min-width: 100%; gap: 1.25rem; padding: 0; margin: 0; list-style: none; }
+.fayre-navigation__pages li { display: flex; flex: 0 0 auto; }
+.fayre-navigation__pages a { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: .5em 0; border-bottom: 2px solid transparent; color: var(--xm-cream); font-size: .8125rem; line-height: 1.4; text-decoration: none; white-space: nowrap; font-weight: 400; }
+.fayre-navigation__pages a[aria-current="page"] { border-bottom-color: var(--xm-gold-light); color: var(--xm-gold-light); font-weight: 700; }
+.fayre-navigation__pages a:hover { text-decoration: underline; text-underline-offset: .25em;  }
+.fayre-navigation a:focus-visible { outline: 2px solid var(--xm-gold-light); outline-offset: 1px; }
+@media (forced-colors: active) { .fayre-navigation__pages a[aria-current="page"] { border-bottom-color: Highlight; } }
+</style>

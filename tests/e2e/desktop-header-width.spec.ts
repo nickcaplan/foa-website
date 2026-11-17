@@ -5,7 +5,7 @@ for(const width of [1024,1280,1440])for(const route of routes){
   await page.setViewportSize({width,height:1000});await page.goto(route);
   const layout=await page.evaluate(()=>{
    const h=document.querySelector('.header-inner')!.getBoundingClientRect();
-   const p=document.querySelector('.art-comp-banner,.narnia-landscape,.view-hero')!.getBoundingClientRect();
+   const p=document.querySelector('.art-comp-banner,.fayre-art-hero,.narnia-landscape,.view-hero')!.getBoundingClientRect();
    const nav=[...document.querySelectorAll('.desktop-nav a')].map(a=>a.getBoundingClientRect().top);
    return{hl:h.left,hr:h.right,pl:p.left,pr:p.right,nav,overflow:document.documentElement.scrollWidth-innerWidth};
   });

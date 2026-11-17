@@ -1,4 +1,5 @@
 ---
+import FayreNavigation from "../components/FayreNavigation.astro";
 import FayreSupporter from "../components/FayreSupporter.astro";
 import {getEntry} from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -6,6 +7,7 @@ import NarniaHero from '../components/NarniaHero.astro';
 import HomepageMobileIdentity from '../components/HomepageMobileIdentity.astro';
 import {withBase} from '../lib/urls';
 import '../styles/christmas.css';
+import FayrePageStyles from '../components/FayrePageStyles.astro';
 const entry=await getEntry('events','christmas-fayre-2026');
 const event=entry?.data;
 if(!event?.signupActivities || !event.signupUrl || !event.loanSignupAnchor || !event.path || !event.contactEmail) throw new Error('Fayre volunteering content is missing');
@@ -17,6 +19,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
   <NarniaHero event={event} eventPage={true} volunteerPage={true}>
    <p slot="priority" class="fayre-volunteer__priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")}>Check JustSignup for available places.</p>
   </NarniaHero>
+  <FayreNavigation current="volunteer" />
   <section class="fayre-volunteer__intro" aria-label="Choose your volunteer activity">
    <p>Choose an activity below. Buttons open JustSignup in a new tab to pick your slot. Event helper slots are 30 minutes; setup and clear-up vary.</p>
   </section>
@@ -38,6 +41,7 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
    <section class="fayre-volunteer__contact" aria-labelledby="volunteer-questions"><h2 id="volunteer-questions">Questions about helping?</h2><a class="button fayre-volunteer__email" href={'mailto:'+event.contactEmail}><span class="cta-label">Email <span class="cta-tail">us<svg class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></span></span><span class="visually-hidden"> (the Fayre team)</span></a></section>
   </div>
  </div>
+ <FayrePageStyles />
 </BaseLayout>
 <script>
  import{remaining,totals,isSnapshot,retainValid,type Snapshot}from"../lib/fireworks-availability";
@@ -181,8 +185,8 @@ const externalIcon='<svg aria-hidden="true" viewBox="0 0 24 24" width="20" heigh
 /* On narrow screens (and at enlarged text) stack the label above the value
    so the line never wraps mid-phrase ("55 / places left"). */
 @media(max-width:47.99rem){.fayre-volunteer__priority strong{display:block;margin:0 0 .1rem}}
-/* The volunteering hero copy runs wider (48rem) than the standard 42rem hero copy, so the CTA would stretch past the standard hero button width. Cap it to the same 39rem content width the other heroes give their CTAs; min() keeps it full-width on phones and at 200% text. */
-.narnia-volunteering .narnia-landscape .button{max-width:min(39rem,100%)!important}
+/* Nick (16 Nov 2026): the full-width CTA felt too wide. Cap the volunteering hero button to the same 22rem the other Fayre hero CTAs (and the Get involved role CTAs) use; min() keeps it full-width on phones and at 200% text. */
+.narnia-volunteering .narnia-landscape .button{max-width:min(22rem,100%)!important}
 .fayre-volunteer__count{display:inline;color:#edcb83;font-size:1.25rem;line-height:1.25;font-weight:800;font-variant-numeric:tabular-nums}
 .fayre-volunteer__count--zero{color:#9fb8a4}
 .fayre-volunteer__count-label{display:inline;font-size:1rem;line-height:1.25;color:#f4ead1}
