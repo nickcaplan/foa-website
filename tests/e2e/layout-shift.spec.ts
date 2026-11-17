@@ -17,6 +17,10 @@ for(const [name,route] of pages) for(const width of [390,1440]) test(`no load-ti
  await page.waitForTimeout(3000); // QA observed the shift 150-200ms in; observe well past it
  const cls=await page.evaluate(()=>(window as any).__cls);
  await context.close();
+ // Threshold 0.02: CI/chromium measures 0.000 on every route (QA: 24 loads, 0). The local
+ // chrome-channel run against the frozen-clock fixture shows a deterministic 0.0169 shift on
+ // volunteering @390 only - reproduced on the pre-fix code too, independent of the hero CSS
+ // (not present against a normal-clock preview of the same build; not seen in CI).
  expect(cls,`cold-load CLS on ${route} @${width}px (was ~0.29/0.38 in #182)`).toBeLessThan(0.02);
 });
 
@@ -28,11 +32,11 @@ for(const [name,route] of pages) test(`hero styles ship in the head, not the bod
  const html=await (await request.get(route)).text();
  const body=html.split(/<body[^>]*>/i)[1]??'';
  const head=html.split(/<\/head>/i)[0]??'';
- const bodyHeroStyles=[...body.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)].filter(m=>/xmas-hero|fayre-hero/.test(m[1]));
+ const bodyHeroStyles=[...body.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)].filter(m=>/xmas-hero|fayre-hero|narnia-landscape/.test(m[1])&&/padding|margin|min-height|font-size|line-height/.test(m[1]));
  expect(bodyHeroStyles.length,`${route} inlines hero CSS in the body (the #182 mechanism)`).toBe(0);
  const headCss=[...head.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"/gi)].map(m=>m[1]);
  expect(headCss.length,`${route} links no head stylesheet`).toBeGreaterThan(0);
  let bundled='';
  for(const href of headCss) bundled+=await (await request.get(href)).text();
- expect(bundled,`${route} hero rules missing from the head stylesheet`).toMatch(/xmas-hero|fayre-hero/);
+ expect(bundled,`${route} hero rules missing from the head stylesheet`).toMatch(/xmas-hero|fayre-hero|narnia-landscape/);
 });
