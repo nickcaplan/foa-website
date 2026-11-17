@@ -119,3 +119,18 @@ for(const [snowRoute,heroSel] of snowRoutes){
   expect(r.withoutSnow,'stripping the snow feature at 200% text changes the hero height by nothing').toBe(r.withSnow);
  });
 }
+
+// Snow must render behind hero content: flake lanes on these pages can reach the
+// copy, CTA or framed picture (QA animation sampling found intersections).
+for(const [snowRoute2,heroSel2,copySel] of [['/christmas-fayre-volunteering/','.narnia-landscape','.narnia-landscape__copy'],['/christmas-fayre-art-competition/','.fayre-art-hero','.fayre-art-hero__copy']] as [string,string,string][]){
+ test(`snow layer stacks behind hero content on ${snowRoute2}`,async({page})=>{
+  await page.setViewportSize({width:390,height:1000});await page.goto(snowRoute2);
+  const r=await page.evaluate(([h,c])=>{
+   const copy=getComputedStyle(document.querySelector(h+' '+c)!);
+   const snow=getComputedStyle(document.querySelector(h+' .xmas-snow')!);
+   return {pos:copy.position,z:parseFloat(copy.zIndex),snowZ:parseFloat(snow.zIndex)};
+  },[heroSel2,copySel]);
+  expect(r.pos,'copy creates a stacking context').not.toBe('static');
+  expect(r.z,'copy paints above the snow layer').toBeGreaterThan(r.snowZ);
+ });
+}

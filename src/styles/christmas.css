@@ -41,15 +41,21 @@ body.xmas-theme::before {
    200% text. 72px - 1.5rem = 48px at 16px root, 24px (= 0.75rem) at 32px root. */
 .narnia-landscape[data-hero-snow] .narnia-landscape__footer { padding-bottom: max(0.75rem, calc(72px - 1.5rem)); }
 /* Volunteering hero has no sponsor footer, so its copy carries the same bank clearance
-   on mobile (desktop's 5rem copy padding already clears the bank). max() tapers the
-   added 48px back to the 2rem default at 200% text: 96px - 1rem = 80px at a 16px root,
-   64px (= 2rem, unchanged) at a 32px root. */
+   on mobile (desktop's 5rem copy padding already clears the bank). The mobile copy
+   default is 1.5rem (fayre-pages.css); max() tapers the added clearance back to it at
+   200% text: 96px - 1.5rem = 72px (24px + 48px bank room) at a 16px root, 48px
+   (= 1.5rem, unchanged) at a 32px root. */
 @media (max-width: 47.99rem) {
-  .narnia-volunteering .narnia-landscape[data-hero-snow] .narnia-landscape__copy { padding-bottom: max(2rem, calc(96px - 1rem)); }
+  body.narnia-volunteering .narnia-landscape[data-hero-snow] .narnia-landscape__copy { padding-bottom: max(1.5rem, calc(96px - 1.5rem)); }
 }
 /* Art hero: same bank clearance as the event page, on the hero itself. 96px - 3rem =
    48px at a 16px root, 0 (no added hero height) at a 32px root. */
-.art-comp .fayre-art-hero[data-hero-snow] { padding-bottom: max(0px, calc(96px - 3rem)); }
+body.art-comp .fayre-art-hero[data-hero-snow] { padding-bottom: max(0px, calc(96px - 3rem)); }
+/* Snow renders behind the hero copy on these two pages: their flake lanes can reach
+   the copy/buttons/framed picture (unlike the event hero, whose gutters stay clear).
+   Copy backgrounds are transparent, so flakes and bank stay visible through it. */
+.narnia-volunteering .narnia-landscape__copy,
+.art-comp .fayre-art-hero__copy { position: relative; z-index: 2; }
 .xmas-snow {
   position: absolute;
   z-index: 1;
