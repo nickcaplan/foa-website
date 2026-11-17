@@ -14,6 +14,15 @@ test('12 November loading audit: committee portraits stay below 190 KiB together
  offset=start+length+(length%2);}
  assert.deepEqual(dimensions,[d.portraitWidth,d.portraitHeight]);}assert.ok(bytes<=190*1024);
 });
-test('small Art route styles are inline while the shared stylesheet stays cacheable',async()=>{
- const html=await readFile('dist/christmas-fayre-art-competition/index.html','utf8');const styles=[...html.matchAll(/<link[^>]+rel="stylesheet"[^>]*>/g)];assert.equal(styles.length,1);assert.match(styles[0][0],/BaseLayout/);assert.match(html,/<style>/);
+test('fayre route styles ship in the shared head stylesheet, not body-inlined',async()=>{
+ // Updated 17 November 2026 for the layout-shift fix: the old invariant required
+ // page styles inlined in the body, which applied after first paint and caused the
+ // #182 cold-load hero shift. The new invariant: fayre/hero rules live in the
+ // head-linked FayrePageStyles bundle; no body <style> may carry them.
+ const html=await readFile('dist/christmas-fayre-art-competition/index.html','utf8');
+ const styles=[...html.matchAll(/<link[^>]+rel="stylesheet"[^>]*>/g)].map(m=>m[0]);
+ assert.ok(styles.some(t=>/FayrePageStyles/.test(t)),'FayrePageStyles bundle linked in the head');
+ const body=html.split(/<body[^>]*>/i)[1]??'';
+ const bodyHero=[...body.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)].filter(m=>/xmas-hero|fayre-hero/.test(m[1]));
+ assert.equal(bodyHero.length,0,'no fayre/hero rules inlined in the body');
 });
