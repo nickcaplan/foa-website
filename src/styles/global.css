@@ -4429,7 +4429,7 @@ a.button[href^="mailto:"] .cta-label{overflow-wrap:normal;word-break:normal}
    the label font eases from 0.95rem to 26px at 200% so the longest word fits. */
 @media(max-width:26rem){
   main .fundraising-card__cta a.button .cta-icon{position:static!important;inset:auto!important;translate:none!important;margin:0 0 0 0.25em!important}
-  main .fundraising-card__cta.fundraising-card__cta a.button:has(.cta-icon){padding-inline-start:max(0.6rem, calc(59.52px - 0.9225rem))!important;padding-inline-end:max(0.6rem, calc(59.52px - 0.9225rem))!important}
+  main .fundraising-card__cta.fundraising-card__cta a.button:has(.cta-icon){padding-inline-start:max(0.6rem, calc(50px - 0.625rem))!important;padding-inline-end:max(0.6rem, calc(50px - 0.625rem))!important}
   main .fundraising-card__cta .cta-word{overflow-wrap:break-word}
 }
 main .fundraising-card__cta{font-size:min(0.95rem, calc(5.4px + 0.6125rem))}
