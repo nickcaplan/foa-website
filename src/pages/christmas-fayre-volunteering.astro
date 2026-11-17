@@ -214,12 +214,12 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 .fayre-volunteer__count-label{display:inline;font-size:1rem;line-height:1.25;color:#f4ead1}
 </style>
 
-<style is:inline>
+<style is:global>
 
 
 @media(min-width:64rem) and (max-width:79.99rem){.narnia-volunteering .menu-toggle{top:calc(1rem + var(--introduction-logo-size)*.45 - calc(var(--menu-toggle-size) / 2))}}
 </style>
-<style is:inline>
+<style is:global>
 /* Keep the event poster centred; align reading content left. */
 .fayre-volunteer .fayre-volunteer__intro,
 .fayre-volunteer .fayre-volunteer__closing h2,
@@ -227,14 +227,14 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 .fayre-volunteer .fayre-volunteer__closing h2::after,
 .fayre-volunteer .fayre-volunteer__loan h2::after{margin-left:0;background:linear-gradient(90deg,var(--xm-gold),transparent)}
 </style>
-<style is:inline>
+<style is:global>
 /* Reserve the icon lane, rather than letting global symmetric padding squeeze the words. */
 .fayre-volunteer__loan .fayre-volunteer__action{flex:0 0 auto;width:max-content;padding-inline:.75rem calc(1.05em + 1rem)!important}
 .fayre-volunteer__loan .fayre-volunteer__action .cta-label{flex:1 1 auto;text-align:left;overflow-wrap:normal;word-break:normal}
 @media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan{padding:1rem}.narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action{width:100%}}
 </style>
 
-<style is:inline>
+<style is:global>
 /* Enlarged text must wrap inside the poster and contact grid, never get clipped. */
 .fayre-volunteer .narnia-landscape__copy,
 .fayre-volunteer .narnia-landscape h1,
@@ -255,32 +255,32 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 </style>
 
 
-<style is:inline>
+<style is:global>
 /* Envelope artwork is shallower than a forward arrow: give it a readable 1.3em box. */
 .fayre-volunteer__email svg.cta-icon{width:1.3em!important;height:1.3em!important}
 .fayre-volunteer .fayre-volunteer__contact .button{padding-right:calc(1.3em + 1.3rem)!important}
 @media(max-width:23rem){.fayre-volunteer .fayre-volunteer__contact .fayre-volunteer__email{width:calc(100% + 16px);max-width:calc(100% + 16px);margin-inline:-8px;padding-inline:calc(1.3em + 12px)!important}}
 </style>
 
-<style is:inline>
+<style is:global>
 /* Same external CTA geometry as the supporting-business button. */
 .narnia-volunteering .fayre-volunteer .fayre-volunteer__loan .fayre-volunteer__action{position:relative;min-height:3.5rem;padding-left:calc(1.3em + 1.3rem)!important;padding-right:calc(1.3em + 1.3rem)!important;justify-content:center;text-align:center}
 .narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action .cta-label{text-align:center;overflow-wrap:normal!important;word-break:normal!important}
 .narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action .cta-icon{position:absolute;right:.9rem!important;top:50%;width:1.3em!important;height:1.3em!important;margin:0!important}
 .narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action svg{width:1.3em!important;height:1.3em!important}
 </style>
-<style is:inline>
+<style is:global>
 /* Narrow enlarged-text columns need reading room, not oversized nested gutters. */
 @media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan{padding-inline:min(1rem,12px)}}
 </style>
-<style is:inline>
+<style is:global>
 /* The external icon has its own lane; its old final-word wrapper must not affect label wrapping. */
 .narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action .cta-tail{display:inline!important;white-space:normal}
 </style>
-<style is:inline>
+<style is:global>
 @media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .fayre-volunteer__loan .fayre-volunteer__action{width:calc(100% + 16px);max-width:calc(100% + 16px);margin-inline:-8px;padding-inline:calc(1.3em + .75rem)!important}}
 </style>
-<style is:inline>
+<style is:global>
 @media(max-width:23rem){
 .narnia-volunteering .fayre-volunteer .fayre-volunteer__loan .fayre-volunteer__action{padding-inline:calc(1.3em + 12px)!important;border-radius:32px}
 .narnia-volunteering .fayre-volunteer__loan .fayre-volunteer__action .cta-icon{right:6px!important;width:1.3em!important;height:1.3em!important}
