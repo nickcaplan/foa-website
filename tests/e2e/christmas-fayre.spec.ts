@@ -57,8 +57,8 @@ for (const width of [320, 390]) {
   });
 }
 
-for(const width of [320,390,1024]) for(const scale of [1,2]) test(`hero snow stays clear of sponsor at ${width}/${scale}`,async({page})=>{
- await page.setViewportSize({width,height:1000});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(route);
+for(const snowSponsorRoute of [route,'/christmas-fayre-volunteering/']) for(const width of [320,390,1024]) for(const scale of [1,2]) test(`hero snow stays clear of sponsor at ${width}/${scale} on ${snowSponsorRoute}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(snowSponsorRoute);
  await page.evaluate(scale=>document.documentElement.style.fontSize=`${16*scale}px`,scale);
  const geometry=await page.evaluate(()=>{
   const box=(s:string)=>document.querySelector(s)!.getBoundingClientRect();

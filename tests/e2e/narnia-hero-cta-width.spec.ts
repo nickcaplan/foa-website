@@ -17,3 +17,23 @@ test(`hero CTA sizes to its label ${width} ${route}`,async({page})=>{
     expect(box!.width,`${route} hero CTA "${(await b.textContent())!.trim().slice(0,30)}" is wider than its label needs`).toBeLessThan(320);
   }
 });
+
+// Same, at 200% browser text: labels double, so the 320px bound no longer applies -
+// guard what still must hold: CTAs stay inside the viewport, the page never scrolls
+// sideways, and the homepage pills keep one shared width.
+for(const width of [390,1440])for(const route of ['/','/events/christmas-fayre-2026/','/christmas-fayre-volunteering/'])
+test(`hero CTA stays on screen at 200% text ${width} ${route}`,async({page})=>{
+  await page.setViewportSize({width,height:1000});
+  await page.goto(route);
+  await page.evaluate(()=>document.documentElement.style.fontSize='32px');
+  const buttons=await page.locator('.narnia-landscape__action').all();
+  expect(buttons.length,`${route} hero has a CTA`).toBeGreaterThan(0);
+  const widths:number[]=[];
+  for(const b of buttons){
+    const box=await b.boundingBox();
+    widths.push(box!.width);
+    expect(box!.width,`${route} hero CTA "${(await b.textContent())!.trim().slice(0,30)}" overflows the viewport at 200% text`).toBeLessThan(width);
+  }
+  if(route==='/')expect(Math.max(...widths)-Math.min(...widths),'homepage pills keep one shared width at 200% text').toBeLessThanOrEqual(1);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${route} scrolls sideways at 200% text`).toBe(true);
+});
