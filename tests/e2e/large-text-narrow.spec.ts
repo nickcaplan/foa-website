@@ -26,6 +26,15 @@ const overflowing = (page: Page) =>
       // links stay reachable by scrolling and keyboard focus, so they are not "running off the screen".
       // Scoped to that one component so a new unintended scroller elsewhere still fails this check.
       if (element.closest(".fayre-navigation__pages")) continue;
+      // #171: the fundraising sources table keeps whole words at enlarged text
+      // instead of breaking them; when the doubled text makes the table wider
+      // than the phone it scrolls sideways inside its own frame (same pattern
+      // as the Fayre navigation row above), so it is not "running off the screen".
+      if (element.closest(".fundraising-sources-frame")) continue;
+      // #179: the fundraising total banner keeps the amount on one line; when
+      // doubled text makes the amount wider than the phone it scrolls inside
+      // its own box, so it is not "running off the screen".
+      if (element.closest(".fundraising-last-total")) continue;
       if (getComputedStyle(element).position === "fixed") continue;
       const box = element.getBoundingClientRect();
       if (box.width > 0 && box.right > limit) found.push(`${element.tagName.toLowerCase()}.${element.className} ends at ${Math.round(box.right)}px`);

@@ -3556,6 +3556,9 @@ body.menu-open .cookie-banner {
   /* #171: inline padding tapers (20px at 100%, 12px at 200%) so the table
      keeps room for whole words at enlarged text. */
   padding-inline: max(12px, calc(30px - 0.625rem));
+  /* #171: words stay whole; if the screen ends up narrower than the table
+     (text enlarged beyond 200%), the table scrolls inside its frame. */
+  overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface);
@@ -3656,6 +3659,9 @@ body.menu-open .cookie-banner {
   margin: 0;
   width: fit-content;
   max-width: 100%;
+  /* #179: the amount stays whole; if the screen ends up narrower than the
+     amount (text enlarged beyond 200%), the banner scrolls inside its box. */
+  overflow-x: auto;
   gap: 0.4rem;
   padding: 1rem 1.5rem;
   border: 1px solid var(--line);
