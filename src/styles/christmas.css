@@ -64,7 +64,9 @@ body.art-comp .fayre-art-hero[data-hero-snow] { padding-bottom: max(0px, calc(94
      runners vs local builds) and can land more than 10% from the art hero's fixed
      424px floor (fayre-page-consistency band). Content taller than the floor still
      grows it; the added 48px tapers to zero at a 32px root like the others. */
-  body:is(.narnia-event,.narnia-volunteering) .narnia-landscape[data-hero-snow] { min-height: calc(23.5rem + max(0px, calc(96px - 3rem))); }
+  /* [data-hero-snow] doubled: fayre-pages.css sets min-height:23.5rem at the same
+     (0,3,1) specificity and loads after this sheet, so a plain selector loses. */
+  body:is(.narnia-event,.narnia-volunteering) .narnia-landscape[data-hero-snow][data-hero-snow] { min-height: calc(23.5rem + max(0px, calc(96px - 3rem))); }
 }
 /* Snow renders behind the hero copy on these two pages: their flake lanes can reach
    the copy/buttons/framed picture (unlike the event hero, whose gutters stay clear).
