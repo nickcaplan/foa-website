@@ -42,14 +42,13 @@ body.xmas-theme::before {
 .narnia-landscape[data-hero-snow] .narnia-landscape__footer { padding-bottom: max(0.75rem, calc(72px - 1.5rem)); }
 /* Volunteering hero has no sponsor footer, so its copy carries the same +48px bank
    clearance as the event hero's footer, at every width (fayre-page-consistency locks
-   the three hero heights within 10%), plus 21px replacing the hero height the sponsor
-   logo contributed before it became absolutely positioned at the copy's bottom
-   (NarniaHero.astro). Defaults: 2rem at >=48rem, 1.5rem below (fayre-pages.css); each
-   max() tapers back at 200% text: 133px - 2rem = 101px (32px + 48px + 21px) and
-   117px - 1.5rem = 93px (24px + 48px + 21px) at a 16px root. */
-body.narnia-volunteering .narnia-landscape[data-hero-snow] .narnia-landscape__copy { padding-bottom: max(2rem, calc(133px - 2rem)); }
+   the three hero heights within 10%). Defaults: 2rem at >=48rem, 1.5rem below
+   (fayre-pages.css); each max() tapers back to its default at 200% text so the snow
+   adds no hero height there: 112px - 2rem = 80px (32px + 48px) and 96px - 1.5rem =
+   72px (24px + 48px) at a 16px root, both equal to the default at a 32px root. */
+body.narnia-volunteering .narnia-landscape[data-hero-snow] .narnia-landscape__copy { padding-bottom: max(2rem, calc(112px - 2rem)); }
 @media (max-width: 47.99rem) {
-  body.narnia-volunteering .narnia-landscape[data-hero-snow] .narnia-landscape__copy { padding-bottom: max(1.5rem, calc(117px - 1.5rem)); }
+  body.narnia-volunteering .narnia-landscape[data-hero-snow] .narnia-landscape__copy { padding-bottom: max(1.5rem, calc(96px - 1.5rem)); }
 }
 /* Art hero: same bank clearance as the event page, on the hero itself. At >=48rem the
    hero is content-driven, so clearance is 46px (94px - 3rem) to keep the three hero
