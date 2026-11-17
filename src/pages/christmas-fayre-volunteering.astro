@@ -38,7 +38,7 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 <BaseLayout socialTitle="Volunteer at the Christmas Fayre | Ashley School" socialDescription="Help bring Narnia to life on Saturday 5 December. Choose an activity, join friends and pick a helper, setup or clear-up slot on JustSignup." image="/social/fayre-volunteering-2026-v2.jpg" imageAlt="Volunteer at the Fayre, Saturday 5 December 2026, 12:00 - 15:00 at Ashley School." imageWidth={1200} imageHeight={630} title="Christmas Fayre Volunteering" description="Help bring Narnia to life at Ashley School. Choose a Christmas Fayre activity and pick your volunteer slot on JustSignup." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering">
  <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
  <div class="site-width fayre-volunteer">
-  <NarniaHero event={event} eventPage={true} volunteerPage={true}>
+  <NarniaHero event={event} eventPage={true} volunteerPage={true} snowfall={true}>
    <p slot="priority" class="fayre-volunteer__priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")} data-availability-snapshot={JSON.stringify(snapshot)}>{heroSummary===null?<><strong>Most help needed</strong><span>{`${ranked.filter(r=>r.count===ranked[0]!.count).map(r=>r.name).join(" & ")} - ${ranked[0]!.count} ${ranked[0]!.count===1?"place":"places"} left`}</span></>:heroSummary}</p>
   </NarniaHero>
   <FayreNavigation current="volunteer" />
