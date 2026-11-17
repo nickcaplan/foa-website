@@ -1,4 +1,6 @@
 ---
-import styles from '../styles/fayre-pages.css?raw';
+// Shared Fayre hero/page rules, bundled into the head stylesheet so first paint
+// already has the final hero geometry (raw + set:html used to inline them in the
+// body, where they applied ~150ms after first paint and shifted the hero - #182).
+import '../styles/fayre-pages.css';
 ---
-<style is:inline set:html={styles} />

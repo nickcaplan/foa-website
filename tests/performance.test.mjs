@@ -65,7 +65,10 @@ for (const { route, eagerImageKiB } of routes) {
     t.diagnostic(JSON.stringify({ route, htmlBytes: Buffer.byteLength(html), scriptGzipBytes: scriptGzip,
       stylesheetGzipBytes: styleGzip, eagerImageBytes: eagerImages, images }));
     assert.ok(scriptGzip <= 4 * kib, `${route}: referenced/inline JS gzip estimate ${scriptGzip} exceeds 4 KiB`);
-    assert.ok(styleGzip <= 18.25 * kib, `${route}: stylesheet gzip estimate ${styleGzip} exceeds 18.25 KiB`);
+    // Raised 17 November 2026 from 18.25 KiB for the layout-shift fix: fayre hero CSS
+    // moved from body-inlined styles (the #182 cold-load shift) into the shared
+    // head-linked FayrePageStyles bundle, adding ~1.4 KiB gzip on fayre routes.
+    assert.ok(styleGzip <= 20.75 * kib, `${route}: stylesheet gzip estimate ${styleGzip} exceeds 20.75 KiB`);
     assert.ok(eagerImages <= eagerImageKiB * kib, `${route}: eager image bytes ${eagerImages} exceed ${eagerImageKiB} KiB`);
   });
 }
