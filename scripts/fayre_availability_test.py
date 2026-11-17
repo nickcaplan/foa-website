@@ -80,14 +80,32 @@ class FetchTests(unittest.TestCase):
         others=[a for c,a in data['activities'].items() if c!=ANCHOR]
         self.assertTrue(all(a.get('unavailable') for a in others))
 class PreservationTests(unittest.TestCase):
-    def test_bootstrap_uses_only_fresh_validated_seed(self):
-        """Verify bootstrap uses only fresh validated seed."""
+    def test_preserve_failure_never_substitutes_seed(self):
+        """A preserve failure must not replace published history with the committed seed.
+
+        Design change, 17 Nov 2026: previously a fresh OR stale seed was returned when
+        the published snapshot could not be read, which put a 15 Nov seed live over
+        newer counts. Now any preserve failure deploys without counts and warns.
+        """
         now=datetime(2026,12,1,9,0,tzinfo=timezone.utc)
         seed={'schema':1,'preview':True,'eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':'2026-12-01T08:37:50+00:00','rows':[{'endsAt':m.END.isoformat(),'open':3,'capacity':6}]} for code,name in m.SHEETS.items()}}
-        with patch.object(m,'urlopen',side_effect=HTTPError('url',404,'missing',{},None)):
+        for label,use_seed in [('fresh seed',seed),('no seed',None)]:
+            with patch.object(m,'urlopen',side_effect=HTTPError('url',404,'missing',{},None)), patch('sys.stderr',new_callable=io.StringIO) as err:
+                result=m.preserve('https://example.test/counts.json',now,use_seed)
+            self.assertEqual(result['activities'],{},label)
+            self.assertIn('WARNING availability preserve',err.getvalue(),label)
+    def test_seed_merges_only_when_newer_per_activity(self):
+        """With the published snapshot readable, the seed wins per activity only when newer."""
+        now=datetime(2026,12,1,9,0,tzinfo=timezone.utc)
+        other=next(c for c in m.SHEETS if c!=ANCHOR)
+        published={ANCHOR:{'name':NAME,'checkedAt':'2026-12-01T08:50:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':5,'capacity':6}]},other:{'name':m.SHEETS[other],'checkedAt':'2026-12-01T08:50:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':5,'capacity':6}]}}
+        seed={'schema':1,'eventEndsAt':m.END.isoformat(),'activities':{code:{'name':name,'checkedAt':'2026-12-01T08:40:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':1,'capacity':6}]} for code,name in m.SHEETS.items()}}
+        seed['activities'][ANCHOR]={'name':NAME,'checkedAt':'2026-12-01T08:59:00+00:00','rows':[{'endsAt':m.END.isoformat(),'open':2,'capacity':6}]}
+        raw={'schema':1,'eventEndsAt':m.END.isoformat(),'activities':published}
+        with patch.object(m,'urlopen',return_value=Response(json.dumps(raw).encode())):
             result=m.preserve('https://example.test/counts.json',now,seed)
-            self.assertNotIn('preview',result);self.assertEqual(len(result['activities']),len(m.SHEETS))
-            self.assertEqual(len(m.preserve('https://example.test/counts.json',datetime(2026,12,1,11,0,tzinfo=timezone.utc),seed)['activities']),len(m.SHEETS))
+        self.assertEqual(result['activities'][ANCHOR]['checkedAt'],'2026-12-01T08:59:00+00:00','newer seed activity wins')
+        self.assertEqual(result['activities'][other]['checkedAt'],'2026-12-01T08:50:00+00:00','older seed activity loses to published')
     def test_published_snapshot_salvaged_per_activity(self):
         """Verify published snapshot salvaged per activity."""
         now=datetime(2026,12,1,9,0,tzinfo=timezone.utc)

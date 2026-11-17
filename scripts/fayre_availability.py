@@ -223,10 +223,12 @@ def preserve(url, now=None, seed=None):
             published = dict(published, activities=activities)
         return published
     except Exception:
-        fallback = candidate or fresh_seed(seed, now, allow_stale=True)
-        if fallback is not None:
-            return fallback
-        print('Published availability unavailable; continuing site deployment without counts',file=sys.stderr)
+        # Never substitute the committed seed here: with the published snapshot
+        # unreadable there is no way to know whether the seed is newer, so returning
+        # it can (and did, 17 Nov 2026) replace newer published history with stale
+        # counts. Deploy with no counts instead - the site hides them and the next
+        # scheduled refresh repairs within minutes.
+        print('WARNING availability preserve: published snapshot unreadable; deploying WITHOUT counts rather than substituting the committed seed',file=sys.stderr)
         return {'schema':1,'checkedAt':None,'eventEndsAt':END.isoformat(),'activities':{}}
 
 if __name__=='__main__':
