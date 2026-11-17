@@ -226,8 +226,9 @@ def preserve(url, now=None, seed=None):
         # Never substitute the committed seed here: with the published snapshot
         # unreadable there is no way to know whether the seed is newer, so returning
         # it can (and did, 17 Nov 2026) replace newer published history with stale
-        # counts. Deploy with no counts instead - the site hides them and the next
-        # scheduled refresh repairs within minutes.
+        # counts. Deploy with no counts instead - the site hides them until a
+        # scheduled refresh publishes fresh counts (recovery timing is not
+        # guaranteed while the scheduler reliability in #183 is unresolved).
         print('WARNING availability preserve: published snapshot unreadable; deploying WITHOUT counts rather than substituting the committed seed',file=sys.stderr)
         return {'schema':1,'checkedAt':None,'eventEndsAt':END.isoformat(),'activities':{}}
 
