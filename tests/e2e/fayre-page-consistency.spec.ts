@@ -7,8 +7,11 @@ for(const width of [320,390,1024,1440]) for(const scale of [1,2]) for(const them
   await page.goto(route);
   await page.evaluate(({scale,theme})=>{document.documentElement.style.fontSize=`${16*scale}px`;document.documentElement.dataset.theme=theme;},{scale,theme});
   const hero=page.locator('.narnia-landscape,.fayre-art-hero').first();
-  const geometry=await hero.evaluate(el=>{const r=el.getBoundingClientRect(),h=el.querySelector('h1')!;return {width:r.width,height:r.height,headingFits:h.scrollWidth<=h.clientWidth};});
+  const geometry=await hero.evaluate(el=>{const r=el.getBoundingClientRect(),h=el.querySelector('h1')!;const range=document.createRange();range.selectNodeContents(h);const tr=range.getBoundingClientRect();return {width:r.width,height:r.height,headingFits:h.scrollWidth<=h.clientWidth,clipLeft:tr.left-r.left,clipRight:r.right-tr.right};});
   expect(geometry.headingFits).toBe(true);sizes.push(geometry);
+  // The hero clips overflowing content; a heading wider than the hero loses both
+  // edges without tripping headingFits (QA on #194: "Competition" at 320px/200%).
+  expect(Math.min(geometry.clipLeft,geometry.clipRight),'heading text clipped by the hero').toBeGreaterThanOrEqual(-1);
   const nav=page.getByRole('navigation',{name:'Christmas Fayre pages'});
   await expect(nav.getByRole('link')).toHaveCount(3);
   await expect(nav.locator('[aria-current=page]')).toHaveCount(1);
