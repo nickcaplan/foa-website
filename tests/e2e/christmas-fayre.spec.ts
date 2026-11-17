@@ -67,3 +67,20 @@ for(const width of [320,390,1024]) for(const scale of [1,2]) test(`hero snow sta
  });
  expect(geometry.contained).toBe(true);expect(geometry.gap).toBeGreaterThanOrEqual(12);
 });
+
+for(const width of [320,390]) test(`snow adds no hero height at 200% text @${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.goto(route);
+ const measure=()=>page.evaluate(()=>{
+  const hero=document.querySelector('.narnia-landscape')!;
+  const footer=hero.querySelector('.narnia-landscape__footer')!;
+  return {heroH:hero.getBoundingClientRect().height,padBottom:parseFloat(getComputedStyle(footer).paddingBottom)};
+ });
+ const normal=await measure();
+ // 200% browser text: snow accommodation must taper away - footer padding back to the
+ // shared 0.75rem and the hero no taller than at 100% beyond what the copy itself needs.
+ await page.evaluate(()=>document.documentElement.style.fontSize='32px');
+ await page.waitForTimeout(100);
+ const enlarged=await measure();
+ expect(normal.padBottom,'100% text keeps the 48px bank clearance').toBe(48);
+ expect(enlarged.padBottom,'200% text falls back to the shared 0.75rem footer padding').toBe(24);
+});

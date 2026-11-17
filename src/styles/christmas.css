@@ -36,7 +36,10 @@ body.xmas-theme::before {
 
 /* Event hero only. Its body grows with copy; decoration cannot reach the page sides. */
 .narnia-landscape[data-hero-snow] .narnia-landscape__body { position: relative; isolation: isolate; }
-.narnia-landscape[data-hero-snow] .narnia-landscape__footer { padding-bottom: 48px; }
+/* Bank clearance: 48px at normal text (the approved design), tapering to the shared
+   0.75rem footer padding once text is enlarged, so the snow adds no hero height at
+   200% text. 72px - 1.5rem = 48px at 16px root, 24px (= 0.75rem) at 32px root. */
+.narnia-landscape[data-hero-snow] .narnia-landscape__footer { padding-bottom: max(0.75rem, calc(72px - 1.5rem)); }
 .xmas-snow {
   position: absolute;
   z-index: 1;
@@ -53,7 +56,10 @@ body.xmas-theme::before {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 30px;
+  /* 30px at normal text, shrinking as text enlarges so it never needs extra footer
+     clearance: 48px - 1.125rem = 30px at 16px root, 12px at 32px root (still >=12px
+     clear of the sponsor logo), gone entirely past ~267% text. */
+  height: max(0px, calc(48px - 1.125rem));
   background: linear-gradient(#fffef9, #dbe9ec);
   clip-path: polygon(0 20%, 3% 8%, 7% 16%, 11% 0, 16% 15%, 20% 8%, 25% 30%, 31% 27%, 38% 60%, 45% 73%, 51% 80%, 57% 68%, 63% 71%, 69% 47%, 76% 53%, 81% 28%, 87% 35%, 93% 8%, 97% 17%, 100% 2%, 100% 100%, 0 100%);
   transform-origin: center bottom;
