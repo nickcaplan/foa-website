@@ -3908,8 +3908,14 @@ body.menu-open .cookie-banner {
   min-width: 0;
   min-height: 2.75rem;
   padding-block: 0.55rem;
+  /* #184: at 200% text the shared 1.15rem inline padding leaves "Christmas"
+     (181px) a pixel wider than the label lane; the min() keeps 1.15rem at a
+     16px root and shaves 4px a side as text enlarges. */
+  padding-inline: min(1.15rem, calc(4px + 0.9rem));
   white-space: normal;
-  overflow-wrap: anywhere;
+  /* whole words in the label; break-word only splits a word that cannot
+     fit the line on its own. */
+  overflow-wrap: break-word;
 }
 
 .involved-action--light {
@@ -3993,6 +3999,11 @@ body.menu-open .cookie-banner {
   max-width: 44rem;
   margin: 0.25rem 0 0;
   color: var(--ink-soft);
+  /* #185 (and the same class on sibling cards): prose wraps as whole words.
+     The 2px + 0.875rem taper equals 1rem at a 16px root and eases to 30px at
+     200% text, so the longest word ("announcements") fits a phone line whole
+     instead of losing its final letter. */
+  font-size: min(1rem, calc(2px + 0.875rem));
   overflow-wrap: break-word;
 }
 
@@ -4386,6 +4397,12 @@ a.button[href^="mailto:"] .cta-label{overflow-wrap:normal;word-break:normal}
 }
 
 @media(max-width:23rem){a.button[href^="mailto:"]:has(.cta-icon){padding-inline:56px!important}main :is(a.button,button.button):not([href^="mailto:"]):has(:is(.cta-icon,.external-link-icon)){padding-inline:calc(1.05em + 16px)!important}}
+/* #184: on a 320px phone at 200% text the shared symmetric icon reserve (49.6px a
+   side) leaves the involved-action label lane 1px narrower than "Christmas", so the
+   word splits. Keep the right (icon-side) reserve untouched; taper only the left:
+   49.6px - 1.05rem equals the shared value at a 16px root and frees 33px at 200%.
+   The label block shifts left by that amount only at enlarged text. */
+@media(max-width:23rem){main a.button.involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:max(8px, calc(49.6px - 1.05rem)) calc(1.05em + 16px)!important}}
 @media(max-width:47.99rem){.involved-closing{padding-inline:12px}.involved-closing .involved-action{width:100%}}
 @media(max-width:47.99rem){.uniform-cta{grid-template-columns:minmax(0,1fr)}.uniform-cta .uniform-action{width:100%;min-width:0}.uniform-cta .cta-word{overflow-wrap:normal}}
 /* Phone strips keep a FIXED 16px gutter (matching the standard 2rem gutter at
