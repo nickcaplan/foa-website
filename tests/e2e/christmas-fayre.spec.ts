@@ -70,17 +70,21 @@ for(const width of [320,390,1024]) for(const scale of [1,2]) test(`hero snow sta
 
 for(const width of [320,390]) test(`snow adds no hero height at 200% text @${width}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.goto(route);
- const measure=()=>page.evaluate(()=>{
-  const hero=document.querySelector('.narnia-landscape')!;
-  const footer=hero.querySelector('.narnia-landscape__footer')!;
-  return {heroH:hero.getBoundingClientRect().height,padBottom:parseFloat(getComputedStyle(footer).paddingBottom)};
- });
- const normal=await measure();
- // 200% browser text: snow accommodation must taper away - footer padding back to the
- // shared 0.75rem and the hero no taller than at 100% beyond what the copy itself needs.
+ const normalPad=await page.evaluate(()=>parseFloat(getComputedStyle(document.querySelector('.narnia-landscape__footer')!).paddingBottom));
+ // 200% browser text: stripping the whole snow feature (attribute-gated styles +
+ // snow layer) must leave the hero height untouched, and the bank clearance must
+ // have tapered back to the shared 0.75rem footer padding (24px at a 32px root).
  await page.evaluate(()=>document.documentElement.style.fontSize='32px');
  await page.waitForTimeout(100);
- const enlarged=await measure();
- expect(normal.padBottom,'100% text keeps the 48px bank clearance').toBe(48);
- expect(enlarged.padBottom,'200% text falls back to the shared 0.75rem footer padding').toBe(24);
+ const r=await page.evaluate(()=>{
+  const hero=document.querySelector('.narnia-landscape')!;
+  const withSnow=hero.getBoundingClientRect().height;
+  const padBottom=parseFloat(getComputedStyle(hero.querySelector('.narnia-landscape__footer')!).paddingBottom);
+  hero.removeAttribute('data-hero-snow');
+  hero.querySelector('.xmas-snow')!.remove();
+  return {withSnow,withoutSnow:hero.getBoundingClientRect().height,padBottom};
+ });
+ expect(normalPad,'100% text keeps the 48px bank clearance').toBe(48);
+ expect(r.padBottom,'200% text falls back to the shared 0.75rem footer padding').toBe(24);
+ expect(r.withoutSnow,'stripping the snow feature at 200% text changes the hero height by nothing').toBe(r.withSnow);
 });
