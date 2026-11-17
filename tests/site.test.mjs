@@ -525,9 +525,9 @@ test("Christmas volunteering lists the source activities and safe click-outs, wi
   assert.ok(html.includes(`data-availability-code="${activity.anchor}"`));
   assert.ok(html.includes(`data-activity-name="${escapeHtml(shown)}"`));
  }
- // Counts load client-side from the published snapshot; no count is ever baked into static HTML.
+ // Counts render at build from the published snapshot and refresh client-side; a full activity is designed to show "0 places left" (#175).
  assert.match(html,/data-availability-url="[^"]*\/fayre-availability\.json"/);
- assert.doesNotMatch(html, /<iframe|\d+ places? left|of \d+ open/);
+ assert.doesNotMatch(html, /<iframe|of \d+ open/);
  assert.ok(html.includes(`href="${basePath}${christmas.path}"`));
 });
 
