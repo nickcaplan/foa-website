@@ -11,11 +11,22 @@ const deadlineEvent=await getEntry('events','christmas-fayre-art-deadline-2026')
 if(!deadlineEvent) throw new Error('Art competition deadline record is missing');
 const deadline=ordinalDateFormatter({weekday:'long',day:'numeric',month:'long',timeZone:'Europe/London'})(deadlineEvent.data.start);
 const deadlineText=deadline;
+// Fixed pseudo-random spread (prime-number strides) so the gutters look uneven but stay deterministic.
+const SNOWFLAKE_COUNT = 20;
+const flakes = Array.from({ length: SNOWFLAKE_COUNT }, (_, i) => ({
+  side: i % 2, lane: ((i * 37 + 11) % 100) / 100,
+  size: 6 + ((i * 5) % 7), duration: 10 + ((i * 7) % 9),
+  delay: -((i * 3.3) % 18), y: (i * 29 + 7) % 95, alpha: .45 + ((i * 11) % 4) * .12,
+}));
 ---
 <BaseLayout socialTitle="Art Competition | Narnia theme | Ashley School" socialDescription="Show us your lions, witches and snow queens. Any medium welcome. Hand in your entry by Monday 30th November for the Ashley School Christmas Fayre Gallery." image="/social/art-competition-2026-v2.jpg" imageAlt="Art Competition, Narnia theme, deadline Monday 30th November, next to the Christmas Fayre woodland artwork framed on an easel." imageWidth={1200} imageHeight={630} title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering art-comp">
  <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
  <div class="site-width fayre-hero-shell">
-  <section class="fayre-art-hero" aria-labelledby="fayre-art-title">
+  <section class="fayre-art-hero" aria-labelledby="fayre-art-title" data-hero-snow>
+   <div class="xmas-snow" aria-hidden="true">
+    {flakes.map(f => <i style={`--side:${f.side};--lane:${f.lane};--size:${f.size}px;--dur:${f.duration}s;--delay:${f.delay}s;--y:${f.y}%;--alpha:${f.alpha}`} />)}
+    <div class="xmas-snow__bank" />
+   </div>
    <div class="fayre-art-hero__copy">
     <p class="fayre-art-hero__eyebrow">Ashley School Christmas Fayre</p>
     <h1 id="fayre-art-title">Art Competition</h1>
