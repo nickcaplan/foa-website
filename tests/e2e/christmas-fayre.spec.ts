@@ -60,6 +60,7 @@ for (const width of [320, 390]) {
 for(const snowSponsorRoute of [route,'/christmas-fayre-volunteering/']) for(const width of [320,390,1024]) for(const scale of [1,2]) test(`hero snow stays clear of sponsor at ${width}/${scale} on ${snowSponsorRoute}`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(snowSponsorRoute);
  await page.evaluate(scale=>document.documentElement.style.fontSize=`${16*scale}px`,scale);
+ await page.waitForTimeout(250); // let the enlarged-root layout and the snow bank settle before measuring
  const geometry=await page.evaluate(()=>{
   const box=(s:string)=>document.querySelector(s)!.getBoundingClientRect();
   const hero=box('.narnia-landscape'),snow=box('.xmas-snow'),bank=box('.xmas-snow__bank'),logo=box('.sponsor-ribbon img');
