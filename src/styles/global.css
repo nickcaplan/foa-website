@@ -493,7 +493,8 @@ a {
 
 .mobile-menu nav a {
   min-width: 0;
-  overflow-wrap: anywhere;
+  /* #171: whole words in the menu at enlarged text. */
+  overflow-wrap: break-word;
 }
 
 .mobile-menu nav a:not(.mobile-menu-cta) {
@@ -3435,7 +3436,8 @@ body.menu-open .cookie-banner {
 
 .fundraising-card__cta-label {
   min-width: 0;
-  overflow-wrap: anywhere;
+  /* #171: whole words; break-word only splits a word that cannot fit alone. */
+  overflow-wrap: break-word;
 }
 
 .fundraising-card__cta .button > [aria-hidden] {
@@ -3551,6 +3553,12 @@ body.menu-open .cookie-banner {
 
 .fundraising-sources-frame {
   padding: 1rem 1.25rem;
+  /* #171: inline padding tapers (20px at 100%, 12px at 200%) so the table
+     keeps room for whole words at enlarged text. */
+  padding-inline: max(12px, calc(30px - 0.625rem));
+  /* #171: words stay whole; if the screen ends up narrower than the table
+     (text enlarged beyond 200%), the table scrolls inside its frame. */
+  overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface);
@@ -3570,6 +3578,10 @@ body.menu-open .cookie-banner {
 
 .fundraising-sources th,
 .fundraising-sources td {
+  /* #171: cell text tapers (16px at 100%, 20px at 200%) so "Fundraising" and
+     the amounts both fit the phone-width table as whole words. */
+  font-size: min(1rem, calc(12px + 0.25rem));
+  overflow-wrap: break-word;
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--line);
 }
@@ -3579,7 +3591,8 @@ body.menu-open .cookie-banner {
 }
 
 .fundraising-sources tr > :last-child {
-  padding-left: 1rem;
+  /* #171: the gap column stays 16px at enlarged text. */
+  padding-left: min(1rem, 16px);
   text-align: right;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -3646,8 +3659,15 @@ body.menu-open .cookie-banner {
   margin: 0;
   width: fit-content;
   max-width: 100%;
+  /* #179: the amount stays whole; if the screen ends up narrower than the
+     amount (text enlarged beyond 200%), the banner scrolls inside its box. */
+  overflow-x: auto;
   gap: 0.4rem;
-  padding: 1rem 1.5rem;
+  padding-block: 1rem;
+  /* #179: side padding tapers (24px at 100%, 12px at 200%) so the amount
+     still fits inside the banner at 200% text. Pixel-equal at a 16px root.
+     Must come after padding-block - a padding shorthand here would reset it. */
+  padding-inline: max(8px, calc(36px - 0.75rem));
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   color: var(--heading);
@@ -3729,6 +3749,40 @@ body.menu-open .cookie-banner {
   font-weight: 600;
   line-height: 1.4;
   overflow-wrap: anywhere;
+}
+
+/* Enlarged-text guards (#179, #180, #181). Media queries cannot see an enlarged root
+   font size, so these taper with rem arithmetic like the christmas.css snow rules:
+   identical results at a 16px root, adjusted as text enlarges. */
+
+/* #179: keep the amount on one line. The clamp floor is 32px + 1rem: 48px (= 3rem,
+   unchanged) at a 16px root, 64px at 200% text, where 96px digits no longer fit a
+   phone card. break-word only ever engages if the amount itself would overflow. */
+.fundraising-last-total strong {
+  font-size: clamp(calc(32px + 1rem), 8vw, 4.5rem);
+  overflow-wrap: break-word;
+}
+
+/* #180: columns need at least max(7rem + 16px, 45%) each. At a 16px root the 45%
+   leg wins, so the list keeps its two columns everywhere it has them today; at
+   200% text the rem leg (240px) is wider than half a phone, so the list falls to
+   one column and activity names wrap as whole words. */
+.fundraising-page .fundraising-support-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(calc(7rem + 16px), 45%)), 1fr));
+}
+
+/* #181: icon lane is 24px + 1rem: 40px (= 2.5rem, unchanged) at a 16px root, 56px
+   at 200% text, and the label may wrap onto its own line when the lane gets tight
+   (flex-wrap changes nothing while everything fits). break-word still protects
+   against a word longer than the line. */
+.fundraising-support-shapes li {
+  flex-wrap: wrap;
+  row-gap: 0.4rem;
+  overflow-wrap: break-word;
+}
+.fundraising-support-shapes .support-icon {
+  width: calc(24px + 1rem);
+  height: calc(24px + 1rem);
 }
 
 .support-icon {
@@ -3874,8 +3928,14 @@ body.menu-open .cookie-banner {
   min-width: 0;
   min-height: 2.75rem;
   padding-block: 0.55rem;
+  /* #184: at 200% text the shared 1.15rem inline padding leaves "Christmas"
+     (181px) a pixel wider than the label lane; the min() keeps 1.15rem at a
+     16px root and shaves 4px a side as text enlarges. */
+  padding-inline: min(1.15rem, calc(4px + 0.9rem));
   white-space: normal;
-  overflow-wrap: anywhere;
+  /* whole words in the label; break-word only splits a word that cannot
+     fit the line on its own. */
+  overflow-wrap: break-word;
 }
 
 .involved-action--light {
@@ -3959,6 +4019,11 @@ body.menu-open .cookie-banner {
   max-width: 44rem;
   margin: 0.25rem 0 0;
   color: var(--ink-soft);
+  /* #185 (and the same class on sibling cards): prose wraps as whole words.
+     The 2px + 0.875rem taper equals 1rem at a 16px root and eases to 30px at
+     200% text, so the longest word ("announcements") fits a phone line whole
+     instead of losing its final letter. */
+  font-size: min(1rem, calc(2px + 0.875rem));
   overflow-wrap: break-word;
 }
 
@@ -4308,6 +4373,15 @@ body.menu-open .cookie-banner {
 .quick-row{position:relative;padding-inline-end:calc(1.05em + 1.8rem)}
 .quick-row .cta-icon{position:absolute!important;right:.9rem;top:50%;translate:0 -50%;margin:0!important}
 .mobile-menu nav a:not(.mobile-menu-cta){position:relative;padding-inline-end:calc(1.05em + 1.8rem);justify-content:flex-start}
+/* #171: the icon lane's end reserve is 1.05em + 1.8rem (89.5px at 200% text),
+   wider than a phone menu line for links like "Newsletter". The min() keeps the
+   existing reserve while it fits and caps it at 36px + 0.6rem (55px at 200%),
+   which leaves a full line for the longest link word. */
+.mobile-menu nav a:not(.mobile-menu-cta){padding-inline-end:min(calc(1.05em + 1.8rem), calc(36px + 0.6rem))}
+/* #171: menu link text tapers with root size (22px at 100%, 30px at 200%) so
+   "Fundraising" fits a phone line whole; event sub-links taper to 27px at 200%
+   for their narrower indented lane. Both equal at a 16px root. */
+:root{--menu-link-size:min(1.375rem, calc(14px + 0.5rem));--menu-event-link-size:min(1.3125rem, calc(15px + 0.375rem))}
 .mobile-menu nav .mobile-menu-arrow{position:absolute!important;right:.9rem;top:50%;translate:0 -50%;margin:0!important}
 
 /* Christmas homepage feature, scoped to the new artwork and actions. */
@@ -4352,6 +4426,32 @@ a.button[href^="mailto:"] .cta-label{overflow-wrap:normal;word-break:normal}
 }
 
 @media(max-width:23rem){a.button[href^="mailto:"]:has(.cta-icon){padding-inline:56px!important}main :is(a.button,button.button):not([href^="mailto:"]):has(:is(.cta-icon,.external-link-icon)){padding-inline:calc(1.05em + 16px)!important}}
+/* #184: on a 320px phone at 200% text the shared symmetric icon reserve (49.6px a
+   side) leaves the involved-action label lane 1px narrower than "Christmas", so the
+   word splits. Keep the right (icon-side) reserve untouched; taper only the left:
+   49.6px - 1.05rem equals the shared value at a 16px root and frees 33px at 200%.
+   The label block shifts left by that amount only at enlarged text. */
+@media(max-width:23rem){main a.button.involved-action:not([href^="mailto:"]):has(.cta-icon){padding-inline:max(8px, calc(49.6px - 1.05rem)) calc(1.05em + 16px)!important}}
+/* #171: on a 320px phone at 200% text the global right-lane icon pattern cannot
+   hold "Fundraising" (202px) inside a 230px button even with no left padding.
+   For this CTA the icon returns to the flow - still glued to "Plans" by
+   .cta-tail - the padding tapers with text size (1.15rem at a 16px root), and
+   the label font eases from 0.95rem to 26px at 200% so the longest word fits. */
+@media(max-width:26rem){
+  /* #171: the arrow stays in the right-edge lane at every text size (Nick's
+     convention). At enlarged text the lanes taper to 30px and the label to
+     23px, so "Fundraising" (153px) ends ~11px before the arrow's zone and can
+     never run under it. Pixel-equal to the base rules at a 16px root. */
+  main .fundraising-card__cta.fundraising-card__cta a.button:has(.cta-icon){padding-inline-start:max(0.6rem, calc(63.52px - 1.1725rem))!important;padding-inline-end:max(0.6rem, calc(43.52px + 0.0775rem))!important}
+  main .fundraising-card__cta .cta-word{overflow-wrap:break-word}
+}
+main .fundraising-card__cta{font-size:min(0.95rem, calc(7.4px + 0.4875rem))}
+/* #171: view-hero intro copy tapers (12px at 100%, 19px at 200%) so words like
+   "opportunities" stay whole beside the hero logo on phones. Equal at 16px root. */
+.view-hero-copy p{font-size:min(0.75rem, calc(5px + 0.4375rem));overflow-wrap:break-word}
+/* #171: view-hero intro paragraphs taper (15.68px at 100%, 26px at 200%) so
+   "opportunities" stays whole beside the hero logo on phones. Equal at 16px root. */
+.view-hero p:not(.eyebrow){font-size:min(0.98rem, calc(5.36px + 0.645rem));overflow-wrap:break-word}
 @media(max-width:47.99rem){.involved-closing{padding-inline:12px}.involved-closing .involved-action{width:100%}}
 @media(max-width:47.99rem){.uniform-cta{grid-template-columns:minmax(0,1fr)}.uniform-cta .uniform-action{width:100%;min-width:0}.uniform-cta .cta-word{overflow-wrap:normal}}
 /* Phone strips keep a FIXED 16px gutter (matching the standard 2rem gutter at
@@ -4456,7 +4556,7 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)!important}
    adds full width in the 16px gutters. Component-scoped twins of this
    rule live in FayreSupporter.astro and EventRow.astro (scoped styles
    beat globals). */
-main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):has(svg){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
+main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):not(.fundraising-card__cta .button):has(svg){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;column-gap:0!important;
