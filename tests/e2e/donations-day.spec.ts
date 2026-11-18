@@ -27,7 +27,8 @@ for (const width of [320, 390, 768, 1440]) for (const theme of ['day', 'night'])
   await expect(section).toContainText('new, sealed, chocolate boxes or boxed biscuits');
   await expect(section).toContainText('please let your class rep know');
   await expect(page.getByRole('link', {name: 'Enter the art competition'})).toHaveAttribute('href', '/christmas-fayre-art-competition/');
-  await expect(page.locator('.narnia-landscape')).toContainText('tickets on the door');
+  await expect(page.locator('.narnia-landscape')).toContainText('£2, under 12s go free');
+  await expect(page.locator('.narnia-landscape')).not.toContainText('tickets on the door');
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   const overflow = await section.locator('li,li strong,li span,.xmas-donations__raffle').evaluateAll(es => es.filter(e => e.scrollWidth > e.clientWidth + 1).map(e => e.textContent));
   expect(overflow).toEqual([]);
