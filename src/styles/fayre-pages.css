@@ -17,6 +17,11 @@ body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape__co
 .art-comp .fayre-art-hero__deadline {display:grid;gap:.4rem;line-height:1.5;margin:0;color:#fff3d5;}
 .art-comp .fayre-art-hero__deadline span {font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:#edcb83;}
 .art-comp .fayre-art-hero__deadline strong {font:500 1.4rem/1.3 Georgia,serif;}
+/* Sponsor logo in flow like the volunteering hero: its box keeps its height at every
+   text size, so hero height and the snow taper guards behave as before. The two-class
+   selector scopes it clear of the global .sponsor-ribbon card styles. */
+.art-comp .fayre-art-hero__sponsor {display:block;width:min(85%,220px);margin:.5rem auto 0;padding:0;background:none;transform:translateY(max(0px,calc(30px - .9375rem)));}
+.art-comp .fayre-art-hero__sponsor img {display:block;width:100%;height:auto;margin:0;}
 @media(max-width:47.99rem){
   body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape,
   .art-comp .fayre-art-hero {min-height:23.5rem;}
@@ -59,7 +64,21 @@ body.narnia-event .xmas-stage .xmas-hero {padding-bottom:0;}
 .art-comp .fayre-art-hero::before {display:none;}
 .art-comp .fayre-art-hero__copy {max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:2rem;align-content:center;align-items:center;padding:1.5rem 2rem;}
 .art-comp .fayre-art-hero__eyebrow,.art-comp .fayre-art-hero h1,.art-comp .fayre-art-hero__theme,.art-comp .fayre-art-hero__deadline {grid-column:1;}
+/* Nick (18 Nov 2026): on desktop the logo belongs under the copy in the left
+   column - centred across the full hero looked floaty next to the easel. The
+   <768px layout is a flex column, so grid-column is ignored there and the phone
+   placement (bottom centre) is unchanged. */
+.art-comp .fayre-art-hero__sponsor {grid-column:1;justify-self:center;}
 .art-comp .fayre-art-picture {grid-column:2;grid-row:1/5;position:relative;padding:10px;background:#f3e6c8;border:3px solid #8a5a2b;box-shadow:inset 0 0 0 3px #c9a65f,inset 0 0 0 6px #5d3d1e,0 10px 20px #0007;border-radius:2px;margin-bottom:24px;}
+@media(min-width:1024px){
+ /* Nick (18 Nov 2026): bigger picture and frame on desktop. The split only leans
+    0.95/1.05 and the gap tightens 2rem -> 1.5rem: the left text column drives the
+    hero height, and a wider swing would wrap it taller and break the 10% hero
+    parity band. This keeps the text column wide enough that nothing re-wraps, so
+    hero height and parity are unchanged while the framed picture grows ~6%. */
+ .art-comp .fayre-art-hero__copy {grid-template-columns:minmax(0,0.92fr) minmax(0,1.08fr);}
+ .art-comp .fayre-art-picture {margin-bottom:0;}
+}
 .art-comp .fayre-art-picture img {display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;}
 .art-comp .fayre-art-picture::before,.art-comp .fayre-art-picture::after {content:'';position:absolute;top:100%;width:8px;height:28px;background:linear-gradient(#6b4a2f,#4a2f1c);transform-origin:top center;border-radius:0 0 2px 2px;}
 .art-comp .fayre-art-picture::before {left:16%;transform:rotate(9deg);}
@@ -79,6 +98,8 @@ body.narnia-event .xmas-stage .xmas-hero {padding-bottom:0;}
  .art-comp .fayre-art-hero__deadline span {font-size:.72rem;}
  .art-comp .fayre-art-hero__deadline strong {font-size:1.25rem;}
 }
+/* The logo's home is under the left-column copy, so no vertical shift is needed at
+   >=768px; the <768px rule above keeps the phone placement near the hero bottom. */
 @media(min-width:768px){
  .art-comp .fayre-art-hero__copy{padding-block:1.25rem;}
  /* Keep the single-word title inside its column when the root font size grows. */

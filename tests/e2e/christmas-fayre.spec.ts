@@ -57,14 +57,30 @@ for (const width of [320, 390]) {
   });
 }
 
-for(const width of [320,390,1024]) for(const scale of [1,2]) test(`hero snow stays clear of sponsor at ${width}/${scale}`,async({page})=>{
- await page.setViewportSize({width,height:1000});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(route);
+const snowSponsorRoutes:{url:string,hero:string,widths:number[]}[]=[
+ {url:route,hero:'.narnia-landscape',widths:[320,390,1024]},
+ {url:'/christmas-fayre-volunteering/',hero:'.narnia-landscape',widths:[320,390,1024]},
+ // Art included since its logo was lowered to the shared family position (Nick, 18 Nov
+ // 2026): 1000 guards the band where the old constant shift let clearance fall to 4px.
+ {url:'/christmas-fayre-art-competition/',hero:'.fayre-art-hero',widths:[320,390,768,1000,1024]},
+];
+for(const {url:snowSponsorRoute,hero:heroSel,widths} of snowSponsorRoutes) for(const width of widths) for(const scale of [1,2]) test(`hero snow stays clear of sponsor at ${width}/${scale} on ${snowSponsorRoute}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(snowSponsorRoute);
  await page.evaluate(scale=>document.documentElement.style.fontSize=`${16*scale}px`,scale);
- const geometry=await page.evaluate(()=>{
+ // Measure only the settled layout: the enlarged root must have applied and the
+ // bank's geometry must be unchanged across two frames (no fixed waits).
+ await page.waitForFunction(async scale=>{
+  if(getComputedStyle(document.documentElement).fontSize!==`${16*scale}px`)return false;
+  const bank=document.querySelector('.xmas-snow__bank');if(!bank)return false;
+  const a=bank.getBoundingClientRect().top;
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  return a===bank.getBoundingClientRect().top;
+ },scale);
+ const geometry=await page.evaluate(heroSel=>{
   const box=(s:string)=>document.querySelector(s)!.getBoundingClientRect();
-  const hero=box('.narnia-landscape'),snow=box('.xmas-snow'),bank=box('.xmas-snow__bank'),logo=box('.sponsor-ribbon img');
+  const hero=box(heroSel),snow=box('.xmas-snow'),bank=box('.xmas-snow__bank'),logo=box('.sponsor-ribbon img');
   return {contained:snow.top>=hero.top&&snow.bottom<=hero.bottom,gap:bank.top-logo.bottom};
- });
+ },heroSel);
  expect(geometry.contained).toBe(true);expect(geometry.gap).toBeGreaterThanOrEqual(12);
 });
 

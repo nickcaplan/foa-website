@@ -164,7 +164,6 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 .fayre-volunteer :global(.narnia-landscape h1 em){display:inline;color:inherit}
 .fayre-volunteer :global(.narnia-landscape__subtitle){display:block;font-size:min(clamp(2.5rem,4.25vw,3.8rem),12.5vw);line-height:1.15;color:#edcb83;letter-spacing:.02em;margin-top:.15em}
 .fayre-volunteer :global(.narnia-landscape__date){margin-bottom:.5rem}
-.fayre-volunteer :global(.narnia-landscape__venue){margin-bottom:1rem}
 @media(max-width:47.99rem){.fayre-volunteer :global(.narnia-landscape__art){position:absolute;inset:0;height:100%;aspect-ratio:auto;object-fit:cover}.fayre-volunteer :global(.narnia-landscape:before){display:block;background:linear-gradient(90deg,#10232ccc,#10232cdd 35%,#10232ccc)}.fayre-volunteer :global(.narnia-landscape h1){font-size:2rem!important}.fayre-volunteer :global(.narnia-landscape__copy){padding:1.25rem 1rem}}
 .fayre-volunteer__grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));column-gap:1.25rem;row-gap:0}
 .fayre-volunteer__card{position:relative;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem;padding:1.5rem;display:grid;grid-template-rows:subgrid;grid-row:span 4;min-width:0;margin-bottom:1.25rem}
@@ -215,7 +214,7 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
    so the line never wraps mid-phrase ("55 / places left"). */
 @media(max-width:47.99rem){.fayre-volunteer__priority strong{display:block;margin:0 0 .1rem}}
 /* Nick (16 Nov 2026): the full-width CTA felt too wide. Cap the volunteering hero button to the same 22rem the other Fayre hero CTAs (and the Get involved role CTAs) use; min() keeps it full-width on phones and at 200% text. */
-.narnia-volunteering .narnia-landscape .button{max-width:min(22rem,100%)!important}
+.narnia-volunteering .narnia-landscape .button{max-width:100%!important}
 .fayre-volunteer__count{display:inline;color:#edcb83;font-size:1.25rem;line-height:1.25;font-weight:800;font-variant-numeric:tabular-nums}
 .fayre-volunteer__count--zero{color:#9fb8a4}
 .fayre-volunteer__count-label{display:inline;font-size:1rem;line-height:1.25;color:#f4ead1}
@@ -252,7 +251,11 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 .fayre-volunteer__contact h2{overflow-wrap:anywhere!important}
 .fayre-volunteer .narnia-landscape .button .cta-word{overflow-wrap:anywhere}
 @container(max-width:11rem){.fayre-volunteer .narnia-landscape .button{font-size:.95rem}.fayre-volunteer .fayre-volunteer__contact{padding:.5rem}.fayre-volunteer .fayre-volunteer__contact h2{font-size:1.3rem!important}}
-.fayre-volunteer .narnia-landscape .button:has(.cta-icon){padding-inline:.5rem calc(1.05em + 1.1rem)!important;border-radius:1.75rem}
+/* Nick (18 Nov 2026): widen the Sign up CTA to match the Volunteer CTA's width on the
+   Fayre event page - 152.4px on phones, 202px at >=48rem. Symmetric padding keeps the
+   label centred in the wider pill with the icon pinned to the right-edge lane. */
+.fayre-volunteer .narnia-landscape .button:has(.cta-icon){padding-inline:calc(1.05em + 1.1rem)!important;border-radius:1.75rem;min-width:9.525rem}
+@media(min-width:48rem){.fayre-volunteer .narnia-landscape .button:has(.cta-icon){min-width:12.625rem}}
 @media(max-width:47.99rem){.narnia-volunteering .fayre-volunteer .narnia-landscape h1{font-size:1.75rem!important}}
 @container(max-width:9rem){.narnia-volunteering .fayre-volunteer .narnia-landscape h1{font-size:1.375rem!important}}
 .fayre-volunteer .fayre-volunteer__contact .button{min-width:0;padding-inline:min(max(56px,calc(1.05em + 1.8rem)),64px)!important;overflow-wrap:anywhere;border-radius:1.75rem;position:relative}
