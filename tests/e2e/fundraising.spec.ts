@@ -26,6 +26,19 @@ for (const route of ["/", "/fundraising/"]) {
     await expect(card.locator("[data-count-to]")).toHaveText(money(raised));
   });
 
+  test(`${route} shows the real total before the card scrolls into view (#204)`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(route);
+    const card = page.locator("[data-fundraising-card]");
+    const top = await card.evaluate((element) => element.getBoundingClientRect().top);
+    test.skip(top <= 900, "card already in view on this route");
+    await page.waitForTimeout(1600);
+    await expect(card.locator("[data-count-to]")).toHaveText(money(raised));
+    await card.scrollIntoViewIfNeeded();
+    await expect(card).toHaveClass(/is-filled/);
+    await expect(card.locator("[data-count-to]")).toHaveText(money(raised));
+  });
+
   test(`${route} shows final figures immediately with reduced motion`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(route);

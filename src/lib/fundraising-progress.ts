@@ -15,20 +15,25 @@ export function initFundraisingProgress() {
   if (!card || !figure || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
 
   const target = Number(figure.dataset.countTo);
-  const lockWidth = () => {
+  // Lock the width against digit-count changes, but keep the real total on
+  // screen until the count-up actually runs: a card below the fold (or one
+  // that never reaches the observer threshold) must never sit at £0 (#204).
+  const lockWidth = (text: string) => {
     figure.style.minWidth = "";
     figure.textContent = formatMoney(Number("8".repeat(String(Math.round(target)).length)));
     figure.style.minWidth = `${Math.ceil(figure.getBoundingClientRect().width)}px`;
-    figure.textContent = formatMoney(0);
+    figure.textContent = text;
   };
-  lockWidth();
+  const finalText = formatMoney(target);
+  lockWidth(finalText);
   card.classList.add("is-armed");
   document.fonts?.ready.then(() => {
-    if (!card.classList.contains("is-filled")) lockWidth();
+    if (!card.classList.contains("is-filled")) lockWidth(finalText);
   });
 
   const run = () => {
     card.classList.add("is-filled");
+    figure.textContent = formatMoney(0);
     const start = performance.now();
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / DURATION_MS);
