@@ -42,7 +42,7 @@
   --newsletter-logo-offset-x: calc(-85 / 380 * 100%);
   --newsletter-logo-offset-y: calc(-29 / 380 * 100%);
   --newsletter-logo-extra-height: calc(103 / 380);
-  --mobile-heading-inset: 1rem;
+  --mobile-heading-inset: max(0.5rem, 1rem - (1rem - 16px));
   --mobile-heading-panel-padding: 1.5rem;
   --mobile-heading-control-clearance: 2rem;
   --home-heading-line-height: 1.2;
@@ -143,16 +143,23 @@ a {
 }
 
 .site-width {
-  width: min(calc(100% - 2rem), var(--max-width));
+  /* At enlarged text the fixed 2rem gutter eats a fifth of a 320px screen;
+     taper it back to 1rem as the root grows (same max() pattern as the snow
+     reserves). 100% text is unchanged. */
+  width: min(calc(100% - max(1rem, 2rem - 2 * (1rem - 16px))), var(--max-width));
   margin-inline: auto;
 }
 
 .eyebrow {
   margin: 0 0 0.75rem;
   color: var(--green);
-  font-size: 0.75rem;
+  /* Shrink the eyebrow a touch at enlarged text so long uppercase words
+     keep fitting their lane (same max() pattern as the snow reserves). */
+  font-size: max(0.6rem, 0.75rem - 0.25 * (1rem - 16px));
   font-weight: 800;
-  letter-spacing: 0.14em;
+  /* Wide tracking shatters long uppercase words at enlarged text; taper it
+     away as the root grows (same max() pattern as the snow reserves). */
+  letter-spacing: max(0.02em, calc(0.14em - 0.2 * (1rem - 16px)));
   line-height: 1.3;
   text-transform: uppercase;
 }
@@ -174,7 +181,7 @@ a {
   font-weight: 500;
   letter-spacing: -0.035em;
   line-height: 1.04;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .section-heading p {
@@ -258,7 +265,7 @@ a {
 .brand-copy {
   display: grid;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   line-height: 1.15;
 }
 
@@ -581,11 +588,11 @@ a {
     min-width: 0;
     padding-top: var(--mobile-heading-control-clearance);
     container-type: inline-size;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
   }
 
   .mobile-page-heading-copy h1 {
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
   }
 
   /* The hero copy frames the heading grid. At enlarged text sizes the logo
@@ -595,7 +602,33 @@ a {
     container: view-hero-copy / inline-size;
   }
 
+  /* Beside the logo on the narrowest phones, the heading eyebrow's lane is
+     only ~116px: shrink it a touch and close its tracking, or a long
+     uppercase word ("REPRESENTATIVES") splits even with no tracking. */
+  @media (max-width: 23rem) {
+    .mobile-page-heading-copy .eyebrow {
+      font-size: 0.625rem;
+      letter-spacing: 0.02em;
+    }
+  }
+
   @container view-hero-copy (max-width: 14em) {
+    .view-hero .mobile-page-heading {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .view-hero .mobile-page-heading-brand {
+      max-width: var(--mobile-page-logo-size);
+    }
+  }
+
+  /* Root-relative twin of the container query above: container-query em follows
+     the container's own font size (fixed on this component), so at a genuinely
+     enlarged root the threshold never grows and the hero stays side-by-side,
+     splitting long heading words in the ~192px lane. rem tracks the root: at
+     100% this matches nothing visible (14rem = 224px, below the 320px floor);
+     at 200% it stacks the logo just like the container query. */
+  @media (max-width: 14rem) {
     .view-hero .mobile-page-heading {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -674,7 +707,7 @@ a {
   min-width: 0;
   margin: 0;
   line-height: 1.25;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .home-introduction strong {
@@ -843,6 +876,8 @@ svg.cta-icon {
 .text-link {
   color: var(--green);
   font-weight: 800;
+  /* Links carry emails/URLs with no whole-word break points; keep the old
+     shatter behaviour so they can never overflow. */
   overflow-wrap: anywhere;
   text-underline-offset: 0.25rem;
 }
@@ -1195,12 +1230,12 @@ svg.cta-icon {
 
 .message-card h2 {
   margin-top: 0.4rem;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .message-card > p:not(.copy-feedback) {
   margin: 0.75rem 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .reps-role .section-heading {
@@ -1394,7 +1429,7 @@ svg.cta-icon {
   padding: 1.5rem;
   border-top: 3px solid var(--green);
   background: var(--surface);
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .newsletter-issue-index h2 {
@@ -1584,9 +1619,9 @@ svg.cta-icon {
 .newsletter-sheet {
   position: relative;
   max-width: 64rem;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   /* Keep side gutters viewport-bounded when enlarged text narrows the paper. */
-  padding: clamp(1.75rem, 6vw, 3.5rem) min(6vw, 3.75rem);
+  padding: clamp(1.75rem, 6vw, 3.5rem) max(0.5rem, min(6vw, 3.75rem) - 0.5 * (1rem - 16px));
   border: 1px solid var(--line);
   border-top: 0.5rem solid var(--green);
   border-radius: 0.35rem;
@@ -1604,7 +1639,7 @@ svg.cta-icon {
 }
 
 .newsletter-board {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   padding: clamp(1rem, 4vw, 2.5rem);
   border: clamp(0.5rem, 1.5vw, 0.9rem) solid #6b4a2e;
   border-radius: 0.5rem;
@@ -1780,7 +1815,7 @@ svg.cta-icon {
 .newsletter-sign-off p > span {
   min-width: 0;
   max-width: 100%;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 @container newsletter-sign-off (max-width: 10em) {
@@ -1843,6 +1878,10 @@ svg.cta-icon {
 .newsletter-list {
   display: grid;
   gap: 0.6rem;
+  /* The contact list holds bare email addresses (text nodes, no link), which
+     have no whole-word break points; let them shatter so the grid track can
+     never outgrow the sheet. */
+  overflow-wrap: anywhere;
   margin: 0.8rem 0 0;
   padding-left: 1.25rem;
 }
@@ -1861,7 +1900,7 @@ svg.cta-icon {
   font-family: var(--font-display);
   font-size: clamp(2.8rem, 8vw, 5rem);
   font-weight: 500;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .co-secretary {
@@ -1902,7 +1941,7 @@ svg.cta-icon {
   /* The vw cap keeps whole words fitting at text zoom. */
   font-size: min(1.8rem, 9vw);
   font-weight: 500;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .pillar p {
@@ -1968,7 +2007,7 @@ svg.cta-icon {
   font-family: var(--font-display);
   font-size: 2rem;
   font-weight: 500;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .footer-brand p {
@@ -2043,7 +2082,7 @@ svg.cta-icon {
 
 .social-link span {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .footer-follow {
@@ -2361,7 +2400,7 @@ body.menu-open .cookie-banner {
 /* Stack a detail row when its own text-relative width cannot hold both cells. */
 
 .view-hero {
-  width: min(calc(100% - 2rem), var(--max-width));
+  width: min(calc(100% - max(1rem, 2rem - 2 * (1rem - 16px))), var(--max-width));
   margin-inline: auto;
   padding: clamp(1.5rem, 3vw, 2.5rem) 0;
   border-radius: var(--radius-md);
@@ -2370,7 +2409,7 @@ body.menu-open .cookie-banner {
 
 .view-hero > .site-width {
   width: 100%;
-  padding-inline: clamp(1rem, 4vw, 3rem);
+  padding-inline: clamp(0.5rem, 4vw, 3rem);
 }
 
 .view-hero-inner {
@@ -2484,7 +2523,7 @@ body.menu-open .cookie-banner {
 
 .info-card {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   padding: clamp(1.5rem, 4vw, 2.5rem);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -2550,15 +2589,15 @@ body.menu-open .cookie-banner {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 0.6rem;
+  gap: max(0.3rem, 0.6rem - 0.5 * (1rem - 16px));
   margin: 1.1rem 0;
   color: var(--heading);
   font-weight: 800;
 }
 
 .price-note svg {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: max(1rem, 1.4rem - 0.5 * (1rem - 16px));
+  height: max(1rem, 1.4rem - 0.5 * (1rem - 16px));
   flex: none;
 }
 
@@ -2569,11 +2608,15 @@ body.menu-open .cookie-banner {
 .sale-time {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.7rem;
   width: fit-content;
+  /* fit-content at 100% text; grows toward full width as the root enlarges
+     so the location line keeps whole words. */
+  min-width: min(100%, 14 * (1rem - 16px));
   max-width: 100%;
   margin-top: 1.25rem;
-  padding: 0.6rem 0.95rem;
+  padding: 0.6rem max(0.5rem, 0.95rem - 0.8 * (1rem - 16px));
   border: 1px solid #e2ad58;
   border-radius: var(--radius-md);
   color: #5f3505;
@@ -2582,7 +2625,7 @@ body.menu-open .cookie-banner {
 
 .sale-time > div {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .sale-time-icon {
@@ -3170,7 +3213,7 @@ body.menu-open .cookie-banner {
   .homepage .hero-grid,
   .xmas-hero > .site-width,
   .not-found-page > .site-width {
-    width: min(calc(100% - 2rem), var(--max-width));
+    width: min(calc(100% - max(1rem, 2rem - 2 * (1rem - 16px))), var(--max-width));
   }
 
   #main-content:has(.view-hero) {
@@ -3916,7 +3959,7 @@ body.menu-open .cookie-banner {
   max-width: 44rem;
   margin: 0.25rem 0 0;
   color: var(--ink-soft);
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .involved-badge {
@@ -4291,7 +4334,7 @@ main :is(a.button,button.button):has(:is(.cta-icon,.external-link-icon)){positio
 main :is(a.button,button.button) :is(.cta-icon,.external-link-icon){position:absolute!important;top:50%!important;translate:0 -50%!important;margin:0!important;right:.9rem!important;inset-inline-end:.9rem!important}
 @media(max-width:47.99rem){main :is(a.button,button.button) :is(.cta-icon,.external-link-icon){right:.5rem!important;inset-inline-end:.5rem!important}}
 @media(max-width:23rem){main :is(a.button,button.button) :is(.cta-icon,.external-link-icon){right:10px!important;inset-inline-end:10px!important}}
-main :is(a.button,button.button):has(:is(.cta-icon,.external-link-icon)){padding-inline:calc(1.05em + 1.8rem)!important}
+main :is(a.button,button.button):has(:is(.cta-icon,.external-link-icon)){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
 a.button[href^="mailto:"]:has(.cta-icon){padding-inline:calc(1.3em + 1.8rem)!important}
 /* Feature-card buttons remain usable at enlarged text instead of shrinking to a word-width. */
 .involved-feature__actions{min-width:0}.involved-feature__actions .involved-action{width:100%;min-width:0}
@@ -4413,14 +4456,14 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)!important}
    adds full width in the 16px gutters. Component-scoped twins of this
    rule live in FayreSupporter.astro and EventRow.astro (scoped styles
    beat globals). */
-main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):has(svg){padding-inline:calc(1.05em + 1.8rem)!important}
+main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):has(svg){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;column-gap:0!important;
   overflow-wrap:break-word!important;word-break:normal!important;
 }
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):not(:has(svg)){
-  padding-inline:24px!important;
+  padding-inline:max(8px, 24px - (1rem - 16px))!important;
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;
   overflow-wrap:break-word!important;word-break:normal!important;
@@ -4438,12 +4481,12 @@ main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-
    cannot balloon the em/rem spacing and squeeze buttons into breaking. */
 main :is(.fundraising-card,.message-card,.info-card,.committee-note,.involved-feature,.involved-closing,.newsletter-expansion-actions,.impact-callout,.newsletter-issue,.narnia-landscape__copy){padding-inline:12px!important}
 main .newsletter-issue{width:100%!important;max-width:100%!important}
-main .newsletter-board{padding-inline:8px!important;border-width:4px!important}
+main .newsletter-board{padding-inline:max(4px,8px - 0.5 * (1rem - 16px))!important;border-width:max(2px,4px - 0.25 * (1rem - 16px))!important}
 main .newsletter-expansion-actions{padding-inline:0!important}
-main .newsletter-read-more{padding-inline:16px!important}
+main .button--large{padding-inline:max(1rem,1.75rem - (1rem - 16px))!important}
 /* Very narrow phones need the sheet's last few px for the longest word. */
 @media(max-width:23rem){
-main .newsletter-issue{padding-inline:8px!important}
+main .newsletter-issue{padding-inline:max(4px,calc(8px - 0.5 * (1rem - 16px)))!important}
 }
 }
 
