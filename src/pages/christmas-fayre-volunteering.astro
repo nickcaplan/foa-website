@@ -39,7 +39,7 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
  <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
  <div class="site-width fayre-volunteer">
   <NarniaHero event={event} eventPage={true} volunteerPage={true} snowfall={true}>
-   <p slot="priority" class="fayre-volunteer__priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")}>{heroSummary===null?<><strong>Most help needed</strong><span>{`${ranked.filter(r=>r.count===ranked[0]!.count).map(r=>r.name).join(" & ")} - ${ranked[0]!.count} ${ranked[0]!.count===1?"place":"places"} left`}</span></>:heroSummary}</p>
+   <p slot="priority" class="fayre-volunteer__priority" data-most-help role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")} data-availability-snapshot={JSON.stringify(snapshot)}>{heroSummary===null?<><strong>Most help needed</strong><span>{`${ranked.filter(r=>r.count===ranked[0]!.count).map(r=>r.name).join(" & ")} - ${ranked[0]!.count} ${ranked[0]!.count===1?"place":"places"} left`}</span></>:heroSummary}</p>
   </NarniaHero>
   <FayreNavigation current="volunteer" />
   <section class="fayre-volunteer__intro" aria-label="Choose your volunteer activity">
@@ -67,7 +67,14 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 </BaseLayout>
 <script>
  import{remaining,totals,isSnapshot,retainValid,type Snapshot}from"../lib/fireworks-availability";
- let snapshot:Snapshot={};
+ // Seed with the build snapshot so a failed (or slow) first fetch never wipes the SSR counts.
+ let snapshot:Snapshot=(()=>{
+  try{
+   const raw=document.querySelector<HTMLElement>("[data-availability-snapshot]")?.dataset.availabilitySnapshot;
+   const parsed:unknown=raw?JSON.parse(raw):undefined;
+   return isSnapshot(parsed)?parsed:{};
+  }catch{return {};}
+ })();
  const ended=()=>Date.now()>=Date.parse("2026-12-05T15:30:00+00:00");
  /** Render validated counts without repeated announcements. */
  function render(){
