@@ -34,7 +34,10 @@ for (const width of [320, 390, 768, 1023]) {
         expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
         expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
         expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
-        if(route.includes("fireworks"))expect(heading.y, `${route}: retired heading stacks below logo`).toBeGreaterThanOrEqual(logoBox.y+logoBox.height);
+        // Approved (design review, PR #209): the supporters hero stacks the crest
+        // above its title once the frame is under ~20em (320px at 100% text);
+        // wider widths and the other standard routes keep the beside-logo rule.
+        if(route.includes("fireworks") || (route.includes("christmas-fayre-supporters") && width <= 320))expect(heading.y, `${route}: heading stacks below the crest`).toBeGreaterThanOrEqual(logoBox.y+logoBox.height);
         else expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
       }
       const logoBottom = await page.locator(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route) ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);

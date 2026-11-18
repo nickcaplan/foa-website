@@ -1,7 +1,7 @@
 import{expect,test}from'@playwright/test';
 // Hero titles must never break a word across lines: a split title reads as a
 // typo (Nick's iPhone showed "COMPETITIO / N" on the Art Competition hero).
-const routes=['/christmas-fayre-art-competition/','/christmas-fayre-volunteering/','/events/christmas-fayre-2026/'];
+const routes=['/christmas-fayre-art-competition/','/christmas-fayre-volunteering/','/christmas-fayre-supporters/','/events/christmas-fayre-2026/'];
 for(const width of [320,390])for(const mode of ['day','night'])for(const scale of [1,2])for(const route of routes)test(`hero title keeps whole words ${width} ${mode} text ${scale} ${route}`,async({page})=>{
  await page.setViewportSize({width,height:850});await page.addInitScript(mode=>{localStorage.setItem('foa-theme',mode);localStorage.setItem('foa-cookie-preferences','essential')},mode);
  await page.goto(route,{waitUntil:'networkidle'});
