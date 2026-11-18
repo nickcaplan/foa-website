@@ -20,7 +20,7 @@ body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape__co
 /* Sponsor logo in flow like the volunteering hero: its box keeps its height at every
    text size, so hero height and the snow taper guards behave as before. The two-class
    selector scopes it clear of the global .sponsor-ribbon card styles. */
-.art-comp .fayre-art-hero__sponsor {display:block;width:min(85%,220px);margin:.5rem auto 0;padding:0;background:none;}
+.art-comp .fayre-art-hero__sponsor {display:block;width:min(85%,220px);margin:.5rem auto 0;padding:0;background:none;transform:translateY(max(0px,calc(30px - .9375rem)));}
 .art-comp .fayre-art-hero__sponsor img {display:block;width:100%;height:auto;margin:0;}
 @media(max-width:47.99rem){
   body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape,
@@ -86,11 +86,20 @@ body.narnia-event .xmas-stage .xmas-hero {padding-bottom:0;}
  .art-comp .fayre-art-hero__deadline strong {font-size:1.25rem;}
 }
 @media(min-width:768px) and (max-width:1023px){
- /* Pinned-height band: content centres with slack below, so the in-flow logo rides
-    99px up at 768px. Lower it into the family range (other heroes sit 9-59px from
-    the hero bottom); the max() tapers the shift to 0 at 200% text, where the snow
-    reserve is gone, so the logo never leaves the hero. */
- .art-comp .fayre-art-hero__sponsor{transform:translateY(max(0px,calc(64px - 2rem)));}
+ /* Pinned-height band: content centres with slack below, so the in-flow logo's
+    natural distance from the hero bottom drifts from 99px at 768px to 67px at
+    1023px. Nick (18 Nov 2026): the logo should sit roughly where it does on the
+    other heroes, so the translate tracks the drift (160.2px - 13.92vw) and holds
+    the logo ~46px from the bottom with ~15px of snow-bank clearance at every
+    width in the band; the old constant 32px shift let clearance fall to 4px by
+    1000px. The rem term tapers the shift to 0 at a 32px root (200% text), where
+    the snow reserve is gone, so the logo never leaves the hero. */
+ .art-comp .fayre-art-hero__sponsor{transform:translateY(max(0px,calc(213.5px - 13.92vw - 3.33125rem)));}
+}
+@media(min-width:1024px){
+ /* Same target as the band: ~46px from the hero bottom (natural 67px, shift 21px,
+    tapering to 0 at a 32px root). */
+ .art-comp .fayre-art-hero__sponsor{transform:translateY(max(0px,calc(42px - 1.3125rem)));}
 }
 @media(min-width:768px){
  .art-comp .fayre-art-hero__copy{padding-block:1.25rem;}
