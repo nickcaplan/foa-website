@@ -92,3 +92,13 @@
   .fayre-lead__name{text-align:center}
   .fayre-lead__thanks{margin-inline:auto}
 }
+/* Day mode: the shared xmas gold (solid #f3d27c under a #fbe7a6->#b8872a gradient,
+   christmas.css) sits on the pale hero panel (--green-light #dfeadd) at 1.18:1,
+   under the 3:1 large-text floor. Night keeps the gold (7.95:1 on #293d2e).
+   Deep gold #7a601c measures 4.82:1 against the day panel; drop the gradient
+   and transparent text-fill in day so the solid colour is what paints. */
+:root:not([data-theme="night"]) .xmas-theme .fayre-supporters-hero .view-hero h1 {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: #7a601c;
+}
