@@ -4,14 +4,18 @@
     /* Lead feature: the sponsor gets the space, not louder type. */
     .fayre-lead{margin:1.5rem 0 0;padding-bottom:2rem;border-bottom:1px solid #b99a5b88}
     .fayre-lead__label{text-transform:uppercase;font:700 .72rem/1.5 var(--font-body);letter-spacing:.12em;color:#edcb83;margin:0 0 1rem}
-    .fayre-lead__well{background:#173844;border-radius:.65rem;padding:1rem;max-width:46rem}
+    .fayre-lead__well{background:#173844;border:1px solid #b99a5b55;border-radius:.65rem;padding:1rem;max-width:46rem}
     .fayre-lead__well img{display:block;width:100%;height:auto;object-fit:contain}
     .fayre-lead__name{font:500 1.5rem/1.3 Georgia,serif;color:#fff3d5;margin:1.25rem 0 0;text-align:left;padding:0}
     .fayre-lead__name:after{display:none}
     .fayre-lead__thanks{margin:.6rem 0 0;line-height:1.6;color:#f4ead1;max-width:42rem}
     .fayre-lead__actions{margin:1rem 0 0}
-    .fayre-supporters__thanks-heading{font:500 1.25rem/1.4 Georgia,serif;color:#edcb83;margin:3rem 0 0;text-align:left;padding:0}
-    .fayre-supporters__thanks-heading:after{display:none}
+    /* Nick (19 Nov 2026, second pass): the gold rule under the Martin lead sat
+       on top of this heading - the margin was set on the bare class (0,1,0),
+       which loses to the shared .xmas-theme h1,h2 margin:0 (0,1,1). The theme
+       class on the selector (0,2,0) makes the gap actually apply. The heading
+       otherwise keeps the shared family look (centred, gold flourish). */
+    .xmas-theme .fayre-supporters__thanks-heading{margin:3rem 0 0}
         /* Two equal columns at normal text (the 45% leg), stacking once enlarged text
        outgrows them (the rem leg), the #180 pattern: media queries always evaluate
        at the initial 16px root, so only the minmax legs see text size. */
@@ -23,14 +27,18 @@
        to the image's intrinsic width, which at 200% text crushed the heading to
        a 6px column and pushed the logo through the card padding (design review,
        19 Nov 2026). minmax(0,38%) keeps the big top-right logo where there is
-       room and caps it so the heading always keeps its column. */
-    .supporter-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,38%);gap:.6rem 1rem;align-items:start;margin:0;padding:1.5rem;background:#173844;border:1px solid #b99a5b55;border-radius:.65rem;color:#fff3d5;min-width:0}
-    .supporter-card__logo{grid-column:2;grid-row:1;display:flex;align-items:flex-start;justify-content:flex-end;height:auto}
+       room and caps it so the heading always keeps its column.
+       Nick (19 Nov 2026, second pass): the logo spans the heading and copy rows
+       so the copy moves up beside it - a logo-only top row left a dead band
+       under the heading - and padding/gaps are tightened. */
+    .supporter-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,38%);gap:.5rem .75rem;align-items:start;margin:0;padding:1.25rem;background:#173844;border:1px solid #b99a5b55;border-radius:.65rem;color:#fff3d5;min-width:0}
+    .supporter-card__logo{grid-column:2;grid-row:1/3;display:flex;align-items:flex-start;justify-content:flex-end;height:auto}
     .supporter-card__logo img{max-width:100%;max-height:7rem;width:auto;height:auto;object-fit:contain;border-radius:.5rem}
     .supporter-card__logo--light img{background:#fff;padding:.4rem}
     .supporter-card__copy{display:contents}
-    .supporter-card__copy>*{grid-column:1/-1}
+    .supporter-card__copy>*{grid-column:1}
     .supporter-card__copy>h3{grid-column:1;grid-row:1}
+    .supporter-card__copy>.supporter-card__actions{grid-column:1/-1}
     @media(min-width:48rem){.supporter-card__logo img{max-height:8rem}}
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
     .supporter-card h3:after{display:none}

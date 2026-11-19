@@ -177,3 +177,82 @@ test("card logos never overlap their headings at narrow widths and 200% text", a
     }
   }
 });
+// Nick (19 Nov 2026, second pass): the gold rule under the Martin lead sits too
+// close to "With thanks to". The h2's margin-top was set but lost to the shared
+// .xmas-theme h2 margin:0 (0,1,1 beats the bare class) - the override needs the
+// theme class on the selector. Fails if the visible gap between the lead
+// section's bottom border and the heading drops below 3rem at any size.
+test("the gold rule above 'With thanks to' keeps a 3rem gap", async ({
+  page,
+}) => {
+  for (const width of [320, 390, 1440]) {
+    for (const scale of [1, 2]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      if (scale === 2)
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = "32px"),
+        );
+      const gap = await page.evaluate(() => {
+        const lead = document
+          .querySelector(".fayre-lead")!
+          .getBoundingClientRect();
+        const h2 = document
+          .querySelector(".fayre-supporters__thanks-heading")!
+          .getBoundingClientRect();
+        return h2.top - lead.bottom;
+      });
+      expect(
+        gap,
+        `${width}px ${scale * 100}%: gap between rule and heading`,
+      ).toBeGreaterThanOrEqual(48 * scale - 2);
+    }
+  }
+});
+
+// Nick (19 Nov 2026, second pass): the Martin Flashman logo well was missing
+// the card treatment the other supporters get - it had the panel background
+// and radius but no border. Fails if the well loses its gold keyline.
+test("the Martin Flashman logo well carries the supporter card border", async ({
+  page,
+}) => {
+  await page.goto(route);
+  const border = await page
+    .locator(".fayre-lead__well")
+    .evaluate((el) => getComputedStyle(el).borderTop);
+  expect(border).toContain("1px");
+  expect(border).toContain("185, 154, 91");
+});
+
+// Nick (19 Nov 2026, second pass): too much whitespace inside the sponsor
+// cards. The logo now spans the heading and copy rows, so the copy starts
+// directly under the heading instead of below a logo-tall top row. Fails if
+// the copy drops back below the logo row.
+test("supporter card copy starts directly under the heading", async ({
+  page,
+}) => {
+  for (const width of [320, 1440]) {
+    for (const scale of [1, 2]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      if (scale === 2)
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = "32px"),
+        );
+      const cards = page.locator(".supporter-card");
+      for (const card of await cards.all()) {
+        const geo = await card.evaluate((el) => {
+          const h = el.querySelector("h3")!.getBoundingClientRect();
+          const p = el
+            .querySelector(".supporter-card__copy > p:not(.supporter-card__actions)")!
+            .getBoundingClientRect();
+          return { gap: p.top - h.bottom, text: el.querySelector("h3")!.textContent };
+        });
+        expect(
+          geo.gap,
+          `${width}px ${scale * 100}% "${geo.text}": copy under heading`,
+        ).toBeLessThanOrEqual(36 * scale);
+      }
+    }
+  }
+});
