@@ -35,8 +35,7 @@ for(const width of [320,390,1024,1440]) for(const scale of [1,2]) for(const them
  expect(Math.max(...sizes.map(s=>s.width))-Math.min(...sizes.map(s=>s.width))).toBeLessThanOrEqual(1);
  // Nick (17 Nov 2026): hero heights may differ by up to 10% - the Christmas Fayre event
  // hero carries the snow bank's clearance padding (#172). Widths stay pixel-locked.
- // The band covers the three content-density-matched heroes (event, volunteering,
- // art); the supporters hero carries only a title and short intro (Nick, 19 Nov
- // 2026), so it is shorter by design and outside the band.
- if(scale===1){const hs=sizes.slice(0,3).map(s=>s.height);expect(Math.max(...hs)-Math.min(...hs)).toBeLessThanOrEqual(Math.min(...hs)*0.1);}
+ // The supporters hero rejoins the band (Nick, 19 Nov 2026): a raised >=75rem floor
+ // levels it with the volunteering hero at wide desktop.
+ if(scale===1){const hs=sizes.map(s=>s.height);expect(Math.max(...hs)-Math.min(...hs)).toBeLessThanOrEqual(Math.min(...hs)*0.1);}
 });

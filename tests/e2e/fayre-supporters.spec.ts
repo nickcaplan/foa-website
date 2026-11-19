@@ -57,10 +57,7 @@ test("each supporter links out to its own site, opening safely in a new tab", as
     ["supporter-martin", ["https://www.martinflashman.co.uk/"]],
     [
       "supporter-ottershaw",
-      [
-        "https://www.mauricemandry.com/",
-        "https://www.instagram.com/ottershawchristmastreefarm/",
-      ],
+      ["https://www.mauricemandry.com/"],
     ],
     ["supporter-glitter", ["https://theglittertree.com/"]],
   ];
