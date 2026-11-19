@@ -43,15 +43,6 @@
        every enlarged-text case while leaving normal-text desktop at three
        columns. */
     @container pageband (max-width:60rem){.fayre-supporters__row{grid-template-columns:minmax(0,1fr)}}
-    /* The same stacked, logo-above-copy layout follows the row collapse:
-       enlarged text stacks the cards at ANY width (the 60rem leg doubles with
-       root text); narrow cards at normal text stack via the card's own 40rem
-       query below. */
-    @container pageband (max-width:60rem){
-      .supporter-card__logo{grid-column:1/-1;grid-row:1;justify-content:flex-start}
-      .supporter-card__logo img{max-height:7rem}
-      .supporter-card__copy{grid-column:1/-1;grid-row:2}
-    }
     /* Nick (19 Nov 2026): logo sits in the card's top-right, bigger, with the
        copy directly below it spanning the full width - the heading shares the
        top row with the logo, so the copy moves up a full row. */
@@ -120,10 +111,25 @@
       .supporter-card__logo{height:auto}
       .supporter-card__copy>h3{min-height:0}
     }
+
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
     .supporter-card h3:after{display:none}
     .supporter-card__copy>p:not(.supporter-card__actions){margin:.6rem 0 0;line-height:1.6;color:#f4ead1;text-wrap:balance}
     .supporter-card__actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0 0}
+    /* Compact single-column partner cards (Nick, 19 Nov 2026 21:00; design
+       agent compact-card-spec): wherever the list is one column - below the
+       1152px row switch, or at any viewport when enlarged text collapses the
+       pageband - the logo floats top right, title and copy flow around it,
+       and the CTA sits full width below. Cards size to their content: no
+       logo-row, heading or card-height floors. Fixed px paddings and logo
+       caps deliberately do not double at enlarged text. The .compact-body
+       wrapper adds no visual box in the three-column row. */
+    .compact-body{display:contents}
+    @media(max-width:1151px){.supporter-card{display:block;padding:20px}.compact-body{display:flow-root}.supporter-card__copy{display:contents}.supporter-card__logo{float:right;display:flex;width:72px;height:auto!important;margin:0 0 8px 16px;justify-content:flex-end}.supporter-card__logo img{max-width:100%!important;max-height:80px!important;box-sizing:border-box}.supporter-card__logo--cream{width:88px}.supporter-card h3{min-height:0!important}.supporter-card__copy>p:not(.supporter-card__actions){text-wrap:pretty;margin-top:8px}.supporter-card__actions{margin-top:16px!important}}
+    @container pageband (max-width:60rem){.supporter-card{display:block;padding:20px}.compact-body{display:flow-root}.supporter-card__copy{display:contents}.supporter-card__logo{float:right;display:flex;width:72px;height:auto!important;margin:0 0 8px 16px;justify-content:flex-end}.supporter-card__logo img{max-width:100%!important;max-height:80px!important;box-sizing:border-box}.supporter-card__logo--cream{width:88px}.supporter-card h3{min-height:0!important}.supporter-card__copy>p:not(.supporter-card__actions){text-wrap:pretty;margin-top:8px}.supporter-card__actions{margin-top:16px!important}}
+    @media(max-width:767px){.supporter-card{padding:12px}}
+    @media(min-width:768px){@container pageband (max-width:60rem){.supporter-card__logo{width:80px}.supporter-card__logo--cream{width:104px}.supporter-card__logo img{max-height:88px!important}}}
+
     /* Design re-review (19 Nov 2026, ca0e1d3): the partner CTAs take one
        consistent size - the card's full internal width - so row-mates always
        match; the label wraps whole words inside (the cta-tail span keeps the

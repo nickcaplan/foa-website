@@ -147,33 +147,43 @@ test("card logos never overlap their headings at narrow widths and 200% text", a
       const cards = page.locator(".supporter-card");
       for (const card of await cards.all()) {
         const geo = await card.evaluate((el) => {
-          const h = el.querySelector("h3")!.getBoundingClientRect();
+          const h3 = el.querySelector("h3")!;
+          // Compact single-column cards float the logo top right and wrap the
+          // heading ink around it, so box-overlap is the wrong check: measure
+          // each heading line box against the logo image box instead.
+          const range = document.createRange();
+          range.selectNodeContents(h3);
+          const lines = [...range.getClientRects()].map((r) => ({
+            x: r.x, y: r.y, w: r.width, h: r.height,
+          }));
           const i = el
             .querySelector(".supporter-card__logo img")!
             .getBoundingClientRect();
           const c = el.getBoundingClientRect();
           const pad = parseFloat(getComputedStyle(el).paddingRight);
           return {
-            text: el.querySelector("h3")!.textContent,
-            h: { x: h.x, y: h.y, w: h.width, h: h.height },
+            text: h3.textContent,
+            lines,
             i: { x: i.x, y: i.y, w: i.width, h: i.height },
             contentRight: c.x + c.width - pad,
             contentWidth: c.width - 2 * pad,
           };
         });
         const label = `${width}px ${theme} "${geo.text}"`;
-        const overlap =
-          geo.h.x < geo.i.x + geo.i.w &&
-          geo.i.x < geo.h.x + geo.h.w &&
-          geo.h.y < geo.i.y + geo.i.h &&
-          geo.i.y < geo.h.y + geo.h.h;
-        expect(overlap, `${label}: logo overlaps heading`).toBe(false);
+        for (const ln of geo.lines) {
+          const overlap =
+            ln.x < geo.i.x + geo.i.w &&
+            geo.i.x < ln.x + ln.w &&
+            ln.y < geo.i.y + geo.i.h &&
+            geo.i.y < ln.y + ln.h;
+          expect(overlap, `${label}: logo overlaps heading ink`).toBe(false);
+        }
         expect(
           geo.i.x + geo.i.w,
           `${label}: logo stays inside the card's content box`,
         ).toBeLessThanOrEqual(geo.contentRight + 1);
         expect(
-          geo.h.w,
+          Math.max(...geo.lines.map((l) => l.w)),
           `${label}: heading keeps a usable column`,
         ).toBeGreaterThanOrEqual(geo.contentWidth * 0.25);
       }
@@ -367,20 +377,26 @@ test("the heading ink always clears the card logo", async ({ page }) => {
       const clearances = await page.evaluate(() =>
         [...document.querySelectorAll(".supporter-card")].map((card) => {
           const h3 = card.querySelector("h3")!;
+          // Compact single-column cards wrap the heading ink around the
+          // floated logo, so check each line box: stacked (logo wholly above
+          // the line) or at least 8px of horizontal clearance.
           const range = document.createRange();
           range.selectNodeContents(h3);
-          const ink = range.getBoundingClientRect();
           const logo = card
             .querySelector(".supporter-card__logo img")!
             .getBoundingClientRect();
-          return { stacked: logo.bottom <= ink.top + 2, gap: logo.left - ink.right };
+          return [...range.getClientRects()].map((ink) => ({
+            stacked: logo.bottom <= ink.top + 2,
+            gap: logo.left - ink.right,
+          }));
         }),
       );
-      for (const [i, c] of clearances.entries())
-        expect(
-          c.stacked || c.gap >= 8,
-          `${width}px ${scale * 100}% card ${i}: heading/logo clearance`,
-        ).toBe(true);
+      for (const [i, lines] of clearances.entries())
+        for (const c of lines)
+          expect(
+            c.stacked || c.gap >= 8,
+            `${width}px ${scale * 100}% card ${i}: heading/logo clearance`,
+          ).toBe(true);
     }
   }
 });
@@ -441,7 +457,12 @@ test("the three partner cards align in their desktop row and stack full-width be
 // partner card is a full-width row with the logo right, the copy left beside
 // it, and the CTA spanning the card's full internal width. Fails if the copy
 // drops under the logo row or the CTA shrinks to the copy column.
-test("tablet partner cards keep copy beside the logo with a full-width CTA", async ({
+// Nick (19 Nov 2026, 21:00; design agent compact-card-spec): in the
+// single-column list each partner card floats its logo top right with the
+// title at the top left, copy flowing around the logo, and the CTA full width
+// below both. Cards size to content - no floors. Fails if a reserved logo
+// column or logo-only top row returns, or the CTA loses its full width.
+test("single-column partner cards float the logo top right with a full-width CTA below", async ({
   page,
 }) => {
   for (const width of [768, 820]) {
@@ -449,6 +470,9 @@ test("tablet partner cards keep copy beside the logo with a full-width CTA", asy
     await page.goto(route);
     const ratios = await page.evaluate(() =>
       [...document.querySelectorAll(".supporter-card")].map((card) => {
+        const pad = parseFloat(getComputedStyle(card).paddingLeft);
+        const c = card.getBoundingClientRect();
+        const h3 = card.querySelector("h3")!.getBoundingClientRect();
         const copy = card
           .querySelector("p:not(.supporter-card__actions)")!
           .getBoundingClientRect();
@@ -458,24 +482,86 @@ test("tablet partner cards keep copy beside the logo with a full-width CTA", asy
         const cta = card
           .querySelector(".supporter-card__actions")!
           .getBoundingClientRect();
-        const inner =
-          card.getBoundingClientRect().width -
-          2 * parseFloat(getComputedStyle(card).paddingLeft);
+        const inner = c.width - 2 * pad;
         return {
-          beside: logo.left > copy.right - 2,
-          copyRatio: copy.width / inner,
+          logoFlushRight: c.x + c.width - pad - logo.right,
+          logoTopVsTitle: logo.top - h3.top,
+          titleTopLeft: h3.left - (c.x + pad),
+          ctaBelow: cta.top - Math.max(copy.bottom, logo.bottom),
           ctaRatio: cta.width / inner,
+          h3Min: getComputedStyle(card.querySelector("h3")!).minHeight,
         };
       }),
     );
     for (const [i, r] of ratios.entries()) {
-      expect(r.beside, `${width}px card ${i}: logo right of copy`).toBe(true);
-      expect(r.copyRatio, `${width}px card ${i}: copy keeps a real column`).toBeGreaterThan(0.5);
+      expect(Math.abs(r.logoFlushRight), `${width}px card ${i}: logo flush right`).toBeLessThanOrEqual(2);
+      expect(Math.abs(r.logoTopVsTitle), `${width}px card ${i}: logo top-aligned with title`).toBeLessThanOrEqual(6);
+      expect(Math.abs(r.titleTopLeft), `${width}px card ${i}: title top left`).toBeLessThanOrEqual(2);
+      expect(r.ctaBelow, `${width}px card ${i}: CTA below text and logo`).toBeGreaterThanOrEqual(-1);
       expect(r.ctaRatio, `${width}px card ${i}: CTA full internal width`).toBeGreaterThan(0.85);
+      expect(r.h3Min, `${width}px card ${i}: no heading floor`).toBe("0px");
     }
   }
 });
 
+
+// Nick (19 Nov 2026, 21:00; design agent compact-card-spec): the compact
+// layout uses fixed px padding (12px phones, 20px from 768px) that does not
+// double at enlarged text, and cards size independently to their content -
+// the short Galeta card must come out shorter than the farm card, with no
+// forced shared heights. Fails if rem padding or equal-height floors return.
+test("compact single-column cards use fixed padding and independent heights", async ({
+  page,
+}) => {
+  await page.goto(route);
+  for (const [width, wantPad] of [[390, 12], [768, 20]] as const) {
+    await page.setViewportSize({ width, height: 900 });
+    const m = await page.evaluate(() =>
+      [...document.querySelectorAll(".supporter-card")].map((card) => ({
+        name: card.querySelector("h3")!.textContent,
+        pad: parseFloat(getComputedStyle(card).paddingLeft),
+        h: card.getBoundingClientRect().height,
+      })),
+    );
+    for (const c of m)
+      expect(c.pad, `${width}px ${c.name}: fixed px padding`).toBe(wantPad);
+    if (width === 390) {
+      const farm = m.find((c) => c.name!.includes("Ottershaw"))!;
+      const galeta = m.find((c) => c.name === "Galeta")!;
+      expect(
+        galeta.h,
+        `390px: Galeta (${Math.round(galeta.h)}px) shorter than farm (${Math.round(farm.h)}px)`,
+      ).toBeLessThan(farm.h - 20);
+    }
+  }
+  // Fixed px padding at enlarged text too: 390 at 200% keeps 12px.
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.evaluate(
+    () => (document.documentElement.style.fontSize = "32px"),
+  );
+  const pad = await page.evaluate(
+    () => parseFloat(getComputedStyle(document.querySelector(".supporter-card")!).paddingLeft),
+  );
+  expect(pad, "390px 200%: padding stays 12px").toBe(12);
+});
+
+// Design verdict (19 Nov 2026, 74aaacd review) + compact-card-spec: the row
+// switch sits exactly at 1152px (72rem) - single column at 1151, three
+// columns at 1152. Fails if the boundary drifts.
+test("the three-column switch sits exactly at 1152px", async ({ page }) => {
+  await page.goto(route);
+  const cols = async (w: number) => {
+    await page.setViewportSize({ width: w, height: 900 });
+    return page.evaluate(() => {
+      const tops = [...document.querySelectorAll(".supporter-card")].map((c) =>
+        Math.round(c.getBoundingClientRect().top),
+      );
+      return new Set(tops).size;
+    });
+  };
+  expect(await cols(1151), "1151px: single column").toBe(3);
+  expect(await cols(1152), "1152px: three columns").toBe(1);
+});
 
 // Design re-review of 96024ee (19 Nov 2026, round 7): the page shared the
 // Fayre social card, whose alt text describes the Fayre date and venue.
