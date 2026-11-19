@@ -459,3 +459,150 @@ test("supporters has its own social card with accurate alt text", async ({
   expect(alt).toContain("Ottershaw Christmas Tree Farm");
   expect(alt).toContain("The Glitter Tree");
 });
+
+// Nick (19 Nov 2026, 18:38, design agent Direction A): small sponsor marks in
+// the hero, directly below the subtitle. A non-interactive duplicate group:
+// names and links stay in the body cards. Fails on main, where the row does
+// not exist.
+test("the hero shows the sponsor mark row below the subtitle, non-interactive", async ({
+  page,
+}) => {
+  await page.goto(route);
+  const row = page.locator(".narnia-landscape__supporters");
+  await expect(row).toHaveCount(1);
+  await expect(row).toHaveAttribute("aria-hidden", "true");
+  const imgs = row.locator("img");
+  await expect(imgs).toHaveCount(3);
+  for (const img of await imgs.all()) await expect(img).toHaveAttribute("alt", "");
+  await expect(imgs.nth(0)).toHaveAttribute("src", /martin-flashman\.png/);
+  await expect(imgs.nth(1)).toHaveAttribute("src", /ottershaw/);
+  await expect(imgs.nth(2)).toHaveAttribute("src", /glitter-tree/);
+  // Nothing in the row is a link or otherwise interactive.
+  await expect(row.locator("a, button")).toHaveCount(0);
+  // It sits directly after the subtitle in the hero copy.
+  const order = await page.evaluate(() => {
+    const intro = document.querySelector(".narnia-landscape__intro")!;
+    const row = document.querySelector(".narnia-landscape__supporters")!;
+    return intro.nextElementSibling === row;
+  });
+  expect(order).toBe(true);
+  // The two partner marks share one wrapper, so a wrap drops them together.
+  const shared = await page.evaluate(() => {
+    const partners = document.querySelector(
+      ".narnia-landscape__supporters-partners",
+    )!;
+    return partners.querySelectorAll("img").length === 2;
+  });
+  expect(shared).toBe(true);
+});
+
+// Direction A dimensions (CSS px, per viewport tier): Martin first and widest,
+// Ottershaw 28x40 (34x48 from 768px), Glitter on a 40px white tile (48px from
+// 768px), gaps 12/20/28. Fails on any size drift.
+test("the hero sponsor row matches the Direction A sizes", async ({
+  page,
+}) => {
+  const tiers = [
+    { w: 320, lead: 152, side: [28, 40], tile: 40, gap: 12 },
+    { w: 390, lead: 176, side: [28, 40], tile: 40, gap: 20 },
+    { w: 768, lead: 200, side: [34, 48], tile: 48, gap: 28 },
+    { w: 1440, lead: 224, side: [34, 48], tile: 48, gap: 28 },
+  ];
+  for (const t of tiers) {
+    await page.setViewportSize({ width: t.w, height: 900 });
+    await page.goto(route);
+    const m = await page.evaluate(() => {
+      const row = document.querySelector(".narnia-landscape__supporters")!;
+      const lead = row
+        .querySelector(".narnia-landscape__supporters-lead")!
+        .getBoundingClientRect();
+      const [otter, glitter] = [
+        ...row.querySelectorAll(".narnia-landscape__supporters-partners img"),
+      ].map((i) => i.getBoundingClientRect());
+      return {
+        lead: lead.width,
+        otter: [otter.width, otter.height],
+        tile: [glitter.width, glitter.height],
+        gap: otter.left - lead.right,
+        tileBg: getComputedStyle(
+          row.querySelector(".narnia-landscape__supporters-tile")!,
+        ).backgroundColor,
+      };
+    });
+    expect(Math.abs(m.lead - t.lead), `${t.w}px lead width`).toBeLessThanOrEqual(1);
+    expect(Math.abs(m.otter[0] - t.side[0]), `${t.w}px otter width`).toBeLessThanOrEqual(1);
+    expect(Math.abs(m.otter[1] - t.side[1]), `${t.w}px otter height`).toBeLessThanOrEqual(1);
+    expect(Math.abs(m.tile[0] - t.tile), `${t.w}px tile width`).toBeLessThanOrEqual(1);
+    expect(Math.abs(m.tile[1] - t.tile), `${t.w}px tile height`).toBeLessThanOrEqual(1);
+    expect(Math.abs(m.gap - t.gap), `${t.w}px row gap`).toBeLessThanOrEqual(1);
+    expect(m.tileBg, `${t.w}px tile is white`).toBe("rgb(255, 255, 255)");
+  }
+});
+
+// Direction A spacing: 12px below the subtitle at normal text, 16px at
+// enlarged text, and always at least 32px clear of the hero's bottom edge
+// (the snow bank peaks at 30px). Fails if the row drifts.
+test("the hero sponsor row keeps its spacing and bottom clearance", async ({
+  page,
+}) => {
+  for (const width of [320, 390, 768, 1440]) {
+    for (const scale of [1, 2]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      if (scale === 2)
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = "32px"),
+        );
+      const m = await page.evaluate(() => {
+        const row = document
+          .querySelector(".narnia-landscape__supporters")!
+          .getBoundingClientRect();
+        const intro = document
+          .querySelector(".narnia-landscape__intro")!
+          .getBoundingClientRect();
+        const hero = document
+          .querySelector(".narnia-landscape")!
+          .getBoundingClientRect();
+        return { above: row.top - intro.bottom, below: hero.bottom - row.bottom };
+      });
+      const want = scale === 1 ? 12 : 16;
+      expect(
+        Math.abs(m.above - want),
+        `${width}px ${scale * 100}%: subtitle-to-row gap`,
+      ).toBeLessThanOrEqual(2);
+      expect(
+        m.below,
+        `${width}px ${scale * 100}%: row-to-hero-bottom clearance`,
+      ).toBeGreaterThanOrEqual(32);
+    }
+  }
+});
+
+// Direction A wrap rule: if the row cannot fit, the two partner marks drop
+// under Martin together - never one orphan. At 320px with 200% text the row
+// wraps; the partners must share a line below Martin.
+test("the partner marks wrap together under Martin, never one orphan", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto(route);
+  await page.evaluate(
+    () => (document.documentElement.style.fontSize = "32px"),
+  );
+  const m = await page.evaluate(() => {
+    const row = document.querySelector(".narnia-landscape__supporters")!;
+    const lead = row
+      .querySelector(".narnia-landscape__supporters-lead")!
+      .getBoundingClientRect();
+    const [otter, glitter] = [
+      ...row.querySelectorAll(".narnia-landscape__supporters-partners img"),
+    ].map((i) => i.getBoundingClientRect());
+    return {
+      leadTop: lead.top,
+      otterTop: otter.top,
+      glitterTop: glitter.top,
+    };
+  });
+  expect(m.otterTop).toBeGreaterThan(m.leadTop + 5);
+  expect(Math.abs(m.otterTop - m.glitterTop)).toBeLessThanOrEqual(2);
+});

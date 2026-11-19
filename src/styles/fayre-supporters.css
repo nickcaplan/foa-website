@@ -133,3 +133,63 @@
 @media(min-width:75rem){
   body.xmas-theme.narnia-volunteering .fayre-supporters-hero .narnia-landscape{min-height:27.25rem}
 }
+
+/* Nick (19 Nov 2026, 18:38, design agent Direction A): small sponsor marks
+   centred directly below the hero subtitle. A non-interactive duplicate group
+   (aria-hidden, empty alts - names and links stay in the body cards). Sizes in
+   CSS px per viewport tier, same in day and night. The two partner marks share
+   one flex group so if the row ever wraps they drop under Martin together,
+   never one orphan. 12px below the subtitle at normal text, 16px at enlarged
+   text (the rem leg), and always at least 32px clear of the hero bottom edge
+   (the snow bank peaks at 30px). The hero grows content-driven; type and
+   siblings are untouched. */
+.fayre-supporters-hero .narnia-landscape__supporters{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin:clamp(12px,.75rem,16px) auto 32px}
+.fayre-supporters-hero .narnia-landscape__supporters-lead{display:block;width:152px;height:auto}
+.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;align-items:center;gap:12px}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:28px;height:40px;object-fit:contain}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:40px;height:40px}
+@media(min-width:390px){
+  .fayre-supporters-hero .narnia-landscape__supporters{gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:176px}
+}
+@media(min-width:768px){
+  .fayre-supporters-hero .narnia-landscape__supporters{gap:28px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:28px}
+  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:200px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:34px;height:48px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:48px;height:48px}
+}
+@media(min-width:1440px){
+  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:224px}
+}
+
+/* Nick (19 Nov 2026, 18:38, design agent Direction A): small sponsor marks
+   centred directly below the hero subtitle. A non-interactive duplicate group
+   (aria-hidden, empty alts - names and links stay in the body cards). Sizes in
+   CSS px per viewport tier, same in day and night. The two partner marks share
+   one flex group so if the row ever wraps they drop under Martin together,
+   never one orphan. 12px below the subtitle at normal text, 16px at enlarged
+   text (the rem leg), and always at least 32px clear of the hero bottom edge
+   (the snow bank peaks at 30px). The hero grows content-driven; type and
+   siblings are untouched. */
+.fayre-supporters-hero .narnia-landscape__supporters{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin:clamp(12px,.75rem,16px) auto 32px}
+.fayre-supporters-hero .narnia-landscape__supporters-lead{display:block;width:152px;height:auto}
+.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;align-items:center;gap:12px}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:28px;height:40px;object-fit:contain}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:40px;height:40px}
+@media(min-width:390px){
+  .fayre-supporters-hero .narnia-landscape__supporters{gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:176px}
+}
+@media(min-width:768px){
+  .fayre-supporters-hero .narnia-landscape__supporters{gap:28px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:28px}
+  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:200px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:34px;height:48px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:48px;height:48px}
+}
+@media(min-width:1440px){
+  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:224px}
+}
