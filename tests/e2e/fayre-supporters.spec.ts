@@ -477,24 +477,32 @@ test("desktop partner rows keep the compact structure with aligned CTAs", async 
 });
 
 
-// Nick + design agent (19 Nov 2026, #213): the Giardina card links to the
-// butchers' Instagram, so the logo slot carries a tonal Instagram glyph tile -
-// an honest destination mark in the same footprint as the other tiles, not a
-// faked brand logo and not a white brand panel. The slot is aria-hidden and
-// non-interactive, the heading starts at the card's top padding beside it,
-// the CTA bottom-aligns with its row-mates and the outer card height matches
-// theirs. Fails if the glyph becomes a white panel, gains a link, stops
-// loading, or the dead empty space beside the heading returns.
-test("the Giardina card carries a tonal Instagram glyph tile", async ({
+// Nick (19 Nov 2026, on the design PASS review, #213): no Instagram glyph -
+// the logo slot carries an ornate G monogram in a square navy box,
+// favicon-like, in Giardina's own colours (navy fascia + white serif
+// lettering, sampled from their Google Maps storefront photo; Cinzel
+// Decorative, OFL, matches the fascia's Roman capitals). The slot is
+// aria-hidden and non-interactive, the heading starts at the card's top
+// padding beside it, the CTA bottom-aligns with its row-mates and the outer
+// card height matches theirs. Fails if the monogram gains a link, stops
+// loading, becomes a white brand panel, or the dead space returns.
+test("the Giardina card carries an ornate G monogram tile", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(route);
+  const tile = page.locator(".supporter-card--monogram img");
+  await tile.scrollIntoViewIfNeeded();
+  await tile.evaluate((i: HTMLImageElement) =>
+    i.complete && i.naturalWidth > 0
+      ? true
+      : new Promise((res) => i.addEventListener("load", () => res(true), { once: true })),
+  );
   const t = await page.evaluate(() => {
-    const card = document.querySelector(".supporter-card--social")!;
+    const card = document.querySelector(".supporter-card--monogram")!;
     const c = card.getBoundingClientRect();
     const pad = parseFloat(getComputedStyle(card).paddingTop);
-    const slot = card.querySelector(".supporter-card__logo--social")!;
+    const slot = card.querySelector(".supporter-card__logo--monogram")!;
     const img = slot.querySelector("img")!;
     const imgR = img.getBoundingClientRect();
     const cs = getComputedStyle(img);
@@ -508,7 +516,7 @@ test("the Giardina card carries a tonal Instagram glyph tile", async ({
       .getBoundingClientRect();
     const rowMates = [
       ...document.querySelectorAll(
-        ".supporter-card:not(.supporter-card--social)",
+        ".supporter-card:not(.supporter-card--monogram)",
       ),
     ]
       .map((m) => {
@@ -545,17 +553,16 @@ test("the Giardina card carries a tonal Instagram glyph tile", async ({
       mateCtaBottom: rowMates.map((m) => m.ctaBottom),
     };
   });
-  expect(t.src, "glyph tile uses the self-hosted Instagram glyph").toContain(
-    "instagram-glyph.svg",
+  expect(t.src, "tile uses the self-hosted G monogram").toContain(
+    "giardina-monogram.svg",
   );
-  expect(t.alt, "glyph is decorative").toBe("");
-  expect(t.ariaHidden, "glyph slot is aria-hidden").toBe("true");
-  expect(t.interactive, "glyph is non-interactive").toBe(0);
-  expect(t.loaded, "glyph image loads").toBe(true);
-  expect(t.tileBg, "tonal tile, not a white brand panel").not.toBe(
+  expect(t.alt, "monogram is decorative").toBe("");
+  expect(t.ariaHidden, "monogram slot is aria-hidden").toBe("true");
+  expect(t.interactive, "monogram is non-interactive").toBe(0);
+  expect(t.loaded, "monogram image loads").toBe(true);
+  expect(t.tileBg, "no white brand panel behind the monogram").not.toBe(
     "rgb(255, 255, 255)",
   );
-  expect(parseFloat(t.tileBorder), "outlined tile").toBeGreaterThanOrEqual(1);
   expect(t.h3OverlapsTile, "heading ink clears the tile").toBe(false);
   expect(t.titleSize, "card keeps the desktop title size").toBe("24px");
   expect(Math.abs(t.h3TopVsPad), "heading at the top padding").toBeLessThanOrEqual(2);

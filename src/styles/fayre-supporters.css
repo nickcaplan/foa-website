@@ -87,12 +87,15 @@
        title, title top left, copy and CTA below. The former stacked logo
        band and its alignment floors are gone; equal card heights and
        bottom-aligned CTAs come from the row grid. */
-    /* Nick + design agent (19 Nov 2026): the Giardina card links to their
-       Instagram, so the logo slot carries a tonal Instagram glyph tile - an
-       honest destination mark in the same footprint as the other tiles, not
-       a faked brand logo. Outlined tile, ivory glyph, aria-hidden and
-       non-interactive; the hero stays logo marks only (no Giardina mark). */
-    .supporter-card__logo--social img{background:#fff3d514;border:1px solid #b99a5b55;padding:8px;box-sizing:border-box}
+    /* Nick (19 Nov 2026, on the design PASS review): no Instagram glyph - an
+       ornate G in a square box, favicon-like, in Giardina's own colours. The
+       monogram SVG (assets/sponsors/giardina-monogram.svg) bakes in the navy
+       box and cream Cinzel Decorative G sampled from their fascia lettering
+       (Google Maps storefront photo, 129 Cottimore Lane); Cinzel Decorative
+       is OFL (Natanael Gama) and matches the fascia's Roman capitals. Same
+       slot footprint as the other tiles, aria-hidden and non-interactive;
+       the hero stays logo marks only (no Giardina mark). */
+    .supporter-card__logo--monogram img{box-sizing:border-box}
 
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
     /* Nick (19 Nov 2026, after the compact cards shipped): bigger card titles
