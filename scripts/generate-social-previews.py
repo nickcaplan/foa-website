@@ -12,7 +12,7 @@ cards={
  'whats-on':('THE FRIENDS OF ASHLEY',["What's on",'at Ashley'],['School events','Term by term']),
  'christmas-fayre':('THE FRIENDS OF ASHLEY',['Christmas','Fayre'],['Saturday 5 December 2026','12:00 - 15:00  |  Ashley School']),
  'fayre-volunteering':('THE FRIENDS OF ASHLEY',['Volunteer','at the Fayre'],['Saturday 5 December 2026','12:00 - 15:00  |  Ashley School']),
- 'fayre-supporters':('ASHLEY SCHOOL CHRISTMAS FAYRE',['Fayre','Supporters'],['Thank you to our sponsors:','Martin Flashman and Co, Ottershaw','Christmas Tree Farm, The Glitter Tree'])
+ 'fayre-supporters':('ASHLEY SCHOOL CHRISTMAS FAYRE',['Fayre','Supporters'],['Thank you to our sponsors: Martin Flashman','and Co, Ottershaw Christmas Tree Farm,','The Glitter Tree and Galeta'])
 }
 for key,(kicker,title,lines) in cards.items():
  if len(sys.argv)>1 and key not in sys.argv[1:]:continue
@@ -53,7 +53,7 @@ for key,(kicker,title,lines) in cards.items():
  for i,t in enumerate(title):d.text((60,153+i*98),t,font=ImageFont.truetype(serif,66 if key=='art-competition' else (72 if key=='fayre-volunteering' else 80)),fill='#fff3d5')
  d.line((64,396,520,396),fill='#b99a5b',width=2)
  for i,t in enumerate(lines):d.text((64,429+i*45),t,font=ImageFont.truetype(sans,27),fill='#fff3d5')
- version='v3' if key in ('home','whats-on') else ('v1' if key in ('christmas-fayre','fayre-supporters') else 'v2')
+ version='v3' if key in ('home','whats-on') else ('v1' if key=='christmas-fayre' else 'v2')
  im.convert('RGB').save(root/f'assets/social/{key}-2026-{version}.jpg',quality=93,optimize=True)
  im.convert('RGB').resize((360,189)).save(f'/tmp/social-{key}-thumb.jpg',quality=90)
  print(key,im.size)

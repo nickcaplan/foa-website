@@ -18,7 +18,7 @@ const date=homepage
   ? new Intl.DateTimeFormat('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'Europe/London'}).format(new Date(event.start)).replace(',', '')
   : ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event.start);
 ---
-<section class="narnia-landscape" aria-label={supportersPage ? "Fayre Supporters" : "Christmas Fayre"} id={eventPage ? "sign-up" : undefined} data-homepage-christmas={homepage ? "" : undefined} data-hero-snow={snowfall ? "" : undefined} style={homepage ? `--narnia-woodland:url(${withBase('/brand/narnia-woodland-continuation.avif')})` : undefined}>
+<section class="narnia-landscape" aria-label={supportersPage ? "Fayre Supporters" : "Christmas Fayre"} id={eventPage ? "sign-up" : undefined} data-homepage-christmas={homepage ? "" : undefined} data-hero-snow={snowfall ? "" : undefined} data-supporters-hero={supportersPage ? "" : undefined} style={homepage ? `--narnia-woodland:url(${withBase('/brand/narnia-woodland-continuation.avif')})` : undefined}>
 <img class="narnia-landscape__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
 <div class="narnia-landscape__body">
 {snowfall && <div class="xmas-snow" aria-hidden="true">
@@ -28,6 +28,14 @@ const date=homepage
 <div class="narnia-landscape__copy">
 <h1 id="xmas-title">{supportersPage ? <>Fayre <em>Supporters</em></> : <>Christmas <em>Fayre</em>{volunteerPage && <> <span class="narnia-landscape__subtitle">Volunteering</span></>}</>}</h1>
 {supportersPage && <p class="narnia-landscape__intro">Thank you to the local businesses behind this year's Christmas Fayre.</p>}
+{supportersPage && <div class="narnia-landscape__supporters" aria-hidden="true">
+  <img class="narnia-landscape__supporters-lead" src={withBase('/sponsors/martin-flashman.png')} alt="" width="1280" height="96" />
+  <span class="narnia-landscape__supporters-partners">
+    <img src={withBase('/sponsors/ottershaw-christmas-tree-farm.png')} alt="" width="300" height="422" />
+    <img class="narnia-landscape__supporters-tile" src={withBase('/brand/glitter-tree.webp')} alt="" width="300" height="300" />
+    <img class="narnia-landscape__supporters-cream" src={withBase('/sponsors/galeta.svg')} alt="" width="127" height="31" />
+  </span>
+</div>}
 {!supportersPage && <p class="narnia-landscape__date">{date}<span class="narnia-landscape__date-divider"> · </span><span class="narnia-landscape__time">{formatEventTimeRange(event.start,event.end).replace(/(?<=\d)-(?=\d)/g,' - ')}</span></p>}
 {!volunteerPage && !supportersPage && <p class="narnia-landscape__venue">{event.location}<br />{event.entry}</p>}
 {!supportersPage && <div class="narnia-landscape__actions"><a class="button narnia-landscape__action" href={volunteerPage ? signupUrl : eventPage ? withBase(volunteerPath) : withBase(event.path)} target={volunteerPage ? '_blank' : undefined} rel={volunteerPage ? 'noopener noreferrer' : undefined}><span class="cta-label">{volunteerPage ? "" : eventPage ? "" : "Event "}<span class="cta-word">{volunteerPage ? "Sign u" : eventPage ? "Voluntee" : "detail"}<span class="cta-tail">{volunteerPage ? "p" : eventPage ? "r" : "s"}{volunteerPage ? <span class="external-link-icon cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span> : <span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>}</span></span>{volunteerPage && <span class="visually-hidden"> (opens JustSignup in a new tab)</span>}</span></a>
