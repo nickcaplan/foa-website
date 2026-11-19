@@ -40,6 +40,16 @@
     .supporter-card__copy>h3{grid-column:1;grid-row:1}
     .supporter-card__copy>.supporter-card__actions{grid-column:1/-1}
     @media(min-width:48rem){.supporter-card__logo img{max-height:8rem}}
+    /* Design re-review (19 Nov 2026, round 6): below 48rem the reserved logo
+       column squeezed the whole paragraph into one-word lines at enlarged text.
+       The logo keeps row 1 (still top-right beside the heading); copy and CTA
+       take the full card width once past it. The compact spanning layout stays
+       at 48rem and up. */
+    @media(max-width:47.99rem){
+      .supporter-card__logo{grid-row:1}
+      .supporter-card__copy>*{grid-column:1/-1}
+      .supporter-card__copy>h3{grid-column:1;grid-row:1}
+    }
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
     .supporter-card h3:after{display:none}
     .supporter-card__copy>p:not(.supporter-card__actions){margin:.6rem 0 0;line-height:1.6;color:#f4ead1;text-wrap:balance}

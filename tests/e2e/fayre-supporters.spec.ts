@@ -231,7 +231,9 @@ test("the Martin Flashman logo well carries the supporter card border", async ({
 test("supporter card copy starts directly under the heading", async ({
   page,
 }) => {
-  for (const width of [320, 1440]) {
+  // The compact spanning layout applies at 48rem and up; below that the copy
+  // takes the full card width once past the logo row (next test).
+  for (const width of [1440]) {
     for (const scale of [1, 2]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(route);
@@ -252,6 +254,47 @@ test("supporter card copy starts directly under the heading", async ({
           geo.gap,
           `${width}px ${scale * 100}% "${geo.text}": copy under heading`,
         ).toBeLessThanOrEqual(36 * scale);
+      }
+    }
+  }
+});
+
+// Design re-review (19 Nov 2026, round 6): below 48rem the logo column was
+// reserved for the whole card, forcing one-word paragraph lines at 200% text.
+// Copy and CTA now span the full card width once past the logo row. Fails if
+// the paragraph column is reserved again on narrow layouts.
+test("supporter card copy and CTA use the full card width on narrow layouts", async ({
+  page,
+}) => {
+  for (const width of [320, 390]) {
+    for (const scale of [1, 2]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      if (scale === 2)
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = "32px"),
+        );
+      const cards = page.locator(".supporter-card");
+      for (const card of await cards.all()) {
+        const geo = await card.evaluate((el) => {
+          const c = el.getBoundingClientRect();
+          const pad = parseFloat(getComputedStyle(el).paddingLeft);
+          const content = c.width - 2 * pad;
+          const p = el
+            .querySelector(".supporter-card__copy > p:not(.supporter-card__actions)")!
+            .getBoundingClientRect();
+          const a = el
+            .querySelector(".supporter-card__actions")!
+            .getBoundingClientRect();
+          return {
+            text: el.querySelector("h3")!.textContent,
+            copyRatio: p.width / content,
+            ctaRatio: a.width / content,
+          };
+        });
+        const label = `${width}px ${scale * 100}% "${geo.text}"`;
+        expect(geo.copyRatio, `${label}: copy full width`).toBeGreaterThan(0.85);
+        expect(geo.ctaRatio, `${label}: CTA row full width`).toBeGreaterThan(0.85);
       }
     }
   }
