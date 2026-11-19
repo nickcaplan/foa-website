@@ -31,32 +31,49 @@
     /* Nick (19 Nov 2026): logo sits in the card's top-right, bigger, with the
        copy directly below it spanning the full width - the heading shares the
        top row with the logo, so the copy moves up a full row. */
-    /* The logo track is a definite percentage cap, not auto: an auto track sizes
-       to the image's intrinsic width, which at 200% text crushed the heading to
-       a 6px column and pushed the logo through the card padding (design review,
-       19 Nov 2026). minmax(0,38%) keeps the big top-right logo where there is
-       room and caps it so the heading always keeps its column.
+    /* The logo track is a definite cap, not auto: an auto track sizes to the
+       image's intrinsic width, which at 200% text crushed the heading to a 6px
+       column and pushed the logo through the card padding (design review,
+       19 Nov 2026). min(38%,8rem) caps it so the heading always keeps its
+       column, and the 8rem leg sizes the track to the logo itself at desktop,
+       killing the wide empty band between copy and logo (design re-review of
+       96024ee, round 7). The card is a container so the layout responds to the
+       card's own width; rem thresholds in the container queries scale with the
+       root font size (verified), so enlarged text triggers them too.
        Nick (19 Nov 2026, second pass): the logo spans the heading and copy rows
        so the copy moves up beside it - a logo-only top row left a dead band
-       under the heading - and padding/gaps are tightened. */
-    .supporter-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,38%);gap:.5rem .75rem;align-items:start;margin:0;padding:1.25rem;background:#173844;border:1px solid #b99a5b55;border-radius:.65rem;color:#fff3d5;min-width:0}
+       under the heading - and padding/gaps are tightened.
+       Row template auto/1fr/auto pins the CTA row to the card bottom, so the
+       paired cards' buttons line up across the row (design round 7). */
+    .supporter-card{container-type:inline-size;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,min(38%,8rem));grid-template-rows:auto 1fr auto;gap:.5rem 1rem;align-items:start;margin:0;padding:1.25rem;background:#173844;border:1px solid #b99a5b55;border-radius:.65rem;color:#fff3d5;min-width:0}
     .supporter-card__logo{grid-column:2;grid-row:1/3;display:flex;align-items:flex-start;justify-content:flex-end;height:auto}
     .supporter-card__logo img{max-width:100%;max-height:7rem;width:auto;height:auto;object-fit:contain;border-radius:.5rem}
     .supporter-card__logo--light img{background:#fff;padding:.4rem}
     .supporter-card__copy{display:contents}
     .supporter-card__copy>*{grid-column:1}
     .supporter-card__copy>h3{grid-column:1;grid-row:1}
-    .supporter-card__copy>.supporter-card__actions{grid-column:1/-1}
+    .supporter-card__copy>.supporter-card__actions{grid-column:1/-1;align-self:end}
     @media(min-width:48rem){.supporter-card__logo img{max-height:8rem}}
-    /* Design re-review (19 Nov 2026, round 6): below 48rem the reserved logo
-       column squeezed the whole paragraph into one-word lines at enlarged text.
-       The logo keeps row 1 (still top-right beside the heading); copy and CTA
-       take the full card width once past it. The compact spanning layout stays
-       at 48rem and up. */
-    @media(max-width:47.99rem){
-      .supporter-card__logo{grid-row:1}
+    /* Design re-review (19 Nov 2026, rounds 6-7): when the copy column would
+       drop under ~240px (narrow viewports, tablet pairs, enlarged text) the
+       logo keeps row 1 (still top-right beside the heading) and copy and CTA
+       take the full card width once past it. The logo box is a fixed 7rem so
+       the paired cards' copy starts level. The compact beside-logo layout
+       stays on wider cards. */
+    @container (max-width:21rem){
+      .supporter-card__logo{grid-row:1;height:7rem}
       .supporter-card__copy>*{grid-column:1/-1}
       .supporter-card__copy>h3{grid-column:1;grid-row:1}
+    }
+    /* Design re-review of 96024ee (round 7): at 320px with 200% text the
+       Ottershaw heading's longest word overflowed its column and touched the
+       logo. On cards this narrow the logo gets its own row above the heading,
+       so the heading always has the full card width. */
+    @container (max-width:16rem){
+      .supporter-card{grid-template-rows:auto auto 1fr auto}
+      .supporter-card__logo{grid-column:1/-1;grid-row:1;height:7rem}
+      .supporter-card__copy>*{grid-column:1/-1}
+      .supporter-card__copy>h3{grid-column:1/-1;grid-row:2}
     }
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
     .supporter-card h3:after{display:none}

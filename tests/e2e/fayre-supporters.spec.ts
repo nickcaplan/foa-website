@@ -239,10 +239,12 @@ test("the Martin Flashman lead block is a differentiated card", async ({
 test("supporter card copy starts directly under the heading", async ({
   page,
 }) => {
-  // The compact spanning layout applies at 48rem and up; below that the copy
-  // takes the full card width once past the logo row (next test).
+  // The compact beside-logo layout applies on wide cards at normal text;
+  // narrower cards and enlarged text take the full card width once past the
+  // logo row (the next tests), which is the design-approved direction for
+  // copy columns under ~240px (round 7).
   for (const width of [1440]) {
-    for (const scale of [1, 2]) {
+    for (const scale of [1]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(route);
       if (scale === 2)
@@ -343,4 +345,117 @@ test("the last supporter card keeps the sibling 2.5rem gap above the footer", as
       ).toBeLessThanOrEqual(40 * scale + 16);
     }
   }
+});
+
+// Design re-review of 96024ee (19 Nov 2026, round 7): at 320px with 200% text
+// the Ottershaw heading's longest word overflowed its column and touched the
+// tree logo. The heading text must always clear the logo: either the logo is
+// stacked on its own row above the heading, or there is a real gap between
+// the heading's ink and the logo. Fails on the 96024ee layout.
+test("the heading ink always clears the card logo", async ({ page }) => {
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    for (const scale of [1, 2]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      if (scale === 2)
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = "32px"),
+        );
+      const clearances = await page.evaluate(() =>
+        [...document.querySelectorAll(".supporter-card")].map((card) => {
+          const h3 = card.querySelector("h3")!;
+          const range = document.createRange();
+          range.selectNodeContents(h3);
+          const ink = range.getBoundingClientRect();
+          const logo = card
+            .querySelector(".supporter-card__logo img")!
+            .getBoundingClientRect();
+          return { stacked: logo.bottom <= ink.top + 2, gap: logo.left - ink.right };
+        }),
+      );
+      for (const [i, c] of clearances.entries())
+        expect(
+          c.stacked || c.gap >= 8,
+          `${width}px ${scale * 100}% card ${i}: heading/logo clearance`,
+        ).toBe(true);
+    }
+  }
+});
+
+// Design re-review of 96024ee (19 Nov 2026, round 7): the paired supporter
+// cards must read as a pair - copy starts level and the CTAs line up across
+// the row. Fails on the 96024ee layout (34px vs 21px copy offset at 1440).
+test("the paired supporter cards align their copy and CTAs", async ({
+  page,
+}) => {
+  for (const width of [768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(route);
+    const m = await page.evaluate(() =>
+      [...document.querySelectorAll(".supporter-card")].map((card) => {
+        const copy = card
+          .querySelector("p:not(.supporter-card__actions)")!
+          .getBoundingClientRect();
+        const cta = card
+          .querySelector(".supporter-card__actions")!
+          .getBoundingClientRect();
+        return { copyTop: copy.top, ctaBottom: cta.bottom };
+      }),
+    );
+    expect(m.length).toBe(2);
+    expect(
+      Math.abs(m[0].copyTop - m[1].copyTop),
+      `${width}px: copy start difference`,
+    ).toBeLessThanOrEqual(2);
+    expect(
+      Math.abs(m[0].ctaBottom - m[1].ctaBottom),
+      `${width}px: CTA bottom difference`,
+    ).toBeLessThanOrEqual(2);
+  }
+});
+
+// Design re-review of 96024ee (19 Nov 2026, round 7): at 768/820 the copy
+// column beside the reserved logo column was 179-195px (ragged 5-line wraps).
+// Below ~240px of copy column the copy takes the full card width under the
+// logo row. Fails on the 96024ee layout.
+test("tablet copy uses the full card width below the logo row", async ({
+  page,
+}) => {
+  for (const width of [768, 820]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(route);
+    const ratios = await page.evaluate(() =>
+      [...document.querySelectorAll(".supporter-card")].map((card) => {
+        const copy = card
+          .querySelector("p:not(.supporter-card__actions)")!
+          .getBoundingClientRect();
+        const inner =
+          card.getBoundingClientRect().width -
+          2 * parseFloat(getComputedStyle(card).paddingLeft);
+        return copy.width / inner;
+      }),
+    );
+    for (const [i, r] of ratios.entries())
+      expect(r, `${width}px card ${i}: copy width ratio`).toBeGreaterThan(0.85);
+  }
+});
+
+// Design re-review of 96024ee (19 Nov 2026, round 7): the page shared the
+// Fayre social card, whose alt text describes the Fayre date and venue.
+// Supporters now has its own card with accurate alt text.
+test("supporters has its own social card with accurate alt text", async ({
+  page,
+}) => {
+  await page.goto(route);
+  const ogImage = page.locator('meta[property="og:image"]');
+  await expect(ogImage).toHaveAttribute(
+    "content",
+    /fayre-supporters-2026-v1\.jpg/,
+  );
+  const alt = await page
+    .locator('meta[property="og:image:alt"]')
+    .getAttribute("content");
+  expect(alt).toContain("Martin Flashman and Co");
+  expect(alt).toContain("Ottershaw Christmas Tree Farm");
+  expect(alt).toContain("The Glitter Tree");
 });
