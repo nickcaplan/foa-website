@@ -155,8 +155,8 @@ test("card logos never overlap their headings at narrow widths and 200% text", a
           // heading ink around it, so box-overlap is the wrong check: measure
           // each heading line box against the logo image box instead.
           const logoImg = el.querySelector(".supporter-card__logo img");
-          // Giardina Family Butchers is a text-only card: no logo, nothing to
-          // overlap, so there is no geometry to check.
+          // Every card carries a logo image now (Giardina's slot holds the
+          // tonal Instagram glyph tile), so the null guard is just a guard.
           if (!logoImg) return null;
           const range = document.createRange();
           range.selectNodeContents(h3);
@@ -477,22 +477,27 @@ test("desktop partner rows keep the compact structure with aligned CTAs", async 
 });
 
 
-// Design agent re-review (19 Nov 2026, #213): the text-only Giardina card is
-// a deliberate variant - no logo band (a blank band read as unfinished), the
-// heading starts at the card's top padding, copy follows at the normal gap,
+// Nick + design agent (19 Nov 2026, #213): the Giardina card links to the
+// butchers' Instagram, so the logo slot carries a tonal Instagram glyph tile -
+// an honest destination mark in the same footprint as the other tiles, not a
+// faked brand logo and not a white brand panel. The slot is aria-hidden and
+// non-interactive, the heading starts at the card's top padding beside it,
 // the CTA bottom-aligns with its row-mates and the outer card height matches
-// theirs. Fails if an empty logo band returns or the copy drops to the band's
-// old position. Pair with the desktop-title pin: the variant keeps the 24px
-// row title.
-test("the text-only card is a deliberate variant with no logo band", async ({
+// theirs. Fails if the glyph becomes a white panel, gains a link, stops
+// loading, or the dead empty space beside the heading returns.
+test("the Giardina card carries a tonal Instagram glyph tile", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(route);
   const t = await page.evaluate(() => {
-    const card = document.querySelector(".supporter-card--text-only")!;
+    const card = document.querySelector(".supporter-card--social")!;
     const c = card.getBoundingClientRect();
     const pad = parseFloat(getComputedStyle(card).paddingTop);
+    const slot = card.querySelector(".supporter-card__logo--social")!;
+    const img = slot.querySelector("img")!;
+    const imgR = img.getBoundingClientRect();
+    const cs = getComputedStyle(img);
     const h3 = card.querySelector("h3")!;
     const h3r = h3.getBoundingClientRect();
     const copy = card
@@ -503,7 +508,7 @@ test("the text-only card is a deliberate variant with no logo band", async ({
       .getBoundingClientRect();
     const rowMates = [
       ...document.querySelectorAll(
-        ".supporter-card:not(.supporter-card--text-only)",
+        ".supporter-card:not(.supporter-card--social)",
       ),
     ]
       .map((m) => {
@@ -518,8 +523,20 @@ test("the text-only card is a deliberate variant with no logo band", async ({
       })
       .filter((m) => Math.abs(m.top - c.top) < 5);
     return {
-      logoEls: card.querySelectorAll(".supporter-card__logo").length,
+      src: img.getAttribute("src"),
+      alt: img.getAttribute("alt"),
+      ariaHidden: slot.getAttribute("aria-hidden"),
+      interactive: slot.querySelectorAll("a, button").length,
+      loaded: img.complete && img.naturalWidth > 0,
+      tileBg: cs.backgroundColor,
+      tileBorder: cs.borderTopWidth,
       h3TopVsPad: h3r.top - (c.top + pad),
+      h3OverlapsTile: !(
+        h3r.right <= imgR.left ||
+        imgR.right <= h3r.left ||
+        h3r.bottom <= imgR.top ||
+        imgR.bottom <= h3r.top
+      ),
       titleSize: getComputedStyle(h3).fontSize,
       copyGap: copy.top - h3r.bottom,
       cardH: c.height,
@@ -528,8 +545,19 @@ test("the text-only card is a deliberate variant with no logo band", async ({
       mateCtaBottom: rowMates.map((m) => m.ctaBottom),
     };
   });
-  expect(t.logoEls, "no logo band element").toBe(0);
-  expect(t.titleSize, "text-only card keeps the desktop title size").toBe("24px");
+  expect(t.src, "glyph tile uses the self-hosted Instagram glyph").toContain(
+    "instagram-glyph.svg",
+  );
+  expect(t.alt, "glyph is decorative").toBe("");
+  expect(t.ariaHidden, "glyph slot is aria-hidden").toBe("true");
+  expect(t.interactive, "glyph is non-interactive").toBe(0);
+  expect(t.loaded, "glyph image loads").toBe(true);
+  expect(t.tileBg, "tonal tile, not a white brand panel").not.toBe(
+    "rgb(255, 255, 255)",
+  );
+  expect(parseFloat(t.tileBorder), "outlined tile").toBeGreaterThanOrEqual(1);
+  expect(t.h3OverlapsTile, "heading ink clears the tile").toBe(false);
+  expect(t.titleSize, "card keeps the desktop title size").toBe("24px");
   expect(Math.abs(t.h3TopVsPad), "heading at the top padding").toBeLessThanOrEqual(2);
   expect(Math.abs(t.copyGap - 9.6), "normal copy gap").toBeLessThanOrEqual(2);
   expect(t.mateH.length, "two row-mates").toBe(2);
@@ -699,12 +727,16 @@ test("supporters has its own social card with accurate alt text", async ({
   expect(alt).toContain("Ottershaw Christmas Tree Farm");
   expect(alt).toContain("The Glitter Tree");
   expect(alt).toContain("Galeta");
+  expect(alt).toContain("W3 Colour");
+  expect(alt).toContain("Moore's Tree Company");
 });
 
 // Nick (19 Nov 2026, 18:38, design agent Direction A): small sponsor marks in
 // the hero, directly below the subtitle. A non-interactive duplicate group:
-// names and links stay in the body cards. Fails on main, where the row does
-// not exist.
+// names and links stay in the body cards. Nick (19 Nov 2026, 22:26): W3
+// Colour and Moore's Tree Company join as tiled marks. Nick (22:32): no text
+// treatment for Giardina - the hero carries logo marks only; Giardina stays
+// on its card. Fails on main, where the row does not exist.
 test("the hero shows the sponsor mark row below the subtitle, non-interactive", async ({
   page,
 }) => {
@@ -713,12 +745,16 @@ test("the hero shows the sponsor mark row below the subtitle, non-interactive", 
   await expect(row).toHaveCount(1);
   await expect(row).toHaveAttribute("aria-hidden", "true");
   const imgs = row.locator("img");
-  await expect(imgs).toHaveCount(4);
+  await expect(imgs).toHaveCount(6);
   for (const img of await imgs.all()) await expect(img).toHaveAttribute("alt", "");
   await expect(imgs.nth(0)).toHaveAttribute("src", /martin-flashman\.png/);
   await expect(imgs.nth(1)).toHaveAttribute("src", /ottershaw/);
   await expect(imgs.nth(2)).toHaveAttribute("src", /glitter-tree/);
   await expect(imgs.nth(3)).toHaveAttribute("src", /galeta\.svg/);
+  await expect(imgs.nth(4)).toHaveAttribute("src", /w3-colour\.svg/);
+  await expect(imgs.nth(5)).toHaveAttribute("src", /moores-tree-company\.jpg/);
+  // No text mark for Giardina anywhere in the hero.
+  await expect(row.locator(".narnia-landscape__supporters-word")).toHaveCount(0);
   // Nothing in the row is a link or otherwise interactive.
   await expect(row.locator("a, button")).toHaveCount(0);
   // It sits directly after the subtitle in the hero copy.
@@ -728,32 +764,32 @@ test("the hero shows the sponsor mark row below the subtitle, non-interactive", 
     return intro.nextElementSibling === row;
   });
   expect(order).toBe(true);
-  // The three partner marks share one indivisible wrapper, so a wrap drops
-  // them under Martin together - never one orphan, never Galeta alone.
+  // The five partner marks share one wrapper.
   const shared = await page.evaluate(() => {
     const partners = document.querySelector(
       ".narnia-landscape__supporters-partners",
     )!;
-    return partners.querySelectorAll("img").length === 3;
+    return partners.querySelectorAll("img").length === 5;
   });
   expect(shared).toBe(true);
 });
 
-// Revised 4-mark spec (19 Nov 2026, 18:52), CSS px per viewport tier: Martin
-// first and widest (152/176/200/224), Ottershaw 28x40 (34x48 from 768px),
-// Glitter on a 40px white tile (48px from 768px), Galeta's dark-ink wordmark
-// on an 80x40 cream tile (88x48 at 768, 96x48 at 1440; #FFF6EB, Glitter's 4px
-// radius), gaps 16/20/24/28. On phones the partner group wraps under Martin
-// as a unit with 8px between the lines; from 768px all four share one line.
-// Fails on any size drift.
-test("the hero sponsor row matches the revised 4-mark sizes", async ({
-  page,
-}) => {
+// Six-mark spec (19 Nov 2026, after Nick added W3 and Moore's to the hero),
+// CSS px per viewport tier: Martin first and widest (152/176/200/224),
+// Ottershaw 24x34 at 320 (28x40 from 390, 34x48 from 768px), Glitter, W3 and
+// Moore's on 34px white tiles (40px from 390, 48px from 768px), Galeta's
+// dark-ink wordmark on a 68x34 cream tile (80x40 from 390, 88x48 at 768,
+// 96x48 at 1440; #FFF6EB, Glitter's 4px radius), gaps 12/20/24 (1440 keeps
+// the 768 gaps so all six marks share one line inside the 624px column). On
+// phones the partner group wraps under Martin as a unit on one line with 8px
+// between the lines; from 768px all six share one line. Giardina has no hero
+// mark (Nick, 22:32: logo marks only). Fails on any size drift.
+test("the hero sponsor row matches the six-mark sizes", async ({ page }) => {
   const tiers = [
-    { w: 320, lead: 152, side: [28, 40], tile: 40, galeta: [80, 40], gap: 16, lines: 2 },
+    { w: 320, lead: 152, side: [24, 34], tile: 34, galeta: [68, 34], gap: 12, lines: 2 },
     { w: 390, lead: 176, side: [28, 40], tile: 40, galeta: [80, 40], gap: 20, lines: 2 },
     { w: 768, lead: 200, side: [34, 48], tile: 48, galeta: [88, 48], gap: 24, lines: 1 },
-    { w: 1440, lead: 224, side: [34, 48], tile: 48, galeta: [96, 48], gap: 28, lines: 1 },
+    { w: 1440, lead: 224, side: [34, 48], tile: 48, galeta: [96, 48], gap: 24, lines: 1 },
   ];
   for (const t of tiers) {
     await page.setViewportSize({ width: t.w, height: 900 });
@@ -763,20 +799,29 @@ test("the hero sponsor row matches the revised 4-mark sizes", async ({
       const lead = row
         .querySelector(".narnia-landscape__supporters-lead")!
         .getBoundingClientRect();
-      const [otter, glitter, galeta] = [
+      const imgs = [
         ...row.querySelectorAll(".narnia-landscape__supporters-partners img"),
       ].map((i) => i.getBoundingClientRect());
+      const [otter, glitter, galeta, w3, moores] = imgs;
+      const gaps = [];
+      for (let k = 0; k + 1 < imgs.length; k++) {
+        if (Math.abs(imgs[k].top - imgs[k + 1].top) < 2)
+          gaps.push(imgs[k + 1].left - imgs[k].right);
+      }
       return {
         lead: { w: lead.width, top: lead.top, bottom: lead.bottom },
         otter: [otter.width, otter.height],
-        tile: [glitter.width, glitter.height],
+        glitter: [glitter.width, glitter.height],
         galeta: [galeta.width, galeta.height],
+        w3: [w3.width, w3.height],
+        moores: [moores.width, moores.height],
         partnerTop: otter.top,
-        gap: otter.left - glitter.right > 0 ? glitter.left - otter.right : glitter.left - otter.right,
+        partnerTops: imgs.map((r) => r.top),
+        gaps,
         lineGap: otter.top - lead.bottom,
-        tileBg: getComputedStyle(
-          row.querySelector(".narnia-landscape__supporters-tile")!,
-        ).backgroundColor,
+        tileBgs: [
+          ...row.querySelectorAll(".narnia-landscape__supporters-tile"),
+        ].map((i) => getComputedStyle(i).backgroundColor),
         creamBg: getComputedStyle(
           row.querySelector(".narnia-landscape__supporters-cream")!,
         ).backgroundColor,
@@ -785,23 +830,27 @@ test("the hero sponsor row matches the revised 4-mark sizes", async ({
     expect(Math.abs(m.lead.w - t.lead), `${t.w}px lead width`).toBeLessThanOrEqual(1);
     expect(Math.abs(m.otter[0] - t.side[0]), `${t.w}px otter width`).toBeLessThanOrEqual(1);
     expect(Math.abs(m.otter[1] - t.side[1]), `${t.w}px otter height`).toBeLessThanOrEqual(1);
-    expect(Math.abs(m.tile[0] - t.tile), `${t.w}px tile width`).toBeLessThanOrEqual(1);
-    expect(Math.abs(m.tile[1] - t.tile), `${t.w}px tile height`).toBeLessThanOrEqual(1);
+    for (const [name, g] of [["glitter", m.glitter], ["w3", m.w3], ["moores", m.moores]] as const) {
+      expect(Math.abs(g[0] - t.tile), `${t.w}px ${name} tile width`).toBeLessThanOrEqual(1);
+      expect(Math.abs(g[1] - t.tile), `${t.w}px ${name} tile height`).toBeLessThanOrEqual(1);
+    }
     expect(Math.abs(m.galeta[0] - t.galeta[0]), `${t.w}px galeta tile width`).toBeLessThanOrEqual(1);
     expect(Math.abs(m.galeta[1] - t.galeta[1]), `${t.w}px galeta tile height`).toBeLessThanOrEqual(1);
-    expect(Math.abs(m.gap - t.gap), `${t.w}px partner gap`).toBeLessThanOrEqual(1);
-    expect(m.tileBg, `${t.w}px glitter tile is white`).toBe("rgb(255, 255, 255)");
+    for (const bg of m.tileBgs)
+      expect(bg, `${t.w}px partner tiles are white`).toBe("rgb(255, 255, 255)");
     expect(m.creamBg, `${t.w}px galeta tile is warm cream`).toBe("rgb(255, 246, 235)");
     if (t.lines === 2) {
       expect(m.partnerTop, `${t.w}px: partner group wraps under Martin`).toBeGreaterThan(m.lead.bottom + 5);
       expect(Math.abs(m.lineGap - 8), `${t.w}px: 8px between the two lines`).toBeLessThanOrEqual(2);
     } else {
+      expect(m.gaps.length, `${t.w}px: partners share one line`).toBe(4);
+      for (const g of m.gaps)
+        expect(Math.abs(g - t.gap), `${t.w}px partner gap`).toBeLessThanOrEqual(1);
       const leadMid = (m.lead.top + m.lead.bottom) / 2;
       expect(Math.abs(m.partnerTop + (t.side[1] / 2) - leadMid), `${t.w}px: one shared line, marks vertically centred`).toBeLessThanOrEqual(2);
     }
   }
 });
-
 
 // Direction A spacing: 12px below the subtitle at normal text, 16px at
 // enlarged text, and always at least 32px clear of the hero's bottom edge
@@ -842,38 +891,60 @@ test("the hero sponsor row keeps its spacing and bottom clearance", async ({
   }
 });
 
-// Revised 4-mark wrap rule: the three partner marks are indivisible - if the
-// row cannot fit they drop under Martin together, never one orphan and never
-// Galeta alone, with 8px between the two lines. At 320px with 200% text the
-// row wraps; the partners must share a line below Martin.
-test("the partner marks wrap together under Martin, never one orphan", async ({
+// Six-mark wrap rule (19 Nov 2026): whatever the viewport and text size, the
+// hero row must never overflow horizontally and every mark stays inside the
+// hero. At 320px with 200% text the partner group drops under Martin as a
+// block with 8px between the lines. Fails on any horizontal scrollbar or a
+// mark escaping the hero bounds.
+test("the hero marks never overflow and stay inside the hero", async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 320, height: 900 });
-  await page.goto(route);
-  await page.evaluate(
-    () => (document.documentElement.style.fontSize = "32px"),
-  );
-  const m = await page.evaluate(() => {
-    const row = document.querySelector(".narnia-landscape__supporters")!;
-    const lead = row
-      .querySelector(".narnia-landscape__supporters-lead")!
-      .getBoundingClientRect();
-    const [otter, glitter, galeta] = [
-      ...row.querySelectorAll(".narnia-landscape__supporters-partners img"),
-    ].map((i) => i.getBoundingClientRect());
-    return {
-      leadBottom: lead.bottom,
-      otterTop: otter.top,
-      glitterTop: glitter.top,
-      galetaTop: galeta.top,
-      lineGap: otter.top - lead.bottom,
-    };
-  });
-  expect(m.otterTop).toBeGreaterThan(m.leadBottom + 5);
-  expect(Math.abs(m.otterTop - m.glitterTop)).toBeLessThanOrEqual(2);
-  expect(Math.abs(m.otterTop - m.galetaTop)).toBeLessThanOrEqual(2);
-  expect(Math.abs(m.lineGap - 8), "8px between the two lines").toBeLessThanOrEqual(2);
+  for (const width of [320, 390, 768, 1440]) {
+    for (const scale of [1, 2]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      if (scale === 2)
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = "32px"),
+        );
+      const m = await page.evaluate(() => {
+        const hero = document
+          .querySelector(".narnia-landscape")!
+          .getBoundingClientRect();
+        const row = document.querySelector(".narnia-landscape__supporters")!;
+        const lead = row
+          .querySelector(".narnia-landscape__supporters-lead")!
+          .getBoundingClientRect();
+        const parts = [
+          ...row.querySelectorAll(".narnia-landscape__supporters-partners img"),
+        ].map((i) => i.getBoundingClientRect());
+        return {
+          scrollW: document.documentElement.scrollWidth,
+          clientW: document.documentElement.clientWidth,
+          heroL: hero.left,
+          heroR: hero.right,
+          heroB: hero.bottom,
+          leadBottom: lead.bottom,
+          partnerTop: parts[0].top,
+          lineGap: parts[0].top - lead.bottom,
+          parts: parts.map((r) => ({
+            left: r.left, right: r.right, bottom: r.bottom,
+          })),
+        };
+      });
+      const label = `${width}px ${scale * 100}%`;
+      expect(m.scrollW, `${label}: no horizontal overflow`).toBeLessThanOrEqual(m.clientW);
+      for (const [i, p] of m.parts.entries()) {
+        expect(p.left, `${label}: mark ${i} inside hero (left)`).toBeGreaterThanOrEqual(m.heroL - 1);
+        expect(p.right, `${label}: mark ${i} inside hero (right)`).toBeLessThanOrEqual(m.heroR + 1);
+        expect(p.bottom, `${label}: mark ${i} inside hero (bottom)`).toBeLessThanOrEqual(m.heroB + 1);
+      }
+      if (width === 320 && scale === 2) {
+        expect(m.partnerTop, "320px 200%: partner group drops under Martin").toBeGreaterThan(m.leadBottom + 5);
+        expect(Math.abs(m.lineGap - 8), "320px 200%: 8px between the lines").toBeLessThanOrEqual(2);
+      }
+    }
+  }
 });
 
 // Design re-review of ca0e1d3 (19 Nov 2026): enlarged text must collapse the

@@ -87,13 +87,12 @@
        title, title top left, copy and CTA below. The former stacked logo
        band and its alignment floors are gone; equal card heights and
        bottom-aligned CTAs come from the row grid. */
-    /* Design agent re-review (19 Nov 2026): the text-only Giardina card is a
-       deliberate variant, not a card missing its logo. No logo at all: the
-       copy spans the card, the heading starts at the top padding, copy
-       follows at the normal gap, and the CTA bottom-aligns with its
-       row-mates under the row's equal card heights. */
-    .supporter-card--text-only{grid-template-columns:minmax(0,1fr)}
-    .supporter-card--text-only .supporter-card__copy{grid-column:1/-1}
+    /* Nick + design agent (19 Nov 2026): the Giardina card links to their
+       Instagram, so the logo slot carries a tonal Instagram glyph tile - an
+       honest destination mark in the same footprint as the other tiles, not
+       a faked brand logo. Outlined tile, ivory glyph, aria-hidden and
+       non-interactive; the hero stays logo marks only (no Giardina mark). */
+    .supporter-card__logo--social img{background:#fff3d514;border:1px solid #b99a5b55;padding:8px;box-sizing:border-box}
 
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
     /* Nick (19 Nov 2026, after the compact cards shipped): bigger card titles
@@ -195,32 +194,37 @@
    enlarged text (the rem leg), and always at least 32px clear of the hero
    bottom edge (the snow bank peaks at 30px). The hero grows content-driven;
    type and siblings are untouched. */
-.fayre-supporters-hero .narnia-landscape__supporters{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:16px;row-gap:8px;margin:clamp(12px,.75rem,16px) auto 0}
+.fayre-supporters-hero .narnia-landscape__supporters{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:12px;row-gap:8px;margin:clamp(12px,.75rem,16px) auto 0}
 .fayre-supporters-hero .narnia-landscape__supporters-lead{display:block;width:152px;height:auto}
-.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;align-items:center;gap:16px}
-.fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:28px;height:40px;object-fit:contain}
-.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:40px;height:40px}
+/* Six marks on the smallest phones: the partner group must stay on one line
+   under Martin inside the 262px content column at 320px, so the base tier
+   scales down (24x34, 34px tiles, 68x34 cream, 12px gaps) and steps back up
+   at 390px. Keeps the supporters hero inside the 10% sibling-height band. */
+.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:12px;row-gap:8px;max-width:min(100%,30rem)}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:24px;height:34px;object-fit:contain}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:34px;height:34px}
 /* Galeta's own dark-ink wordmark (from the Home link on galeta.co.uk) sits on
    a warm cream tile (#FFF6EB, their fresh-dough) with Glitter's 4px radius -
-   near-black ink would vanish on the dark hero. Phone tile 80x40, logo 64
-   wide: 8px horizontal inset, vertical inset centres the 127:31 mark. */
-.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{background:#fff6eb;border-radius:4px;padding:12px 8px;box-sizing:border-box;width:80px;height:40px}
+   near-black ink would vanish on the dark hero. Phone tile 68x34, logo 48
+   wide: 7px horizontal inset, vertical inset centres the 127:31 mark. */
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{background:#fff6eb;border-radius:4px;padding:10px 7px;box-sizing:border-box;width:68px;height:34px}
 @media(min-width:390px){
   .fayre-supporters-hero .narnia-landscape__supporters{column-gap:20px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{column-gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:28px;height:40px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:40px;height:40px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:80px;height:40px;padding:12px 8px}
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:176px}
 }
 @media(min-width:768px){
   .fayre-supporters-hero .narnia-landscape__supporters{column-gap:24px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:24px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{column-gap:24px;row-gap:10px;max-width:none}
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:200px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:34px;height:48px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:48px;height:48px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:88px;height:48px;padding:15px 8px}
 }
 @media(min-width:1440px){
-  .fayre-supporters-hero .narnia-landscape__supporters{column-gap:28px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:28px}
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:224px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:96px;height:48px;padding:14px 8px}
 }
