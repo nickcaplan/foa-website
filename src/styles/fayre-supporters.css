@@ -112,7 +112,15 @@
       .supporter-card__copy>h3{min-height:0}
     }
 
+
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
+    /* Nick (19 Nov 2026, after the compact cards shipped): bigger card titles
+       on desktop. Only the side-by-side three-column row - the compact
+       single-column layout keeps its spec'd 1.25rem (reverted by the pageband
+       rule, which follows the row collapse at enlarged text). These rules sit
+       after the base h3 style so they win the tie on source order. */
+    @media(min-width:72rem){.supporter-card h3{font-size:1.5rem}}
+    @container pageband (max-width:60rem){.supporter-card h3{font-size:1.25rem}}
     .supporter-card h3:after{display:none}
     .supporter-card__copy>p:not(.supporter-card__actions){margin:.6rem 0 0;line-height:1.6;color:#f4ead1;text-wrap:balance}
     .supporter-card__actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0 0}

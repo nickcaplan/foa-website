@@ -563,6 +563,32 @@ test("the three-column switch sits exactly at 1152px", async ({ page }) => {
   expect(await cols(1152), "1152px: three columns").toBe(1);
 });
 
+// Nick (19 Nov 2026, after #210 shipped): bigger card titles on desktop. The
+// bump (1.25rem -> 1.5rem) applies only in the side-by-side three-column row;
+// the compact single-column layout keeps its spec'd 1.25rem, and enlarged text
+// follows the row collapse (the rem doubles naturally, no extra bump). Fails
+// if the desktop row drops back to 1.25rem or the bump leaks into compact.
+test("card titles are bigger only in the desktop three-column row", async ({
+  page,
+}) => {
+  await page.goto(route);
+  const size = async () =>
+    page.evaluate(() =>
+      parseFloat(getComputedStyle(document.querySelector(".supporter-card h3")!).fontSize),
+    );
+  await page.setViewportSize({ width: 1440, height: 900 });
+  expect(await size(), "1440px desktop row").toBe(24);
+  await page.setViewportSize({ width: 1151, height: 900 });
+  expect(await size(), "1151px single column").toBe(20);
+  await page.setViewportSize({ width: 390, height: 900 });
+  expect(await size(), "390px phone").toBe(20);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.evaluate(
+    () => (document.documentElement.style.fontSize = "32px"),
+  );
+  expect(await size(), "1440px at 200% text stays compact-spec").toBe(40);
+});
+
 // Design re-review of 96024ee (19 Nov 2026, round 7): the page shared the
 // Fayre social card, whose alt text describes the Fayre date and venue.
 // Supporters now has its own card with accurate alt text.
