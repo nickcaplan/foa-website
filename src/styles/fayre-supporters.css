@@ -82,37 +82,29 @@
        take the full card width once past it. The logo box is a fixed 7rem so
        the paired cards' copy starts level. The compact beside-logo layout
        stays on wider cards. */
-    /* Nick (19 Nov 2026, 18:52, design agent 4-card spec): on narrow cards -
-       phones, the 3-column desktop card (~450px), and every card at enlarged
-       text (the rem leg doubles at 200%) - the logo stacks on its own row
-       above the copy. Wide full-width cards keep the logo beside the copy.
-       The logo row is a fixed 7rem so the column-mates' headings start level
-       and the CTAs bottom-align. */
-    @container (max-width:40rem){
-      .supporter-card__logo{grid-column:1/-1;grid-row:1;justify-content:flex-start}
-      .supporter-card__logo img{max-height:7rem}
-      .supporter-card__copy{grid-column:1/-1;grid-row:2}
-    }
-    /* Design re-review (19 Nov 2026, ca0e1d3): the alignment floors (a 7rem
-       logo row and a two-line heading zone) exist ONLY where the partner
-       cards sit side by side - the >=1100px three-column row at normal text.
-       In single-column layouts they just strand empty bands (Galeta's short
-       wordmark on phone and enlarged tablet). The container rule reverts them
-       whenever the row has collapsed (enlarged text). Same 72rem switch as
-       the row itself, so the floors exist exactly where cards sit side by
-       side. */
-    @media(min-width:72rem){
-      .supporter-card__logo{height:7rem}
-      .supporter-card__copy>h3{min-height:2.6em}
-    }
-    /* Keyed off the PAGE container (the row's state), not the card's own
-       width: only a side-by-side row gets the floors. */
-    @container pageband (max-width:60rem){
-      .supporter-card__logo{height:auto}
-      .supporter-card__copy>h3{min-height:0}
-    }
+    /* Nick (19 Nov 2026, 22:24, on #213): the desktop three-column row keeps
+       the same compact structure as mobile - logo top right beside the
+       title, title top left, copy and CTA below. The former stacked logo
+       band and its alignment floors are gone; equal card heights and
+       bottom-aligned CTAs come from the row grid. */
+    /* Nick (19 Nov 2026, on the design PASS review): no Instagram glyph - an
+       ornate G in a square box, favicon-like, in Giardina's own colours. The
+       monogram SVG (assets/sponsors/giardina-monogram.svg) bakes in the navy
+       box and cream Cinzel Decorative G sampled from their fascia lettering
+       (Google Maps storefront photo, 129 Cottimore Lane); Cinzel Decorative
+       is OFL (Natanael Gama) and matches the fascia's Roman capitals. Same
+       slot footprint as the other tiles, aria-hidden and non-interactive;
+       the hero stays logo marks only (no Giardina mark). */
+    .supporter-card__logo--monogram img{box-sizing:border-box}
 
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
+    /* Nick (19 Nov 2026, after the compact cards shipped): bigger card titles
+       on desktop. Only the side-by-side three-column row - the compact
+       single-column layout keeps its spec'd 1.25rem (reverted by the pageband
+       rule, which follows the row collapse at enlarged text). These rules sit
+       after the base h3 style so they win the tie on source order. */
+    @media(min-width:72rem){.supporter-card h3{font-size:1.5rem}}
+    @container pageband (max-width:60rem){.supporter-card h3{font-size:1.25rem}}
     .supporter-card h3:after{display:none}
     .supporter-card__copy>p:not(.supporter-card__actions){margin:.6rem 0 0;line-height:1.6;color:#f4ead1;text-wrap:balance}
     .supporter-card__actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0 0}
@@ -205,34 +197,54 @@
    enlarged text (the rem leg), and always at least 32px clear of the hero
    bottom edge (the snow bank peaks at 30px). The hero grows content-driven;
    type and siblings are untouched. */
-.fayre-supporters-hero .narnia-landscape__supporters{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:16px;row-gap:8px;margin:clamp(12px,.75rem,16px) auto 0}
+.fayre-supporters-hero .narnia-landscape__supporters{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:12px;row-gap:8px;margin:clamp(12px,.75rem,16px) auto 0}
 .fayre-supporters-hero .narnia-landscape__supporters-lead{display:block;width:152px;height:auto}
-.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;align-items:center;gap:16px}
-.fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:28px;height:40px;object-fit:contain}
-.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:40px;height:40px}
+/* Six marks on the smallest phones: the partner group must stay on one line
+   under Martin inside the 262px content column at 320px, so the base tier
+   scales down (24x34, 34px tiles, 68x34 cream, 12px gaps) and steps back up
+   at 390px. Keeps the supporters hero inside the 10% sibling-height band. */
+.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:12px;row-gap:8px;max-width:min(100%,30rem)}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:24px;height:34px;object-fit:contain}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:34px;height:34px}
 /* Galeta's own dark-ink wordmark (from the Home link on galeta.co.uk) sits on
    a warm cream tile (#FFF6EB, their fresh-dough) with Glitter's 4px radius -
-   near-black ink would vanish on the dark hero. Phone tile 80x40, logo 64
-   wide: 8px horizontal inset, vertical inset centres the 127:31 mark. */
-.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{background:#fff6eb;border-radius:4px;padding:12px 8px;box-sizing:border-box;width:80px;height:40px}
+   near-black ink would vanish on the dark hero. Phone tile 68x34, logo 48
+   wide: 7px horizontal inset, vertical inset centres the 127:31 mark. */
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{background:#fff6eb;border-radius:4px;padding:10px 7px;box-sizing:border-box;width:68px;height:34px}
 @media(min-width:390px){
   .fayre-supporters-hero .narnia-landscape__supporters{column-gap:20px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{column-gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:28px;height:40px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:40px;height:40px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:80px;height:40px;padding:12px 8px}
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:176px}
 }
 @media(min-width:768px){
   .fayre-supporters-hero .narnia-landscape__supporters{column-gap:24px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:24px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{column-gap:24px;row-gap:10px;max-width:none}
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:200px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:34px;height:48px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:48px;height:48px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:88px;height:48px;padding:15px 8px}
 }
 @media(min-width:1440px){
-  .fayre-supporters-hero .narnia-landscape__supporters{column-gap:28px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:28px}
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:224px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:96px;height:48px;padding:14px 8px}
+}
+/* Design agent final-review fix (19 Nov 2026, #213): at 200% text on phones
+   the px-fixed marks wrapped 4+1, orphaning Moore's on a third hero line.
+   rem thresholds in container queries scale with the root font, so
+   (max-width:13rem) matches only enlarged text at phone widths; the cap then
+   wraps the group an intentional 3+2 (Ottershaw/Glitter/Galeta, then
+   W3/Moore's), never one orphan, with Martin kept separate above. */
+.fayre-supporters-hero .narnia-landscape__copy{container-type:inline-size;container-name:herocopy}
+@container herocopy (max-width:13rem){
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{max-width:160px}
+}
+@media(min-width:390px){
+  @container herocopy (max-width:13rem){
+    .fayre-supporters-hero .narnia-landscape__supporters-partners{max-width:198px}
+  }
 }
 /* Nick (19 Nov 2026, 18:52, design agent 4-mark spec): the supporters hero
    opts out of the shared +48px snow-bank clearance (christmas.css, via

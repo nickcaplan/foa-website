@@ -39,6 +39,9 @@ test("Martin Flashman and Co leads the page, before Ottershaw and The Glitter Tr
     "Ottershaw Christmas Tree Farm",
     "The Glitter Tree",
     "Galeta",
+    "W3 Colour",
+    "Moore's Tree Company",
+    "Giardina Family Butchers",
   ]);
   const lead = page.locator(".fayre-lead");
   await expect(lead.locator(".fayre-lead__label")).toHaveText(
@@ -151,14 +154,16 @@ test("card logos never overlap their headings at narrow widths and 200% text", a
           // Compact single-column cards float the logo top right and wrap the
           // heading ink around it, so box-overlap is the wrong check: measure
           // each heading line box against the logo image box instead.
+          const logoImg = el.querySelector(".supporter-card__logo img");
+          // Every card carries a logo image now (Giardina's slot holds the
+          // tonal Instagram glyph tile), so the null guard is just a guard.
+          if (!logoImg) return null;
           const range = document.createRange();
           range.selectNodeContents(h3);
           const lines = [...range.getClientRects()].map((r) => ({
             x: r.x, y: r.y, w: r.width, h: r.height,
           }));
-          const i = el
-            .querySelector(".supporter-card__logo img")!
-            .getBoundingClientRect();
+          const i = logoImg.getBoundingClientRect();
           const c = el.getBoundingClientRect();
           const pad = parseFloat(getComputedStyle(el).paddingRight);
           return {
@@ -169,6 +174,7 @@ test("card logos never overlap their headings at narrow widths and 200% text", a
             contentWidth: c.width - 2 * pad,
           };
         });
+        if (!geo) continue;
         const label = `${width}px ${theme} "${geo.text}"`;
         for (const ln of geo.lines) {
           const overlap =
@@ -382,9 +388,11 @@ test("the heading ink always clears the card logo", async ({ page }) => {
           // the line) or at least 8px of horizontal clearance.
           const range = document.createRange();
           range.selectNodeContents(h3);
-          const logo = card
-            .querySelector(".supporter-card__logo img")!
-            .getBoundingClientRect();
+          const logoImg = card.querySelector(".supporter-card__logo img");
+          // Text-only card (Giardina Family Butchers): no logo, no clearance
+          // to measure.
+          if (!logoImg) return [];
+          const logo = logoImg.getBoundingClientRect();
           return [...range.getClientRects()].map((ink) => ({
             stacked: logo.bottom <= ink.top + 2,
             gap: logo.left - ink.right,
@@ -401,37 +409,53 @@ test("the heading ink always clears the card logo", async ({ page }) => {
   }
 });
 
-// Nick (19 Nov 2026, 18:52, design agent 4-card spec): from 1100px the three
-// partner cards share one row of equal columns - copy starts level and the
-// CTAs bottom-align. Below that each card takes a full-width row of its own
-// (no equal-height across rows). Fails if the desktop trio drifts out of
-// alignment or the tablet layout keeps side-by-side cards.
-test("the three partner cards align in their desktop row and stack full-width below", async ({
+// Nick (19 Nov 2026, 22:24, on #213): the desktop rows use the same compact
+// structure as mobile - logo top right beside the title, title top left,
+// copy and CTA below. Six cards form two rows of three equal columns with
+// equal card heights and bottom-aligned CTAs per row; below the switch each
+// card takes a full-width row of its own. Fails if the stacked logo band or
+// its floors return, or the tablet layout keeps side-by-side cards.
+test("desktop partner rows keep the compact structure with aligned CTAs", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(route);
   const m = await page.evaluate(() =>
     [...document.querySelectorAll(".supporter-card")].map((card) => {
-      const copy = card
-        .querySelector("p:not(.supporter-card__actions)")!
-        .getBoundingClientRect();
+      const c = card.getBoundingClientRect();
+      const padL = parseFloat(getComputedStyle(card).paddingLeft);
+      const padR = parseFloat(getComputedStyle(card).paddingRight);
+      const padT = parseFloat(getComputedStyle(card).paddingTop);
+      const h3 = card.querySelector("h3")!.getBoundingClientRect();
+      const logoImg = card.querySelector(".supporter-card__logo img");
+      const logo = logoImg ? logoImg.getBoundingClientRect() : null;
       const cta = card
         .querySelector(".supporter-card__actions")!
         .getBoundingClientRect();
-      return { copyTop: copy.top, ctaBottom: cta.bottom };
+      return {
+        top: c.top,
+        h: c.height,
+        titleTop: h3.top - (c.top + padT),
+        titleLeft: h3.left - (c.left + padL),
+        logoFlushRight: logo ? c.right - padR - logo.right : null,
+        logoVsTitle: logo ? logo.top - h3.top : null,
+        ctaBottom: cta.bottom,
+      };
     }),
   );
-  expect(m.length).toBe(3);
-  for (let i = 1; i < 3; i++) {
-    expect(
-      Math.abs(m[0].copyTop - m[i].copyTop),
-      `1440px card ${i}: copy start difference`,
-    ).toBeLessThanOrEqual(2);
-    expect(
-      Math.abs(m[0].ctaBottom - m[i].ctaBottom),
-      `1440px card ${i}: CTA bottom difference`,
-    ).toBeLessThanOrEqual(2);
+  expect(m.length).toBe(6);
+  for (const [rowIdx, row] of [m.slice(0, 3), m.slice(3, 6)].entries()) {
+    for (const [i, c] of row.entries()) {
+      const label = `1440px row ${rowIdx} card ${i}`;
+      expect(Math.abs(c.titleTop), `${label}: title at the top padding`).toBeLessThanOrEqual(2);
+      expect(Math.abs(c.titleLeft), `${label}: title flush left`).toBeLessThanOrEqual(2);
+      if (c.logoFlushRight !== null) {
+        expect(Math.abs(c.logoFlushRight), `${label}: logo flush right`).toBeLessThanOrEqual(2);
+        expect(Math.abs(c.logoVsTitle!), `${label}: logo top-aligned with title`).toBeLessThanOrEqual(6);
+      }
+      expect(Math.abs(row[0].h - c.h), `${label}: equal card height in row`).toBeLessThanOrEqual(2);
+      expect(Math.abs(row[0].ctaBottom - c.ctaBottom), `${label}: CTA bottom-aligned`).toBeLessThanOrEqual(2);
+    }
   }
   await page.setViewportSize({ width: 768, height: 900 });
   await page.goto(route);
@@ -444,14 +468,111 @@ test("the three partner cards align in their desktop row and stack full-width be
       return { top: c.top, widthRatio: c.width / row.width };
     });
   });
-  expect(rows.length).toBe(3);
-  for (let i = 0; i < 3; i++) {
+  expect(rows.length).toBe(6);
+  for (let i = 0; i < 6; i++) {
     expect(rows[i].widthRatio, `768px card ${i}: full-width row`).toBeGreaterThan(0.98);
     if (i > 0)
       expect(rows[i].top, `768px card ${i}: own row`).toBeGreaterThan(rows[i - 1].top + 5);
   }
 });
 
+
+// Nick (19 Nov 2026, on the design PASS review, #213): no Instagram glyph -
+// the logo slot carries an ornate G monogram in a square navy box,
+// favicon-like, in Giardina's own colours (navy fascia + white serif
+// lettering, sampled from their Google Maps storefront photo; Cinzel
+// Decorative, OFL, matches the fascia's Roman capitals). The slot is
+// aria-hidden and non-interactive, the heading starts at the card's top
+// padding beside it, the CTA bottom-aligns with its row-mates and the outer
+// card height matches theirs. Fails if the monogram gains a link, stops
+// loading, becomes a white brand panel, or the dead space returns.
+test("the Giardina card carries an ornate G monogram tile", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(route);
+  const tile = page.locator(".supporter-card--monogram img");
+  await tile.scrollIntoViewIfNeeded();
+  await tile.evaluate((i: HTMLImageElement) =>
+    i.complete && i.naturalWidth > 0
+      ? true
+      : new Promise((res) => i.addEventListener("load", () => res(true), { once: true })),
+  );
+  const t = await page.evaluate(() => {
+    const card = document.querySelector(".supporter-card--monogram")!;
+    const c = card.getBoundingClientRect();
+    const pad = parseFloat(getComputedStyle(card).paddingTop);
+    const slot = card.querySelector(".supporter-card__logo--monogram")!;
+    const img = slot.querySelector("img")!;
+    const imgR = img.getBoundingClientRect();
+    const cs = getComputedStyle(img);
+    const h3 = card.querySelector("h3")!;
+    const h3r = h3.getBoundingClientRect();
+    const copy = card
+      .querySelector("p:not(.supporter-card__actions)")!
+      .getBoundingClientRect();
+    const cta = card
+      .querySelector(".supporter-card__actions")!
+      .getBoundingClientRect();
+    const rowMates = [
+      ...document.querySelectorAll(
+        ".supporter-card:not(.supporter-card--monogram)",
+      ),
+    ]
+      .map((m) => {
+        const r = m.getBoundingClientRect();
+        return {
+          top: r.top,
+          h: r.height,
+          ctaBottom: m
+            .querySelector(".supporter-card__actions")!
+            .getBoundingClientRect().bottom,
+        };
+      })
+      .filter((m) => Math.abs(m.top - c.top) < 5);
+    return {
+      src: img.getAttribute("src"),
+      alt: img.getAttribute("alt"),
+      ariaHidden: slot.getAttribute("aria-hidden"),
+      interactive: slot.querySelectorAll("a, button").length,
+      loaded: img.complete && img.naturalWidth > 0,
+      tileBg: cs.backgroundColor,
+      tileBorder: cs.borderTopWidth,
+      h3TopVsPad: h3r.top - (c.top + pad),
+      h3OverlapsTile: !(
+        h3r.right <= imgR.left ||
+        imgR.right <= h3r.left ||
+        h3r.bottom <= imgR.top ||
+        imgR.bottom <= h3r.top
+      ),
+      titleSize: getComputedStyle(h3).fontSize,
+      copyGap: copy.top - h3r.bottom,
+      cardH: c.height,
+      mateH: rowMates.map((m) => m.h),
+      ctaBottom: cta.bottom,
+      mateCtaBottom: rowMates.map((m) => m.ctaBottom),
+    };
+  });
+  expect(t.src, "tile uses the self-hosted G monogram").toContain(
+    "giardina-monogram.svg",
+  );
+  expect(t.alt, "monogram is decorative").toBe("");
+  expect(t.ariaHidden, "monogram slot is aria-hidden").toBe("true");
+  expect(t.interactive, "monogram is non-interactive").toBe(0);
+  expect(t.loaded, "monogram image loads").toBe(true);
+  expect(t.tileBg, "no white brand panel behind the monogram").not.toBe(
+    "rgb(255, 255, 255)",
+  );
+  expect(t.h3OverlapsTile, "heading ink clears the tile").toBe(false);
+  expect(t.titleSize, "card keeps the desktop title size").toBe("24px");
+  expect(Math.abs(t.h3TopVsPad), "heading at the top padding").toBeLessThanOrEqual(2);
+  expect(Math.abs(t.copyGap - 9.6), "normal copy gap").toBeLessThanOrEqual(2);
+  expect(t.mateH.length, "two row-mates").toBe(2);
+  for (const h of t.mateH)
+    expect(Math.abs(t.cardH - h), "equal outer card height").toBeLessThanOrEqual(2);
+  for (const b of t.mateCtaBottom)
+    expect(Math.abs(t.ctaBottom - b), "CTA bottom-aligned").toBeLessThanOrEqual(2);
+});
 
 // Nick (19 Nov 2026, 18:52, design agent 4-card spec): below 1100px each
 // partner card is a full-width row with the logo right, the copy left beside
@@ -476,26 +597,27 @@ test("single-column partner cards float the logo top right with a full-width CTA
         const copy = card
           .querySelector("p:not(.supporter-card__actions)")!
           .getBoundingClientRect();
-        const logo = card
-          .querySelector(".supporter-card__logo img")!
-          .getBoundingClientRect();
+        const logoImg = card.querySelector(".supporter-card__logo img");
+        const logo = logoImg ? logoImg.getBoundingClientRect() : null;
         const cta = card
           .querySelector(".supporter-card__actions")!
           .getBoundingClientRect();
         const inner = c.width - 2 * pad;
         return {
-          logoFlushRight: c.x + c.width - pad - logo.right,
-          logoTopVsTitle: logo.top - h3.top,
+          logoFlushRight: logo ? c.x + c.width - pad - logo.right : null,
+          logoTopVsTitle: logo ? logo.top - h3.top : null,
           titleTopLeft: h3.left - (c.x + pad),
-          ctaBelow: cta.top - Math.max(copy.bottom, logo.bottom),
+          ctaBelow: cta.top - Math.max(copy.bottom, logo ? logo.bottom : 0),
           ctaRatio: cta.width / inner,
           h3Min: getComputedStyle(card.querySelector("h3")!).minHeight,
         };
       }),
     );
     for (const [i, r] of ratios.entries()) {
-      expect(Math.abs(r.logoFlushRight), `${width}px card ${i}: logo flush right`).toBeLessThanOrEqual(2);
-      expect(Math.abs(r.logoTopVsTitle), `${width}px card ${i}: logo top-aligned with title`).toBeLessThanOrEqual(6);
+      if (r.logoFlushRight !== null) {
+        expect(Math.abs(r.logoFlushRight), `${width}px card ${i}: logo flush right`).toBeLessThanOrEqual(2);
+        expect(Math.abs(r.logoTopVsTitle!), `${width}px card ${i}: logo top-aligned with title`).toBeLessThanOrEqual(6);
+      }
       expect(Math.abs(r.titleTopLeft), `${width}px card ${i}: title top left`).toBeLessThanOrEqual(2);
       expect(r.ctaBelow, `${width}px card ${i}: CTA below text and logo`).toBeGreaterThanOrEqual(-1);
       expect(r.ctaRatio, `${width}px card ${i}: CTA full internal width`).toBeGreaterThan(0.85);
@@ -559,8 +681,38 @@ test("the three-column switch sits exactly at 1152px", async ({ page }) => {
       return new Set(tops).size;
     });
   };
-  expect(await cols(1151), "1151px: single column").toBe(3);
-  expect(await cols(1152), "1152px: three columns").toBe(1);
+  expect(await cols(1151), "1151px: single column").toBe(6);
+  expect(await cols(1152), "1152px: two rows of three columns").toBe(2);
+});
+
+// Nick (19 Nov 2026, after #210 shipped): bigger card titles on desktop. The
+// bump (1.25rem -> 1.5rem) applies only in the side-by-side three-column row;
+// the compact single-column layout keeps its spec'd 1.25rem, and enlarged text
+// follows the row collapse (the rem doubles naturally, no extra bump). Fails
+// if the desktop row drops back to 1.25rem or the bump leaks into compact.
+test("card titles are bigger only in the desktop three-column row", async ({
+  page,
+}) => {
+  await page.goto(route);
+  const sizes = async () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll(".supporter-card h3")].map((h) =>
+        parseFloat(getComputedStyle(h).fontSize),
+      ),
+    );
+  await page.setViewportSize({ width: 1440, height: 900 });
+  expect(await sizes(), "1440px desktop row").toEqual(Array(6).fill(24));
+  await page.setViewportSize({ width: 1152, height: 900 });
+  expect(await sizes(), "1152px switch: already the desktop row").toEqual(Array(6).fill(24));
+  await page.setViewportSize({ width: 1151, height: 900 });
+  expect(await sizes(), "1151px single column").toEqual(Array(6).fill(20));
+  await page.setViewportSize({ width: 390, height: 900 });
+  expect(await sizes(), "390px phone").toEqual(Array(6).fill(20));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.evaluate(
+    () => (document.documentElement.style.fontSize = "32px"),
+  );
+  expect(await sizes(), "1440px at 200% text stays compact-spec").toEqual(Array(6).fill(40));
 });
 
 // Design re-review of 96024ee (19 Nov 2026, round 7): the page shared the
@@ -582,12 +734,16 @@ test("supporters has its own social card with accurate alt text", async ({
   expect(alt).toContain("Ottershaw Christmas Tree Farm");
   expect(alt).toContain("The Glitter Tree");
   expect(alt).toContain("Galeta");
+  expect(alt).toContain("W3 Colour");
+  expect(alt).toContain("Moore's Tree Company");
 });
 
 // Nick (19 Nov 2026, 18:38, design agent Direction A): small sponsor marks in
 // the hero, directly below the subtitle. A non-interactive duplicate group:
-// names and links stay in the body cards. Fails on main, where the row does
-// not exist.
+// names and links stay in the body cards. Nick (19 Nov 2026, 22:26): W3
+// Colour and Moore's Tree Company join as tiled marks. Nick (22:32): no text
+// treatment for Giardina - the hero carries logo marks only; Giardina stays
+// on its card. Fails on main, where the row does not exist.
 test("the hero shows the sponsor mark row below the subtitle, non-interactive", async ({
   page,
 }) => {
@@ -596,12 +752,16 @@ test("the hero shows the sponsor mark row below the subtitle, non-interactive", 
   await expect(row).toHaveCount(1);
   await expect(row).toHaveAttribute("aria-hidden", "true");
   const imgs = row.locator("img");
-  await expect(imgs).toHaveCount(4);
+  await expect(imgs).toHaveCount(6);
   for (const img of await imgs.all()) await expect(img).toHaveAttribute("alt", "");
   await expect(imgs.nth(0)).toHaveAttribute("src", /martin-flashman\.png/);
   await expect(imgs.nth(1)).toHaveAttribute("src", /ottershaw/);
   await expect(imgs.nth(2)).toHaveAttribute("src", /glitter-tree/);
   await expect(imgs.nth(3)).toHaveAttribute("src", /galeta\.svg/);
+  await expect(imgs.nth(4)).toHaveAttribute("src", /w3-colour\.svg/);
+  await expect(imgs.nth(5)).toHaveAttribute("src", /moores-tree-company\.jpg/);
+  // No text mark for Giardina anywhere in the hero.
+  await expect(row.locator(".narnia-landscape__supporters-word")).toHaveCount(0);
   // Nothing in the row is a link or otherwise interactive.
   await expect(row.locator("a, button")).toHaveCount(0);
   // It sits directly after the subtitle in the hero copy.
@@ -611,32 +771,32 @@ test("the hero shows the sponsor mark row below the subtitle, non-interactive", 
     return intro.nextElementSibling === row;
   });
   expect(order).toBe(true);
-  // The three partner marks share one indivisible wrapper, so a wrap drops
-  // them under Martin together - never one orphan, never Galeta alone.
+  // The five partner marks share one wrapper.
   const shared = await page.evaluate(() => {
     const partners = document.querySelector(
       ".narnia-landscape__supporters-partners",
     )!;
-    return partners.querySelectorAll("img").length === 3;
+    return partners.querySelectorAll("img").length === 5;
   });
   expect(shared).toBe(true);
 });
 
-// Revised 4-mark spec (19 Nov 2026, 18:52), CSS px per viewport tier: Martin
-// first and widest (152/176/200/224), Ottershaw 28x40 (34x48 from 768px),
-// Glitter on a 40px white tile (48px from 768px), Galeta's dark-ink wordmark
-// on an 80x40 cream tile (88x48 at 768, 96x48 at 1440; #FFF6EB, Glitter's 4px
-// radius), gaps 16/20/24/28. On phones the partner group wraps under Martin
-// as a unit with 8px between the lines; from 768px all four share one line.
-// Fails on any size drift.
-test("the hero sponsor row matches the revised 4-mark sizes", async ({
-  page,
-}) => {
+// Six-mark spec (19 Nov 2026, after Nick added W3 and Moore's to the hero),
+// CSS px per viewport tier: Martin first and widest (152/176/200/224),
+// Ottershaw 24x34 at 320 (28x40 from 390, 34x48 from 768px), Glitter, W3 and
+// Moore's on 34px white tiles (40px from 390, 48px from 768px), Galeta's
+// dark-ink wordmark on a 68x34 cream tile (80x40 from 390, 88x48 at 768,
+// 96x48 at 1440; #FFF6EB, Glitter's 4px radius), gaps 12/20/24 (1440 keeps
+// the 768 gaps so all six marks share one line inside the 624px column). On
+// phones the partner group wraps under Martin as a unit on one line with 8px
+// between the lines; from 768px all six share one line. Giardina has no hero
+// mark (Nick, 22:32: logo marks only). Fails on any size drift.
+test("the hero sponsor row matches the six-mark sizes", async ({ page }) => {
   const tiers = [
-    { w: 320, lead: 152, side: [28, 40], tile: 40, galeta: [80, 40], gap: 16, lines: 2 },
+    { w: 320, lead: 152, side: [24, 34], tile: 34, galeta: [68, 34], gap: 12, lines: 2 },
     { w: 390, lead: 176, side: [28, 40], tile: 40, galeta: [80, 40], gap: 20, lines: 2 },
     { w: 768, lead: 200, side: [34, 48], tile: 48, galeta: [88, 48], gap: 24, lines: 1 },
-    { w: 1440, lead: 224, side: [34, 48], tile: 48, galeta: [96, 48], gap: 28, lines: 1 },
+    { w: 1440, lead: 224, side: [34, 48], tile: 48, galeta: [96, 48], gap: 24, lines: 1 },
   ];
   for (const t of tiers) {
     await page.setViewportSize({ width: t.w, height: 900 });
@@ -646,20 +806,29 @@ test("the hero sponsor row matches the revised 4-mark sizes", async ({
       const lead = row
         .querySelector(".narnia-landscape__supporters-lead")!
         .getBoundingClientRect();
-      const [otter, glitter, galeta] = [
+      const imgs = [
         ...row.querySelectorAll(".narnia-landscape__supporters-partners img"),
       ].map((i) => i.getBoundingClientRect());
+      const [otter, glitter, galeta, w3, moores] = imgs;
+      const gaps = [];
+      for (let k = 0; k + 1 < imgs.length; k++) {
+        if (Math.abs(imgs[k].top - imgs[k + 1].top) < 2)
+          gaps.push(imgs[k + 1].left - imgs[k].right);
+      }
       return {
         lead: { w: lead.width, top: lead.top, bottom: lead.bottom },
         otter: [otter.width, otter.height],
-        tile: [glitter.width, glitter.height],
+        glitter: [glitter.width, glitter.height],
         galeta: [galeta.width, galeta.height],
+        w3: [w3.width, w3.height],
+        moores: [moores.width, moores.height],
         partnerTop: otter.top,
-        gap: otter.left - glitter.right > 0 ? glitter.left - otter.right : glitter.left - otter.right,
+        partnerTops: imgs.map((r) => r.top),
+        gaps,
         lineGap: otter.top - lead.bottom,
-        tileBg: getComputedStyle(
-          row.querySelector(".narnia-landscape__supporters-tile")!,
-        ).backgroundColor,
+        tileBgs: [
+          ...row.querySelectorAll(".narnia-landscape__supporters-tile"),
+        ].map((i) => getComputedStyle(i).backgroundColor),
         creamBg: getComputedStyle(
           row.querySelector(".narnia-landscape__supporters-cream")!,
         ).backgroundColor,
@@ -668,23 +837,27 @@ test("the hero sponsor row matches the revised 4-mark sizes", async ({
     expect(Math.abs(m.lead.w - t.lead), `${t.w}px lead width`).toBeLessThanOrEqual(1);
     expect(Math.abs(m.otter[0] - t.side[0]), `${t.w}px otter width`).toBeLessThanOrEqual(1);
     expect(Math.abs(m.otter[1] - t.side[1]), `${t.w}px otter height`).toBeLessThanOrEqual(1);
-    expect(Math.abs(m.tile[0] - t.tile), `${t.w}px tile width`).toBeLessThanOrEqual(1);
-    expect(Math.abs(m.tile[1] - t.tile), `${t.w}px tile height`).toBeLessThanOrEqual(1);
+    for (const [name, g] of [["glitter", m.glitter], ["w3", m.w3], ["moores", m.moores]] as const) {
+      expect(Math.abs(g[0] - t.tile), `${t.w}px ${name} tile width`).toBeLessThanOrEqual(1);
+      expect(Math.abs(g[1] - t.tile), `${t.w}px ${name} tile height`).toBeLessThanOrEqual(1);
+    }
     expect(Math.abs(m.galeta[0] - t.galeta[0]), `${t.w}px galeta tile width`).toBeLessThanOrEqual(1);
     expect(Math.abs(m.galeta[1] - t.galeta[1]), `${t.w}px galeta tile height`).toBeLessThanOrEqual(1);
-    expect(Math.abs(m.gap - t.gap), `${t.w}px partner gap`).toBeLessThanOrEqual(1);
-    expect(m.tileBg, `${t.w}px glitter tile is white`).toBe("rgb(255, 255, 255)");
+    for (const bg of m.tileBgs)
+      expect(bg, `${t.w}px partner tiles are white`).toBe("rgb(255, 255, 255)");
     expect(m.creamBg, `${t.w}px galeta tile is warm cream`).toBe("rgb(255, 246, 235)");
     if (t.lines === 2) {
       expect(m.partnerTop, `${t.w}px: partner group wraps under Martin`).toBeGreaterThan(m.lead.bottom + 5);
       expect(Math.abs(m.lineGap - 8), `${t.w}px: 8px between the two lines`).toBeLessThanOrEqual(2);
     } else {
+      expect(m.gaps.length, `${t.w}px: partners share one line`).toBe(4);
+      for (const g of m.gaps)
+        expect(Math.abs(g - t.gap), `${t.w}px partner gap`).toBeLessThanOrEqual(1);
       const leadMid = (m.lead.top + m.lead.bottom) / 2;
       expect(Math.abs(m.partnerTop + (t.side[1] / 2) - leadMid), `${t.w}px: one shared line, marks vertically centred`).toBeLessThanOrEqual(2);
     }
   }
 });
-
 
 // Direction A spacing: 12px below the subtitle at normal text, 16px at
 // enlarged text, and always at least 32px clear of the hero's bottom edge
@@ -725,38 +898,70 @@ test("the hero sponsor row keeps its spacing and bottom clearance", async ({
   }
 });
 
-// Revised 4-mark wrap rule: the three partner marks are indivisible - if the
-// row cannot fit they drop under Martin together, never one orphan and never
-// Galeta alone, with 8px between the two lines. At 320px with 200% text the
-// row wraps; the partners must share a line below Martin.
-test("the partner marks wrap together under Martin, never one orphan", async ({
+// Six-mark wrap rule (19 Nov 2026): whatever the viewport and text size, the
+// hero row must never overflow horizontally and every mark stays inside the
+// hero. At 320px with 200% text the partner group drops under Martin as a
+// block with 8px between the lines. Fails on any horizontal scrollbar or a
+// mark escaping the hero bounds.
+test("the hero marks never overflow and stay inside the hero", async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 320, height: 900 });
-  await page.goto(route);
-  await page.evaluate(
-    () => (document.documentElement.style.fontSize = "32px"),
-  );
-  const m = await page.evaluate(() => {
-    const row = document.querySelector(".narnia-landscape__supporters")!;
-    const lead = row
-      .querySelector(".narnia-landscape__supporters-lead")!
-      .getBoundingClientRect();
-    const [otter, glitter, galeta] = [
-      ...row.querySelectorAll(".narnia-landscape__supporters-partners img"),
-    ].map((i) => i.getBoundingClientRect());
-    return {
-      leadBottom: lead.bottom,
-      otterTop: otter.top,
-      glitterTop: glitter.top,
-      galetaTop: galeta.top,
-      lineGap: otter.top - lead.bottom,
-    };
-  });
-  expect(m.otterTop).toBeGreaterThan(m.leadBottom + 5);
-  expect(Math.abs(m.otterTop - m.glitterTop)).toBeLessThanOrEqual(2);
-  expect(Math.abs(m.otterTop - m.galetaTop)).toBeLessThanOrEqual(2);
-  expect(Math.abs(m.lineGap - 8), "8px between the two lines").toBeLessThanOrEqual(2);
+  for (const width of [320, 390, 768, 1440]) {
+    for (const scale of [1, 2]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      if (scale === 2)
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = "32px"),
+        );
+      const m = await page.evaluate(() => {
+        const hero = document
+          .querySelector(".narnia-landscape")!
+          .getBoundingClientRect();
+        const row = document.querySelector(".narnia-landscape__supporters")!;
+        const lead = row
+          .querySelector(".narnia-landscape__supporters-lead")!
+          .getBoundingClientRect();
+        const parts = [
+          ...row.querySelectorAll(".narnia-landscape__supporters-partners img"),
+        ].map((i) => i.getBoundingClientRect());
+        return {
+          scrollW: document.documentElement.scrollWidth,
+          clientW: document.documentElement.clientWidth,
+          heroL: hero.left,
+          heroR: hero.right,
+          heroB: hero.bottom,
+          leadBottom: lead.bottom,
+          partnerTop: parts[0].top,
+          lineGap: parts[0].top - lead.bottom,
+          parts: parts.map((r) => ({
+            top: r.top, left: r.left, right: r.right, bottom: r.bottom,
+          })),
+        };
+      });
+      const label = `${width}px ${scale * 100}%`;
+      expect(m.scrollW, `${label}: no horizontal overflow`).toBeLessThanOrEqual(m.clientW);
+      for (const [i, p] of m.parts.entries()) {
+        expect(p.left, `${label}: mark ${i} inside hero (left)`).toBeGreaterThanOrEqual(m.heroL - 1);
+        expect(p.right, `${label}: mark ${i} inside hero (right)`).toBeLessThanOrEqual(m.heroR + 1);
+        expect(p.bottom, `${label}: mark ${i} inside hero (bottom)`).toBeLessThanOrEqual(m.heroB + 1);
+      }
+      if ((width === 320 || width === 390) && scale === 2) {
+        expect(m.partnerTop, `${label}: partner group drops under Martin`).toBeGreaterThan(m.leadBottom + 5);
+        expect(Math.abs(m.lineGap - 8), `${label}: 8px between the lines`).toBeLessThanOrEqual(2);
+        // Design agent final review (19 Nov 2026): enlarged text wraps the
+        // group an intentional 3+2 - Ottershaw/Glitter/Galeta, then
+        // W3/Moore's - never a 4+1 orphan line.
+        const lines = new Map<number, number>();
+        for (const p of m.parts) {
+          const key = [...lines.keys()].find((k) => Math.abs(k - p.top) < 2);
+          lines.set(key ?? p.top, (lines.get(key ?? p.top) ?? 0) + 1);
+        }
+        const counts = [...lines.entries()].sort((a, b) => a[0] - b[0]).map(([, n]) => n);
+        expect(counts, `${label}: intentional 3+2 wrap, no orphan`).toEqual([3, 2]);
+      }
+    }
+  }
 });
 
 // Design re-review of ca0e1d3 (19 Nov 2026): enlarged text must collapse the
@@ -786,16 +991,18 @@ test("enlarged text stacks the partner cards full-width with full-width CTAs", a
         top: c.top,
         widthRatio: c.width / row.width,
         ctaRatio: cta.width / (c.width - 2 * pad),
-        logoRowH: parseFloat(
-          getComputedStyle(card.querySelector(".supporter-card__logo")!).height,
-        ),
+        logoRowH: card.querySelector(".supporter-card__logo")
+          ? parseFloat(
+              getComputedStyle(card.querySelector(".supporter-card__logo")!).height,
+            )
+          : null,
         h3Min: getComputedStyle(card.querySelector("h3")!).minHeight,
         name: card.querySelector("h3")!.textContent,
       };
     });
   });
-  expect(m.length).toBe(3);
-  for (let i = 0; i < 3; i++) {
+  expect(m.length).toBe(6);
+  for (let i = 0; i < 6; i++) {
     expect(m[i].widthRatio, `${m[i].name}: full-width row`).toBeGreaterThan(0.98);
     if (i > 0)
       expect(m[i].top, `${m[i].name}: own row`).toBeGreaterThan(m[i - 1].top + 5);
@@ -805,8 +1012,7 @@ test("enlarged text stacks the partner cards full-width with full-width CTAs", a
   // cards keep natural logo rows and no two-line heading minimum. Galeta's
   // short wordmark is the tell: a fixed 7rem row would strand it in an empty
   // band (224px at 200% text); natural sizing keeps it near its ~94px.
-  const galeta = m[2];
-  expect(galeta.name).toBe("Galeta");
+  const galeta = m.find((c) => c.name === "Galeta")!;
   expect(galeta.logoRowH, "Galeta: no fixed logo row").toBeLessThan(150);
   expect(galeta.h3Min, "Galeta: no heading floor").toBe("0px");
 });
@@ -822,9 +1028,11 @@ test("partner CTAs share one width in the desktop row", async ({ page }) => {
       (b) => b.getBoundingClientRect().width,
     ),
   );
-  expect(w.length).toBe(3);
-  expect(Math.abs(w[0] - w[1]), "card 0/1 CTA width").toBeLessThanOrEqual(2);
-  expect(Math.abs(w[0] - w[2]), "card 0/2 CTA width").toBeLessThanOrEqual(2);
+  expect(w.length).toBe(6);
+  // Two rows of three equal columns: every CTA spans its card's full
+  // internal width, so all six share one width.
+  for (let i = 1; i < 6; i++)
+    expect(Math.abs(w[0] - w[i]), `card 0/${i} CTA width`).toBeLessThanOrEqual(2);
 });
 
 test("partner CTAs share one height across the whole three-column range", async ({
@@ -841,9 +1049,12 @@ test("partner CTAs share one height across the whole three-column range", async 
         (b) => b.getBoundingClientRect().height,
       ),
     );
-    expect(h.length, `CTA count at ${width}`).toBe(3);
-    expect(Math.abs(h[0] - h[1]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
-    expect(Math.abs(h[0] - h[2]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
+    expect(h.length, `CTA count at ${width}`).toBe(6);
+    // Row-mates share one CTA height; rows are independent of each other.
+    for (const row of [h.slice(0, 3), h.slice(3, 6)]) {
+      expect(Math.abs(row[0] - row[1]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
+      expect(Math.abs(row[0] - row[2]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
+    }
   }
   // Below the switch the row stays one full-width card per row (no 3-col wrap).
   await page.setViewportSize({ width: 1100, height: 900 });
@@ -852,5 +1063,5 @@ test("partner CTAs share one height across the whole three-column range", async 
       (c) => Math.round(c.getBoundingClientRect().top),
     ),
   );
-  expect(new Set(tops.slice(-3)).size, "partner cards stack below 1152px").toBe(3);
+  expect(new Set(tops).size, "partner cards stack below 1152px").toBe(6);
 });
