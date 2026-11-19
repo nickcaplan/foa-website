@@ -928,7 +928,7 @@ test("the hero marks never overflow and stay inside the hero", async ({
           partnerTop: parts[0].top,
           lineGap: parts[0].top - lead.bottom,
           parts: parts.map((r) => ({
-            left: r.left, right: r.right, bottom: r.bottom,
+            top: r.top, left: r.left, right: r.right, bottom: r.bottom,
           })),
         };
       });
@@ -939,9 +939,19 @@ test("the hero marks never overflow and stay inside the hero", async ({
         expect(p.right, `${label}: mark ${i} inside hero (right)`).toBeLessThanOrEqual(m.heroR + 1);
         expect(p.bottom, `${label}: mark ${i} inside hero (bottom)`).toBeLessThanOrEqual(m.heroB + 1);
       }
-      if (width === 320 && scale === 2) {
-        expect(m.partnerTop, "320px 200%: partner group drops under Martin").toBeGreaterThan(m.leadBottom + 5);
-        expect(Math.abs(m.lineGap - 8), "320px 200%: 8px between the lines").toBeLessThanOrEqual(2);
+      if ((width === 320 || width === 390) && scale === 2) {
+        expect(m.partnerTop, `${label}: partner group drops under Martin`).toBeGreaterThan(m.leadBottom + 5);
+        expect(Math.abs(m.lineGap - 8), `${label}: 8px between the lines`).toBeLessThanOrEqual(2);
+        // Design agent final review (19 Nov 2026): enlarged text wraps the
+        // group an intentional 3+2 - Ottershaw/Glitter/Galeta, then
+        // W3/Moore's - never a 4+1 orphan line.
+        const lines = new Map<number, number>();
+        for (const p of m.parts) {
+          const key = [...lines.keys()].find((k) => Math.abs(k - p.top) < 2);
+          lines.set(key ?? p.top, (lines.get(key ?? p.top) ?? 0) + 1);
+        }
+        const counts = [...lines.entries()].sort((a, b) => a[0] - b[0]).map(([, n]) => n);
+        expect(counts, `${label}: intentional 3+2 wrap, no orphan`).toEqual([3, 2]);
       }
     }
   }

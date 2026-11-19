@@ -228,6 +228,21 @@
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:224px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:96px;height:48px;padding:14px 8px}
 }
+/* Design agent final-review fix (19 Nov 2026, #213): at 200% text on phones
+   the px-fixed marks wrapped 4+1, orphaning Moore's on a third hero line.
+   rem thresholds in container queries scale with the root font, so
+   (max-width:13rem) matches only enlarged text at phone widths; the cap then
+   wraps the group an intentional 3+2 (Ottershaw/Glitter/Galeta, then
+   W3/Moore's), never one orphan, with Martin kept separate above. */
+.fayre-supporters-hero .narnia-landscape__copy{container-type:inline-size;container-name:herocopy}
+@container herocopy (max-width:13rem){
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{max-width:160px}
+}
+@media(min-width:390px){
+  @container herocopy (max-width:13rem){
+    .fayre-supporters-hero .narnia-landscape__supporters-partners{max-width:198px}
+  }
+}
 /* Nick (19 Nov 2026, 18:52, design agent 4-mark spec): the supporters hero
    opts out of the shared +48px snow-bank clearance (christmas.css, via
    [data-supporters-hero]) - the sponsor mark row consumes that slack and
