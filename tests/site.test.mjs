@@ -154,6 +154,7 @@ test("navigation exposes the menu on Home and both menus on interior pages", asy
       const expected = ["/", "/newsletter/", "/whats-on/", "/fundraising/", "/get-involved/", "/uniform/"];
       if (label === "Mobile navigation") {
         expected.splice(3, 0, "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/", "/christmas-fayre-supporters/");
+        expected.splice(expected.indexOf("/get-involved/"), 1);
         expected.push("/contact/");
       }
       assert.deepEqual(destinations, expected.map((destination) => `${basePath}${destination}`));

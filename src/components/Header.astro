@@ -28,7 +28,10 @@ const menuEvents = ["christmas-fayre-2026"].flatMap((id) => {
     { href: "/christmas-fayre-supporters/", label: "Fayre Supporters" },
   ];
 });
-const mobile = [...desktop.slice(0, 3), menuEvents[0], ...desktop.slice(3)];
+// Get Involved leaves the phone menu only (Nick, 19 Nov 2026): the Christmas Fayre
+// subgroup grew the panel past the no-scroll fit at 667px. Desktop keeps it;
+// on phones it stays reachable from the homepage quick rows and the footer.
+const mobile = [...desktop.slice(0, 3), menuEvents[0], ...desktop.slice(3).filter((item) => item.href !== "/get-involved/")];
 const menuSubEvents = menuEvents.slice(1);
 const mobileOnly = [
   { href: "/contact/", label: "Contact Us" },

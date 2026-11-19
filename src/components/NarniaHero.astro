@@ -2,7 +2,7 @@
 import FayreDonationsNotice from './FayreDonationsNotice.astro';
 import {withBase} from '../lib/urls';
 import {ordinalDateFormatter,formatEventTimeRange} from '../lib/dates';
-const {event,eventPage=false,homepage=false,volunteerPage=false,snowfall=false}=Astro.props;
+const {event,eventPage=false,homepage=false,volunteerPage=false,supportersPage=false,snowfall=false}=Astro.props;
 // Fixed pseudo-random spread (prime-number strides) so the gutters look uneven but stay deterministic.
 const SNOWFLAKE_COUNT = 20;
 const flakes = snowfall ? Array.from({ length: SNOWFLAKE_COUNT }, (_, i) => ({
@@ -18,7 +18,7 @@ const date=homepage
   ? new Intl.DateTimeFormat('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'Europe/London'}).format(new Date(event.start)).replace(',', '')
   : ordinalDateFormatter({weekday:'long',timeZone:'Europe/London'})(event.start);
 ---
-<section class="narnia-landscape" aria-label="Christmas Fayre" id={eventPage ? "sign-up" : undefined} data-homepage-christmas={homepage ? "" : undefined} data-hero-snow={snowfall ? "" : undefined} style={homepage ? `--narnia-woodland:url(${withBase('/brand/narnia-woodland-continuation.avif')})` : undefined}>
+<section class={supportersPage ? "narnia-landscape narnia-landscape--supporters" : "narnia-landscape"} aria-label={supportersPage ? "Fayre Supporters" : "Christmas Fayre"} id={eventPage ? "sign-up" : undefined} data-homepage-christmas={homepage ? "" : undefined} data-hero-snow={snowfall ? "" : undefined} style={homepage ? `--narnia-woodland:url(${withBase('/brand/narnia-woodland-continuation.avif')})` : undefined}>
 <img class="narnia-landscape__art" src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
 <div class="narnia-landscape__body">
 {snowfall && <div class="xmas-snow" aria-hidden="true">
@@ -26,12 +26,14 @@ const date=homepage
   <div class="xmas-snow__bank" />
 </div>}
 <div class="narnia-landscape__copy">
-<h1 id="xmas-title">Christmas <em>Fayre</em>{volunteerPage && <> <span class="narnia-landscape__subtitle">Volunteering</span></>}</h1>
-<p class="narnia-landscape__date">{date}<span class="narnia-landscape__date-divider"> · </span><span class="narnia-landscape__time">{formatEventTimeRange(event.start,event.end).replace(/(?<=\d)-(?=\d)/g,' - ')}</span></p>
-{!volunteerPage && <p class="narnia-landscape__venue">{event.location}<br />{event.entry}</p>}
-<div class="narnia-landscape__actions"><a class="button narnia-landscape__action" href={volunteerPage ? signupUrl : eventPage ? withBase(volunteerPath) : withBase(event.path)} target={volunteerPage ? '_blank' : undefined} rel={volunteerPage ? 'noopener noreferrer' : undefined}><span class="cta-label">{volunteerPage ? "" : eventPage ? "" : "Event "}<span class="cta-word">{volunteerPage ? "Sign u" : eventPage ? "Voluntee" : "detail"}<span class="cta-tail">{volunteerPage ? "p" : eventPage ? "r" : "s"}{volunteerPage ? <span class="external-link-icon cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span> : <span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>}</span></span>{volunteerPage && <span class="visually-hidden"> (opens JustSignup in a new tab)</span>}</span></a>
+<h1 id="xmas-title">{supportersPage ? <>Fayre <em>Supporters</em></> : <>Christmas <em>Fayre</em>{volunteerPage && <> <span class="narnia-landscape__subtitle">Volunteering</span></>}</>}</h1>
+{supportersPage && <p class="narnia-landscape__intro">Thank you to the local businesses behind this year's Christmas Fayre.</p>}
+{!supportersPage && <p class="narnia-landscape__date">{date}<span class="narnia-landscape__date-divider"> · </span><span class="narnia-landscape__time">{formatEventTimeRange(event.start,event.end).replace(/(?<=\d)-(?=\d)/g,' - ')}</span></p>}
+{!volunteerPage && !supportersPage && <p class="narnia-landscape__venue">{event.location}<br />{event.entry}</p>}
+{!supportersPage && <div class="narnia-landscape__actions"><a class="button narnia-landscape__action" href={volunteerPage ? signupUrl : eventPage ? withBase(volunteerPath) : withBase(event.path)} target={volunteerPage ? '_blank' : undefined} rel={volunteerPage ? 'noopener noreferrer' : undefined}><span class="cta-label">{volunteerPage ? "" : eventPage ? "" : "Event "}<span class="cta-word">{volunteerPage ? "Sign u" : eventPage ? "Voluntee" : "detail"}<span class="cta-tail">{volunteerPage ? "p" : eventPage ? "r" : "s"}{volunteerPage ? <span class="external-link-icon cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span> : <span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>}</span></span>{volunteerPage && <span class="visually-hidden"> (opens JustSignup in a new tab)</span>}</span></a>
 {homepage && <a class="button narnia-landscape__secondary narnia-landscape__action" href={withBase(volunteerPath)}><span class="cta-label"><span class="cta-word">Voluntee<span class="cta-tail">r<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></span></a>}
 {homepage && <a class="button narnia-landscape__secondary narnia-landscape__action" href={withBase("/christmas-fayre-art-competition/")}><span class="cta-label"><span class="cta-word">Art Competitio<span class="cta-tail">n<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></span></span></a>}</div>
+}
 {volunteerPage && <slot name="priority" />}
 {volunteerPage && <span class="sponsor-ribbon narnia-landscape__sponsor"><img src={withBase('/sponsors/martin-flashman.png')} alt="Martin Flashman and Co" width="1280" height="96" /></span>}
 
@@ -109,4 +111,9 @@ const date=homepage
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__date{font-size:1rem}
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__time{display:inline}
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__date-divider{display:inline}
+</style>
+<style is:global>
+/* Supporters hero: the family panel with title and a short intro only, so the
+   copy block keeps the shared 34rem floor but needs no actions/footer room. */
+.narnia-landscape__intro{font-size:1.05rem;line-height:1.7;margin:0;color:#f4ead1;max-width:34rem}
 </style>

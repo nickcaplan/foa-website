@@ -1,9 +1,8 @@
 import {test,expect} from '@playwright/test';
-// Hero geometry is locked across the three hero-carrying Fayre pages; the
-// supporters page has no Narnia hero (design spec, 18 Nov 2026) but shares the
-// journey navigation, checked on all four.
-const heroRoutes=['/events/christmas-fayre-2026/','/christmas-fayre-volunteering/','/christmas-fayre-art-competition/'];
-const navRoutes=[...heroRoutes,'/christmas-fayre-supporters/'];
+// Hero geometry is locked across the four hero-carrying Fayre pages; the
+// supporters page joined the shared Narnia hero family (Nick, 19 Nov 2026).
+const heroRoutes=['/events/christmas-fayre-2026/','/christmas-fayre-volunteering/','/christmas-fayre-art-competition/','/christmas-fayre-supporters/'];
+const navRoutes=heroRoutes;
 for(const width of [320,390,1024,1440]) for(const scale of [1,2]) for(const theme of ['day','night']) test(`Fayre shared frame ${width}/${scale}/${theme}`,async({page})=>{
  await page.setViewportSize({width,height:1000});
  const sizes:{width:number,height:number}[]=[];
@@ -36,5 +35,8 @@ for(const width of [320,390,1024,1440]) for(const scale of [1,2]) for(const them
  expect(Math.max(...sizes.map(s=>s.width))-Math.min(...sizes.map(s=>s.width))).toBeLessThanOrEqual(1);
  // Nick (17 Nov 2026): hero heights may differ by up to 10% - the Christmas Fayre event
  // hero carries the snow bank's clearance padding (#172). Widths stay pixel-locked.
- if(scale===1){const hs=sizes.map(s=>s.height);expect(Math.max(...hs)-Math.min(...hs)).toBeLessThanOrEqual(Math.min(...hs)*0.1);}
+ // The band covers the three content-density-matched heroes (event, volunteering,
+ // art); the supporters hero carries only a title and short intro (Nick, 19 Nov
+ // 2026), so it is shorter by design and outside the band.
+ if(scale===1){const hs=sizes.slice(0,3).map(s=>s.height);expect(Math.max(...hs)-Math.min(...hs)).toBeLessThanOrEqual(Math.min(...hs)*0.1);}
 });

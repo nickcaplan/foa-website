@@ -30,7 +30,7 @@ test("Martin Flashman and Co leads the page, before Ottershaw and The Glitter Tr
   page,
 }) => {
   await page.goto(route);
-  await expect(page.locator("h1")).toHaveText("Fayre supporters");
+  await expect(page.locator(".narnia-landscape h1")).toHaveText("Fayre Supporters");
   const headings = await page
     .locator(".fayre-lead__name, .supporter-card h3")
     .allTextContents();
@@ -91,40 +91,35 @@ test("every supporter logo renders with its alt text", async ({ page }) => {
   }
 });
 
-// Day-mode contrast guard: the hero title sits on the pale view-hero panel
-// (--green-light #dfeadd), where the shared xmas gold gradient reads 1.18:1.
-// The page override paints a solid deep gold (4.82:1) in day mode only.
-// Fails without the fayre-supporters.css day override (colour + fill + gradient).
-test("hero title keeps at least 3:1 contrast on the pale day panel", async ({
+// Family-hero guard (Nick, 19 Nov 2026): the supporters hero is the shared
+// dark winter panel - gold keyline, snow edge, cream title - in BOTH themes,
+// replacing the pale view-hero panel (whose shared gold read 1.18:1 in day).
+// Fails if the page loses the Narnia hero or the panel lightens.
+test("hero is the shared dark winter panel in day and night", async ({
   page,
 }) => {
-  await page.addInitScript(() => localStorage.setItem("foa-theme", "day"));
-  await page.goto(route);
-  const title = page.locator(".fayre-supporters-hero .view-hero h1");
-  await expect(title).toBeVisible();
-  const ratio = await title.evaluate((el) => {
-    const lum = (rgb: number[]) => {
-      const f = (c: number) =>
-        c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-      const [r, g, b] = rgb.map((c) => f(c / 255));
-      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-    };
-    const parse = (s: string) =>
-      s
-        .match(/[\d.]+/g)!
-        .slice(0, 3)
-        .map(Number);
-    const style = getComputedStyle(el);
-    if (style.backgroundImage !== "none")
-      throw new Error(
-        `title still paints a gradient: ${style.backgroundImage}`,
-      );
-    const fill = style.webkitTextFillColor;
-    const panel = getComputedStyle(el.closest(".view-hero")!).backgroundColor;
-    const [hi, lo] = [lum(parse(fill)), lum(parse(panel))].sort(
-      (a, b) => b - a,
+  for (const theme of ["day", "night"]) {
+    await page.addInitScript(
+      (t) => localStorage.setItem("foa-theme", t),
+      theme,
     );
-    return (hi + 0.05) / (lo + 0.05);
-  });
-  expect(ratio).toBeGreaterThanOrEqual(3);
+    await page.goto(route);
+    const hero = page.locator(".narnia-landscape").first();
+    await expect(hero).toBeVisible();
+    const title = hero.locator("h1");
+    await expect(title).toHaveText("Fayre Supporters");
+    const colours = await hero.evaluate((el) => {
+      const style = getComputedStyle(el);
+      return {
+        background: style.backgroundColor,
+        border: style.borderTopColor,
+        title: getComputedStyle(el.querySelector("h1")!).color,
+        snow: el.querySelector(".xmas-snow") !== null,
+      };
+    });
+    expect(colours.background, `${theme} panel`).toBe("rgb(16, 45, 56)");
+    expect(colours.border, `${theme} keyline`).toBe("rgb(185, 154, 91)");
+    expect(colours.title, `${theme} title`).toBe("rgb(255, 243, 213)");
+    expect(colours.snow, `${theme} snow edge`).toBe(true);
+  }
 });

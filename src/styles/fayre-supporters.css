@@ -42,11 +42,6 @@
     }
     .fayre-supporters__button:hover{background:#954052}
     .fayre-supporters__button:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}
-    .fayre-supporters__back{margin:2rem 0 2.5rem;font-size:.9rem}
-    .fayre-supporters__back a{color:#f4ead1;text-decoration:underline;text-underline-offset:.25em}
-    .fayre-supporters__back a:hover{color:#fff3d5}
-    .fayre-supporters__back a:focus-visible{outline:2px solid #edcb83;outline-offset:2px}
-    .fayre-supporters__back .cta-icon{display:inline-block;vertical-align:-.15em;width:1.1em;height:1.1em;margin-left:.15em}
     @media(min-width:48rem){.fayre-lead__well{padding:2rem}}
     @media(max-width:47.99rem){
       /* Fixed 16px gutters and card padding on phones (the site rule for strips), so
@@ -55,35 +50,6 @@
       .supporter-card{padding:12px}
       .fayre-lead__well{padding:12px}
     }
-/* Design review (round 2): the title gets its own full-width row below the
-   128px crest once the hero frame is under about 20em - the site's view-hero
-   stacking pattern (global stacks at 14em/14rem), raised for this route
-   because "Supporters" beside the crest needs more room. The rem twin tracks
-   enlarged root text, which container-query em cannot see (media queries
-   always evaluate at the initial 16px root), so 200% text stacks the same
-   way. No viewport-based title shrink; the h1 keeps the site zoom cap. */
-@container view-hero-copy (max-width: 20em) {
-  .xmas-theme .fayre-supporters-hero .mobile-page-heading { grid-template-columns: minmax(0, 1fr); }
-  .xmas-theme .fayre-supporters-hero .mobile-page-heading-brand { max-width: var(--mobile-page-logo-size); }
-}
-@media (max-width: 20rem) {
-  .xmas-theme .fayre-supporters-hero .mobile-page-heading { grid-template-columns: minmax(0, 1fr); }
-  .xmas-theme .fayre-supporters-hero .mobile-page-heading-brand { max-width: var(--mobile-page-logo-size); }
-}
-/* First xmas-theme page to use the standard PageHero panel: reconcile the two
-   opening rules. xmas artwork must start at y=0 (xmas zeroes main padding),
-   while view-hero pages get the panel at y=16 via main padding. With both
-   matching, the later view-hero rule was winning and pushing the stage down.
-   Keep main at 0 and give the panel its 16px from its own margin instead -
-   the stage is a BFC (overflow:clip), so the margin stays contained. */
-@media (max-width: 63.99rem) {
-  .xmas-theme #main-content:has(.view-hero) { padding-top: 0; }
-  .xmas-theme #main-content:has(.view-hero) .view-hero { margin-top: max(1rem, env(safe-area-inset-top, 0px)); }
-  /* overflow:clip does not make .xmas-stage a BFC, so the panel margin would
-     collapse up to the body and push the stage down; the wrapper contains it. */
-  .xmas-theme .fayre-supporters-hero { display: flow-root; }
-}
-
 @media(min-width:48rem){
   /* One axis for the lead feature on wider screens: well, name, copy and CTA
      all centred in the full-width surface. */
@@ -91,14 +57,4 @@
   .fayre-lead__well{margin-inline:auto}
   .fayre-lead__name{text-align:center}
   .fayre-lead__thanks{margin-inline:auto}
-}
-/* Day mode: the shared xmas gold (solid #f3d27c under a #fbe7a6->#b8872a gradient,
-   christmas.css) sits on the pale hero panel (--green-light #dfeadd) at 1.18:1,
-   under the 3:1 large-text floor. Night keeps the gold (7.95:1 on #293d2e).
-   Deep gold #7a601c measures 4.82:1 against the day panel; drop the gradient
-   and transparent text-fill in day so the solid colour is what paints. */
-:root:not([data-theme="night"]) .xmas-theme .fayre-supporters-hero .view-hero h1 {
-  background: none;
-  -webkit-text-fill-color: currentColor;
-  color: #7a601c;
 }

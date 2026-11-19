@@ -42,7 +42,6 @@ test.describe("mobile menu touch journeys", () => {
     await page.goto("/");
 
     for (const destination of [
-      { name: "Get Involved", path: "/get-involved/" },
       { name: "Uniform", path: "/uniform/" },
       { name: "Contact Us", path: "/contact/" },
       { name: "Home", path: "/" },
@@ -64,6 +63,22 @@ test.describe("mobile menu touch journeys", () => {
       await expect(page.locator("[data-mobile-menu]")).toHaveAttribute("aria-hidden", "true");
     }
     expect(errors).toEqual([]);
+  });
+
+  // Get Involved is not in the phone menu (Nick, 19 Nov 2026); phones reach it
+  // from the homepage quick row and the footer.
+  test("Get Involved stays reachable from the homepage and footer on phones", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Get involved" }).first().click();
+    await expect(page).toHaveURL(/\/get-involved\/$/);
+    await expect(page.locator("main h1:visible")).toBeVisible();
+    await page.goto("/");
+    await page.getByRole("contentinfo").getByRole("link", { name: "Get Involved" }).click();
+    await expect(page).toHaveURL(/\/get-involved\/$/);
+    await expect(page.locator("main h1:visible")).toBeVisible();
+    await page.getByRole("button", { name: "Open menu" }).click();
+    const navigation = page.getByRole("navigation", { name: "Mobile navigation" });
+    await expect(navigation.getByRole("link", { name: "Get Involved", exact: true })).toHaveCount(0);
   });
 });
 
@@ -166,8 +181,8 @@ test.describe("mobile navigation", () => {
 
     const navigation = page.getByRole("navigation", { name: "Mobile navigation" });
     await expect(navigation.getByRole("link"))
-      .toHaveText(["Home", "Newsletter", "What's On", "Christmas Fayre", "Fayre Volunteering", "Art Competition", "Fayre Supporters", "Fundraising", "Get Involved", "Uniform", "Contact Us"]);
-    await expect(navigation.locator(".mobile-menu-arrow")).toHaveCount(10);
+      .toHaveText(["Home", "Newsletter", "What's On", "Christmas Fayre", "Fayre Volunteering", "Art Competition", "Fayre Supporters", "Fundraising", "Uniform", "Contact Us"]);
+    await expect(navigation.locator(".mobile-menu-arrow")).toHaveCount(9);
     for (const arrow of await navigation.locator(".mobile-menu-arrow").all()) {
       await expect(arrow).toHaveAttribute("aria-hidden", "true");
     }
