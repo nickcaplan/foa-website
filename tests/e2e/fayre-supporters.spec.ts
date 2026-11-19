@@ -409,40 +409,52 @@ test("the heading ink always clears the card logo", async ({ page }) => {
   }
 });
 
-// Nick (19 Nov 2026, 18:52, design agent 4-card spec): from 1100px the three
-// partner cards share one row of equal columns - copy starts level and the
-// CTAs bottom-align. Below that each card takes a full-width row of its own
-// (no equal-height across rows). Fails if the desktop trio drifts out of
-// alignment or the tablet layout keeps side-by-side cards.
-test("the three partner cards align in their desktop row and stack full-width below", async ({
+// Nick (19 Nov 2026, 22:24, on #213): the desktop rows use the same compact
+// structure as mobile - logo top right beside the title, title top left,
+// copy and CTA below. Six cards form two rows of three equal columns with
+// equal card heights and bottom-aligned CTAs per row; below the switch each
+// card takes a full-width row of its own. Fails if the stacked logo band or
+// its floors return, or the tablet layout keeps side-by-side cards.
+test("desktop partner rows keep the compact structure with aligned CTAs", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(route);
   const m = await page.evaluate(() =>
     [...document.querySelectorAll(".supporter-card")].map((card) => {
-      const copy = card
-        .querySelector("p:not(.supporter-card__actions)")!
-        .getBoundingClientRect();
+      const c = card.getBoundingClientRect();
+      const padL = parseFloat(getComputedStyle(card).paddingLeft);
+      const padR = parseFloat(getComputedStyle(card).paddingRight);
+      const padT = parseFloat(getComputedStyle(card).paddingTop);
+      const h3 = card.querySelector("h3")!.getBoundingClientRect();
+      const logoImg = card.querySelector(".supporter-card__logo img");
+      const logo = logoImg ? logoImg.getBoundingClientRect() : null;
       const cta = card
         .querySelector(".supporter-card__actions")!
         .getBoundingClientRect();
-      return { copyTop: copy.top, ctaBottom: cta.bottom };
+      return {
+        top: c.top,
+        h: c.height,
+        titleTop: h3.top - (c.top + padT),
+        titleLeft: h3.left - (c.left + padL),
+        logoFlushRight: logo ? c.right - padR - logo.right : null,
+        logoVsTitle: logo ? logo.top - h3.top : null,
+        ctaBottom: cta.bottom,
+      };
     }),
   );
   expect(m.length).toBe(6);
-  // Six cards form two rows of three equal columns; copy starts level and
-  // CTAs bottom-align within each row independently.
-  for (const row of [m.slice(0, 3), m.slice(3, 6)]) {
-    for (let i = 1; i < 3; i++) {
-      expect(
-        Math.abs(row[0].copyTop - row[i].copyTop),
-        `1440px card ${i}: copy start difference`,
-      ).toBeLessThanOrEqual(2);
-      expect(
-        Math.abs(row[0].ctaBottom - row[i].ctaBottom),
-        `1440px card ${i}: CTA bottom difference`,
-      ).toBeLessThanOrEqual(2);
+  for (const [rowIdx, row] of [m.slice(0, 3), m.slice(3, 6)].entries()) {
+    for (const [i, c] of row.entries()) {
+      const label = `1440px row ${rowIdx} card ${i}`;
+      expect(Math.abs(c.titleTop), `${label}: title at the top padding`).toBeLessThanOrEqual(2);
+      expect(Math.abs(c.titleLeft), `${label}: title flush left`).toBeLessThanOrEqual(2);
+      if (c.logoFlushRight !== null) {
+        expect(Math.abs(c.logoFlushRight), `${label}: logo flush right`).toBeLessThanOrEqual(2);
+        expect(Math.abs(c.logoVsTitle!), `${label}: logo top-aligned with title`).toBeLessThanOrEqual(6);
+      }
+      expect(Math.abs(row[0].h - c.h), `${label}: equal card height in row`).toBeLessThanOrEqual(2);
+      expect(Math.abs(row[0].ctaBottom - c.ctaBottom), `${label}: CTA bottom-aligned`).toBeLessThanOrEqual(2);
     }
   }
   await page.setViewportSize({ width: 768, height: 900 });
@@ -464,6 +476,68 @@ test("the three partner cards align in their desktop row and stack full-width be
   }
 });
 
+
+// Design agent re-review (19 Nov 2026, #213): the text-only Giardina card is
+// a deliberate variant - no logo band (a blank band read as unfinished), the
+// heading starts at the card's top padding, copy follows at the normal gap,
+// the CTA bottom-aligns with its row-mates and the outer card height matches
+// theirs. Fails if an empty logo band returns or the copy drops to the band's
+// old position. Pair with the desktop-title pin: the variant keeps the 24px
+// row title.
+test("the text-only card is a deliberate variant with no logo band", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(route);
+  const t = await page.evaluate(() => {
+    const card = document.querySelector(".supporter-card--text-only")!;
+    const c = card.getBoundingClientRect();
+    const pad = parseFloat(getComputedStyle(card).paddingTop);
+    const h3 = card.querySelector("h3")!;
+    const h3r = h3.getBoundingClientRect();
+    const copy = card
+      .querySelector("p:not(.supporter-card__actions)")!
+      .getBoundingClientRect();
+    const cta = card
+      .querySelector(".supporter-card__actions")!
+      .getBoundingClientRect();
+    const rowMates = [
+      ...document.querySelectorAll(
+        ".supporter-card:not(.supporter-card--text-only)",
+      ),
+    ]
+      .map((m) => {
+        const r = m.getBoundingClientRect();
+        return {
+          top: r.top,
+          h: r.height,
+          ctaBottom: m
+            .querySelector(".supporter-card__actions")!
+            .getBoundingClientRect().bottom,
+        };
+      })
+      .filter((m) => Math.abs(m.top - c.top) < 5);
+    return {
+      logoEls: card.querySelectorAll(".supporter-card__logo").length,
+      h3TopVsPad: h3r.top - (c.top + pad),
+      titleSize: getComputedStyle(h3).fontSize,
+      copyGap: copy.top - h3r.bottom,
+      cardH: c.height,
+      mateH: rowMates.map((m) => m.h),
+      ctaBottom: cta.bottom,
+      mateCtaBottom: rowMates.map((m) => m.ctaBottom),
+    };
+  });
+  expect(t.logoEls, "no logo band element").toBe(0);
+  expect(t.titleSize, "text-only card keeps the desktop title size").toBe("24px");
+  expect(Math.abs(t.h3TopVsPad), "heading at the top padding").toBeLessThanOrEqual(2);
+  expect(Math.abs(t.copyGap - 9.6), "normal copy gap").toBeLessThanOrEqual(2);
+  expect(t.mateH.length, "two row-mates").toBe(2);
+  for (const h of t.mateH)
+    expect(Math.abs(t.cardH - h), "equal outer card height").toBeLessThanOrEqual(2);
+  for (const b of t.mateCtaBottom)
+    expect(Math.abs(t.ctaBottom - b), "CTA bottom-aligned").toBeLessThanOrEqual(2);
+});
 
 // Nick (19 Nov 2026, 18:52, design agent 4-card spec): below 1100px each
 // partner card is a full-width row with the logo right, the copy left beside
@@ -585,21 +659,25 @@ test("card titles are bigger only in the desktop three-column row", async ({
   page,
 }) => {
   await page.goto(route);
-  const size = async () =>
+  const sizes = async () =>
     page.evaluate(() =>
-      parseFloat(getComputedStyle(document.querySelector(".supporter-card h3")!).fontSize),
+      [...document.querySelectorAll(".supporter-card h3")].map((h) =>
+        parseFloat(getComputedStyle(h).fontSize),
+      ),
     );
   await page.setViewportSize({ width: 1440, height: 900 });
-  expect(await size(), "1440px desktop row").toBe(24);
+  expect(await sizes(), "1440px desktop row").toEqual(Array(6).fill(24));
+  await page.setViewportSize({ width: 1152, height: 900 });
+  expect(await sizes(), "1152px switch: already the desktop row").toEqual(Array(6).fill(24));
   await page.setViewportSize({ width: 1151, height: 900 });
-  expect(await size(), "1151px single column").toBe(20);
+  expect(await sizes(), "1151px single column").toEqual(Array(6).fill(20));
   await page.setViewportSize({ width: 390, height: 900 });
-  expect(await size(), "390px phone").toBe(20);
+  expect(await sizes(), "390px phone").toEqual(Array(6).fill(20));
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.evaluate(
     () => (document.documentElement.style.fontSize = "32px"),
   );
-  expect(await size(), "1440px at 200% text stays compact-spec").toBe(40);
+  expect(await sizes(), "1440px at 200% text stays compact-spec").toEqual(Array(6).fill(40));
 });
 
 // Design re-review of 96024ee (19 Nov 2026, round 7): the page shared the

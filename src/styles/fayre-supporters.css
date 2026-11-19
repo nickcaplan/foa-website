@@ -82,36 +82,18 @@
        take the full card width once past it. The logo box is a fixed 7rem so
        the paired cards' copy starts level. The compact beside-logo layout
        stays on wider cards. */
-    /* Nick (19 Nov 2026, 18:52, design agent 4-card spec): on narrow cards -
-       phones, the 3-column desktop card (~450px), and every card at enlarged
-       text (the rem leg doubles at 200%) - the logo stacks on its own row
-       above the copy. Wide full-width cards keep the logo beside the copy.
-       The logo row is a fixed 7rem so the column-mates' headings start level
-       and the CTAs bottom-align. */
-    @container (max-width:40rem){
-      .supporter-card__logo{grid-column:1/-1;grid-row:1;justify-content:flex-start}
-      .supporter-card__logo img{max-height:7rem}
-      .supporter-card__copy{grid-column:1/-1;grid-row:2}
-    }
-    /* Design re-review (19 Nov 2026, ca0e1d3): the alignment floors (a 7rem
-       logo row and a two-line heading zone) exist ONLY where the partner
-       cards sit side by side - the >=1100px three-column row at normal text.
-       In single-column layouts they just strand empty bands (Galeta's short
-       wordmark on phone and enlarged tablet). The container rule reverts them
-       whenever the row has collapsed (enlarged text). Same 72rem switch as
-       the row itself, so the floors exist exactly where cards sit side by
-       side. */
-    @media(min-width:72rem){
-      .supporter-card__logo{height:7rem}
-      .supporter-card__copy>h3{min-height:2.6em}
-    }
-    /* Keyed off the PAGE container (the row's state), not the card's own
-       width: only a side-by-side row gets the floors. */
-    @container pageband (max-width:60rem){
-      .supporter-card__logo{height:auto}
-      .supporter-card__copy>h3{min-height:0}
-    }
-
+    /* Nick (19 Nov 2026, 22:24, on #213): the desktop three-column row keeps
+       the same compact structure as mobile - logo top right beside the
+       title, title top left, copy and CTA below. The former stacked logo
+       band and its alignment floors are gone; equal card heights and
+       bottom-aligned CTAs come from the row grid. */
+    /* Design agent re-review (19 Nov 2026): the text-only Giardina card is a
+       deliberate variant, not a card missing its logo. No logo at all: the
+       copy spans the card, the heading starts at the top padding, copy
+       follows at the normal gap, and the CTA bottom-aligns with its
+       row-mates under the row's equal card heights. */
+    .supporter-card--text-only{grid-template-columns:minmax(0,1fr)}
+    .supporter-card--text-only .supporter-card__copy{grid-column:1/-1}
 
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
     /* Nick (19 Nov 2026, after the compact cards shipped): bigger card titles
