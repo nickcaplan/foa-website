@@ -58,3 +58,15 @@
   .fayre-lead__name{text-align:center}
   .fayre-lead__thanks{margin-inline:auto}
 }
+
+/* Design review (19 Nov 2026): the shared hero base caps its title by viewport
+   (min(3rem,10vw) on phones, a 4.5vw clamp leg on desktop), so it cannot grow
+   with root text - at 200% it stays 32/39/64.8px. Each Fayre sibling carries a
+   page-scoped rem override; this is the supporters one. The calc leg keeps
+   100% text pixel-identical to the base rule and adds the root growth at 200%;
+   the 20cqi leg keeps "Supporters" whole inside the hero frame at the
+   narrowest containers (the panel is the inline-size container). */
+.xmas-theme .fayre-supporters-hero .narnia-landscape h1{font-size:clamp(2rem,calc(4.5vw + 1rem - 16px),4.5rem)!important}
+@media(max-width:47.99rem){
+  .xmas-theme .fayre-supporters-hero .narnia-landscape h1{font-size:min(3rem,calc(10vw + 1rem - 16px),20cqi)!important}
+}
