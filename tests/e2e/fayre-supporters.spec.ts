@@ -39,6 +39,9 @@ test("Martin Flashman and Co leads the page, before Ottershaw and The Glitter Tr
     "Ottershaw Christmas Tree Farm",
     "The Glitter Tree",
     "Galeta",
+    "W3 Colour",
+    "Moore's Tree Company",
+    "Giardina Family Butchers",
   ]);
   const lead = page.locator(".fayre-lead");
   await expect(lead.locator(".fayre-lead__label")).toHaveText(
@@ -151,14 +154,16 @@ test("card logos never overlap their headings at narrow widths and 200% text", a
           // Compact single-column cards float the logo top right and wrap the
           // heading ink around it, so box-overlap is the wrong check: measure
           // each heading line box against the logo image box instead.
+          const logoImg = el.querySelector(".supporter-card__logo img");
+          // Giardina Family Butchers is a text-only card: no logo, nothing to
+          // overlap, so there is no geometry to check.
+          if (!logoImg) return null;
           const range = document.createRange();
           range.selectNodeContents(h3);
           const lines = [...range.getClientRects()].map((r) => ({
             x: r.x, y: r.y, w: r.width, h: r.height,
           }));
-          const i = el
-            .querySelector(".supporter-card__logo img")!
-            .getBoundingClientRect();
+          const i = logoImg.getBoundingClientRect();
           const c = el.getBoundingClientRect();
           const pad = parseFloat(getComputedStyle(el).paddingRight);
           return {
@@ -169,6 +174,7 @@ test("card logos never overlap their headings at narrow widths and 200% text", a
             contentWidth: c.width - 2 * pad,
           };
         });
+        if (!geo) continue;
         const label = `${width}px ${theme} "${geo.text}"`;
         for (const ln of geo.lines) {
           const overlap =
@@ -382,9 +388,11 @@ test("the heading ink always clears the card logo", async ({ page }) => {
           // the line) or at least 8px of horizontal clearance.
           const range = document.createRange();
           range.selectNodeContents(h3);
-          const logo = card
-            .querySelector(".supporter-card__logo img")!
-            .getBoundingClientRect();
+          const logoImg = card.querySelector(".supporter-card__logo img");
+          // Text-only card (Giardina Family Butchers): no logo, no clearance
+          // to measure.
+          if (!logoImg) return [];
+          const logo = logoImg.getBoundingClientRect();
           return [...range.getClientRects()].map((ink) => ({
             stacked: logo.bottom <= ink.top + 2,
             gap: logo.left - ink.right,
@@ -422,16 +430,20 @@ test("the three partner cards align in their desktop row and stack full-width be
       return { copyTop: copy.top, ctaBottom: cta.bottom };
     }),
   );
-  expect(m.length).toBe(3);
-  for (let i = 1; i < 3; i++) {
-    expect(
-      Math.abs(m[0].copyTop - m[i].copyTop),
-      `1440px card ${i}: copy start difference`,
-    ).toBeLessThanOrEqual(2);
-    expect(
-      Math.abs(m[0].ctaBottom - m[i].ctaBottom),
-      `1440px card ${i}: CTA bottom difference`,
-    ).toBeLessThanOrEqual(2);
+  expect(m.length).toBe(6);
+  // Six cards form two rows of three equal columns; copy starts level and
+  // CTAs bottom-align within each row independently.
+  for (const row of [m.slice(0, 3), m.slice(3, 6)]) {
+    for (let i = 1; i < 3; i++) {
+      expect(
+        Math.abs(row[0].copyTop - row[i].copyTop),
+        `1440px card ${i}: copy start difference`,
+      ).toBeLessThanOrEqual(2);
+      expect(
+        Math.abs(row[0].ctaBottom - row[i].ctaBottom),
+        `1440px card ${i}: CTA bottom difference`,
+      ).toBeLessThanOrEqual(2);
+    }
   }
   await page.setViewportSize({ width: 768, height: 900 });
   await page.goto(route);
@@ -444,8 +456,8 @@ test("the three partner cards align in their desktop row and stack full-width be
       return { top: c.top, widthRatio: c.width / row.width };
     });
   });
-  expect(rows.length).toBe(3);
-  for (let i = 0; i < 3; i++) {
+  expect(rows.length).toBe(6);
+  for (let i = 0; i < 6; i++) {
     expect(rows[i].widthRatio, `768px card ${i}: full-width row`).toBeGreaterThan(0.98);
     if (i > 0)
       expect(rows[i].top, `768px card ${i}: own row`).toBeGreaterThan(rows[i - 1].top + 5);
@@ -476,26 +488,27 @@ test("single-column partner cards float the logo top right with a full-width CTA
         const copy = card
           .querySelector("p:not(.supporter-card__actions)")!
           .getBoundingClientRect();
-        const logo = card
-          .querySelector(".supporter-card__logo img")!
-          .getBoundingClientRect();
+        const logoImg = card.querySelector(".supporter-card__logo img");
+        const logo = logoImg ? logoImg.getBoundingClientRect() : null;
         const cta = card
           .querySelector(".supporter-card__actions")!
           .getBoundingClientRect();
         const inner = c.width - 2 * pad;
         return {
-          logoFlushRight: c.x + c.width - pad - logo.right,
-          logoTopVsTitle: logo.top - h3.top,
+          logoFlushRight: logo ? c.x + c.width - pad - logo.right : null,
+          logoTopVsTitle: logo ? logo.top - h3.top : null,
           titleTopLeft: h3.left - (c.x + pad),
-          ctaBelow: cta.top - Math.max(copy.bottom, logo.bottom),
+          ctaBelow: cta.top - Math.max(copy.bottom, logo ? logo.bottom : 0),
           ctaRatio: cta.width / inner,
           h3Min: getComputedStyle(card.querySelector("h3")!).minHeight,
         };
       }),
     );
     for (const [i, r] of ratios.entries()) {
-      expect(Math.abs(r.logoFlushRight), `${width}px card ${i}: logo flush right`).toBeLessThanOrEqual(2);
-      expect(Math.abs(r.logoTopVsTitle), `${width}px card ${i}: logo top-aligned with title`).toBeLessThanOrEqual(6);
+      if (r.logoFlushRight !== null) {
+        expect(Math.abs(r.logoFlushRight), `${width}px card ${i}: logo flush right`).toBeLessThanOrEqual(2);
+        expect(Math.abs(r.logoTopVsTitle!), `${width}px card ${i}: logo top-aligned with title`).toBeLessThanOrEqual(6);
+      }
       expect(Math.abs(r.titleTopLeft), `${width}px card ${i}: title top left`).toBeLessThanOrEqual(2);
       expect(r.ctaBelow, `${width}px card ${i}: CTA below text and logo`).toBeGreaterThanOrEqual(-1);
       expect(r.ctaRatio, `${width}px card ${i}: CTA full internal width`).toBeGreaterThan(0.85);
@@ -559,8 +572,8 @@ test("the three-column switch sits exactly at 1152px", async ({ page }) => {
       return new Set(tops).size;
     });
   };
-  expect(await cols(1151), "1151px: single column").toBe(3);
-  expect(await cols(1152), "1152px: three columns").toBe(1);
+  expect(await cols(1151), "1151px: single column").toBe(6);
+  expect(await cols(1152), "1152px: two rows of three columns").toBe(2);
 });
 
 // Design re-review of 96024ee (19 Nov 2026, round 7): the page shared the
@@ -786,16 +799,18 @@ test("enlarged text stacks the partner cards full-width with full-width CTAs", a
         top: c.top,
         widthRatio: c.width / row.width,
         ctaRatio: cta.width / (c.width - 2 * pad),
-        logoRowH: parseFloat(
-          getComputedStyle(card.querySelector(".supporter-card__logo")!).height,
-        ),
+        logoRowH: card.querySelector(".supporter-card__logo")
+          ? parseFloat(
+              getComputedStyle(card.querySelector(".supporter-card__logo")!).height,
+            )
+          : null,
         h3Min: getComputedStyle(card.querySelector("h3")!).minHeight,
         name: card.querySelector("h3")!.textContent,
       };
     });
   });
-  expect(m.length).toBe(3);
-  for (let i = 0; i < 3; i++) {
+  expect(m.length).toBe(6);
+  for (let i = 0; i < 6; i++) {
     expect(m[i].widthRatio, `${m[i].name}: full-width row`).toBeGreaterThan(0.98);
     if (i > 0)
       expect(m[i].top, `${m[i].name}: own row`).toBeGreaterThan(m[i - 1].top + 5);
@@ -805,8 +820,7 @@ test("enlarged text stacks the partner cards full-width with full-width CTAs", a
   // cards keep natural logo rows and no two-line heading minimum. Galeta's
   // short wordmark is the tell: a fixed 7rem row would strand it in an empty
   // band (224px at 200% text); natural sizing keeps it near its ~94px.
-  const galeta = m[2];
-  expect(galeta.name).toBe("Galeta");
+  const galeta = m.find((c) => c.name === "Galeta")!;
   expect(galeta.logoRowH, "Galeta: no fixed logo row").toBeLessThan(150);
   expect(galeta.h3Min, "Galeta: no heading floor").toBe("0px");
 });
@@ -822,9 +836,11 @@ test("partner CTAs share one width in the desktop row", async ({ page }) => {
       (b) => b.getBoundingClientRect().width,
     ),
   );
-  expect(w.length).toBe(3);
-  expect(Math.abs(w[0] - w[1]), "card 0/1 CTA width").toBeLessThanOrEqual(2);
-  expect(Math.abs(w[0] - w[2]), "card 0/2 CTA width").toBeLessThanOrEqual(2);
+  expect(w.length).toBe(6);
+  // Two rows of three equal columns: every CTA spans its card's full
+  // internal width, so all six share one width.
+  for (let i = 1; i < 6; i++)
+    expect(Math.abs(w[0] - w[i]), `card 0/${i} CTA width`).toBeLessThanOrEqual(2);
 });
 
 test("partner CTAs share one height across the whole three-column range", async ({
@@ -841,9 +857,12 @@ test("partner CTAs share one height across the whole three-column range", async 
         (b) => b.getBoundingClientRect().height,
       ),
     );
-    expect(h.length, `CTA count at ${width}`).toBe(3);
-    expect(Math.abs(h[0] - h[1]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
-    expect(Math.abs(h[0] - h[2]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
+    expect(h.length, `CTA count at ${width}`).toBe(6);
+    // Row-mates share one CTA height; rows are independent of each other.
+    for (const row of [h.slice(0, 3), h.slice(3, 6)]) {
+      expect(Math.abs(row[0] - row[1]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
+      expect(Math.abs(row[0] - row[2]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
+    }
   }
   // Below the switch the row stays one full-width card per row (no 3-col wrap).
   await page.setViewportSize({ width: 1100, height: 900 });
@@ -852,5 +871,5 @@ test("partner CTAs share one height across the whole three-column range", async 
       (c) => Math.round(c.getBoundingClientRect().top),
     ),
   );
-  expect(new Set(tops.slice(-3)).size, "partner cards stack below 1152px").toBe(3);
+  expect(new Set(tops).size, "partner cards stack below 1152px").toBe(6);
 });
