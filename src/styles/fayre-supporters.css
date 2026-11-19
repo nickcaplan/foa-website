@@ -25,12 +25,17 @@
        otherwise keeps the shared family look (centred, gold flourish). */
     .xmas-theme .fayre-supporters__thanks-heading{margin:3rem 0 0}
         /* Nick (19 Nov 2026, 18:52, design agent 4-card spec): one full-width
-       partner card per row below 1100px; three equal columns from 1100px up
-       (68.75rem, evaluated at the initial 16px root like every media query).
+       partner card per row below 1152px; three equal columns from 1152px up
+       (72rem, evaluated at the initial 16px root like every media query).
        Rows size to their own content - no equal-height across rows. */
     .fayre-supporters{container-type:inline-size;container-name:pageband}
     .fayre-supporters__row{display:grid;grid-template-columns:minmax(0,1fr);gap:1.25rem;margin:1.25rem 0 0}
-    @media(min-width:68.75rem){.fayre-supporters__row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    /* Design verdict (19 Nov 2026, 74aaacd review): the three-column switch
+       waits until every CTA label fits on one line - the farm label (the
+       longest) wraps below a ~305px card, i.e. under ~1130px viewport - so
+       row-mate CTAs always share one height. 72rem = 1152px at the initial
+       16px root, with slack above the measured wrap point. */
+    @media(min-width:72rem){.fayre-supporters__row{grid-template-columns:repeat(3,minmax(0,1fr))}}
     /* Design re-review (19 Nov 2026, ca0e1d3): cards must respond to available
        copy width, not viewport alone. At enlarged text three columns leave the
        CTA labels too little room (labels split mid-word), so the row drops to
@@ -102,8 +107,10 @@
        cards sit side by side - the >=1100px three-column row at normal text.
        In single-column layouts they just strand empty bands (Galeta's short
        wordmark on phone and enlarged tablet). The container rule reverts them
-       whenever the row has collapsed (enlarged text). */
-    @media(min-width:68.75rem){
+       whenever the row has collapsed (enlarged text). Same 72rem switch as
+       the row itself, so the floors exist exactly where cards sit side by
+       side. */
+    @media(min-width:72rem){
       .supporter-card__logo{height:7rem}
       .supporter-card__copy>h3{min-height:2.6em}
     }
@@ -124,7 +131,7 @@
     .supporter-card .fayre-supporters__button{width:100%}
     /* Label font tapers at enlarged text (16px at 100%, 28px at 200%) so the longest
        words stay whole beside the icon lane, the #171 pattern. */
-    .fayre-supporters__button{display:inline-flex;align-items:center;justify-content:center;width:max-content;max-width:100%;min-height:3.5rem;border:1px solid #c9a65f;border-radius:1.75rem;background:#742f3c;color:#fff5e2;text-decoration:none;font-size:min(1rem,calc(12px + .5rem));font-weight:700;overflow-wrap:anywhere;box-sizing:border-box;text-align:center}
+    .fayre-supporters__button{display:inline-flex;align-items:center;justify-content:center;width:max-content;max-width:100%;min-height:3.5rem;border:1px solid #c9a65f;border-radius:1.75rem;background:#742f3c;color:#fff5e2;text-decoration:none;font-size:min(1rem,calc(12px + .5rem));font-weight:700;overflow-wrap:break-word;box-sizing:border-box;text-align:center} /* whole-word wrapping only - no mid-word splits (design verdict 19 Nov 2026) */
     .fayre-supporters__button .cta-label{display:block;width:100%;min-width:0;text-align:center}
     /* Hug-width buttons (>=48rem): the site's pill rule reserves exactly the
        icon's lane (icon + .9rem offset) as inline padding, which touches the

@@ -740,3 +740,31 @@ test("partner CTAs share one width in the desktop row", async ({ page }) => {
   expect(Math.abs(w[0] - w[1]), "card 0/1 CTA width").toBeLessThanOrEqual(2);
   expect(Math.abs(w[0] - w[2]), "card 0/2 CTA width").toBeLessThanOrEqual(2);
 });
+
+test("partner CTAs share one height across the whole three-column range", async ({
+  page,
+}) => {
+  // Design verdict (19 Nov 2026): below the fit point the farm label wraps and
+  // its CTA grows taller than its row-mates, so the three-column switch waits
+  // until every label fits one line (72rem = 1152px; measured wrap ~1130px).
+  await page.goto(route);
+  for (const width of [1152, 1200, 1300, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const h = await page.evaluate(() =>
+      [...document.querySelectorAll(".supporter-card .fayre-supporters__button")].map(
+        (b) => b.getBoundingClientRect().height,
+      ),
+    );
+    expect(h.length, `CTA count at ${width}`).toBe(3);
+    expect(Math.abs(h[0] - h[1]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
+    expect(Math.abs(h[0] - h[2]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
+  }
+  // Below the switch the row stays one full-width card per row (no 3-col wrap).
+  await page.setViewportSize({ width: 1100, height: 900 });
+  const tops = await page.evaluate(() =>
+    [...document.querySelectorAll(".supporter-card")].map(
+      (c) => Math.round(c.getBoundingClientRect().top),
+    ),
+  );
+  expect(new Set(tops.slice(-3)).size, "partner cards stack below 1152px").toBe(3);
+});
