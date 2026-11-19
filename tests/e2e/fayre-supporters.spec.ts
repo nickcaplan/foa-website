@@ -210,18 +210,26 @@ test("the gold rule above 'With thanks to' keeps a 3rem gap", async ({
   }
 });
 
-// Nick (19 Nov 2026, second pass): the Martin Flashman logo well was missing
-// the card treatment the other supporters get - it had the panel background
-// and radius but no border. Fails if the well loses its gold keyline.
-test("the Martin Flashman logo well carries the supporter card border", async ({
+// Nick (19 Nov 2026, 16:38): the whole lead-sponsor block is a card like the
+// supporter cards, visibly differentiated as the lead: same panel and radius,
+// but a solid brighter gold keyline instead of the supporters' faint one.
+// Fails if the block loses the card treatment or its lead keyline.
+test("the Martin Flashman lead block is a differentiated card", async ({
   page,
 }) => {
   await page.goto(route);
-  const border = await page
-    .locator(".fayre-lead__well")
-    .evaluate((el) => getComputedStyle(el).borderTop);
-  expect(border).toContain("1px");
-  expect(border).toContain("185, 154, 91");
+  const style = await page.locator(".fayre-lead").evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return {
+      background: cs.backgroundColor,
+      border: cs.borderTop,
+      radius: cs.borderTopLeftRadius,
+    };
+  });
+  expect(style.background).toBe("rgb(23, 56, 68)");
+  expect(style.border).toContain("1px");
+  expect(style.border).toContain("201, 166, 95");
+  expect(style.radius).toBe("10.4px");
 });
 
 // Nick (19 Nov 2026, second pass): too much whitespace inside the sponsor
@@ -296,6 +304,43 @@ test("supporter card copy and CTA use the full card width on narrow layouts", as
         expect(geo.copyRatio, `${label}: copy full width`).toBeGreaterThan(0.85);
         expect(geo.ctaRatio, `${label}: CTA row full width`).toBeGreaterThan(0.85);
       }
+    }
+  }
+});
+
+// Nick (19 Nov 2026, 16:42): the last supporter card sat flush against the
+// footer's gold line. Sibling Fayre pages all keep a 2.5rem gap between their
+// last content and the footer (measured on the Fayre, Volunteering and Art
+// Competition pages at 390 and 1440); the supporters page now matches that
+// rhythm. Fails if the page's bottom padding is removed or shrinks.
+test("the last supporter card keeps the sibling 2.5rem gap above the footer", async ({
+  page,
+}) => {
+  for (const width of [320, 390, 1440]) {
+    for (const scale of [1, 2]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      if (scale === 2)
+        await page.evaluate(
+          () => (document.documentElement.style.fontSize = "32px"),
+        );
+      const gap = await page.evaluate(() => {
+        const footer = document
+          .querySelector(".site-footer")!
+          .getBoundingClientRect();
+        const row = document
+          .querySelector(".fayre-supporters__row")!
+          .getBoundingClientRect();
+        return footer.top - row.bottom;
+      });
+      expect(
+        gap,
+        `${width}px ${scale * 100}%: gap above the footer gold line`,
+      ).toBeGreaterThanOrEqual(40 * scale - 2);
+      expect(
+        gap,
+        `${width}px ${scale * 100}%: gap above the footer gold line`,
+      ).toBeLessThanOrEqual(40 * scale + 16);
     }
   }
 });
