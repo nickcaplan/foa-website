@@ -19,7 +19,12 @@
     /* Nick (19 Nov 2026): logo sits in the card's top-right, bigger, with the
        copy directly below it spanning the full width - the heading shares the
        top row with the logo, so the copy moves up a full row. */
-    .supporter-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.6rem 1rem;align-items:start;margin:0;padding:1.5rem;background:#173844;border:1px solid #b99a5b55;border-radius:.65rem;color:#fff3d5;min-width:0}
+    /* The logo track is a definite percentage cap, not auto: an auto track sizes
+       to the image's intrinsic width, which at 200% text crushed the heading to
+       a 6px column and pushed the logo through the card padding (design review,
+       19 Nov 2026). minmax(0,38%) keeps the big top-right logo where there is
+       room and caps it so the heading always keeps its column. */
+    .supporter-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,38%);gap:.6rem 1rem;align-items:start;margin:0;padding:1.5rem;background:#173844;border:1px solid #b99a5b55;border-radius:.65rem;color:#fff3d5;min-width:0}
     .supporter-card__logo{grid-column:2;grid-row:1;display:flex;align-items:flex-start;justify-content:flex-end;height:auto}
     .supporter-card__logo img{max-width:100%;max-height:7rem;width:auto;height:auto;object-fit:contain;border-radius:.5rem}
     .supporter-card__logo--light img{background:#fff;padding:.4rem}

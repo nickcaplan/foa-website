@@ -120,3 +120,60 @@ test("hero is the shared dark winter panel in day and night", async ({
     expect(colours.snow, `${theme} snow edge`).toBe(true);
   }
 });
+// Design review (19 Nov 2026, head 2ebbe21): at 320/390px with 200% text the
+// enlarged card logos crushed the supporter headings - the logo's auto grid
+// track sized to the image, leaving the heading a 6px column and pushing the
+// logo through the card padding. The logo track is now reserved with a
+// definite cap (minmax(0,38%)), so the heading always keeps its column.
+// Fails if a logo touches its heading, escapes the card's content box, or the
+// heading column is crushed below a quarter of the content width.
+test("card logos never overlap their headings at narrow widths and 200% text", async ({
+  page,
+}) => {
+  for (const width of [320, 390]) {
+    for (const theme of ["day", "night"]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.addInitScript(
+        (t) => localStorage.setItem("foa-theme", t),
+        theme,
+      );
+      await page.goto(route);
+      await page.evaluate(
+        () => (document.documentElement.style.fontSize = "32px"),
+      );
+      const cards = page.locator(".supporter-card");
+      for (const card of await cards.all()) {
+        const geo = await card.evaluate((el) => {
+          const h = el.querySelector("h3")!.getBoundingClientRect();
+          const i = el
+            .querySelector(".supporter-card__logo img")!
+            .getBoundingClientRect();
+          const c = el.getBoundingClientRect();
+          const pad = parseFloat(getComputedStyle(el).paddingRight);
+          return {
+            text: el.querySelector("h3")!.textContent,
+            h: { x: h.x, y: h.y, w: h.width, h: h.height },
+            i: { x: i.x, y: i.y, w: i.width, h: i.height },
+            contentRight: c.x + c.width - pad,
+            contentWidth: c.width - 2 * pad,
+          };
+        });
+        const label = `${width}px ${theme} "${geo.text}"`;
+        const overlap =
+          geo.h.x < geo.i.x + geo.i.w &&
+          geo.i.x < geo.h.x + geo.h.w &&
+          geo.h.y < geo.i.y + geo.i.h &&
+          geo.i.y < geo.h.y + geo.h.h;
+        expect(overlap, `${label}: logo overlaps heading`).toBe(false);
+        expect(
+          geo.i.x + geo.i.w,
+          `${label}: logo stays inside the card's content box`,
+        ).toBeLessThanOrEqual(geo.contentRight + 1);
+        expect(
+          geo.h.w,
+          `${label}: heading keeps a usable column`,
+        ).toBeGreaterThanOrEqual(geo.contentWidth * 0.25);
+      }
+    }
+  }
+});
