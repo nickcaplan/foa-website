@@ -17,7 +17,8 @@ for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(cons
  await expect(page.locator('.fayre-volunteer__email')).toHaveAttribute('href',/^mailto:/);
  for(const range of await page.locator('.fayre-volunteer__schedule dd').all()) await expect(range).toHaveCSS('white-space','nowrap');
  // The "Most help needed" status banner and last-updated line intentionally sit above the grid.
- if(scale===1)expect(await page.locator('.fayre-volunteer__card').first().evaluate(n=>n.getBoundingClientRect().top)).toBeLessThan(width<500?700:800);
+ // The shared Fayre nav wraps to a second row at 320px (4 tabs), pushing content down one nav row (~37px); 760 keeps guarding against further drift.
+  if(scale===1)expect(await page.locator('.fayre-volunteer__card').first().evaluate(n=>n.getBoundingClientRect().top)).toBeLessThan(width<500?760:800);
  for(const link of await page.locator('.fayre-volunteer__action').all()){await expect(link).toHaveAttribute('href',/^https:\/\/justsignup.io\/s\/uhyd1u3wq4#s-/);await expect(link).toHaveAttribute('rel','noopener noreferrer');await expect(link).toHaveAttribute('target','_blank')}
  expect(requests).toEqual([]);await expect(page.locator('iframe')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBe(0);

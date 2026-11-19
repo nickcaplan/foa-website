@@ -4556,7 +4556,7 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)!important}
    adds full width in the 16px gutters. Component-scoped twins of this
    rule live in FayreSupporter.astro and EventRow.astro (scoped styles
    beat globals). */
-main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):not(.fundraising-card__cta .button):has(svg){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
+main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):not(.fundraising-card__cta .button):not(.fayre-supporters__button):has(svg){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;column-gap:0!important;

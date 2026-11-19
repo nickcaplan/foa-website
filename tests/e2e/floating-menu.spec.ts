@@ -19,9 +19,9 @@ for (const width of [320, 390, 768, 1023]) {
       expect(before!.width).toBe(48);
       expect(before!.height).toBe(48);
       expect(before!.x + before!.width).toBeLessThanOrEqual(width);
-      if(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route)) {
+      if(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/", "/christmas-fayre-supporters/"].includes(route)) {
         // Approved: these pages open with the homepage identity bar on mobile.
-        if(route !== "/christmas-fayre-art-competition/")await expect(page.locator('.narnia-landscape h1')).toHaveText(route === '/christmas-fayre-volunteering/' ? 'Christmas Fayre Volunteering' : 'Christmas Fayre');
+        if(route !== "/christmas-fayre-art-competition/")await expect(page.locator('.narnia-landscape h1')).toHaveText(route === '/christmas-fayre-volunteering/' ? 'Christmas Fayre Volunteering' : route === '/christmas-fayre-supporters/' ? 'Fayre Supporters' : 'Christmas Fayre');
         await expect(page.locator('.homepage-mobile-identity')).toBeVisible();
       } else {
         const logo = page.locator(".page-logo-home:visible");
@@ -34,14 +34,14 @@ for (const width of [320, 390, 768, 1023]) {
         expect(logoBox.width, `${route}: approved 128px logo size`).toBe(128);
         expect(logoBox.x, `${route}: consistent left anchor`).toBe(32);
         expect(logoBox.y, `${route}: consistent top anchor`).toBe(40);
-        if(route.includes("fireworks"))expect(heading.y, `${route}: retired heading stacks below logo`).toBeGreaterThanOrEqual(logoBox.y+logoBox.height);
+        if(route.includes("fireworks"))expect(heading.y, `${route}: heading stacks below the crest`).toBeGreaterThanOrEqual(logoBox.y+logoBox.height);
         else expect(heading.x, `${route}: the heading sits beside the logo`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
       }
-      const logoBottom = await page.locator(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route) ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
+      const logoBottom = await page.locator(["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/", "/christmas-fayre-supporters/"].includes(route) ? ".homepage-mobile-identity" : ".mobile-page-logo:visible").evaluate((element) => element.getBoundingClientRect().bottom);
       const panel = page.locator(".view-hero");
       if (await panel.count()) {
         // Identity-bar routes open with the bar flush to the top, so the hero panel starts below it instead of at the usual 16px.
-        const identityBarRoute = ["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route);
+        const identityBarRoute = ["/", "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/", "/christmas-fayre-supporters/"].includes(route);
         expect((await panel.boundingBox())!.y, route).toBe(identityBarRoute ? logoBottom : 16);
         const eyebrow = await panel.locator(".eyebrow").boundingBox();
         expect(eyebrow!.y, `${route}: eyebrow should clear the floating controls`).toBeGreaterThanOrEqual(before!.y + before!.height);
@@ -122,7 +122,7 @@ for (const width of [320, 390, 768, 1023]) {
       if (route !== "/") {
         await page.goto(route);
         // Identity-bar routes link home from the bar; standard pages from the mobile hero logo.
-        const homeLink = ["/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/"].includes(route) ? ".homepage-mobile-identity__home" : ".page-logo-home:visible";
+        const homeLink = ["/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/", "/christmas-fayre-supporters/"].includes(route) ? ".homepage-mobile-identity__home" : ".page-logo-home:visible";
         await page.locator(homeLink).click();
         await expect(page).toHaveURL(/\/$/);
         await expect(page.locator("body")).toHaveClass("homepage");
