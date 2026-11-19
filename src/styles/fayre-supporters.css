@@ -24,10 +24,12 @@
        class on the selector (0,2,0) makes the gap actually apply. The heading
        otherwise keeps the shared family look (centred, gold flourish). */
     .xmas-theme .fayre-supporters__thanks-heading{margin:3rem 0 0}
-        /* Two equal columns at normal text (the 45% leg), stacking once enlarged text
-       outgrows them (the rem leg), the #180 pattern: media queries always evaluate
-       at the initial 16px root, so only the minmax legs see text size. */
-    .fayre-supporters__row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,max(calc(14rem + 16px),45%)),1fr));gap:1.25rem;margin:1.25rem 0 0}
+        /* Nick (19 Nov 2026, 18:52, design agent 4-card spec): one full-width
+       partner card per row below 1100px; three equal columns from 1100px up
+       (68.75rem, evaluated at the initial 16px root like every media query).
+       Rows size to their own content - no equal-height across rows. */
+    .fayre-supporters__row{display:grid;grid-template-columns:minmax(0,1fr);gap:1.25rem;margin:1.25rem 0 0}
+    @media(min-width:68.75rem){.fayre-supporters__row{grid-template-columns:repeat(3,minmax(0,1fr))}}
     /* Nick (19 Nov 2026): logo sits in the card's top-right, bigger, with the
        copy directly below it spanning the full width - the heading shares the
        top row with the logo, so the copy moves up a full row. */
@@ -45,14 +47,21 @@
        under the heading - and padding/gaps are tightened.
        Row template auto/1fr/auto pins the CTA row to the card bottom, so the
        paired cards' buttons line up across the row (design round 7). */
+    /* Grid rows: logo/heading band, copy (1fr), CTA. The card itself cannot be
+       restyled by its own container queries (a container query only reaches
+       descendants), so the item placements below flip between the beside-logo
+       and stacked layouts while the 3-row template stays put. */
     .supporter-card{container-type:inline-size;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,min(38%,8rem));grid-template-rows:auto 1fr auto;gap:.5rem 1rem;align-items:start;margin:0;padding:1.25rem;background:#173844;border:1px solid #b99a5b55;border-radius:.65rem;color:#fff3d5;min-width:0}
     .supporter-card__logo{grid-column:2;grid-row:1/3;display:flex;align-items:flex-start;justify-content:flex-end;height:auto}
     .supporter-card__logo img{max-width:100%;max-height:7rem;width:auto;height:auto;object-fit:contain;border-radius:.5rem}
     .supporter-card__logo--light img{background:#fff;padding:.4rem}
-    .supporter-card__copy{display:contents}
-    .supporter-card__copy>*{grid-column:1}
-    .supporter-card__copy>h3{grid-column:1;grid-row:1}
-    .supporter-card__copy>.supporter-card__actions{grid-column:1/-1;align-self:end}
+    /* Galeta's dark-ink wordmark on a warm cream tile (#FFF6EB), width-capped
+       so the wide mark does not fill the stacked card the way a tall logo
+       fills its column. */
+    .supporter-card__logo--cream{align-items:center}
+    .supporter-card__logo--cream img{background:#fff6eb;padding:.4rem .6rem;max-width:12rem}
+    .supporter-card__copy{display:block;grid-column:1;grid-row:1/3;min-width:0}
+    .supporter-card__actions{grid-column:1/-1;grid-row:3;align-self:end}
     @media(min-width:48rem){.supporter-card__logo img{max-height:8rem}}
     /* Design re-review (19 Nov 2026, rounds 6-7): when the copy column would
        drop under ~240px (narrow viewports, tablet pairs, enlarged text) the
@@ -60,20 +69,19 @@
        take the full card width once past it. The logo box is a fixed 7rem so
        the paired cards' copy starts level. The compact beside-logo layout
        stays on wider cards. */
-    @container (max-width:21rem){
-      .supporter-card__logo{grid-row:1;height:7rem}
-      .supporter-card__copy>*{grid-column:1/-1}
-      .supporter-card__copy>h3{grid-column:1;grid-row:1}
-    }
-    /* Design re-review of 96024ee (round 7): at 320px with 200% text the
-       Ottershaw heading's longest word overflowed its column and touched the
-       logo. On cards this narrow the logo gets its own row above the heading,
-       so the heading always has the full card width. */
-    @container (max-width:16rem){
-      .supporter-card{grid-template-rows:auto auto 1fr auto}
-      .supporter-card__logo{grid-column:1/-1;grid-row:1;height:7rem}
-      .supporter-card__copy>*{grid-column:1/-1}
-      .supporter-card__copy>h3{grid-column:1/-1;grid-row:2}
+    /* Nick (19 Nov 2026, 18:52, design agent 4-card spec): on narrow cards -
+       phones, the 3-column desktop card (~450px), and every card at enlarged
+       text (the rem leg doubles at 200%) - the logo stacks on its own row
+       above the copy. Wide full-width cards keep the logo beside the copy.
+       The logo row is a fixed 7rem so the column-mates' headings start level
+       and the CTAs bottom-align. */
+    @container (max-width:30rem){
+      .supporter-card__logo{grid-column:1/-1;grid-row:1;height:7rem;justify-content:flex-start}
+      .supporter-card__logo img{max-height:7rem}
+      .supporter-card__copy{grid-column:1/-1;grid-row:2}
+      /* A two-line heading zone keeps the column-mates' copy starts level
+         (the 1100px+ three-column row). */
+      .supporter-card__copy>h3{min-height:2.6em}
     }
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
     .supporter-card h3:after{display:none}
@@ -134,62 +142,50 @@
   body.xmas-theme.narnia-volunteering .fayre-supporters-hero .narnia-landscape{min-height:27.25rem}
 }
 
-/* Nick (19 Nov 2026, 18:38, design agent Direction A): small sponsor marks
-   centred directly below the hero subtitle. A non-interactive duplicate group
-   (aria-hidden, empty alts - names and links stay in the body cards). Sizes in
-   CSS px per viewport tier, same in day and night. The two partner marks share
-   one flex group so if the row ever wraps they drop under Martin together,
-   never one orphan. 12px below the subtitle at normal text, 16px at enlarged
-   text (the rem leg), and always at least 32px clear of the hero bottom edge
-   (the snow bank peaks at 30px). The hero grows content-driven; type and
-   siblings are untouched. */
-.fayre-supporters-hero .narnia-landscape__supporters{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin:clamp(12px,.75rem,16px) auto 32px}
+/* Nick (19 Nov 2026, 18:38, design agent Direction A; revised 4-mark spec
+   18:52): small sponsor marks centred directly below the hero subtitle, in
+   sponsor order: Martin, Ottershaw, Glitter, Galeta. A non-interactive
+   duplicate group (aria-hidden, empty alts - names and links stay in the body
+   cards). Sizes in CSS px per viewport tier, same in day and night. The three
+   partner marks share one indivisible flex group: on phones the group wraps
+   under Martin as a unit (8px between the two lines), never one orphan and
+   never Galeta alone. 12px below the subtitle at normal text, 16px at
+   enlarged text (the rem leg), and always at least 32px clear of the hero
+   bottom edge (the snow bank peaks at 30px). The hero grows content-driven;
+   type and siblings are untouched. */
+.fayre-supporters-hero .narnia-landscape__supporters{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:16px;row-gap:8px;margin:clamp(12px,.75rem,16px) auto 0}
 .fayre-supporters-hero .narnia-landscape__supporters-lead{display:block;width:152px;height:auto}
-.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;align-items:center;gap:12px}
+.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;align-items:center;gap:16px}
 .fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:28px;height:40px;object-fit:contain}
 .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:40px;height:40px}
+/* Galeta's own dark-ink wordmark (from the Home link on galeta.co.uk) sits on
+   a warm cream tile (#FFF6EB, their fresh-dough) with Glitter's 4px radius -
+   near-black ink would vanish on the dark hero. Phone tile 80x40, logo 64
+   wide: 8px horizontal inset, vertical inset centres the 127:31 mark. */
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{background:#fff6eb;border-radius:4px;padding:12px 8px;box-sizing:border-box;width:80px;height:40px}
 @media(min-width:390px){
-  .fayre-supporters-hero .narnia-landscape__supporters{gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters{column-gap:20px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:20px}
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:176px}
 }
 @media(min-width:768px){
-  .fayre-supporters-hero .narnia-landscape__supporters{gap:28px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:28px}
+  .fayre-supporters-hero .narnia-landscape__supporters{column-gap:24px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:24px}
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:200px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:34px;height:48px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:48px;height:48px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:88px;height:48px;padding:15px 8px}
 }
 @media(min-width:1440px){
-  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:224px}
-}
-
-/* Nick (19 Nov 2026, 18:38, design agent Direction A): small sponsor marks
-   centred directly below the hero subtitle. A non-interactive duplicate group
-   (aria-hidden, empty alts - names and links stay in the body cards). Sizes in
-   CSS px per viewport tier, same in day and night. The two partner marks share
-   one flex group so if the row ever wraps they drop under Martin together,
-   never one orphan. 12px below the subtitle at normal text, 16px at enlarged
-   text (the rem leg), and always at least 32px clear of the hero bottom edge
-   (the snow bank peaks at 30px). The hero grows content-driven; type and
-   siblings are untouched. */
-.fayre-supporters-hero .narnia-landscape__supporters{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin:clamp(12px,.75rem,16px) auto 32px}
-.fayre-supporters-hero .narnia-landscape__supporters-lead{display:block;width:152px;height:auto}
-.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;align-items:center;gap:12px}
-.fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:28px;height:40px;object-fit:contain}
-.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:40px;height:40px}
-@media(min-width:390px){
-  .fayre-supporters-hero .narnia-landscape__supporters{gap:20px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:20px}
-  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:176px}
-}
-@media(min-width:768px){
-  .fayre-supporters-hero .narnia-landscape__supporters{gap:28px}
+  .fayre-supporters-hero .narnia-landscape__supporters{column-gap:28px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners{gap:28px}
-  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:200px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:34px;height:48px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:48px;height:48px}
-}
-@media(min-width:1440px){
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:224px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:96px;height:48px;padding:14px 8px}
 }
+/* Nick (19 Nov 2026, 18:52, design agent 4-mark spec): the supporters hero
+   opts out of the shared +48px snow-bank clearance (christmas.css, via
+   [data-supporters-hero]) - the sponsor mark row consumes that slack and
+   keeps its own 32px to the hero bottom edge (the bank peaks at 30px), so
+   the phone hero grows ~28-30px and stays inside Nick's 10% sibling band
+   instead of stacking the full row on top of the clearance. */
+body.xmas-theme.narnia-volunteering .fayre-supporters-hero .narnia-landscape__copy{padding-bottom:32px}

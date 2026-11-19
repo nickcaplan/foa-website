@@ -46,9 +46,9 @@ body.xmas-theme::before {
    (fayre-pages.css); each max() tapers back to its default at 200% text so the snow
    adds no hero height there: 112px - 2rem = 80px (32px + 48px) and 96px - 1.5rem =
    72px (24px + 48px) at a 16px root, both equal to the default at a 32px root. */
-body.narnia-volunteering .narnia-landscape[data-hero-snow] .narnia-landscape__copy { padding-bottom: max(2rem, calc(112px - 2rem)); }
+body.narnia-volunteering .narnia-landscape[data-hero-snow]:not([data-supporters-hero]) .narnia-landscape__copy { padding-bottom: max(2rem, calc(112px - 2rem)); }
 @media (max-width: 47.99rem) {
-  body.narnia-volunteering .narnia-landscape[data-hero-snow] .narnia-landscape__copy { padding-bottom: max(1.5rem, calc(96px - 1.5rem)); }
+  body.narnia-volunteering .narnia-landscape[data-hero-snow]:not([data-supporters-hero]) .narnia-landscape__copy { padding-bottom: max(1.5rem, calc(96px - 1.5rem)); }
 }
 /* Art hero: same bank clearance as the event page, on the hero itself. At >=48rem the
    hero is content-driven, so clearance is 46px (94px - 3rem) to keep the three hero
