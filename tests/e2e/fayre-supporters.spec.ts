@@ -672,3 +672,71 @@ test("the partner marks wrap together under Martin, never one orphan", async ({
   expect(Math.abs(m.otterTop - m.galetaTop)).toBeLessThanOrEqual(2);
   expect(Math.abs(m.lineGap - 8), "8px between the two lines").toBeLessThanOrEqual(2);
 });
+
+// Design re-review of ca0e1d3 (19 Nov 2026): enlarged text must collapse the
+// partner row to one full-width card per row - three narrow columns at 200%
+// split CTA labels mid-word ("farm's", "Glitter"). The row collapse keys off
+// the page band's inline size (40rem doubles with root text), so it responds
+// to available copy width, not viewport alone. Fails on ca0e1d3.
+test("enlarged text stacks the partner cards full-width with full-width CTAs", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(route);
+  await page.evaluate(
+    () => (document.documentElement.style.fontSize = "32px"),
+  );
+  const m = await page.evaluate(() => {
+    const row = document
+      .querySelector(".fayre-supporters__row")!
+      .getBoundingClientRect();
+    return [...document.querySelectorAll(".supporter-card")].map((card) => {
+      const c = card.getBoundingClientRect();
+      const pad = parseFloat(getComputedStyle(card).paddingLeft);
+      const cta = card
+        .querySelector(".supporter-card__actions .button")!
+        .getBoundingClientRect();
+      return {
+        top: c.top,
+        widthRatio: c.width / row.width,
+        ctaRatio: cta.width / (c.width - 2 * pad),
+        logoRowH: parseFloat(
+          getComputedStyle(card.querySelector(".supporter-card__logo")!).height,
+        ),
+        h3Min: getComputedStyle(card.querySelector("h3")!).minHeight,
+        name: card.querySelector("h3")!.textContent,
+      };
+    });
+  });
+  expect(m.length).toBe(3);
+  for (let i = 0; i < 3; i++) {
+    expect(m[i].widthRatio, `${m[i].name}: full-width row`).toBeGreaterThan(0.98);
+    if (i > 0)
+      expect(m[i].top, `${m[i].name}: own row`).toBeGreaterThan(m[i - 1].top + 5);
+    expect(m[i].ctaRatio, `${m[i].name}: CTA fills the card`).toBeGreaterThan(0.95);
+  }
+  // The alignment floors belong only to the side-by-side row: single-column
+  // cards keep natural logo rows and no two-line heading minimum. Galeta's
+  // short wordmark is the tell: a fixed 7rem row would strand it in an empty
+  // band (224px at 200% text); natural sizing keeps it near its ~94px.
+  const galeta = m[2];
+  expect(galeta.name).toBe("Galeta");
+  expect(galeta.logoRowH, "Galeta: no fixed logo row").toBeLessThan(150);
+  expect(galeta.h3Min, "Galeta: no heading floor").toBe("0px");
+});
+
+// Design re-review of ca0e1d3 (19 Nov 2026): where the partner cards form a
+// row, their CTAs share one consistent size - the card's full internal width.
+// Fails on ca0e1d3 (hug-content widths 307/280/198).
+test("partner CTAs share one width in the desktop row", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(route);
+  const w = await page.evaluate(() =>
+    [...document.querySelectorAll(".supporter-card .fayre-supporters__button")].map(
+      (b) => b.getBoundingClientRect().width,
+    ),
+  );
+  expect(w.length).toBe(3);
+  expect(Math.abs(w[0] - w[1]), "card 0/1 CTA width").toBeLessThanOrEqual(2);
+  expect(Math.abs(w[0] - w[2]), "card 0/2 CTA width").toBeLessThanOrEqual(2);
+});

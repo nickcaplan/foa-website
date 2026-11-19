@@ -28,8 +28,25 @@
        partner card per row below 1100px; three equal columns from 1100px up
        (68.75rem, evaluated at the initial 16px root like every media query).
        Rows size to their own content - no equal-height across rows. */
+    .fayre-supporters{container-type:inline-size;container-name:pageband}
     .fayre-supporters__row{display:grid;grid-template-columns:minmax(0,1fr);gap:1.25rem;margin:1.25rem 0 0}
     @media(min-width:68.75rem){.fayre-supporters__row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    /* Design re-review (19 Nov 2026, ca0e1d3): cards must respond to available
+       copy width, not viewport alone. At enlarged text three columns leave the
+       CTA labels too little room (labels split mid-word), so the row drops to
+       one full-width card per row: 40rem doubles with the root font, catching
+       every enlarged-text case while leaving normal-text desktop at three
+       columns. */
+    @container pageband (max-width:60rem){.fayre-supporters__row{grid-template-columns:minmax(0,1fr)}}
+    /* The same stacked, logo-above-copy layout follows the row collapse:
+       enlarged text stacks the cards at ANY width (the 60rem leg doubles with
+       root text); narrow cards at normal text stack via the card's own 40rem
+       query below. */
+    @container pageband (max-width:60rem){
+      .supporter-card__logo{grid-column:1/-1;grid-row:1;justify-content:flex-start}
+      .supporter-card__logo img{max-height:7rem}
+      .supporter-card__copy{grid-column:1/-1;grid-row:2}
+    }
     /* Nick (19 Nov 2026): logo sits in the card's top-right, bigger, with the
        copy directly below it spanning the full width - the heading shares the
        top row with the logo, so the copy moves up a full row. */
@@ -75,18 +92,36 @@
        above the copy. Wide full-width cards keep the logo beside the copy.
        The logo row is a fixed 7rem so the column-mates' headings start level
        and the CTAs bottom-align. */
-    @container (max-width:30rem){
-      .supporter-card__logo{grid-column:1/-1;grid-row:1;height:7rem;justify-content:flex-start}
+    @container (max-width:40rem){
+      .supporter-card__logo{grid-column:1/-1;grid-row:1;justify-content:flex-start}
       .supporter-card__logo img{max-height:7rem}
       .supporter-card__copy{grid-column:1/-1;grid-row:2}
-      /* A two-line heading zone keeps the column-mates' copy starts level
-         (the 1100px+ three-column row). */
+    }
+    /* Design re-review (19 Nov 2026, ca0e1d3): the alignment floors (a 7rem
+       logo row and a two-line heading zone) exist ONLY where the partner
+       cards sit side by side - the >=1100px three-column row at normal text.
+       In single-column layouts they just strand empty bands (Galeta's short
+       wordmark on phone and enlarged tablet). The container rule reverts them
+       whenever the row has collapsed (enlarged text). */
+    @media(min-width:68.75rem){
+      .supporter-card__logo{height:7rem}
       .supporter-card__copy>h3{min-height:2.6em}
+    }
+    /* Keyed off the PAGE container (the row's state), not the card's own
+       width: only a side-by-side row gets the floors. */
+    @container pageband (max-width:60rem){
+      .supporter-card__logo{height:auto}
+      .supporter-card__copy>h3{min-height:0}
     }
     .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
     .supporter-card h3:after{display:none}
     .supporter-card__copy>p:not(.supporter-card__actions){margin:.6rem 0 0;line-height:1.6;color:#f4ead1;text-wrap:balance}
     .supporter-card__actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0 0}
+    /* Design re-review (19 Nov 2026, ca0e1d3): the partner CTAs take one
+       consistent size - the card's full internal width - so row-mates always
+       match; the label wraps whole words inside (the cta-tail span keeps the
+       last word with the icon). */
+    .supporter-card .fayre-supporters__button{width:100%}
     /* Label font tapers at enlarged text (16px at 100%, 28px at 200%) so the longest
        words stay whole beside the icon lane, the #171 pattern. */
     .fayre-supporters__button{display:inline-flex;align-items:center;justify-content:center;width:max-content;max-width:100%;min-height:3.5rem;border:1px solid #c9a65f;border-radius:1.75rem;background:#742f3c;color:#fff5e2;text-decoration:none;font-size:min(1rem,calc(12px + .5rem));font-weight:700;overflow-wrap:anywhere;box-sizing:border-box;text-align:center}
@@ -139,7 +174,11 @@
    the volunteering hero (measured 436px at 1440). Only >=75rem: at 1024 the
    four heroes already sit inside the 10% parity band on the shared floor. */
 @media(min-width:75rem){
-  body.xmas-theme.narnia-volunteering .fayre-supporters-hero .narnia-landscape{min-height:27.25rem}
+  /* Fixed px, not rem: the floor compensates for a viewport-width gap, so it
+     must not grow with root text - at 200% the heroes are content-driven and
+     a doubling floor put Supporters 11% over its siblings (design re-review
+     of ca0e1d3). 436px = the volunteering hero's measured 1440px height. */
+  body.xmas-theme.narnia-volunteering .fayre-supporters-hero .narnia-landscape{min-height:436px}
 }
 
 /* Nick (19 Nov 2026, 18:38, design agent Direction A; revised 4-mark spec
