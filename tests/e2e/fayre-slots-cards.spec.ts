@@ -77,7 +77,10 @@ for (const width of [320, 390, 640, 768, 820, 900, 1024, 1280, 1440]) {
           const range = document.createRange();
           const texts: Text[] = [];
           (function walk(n: Node) { for (const c of n.childNodes) { if (c.nodeType === 3 && !c.parentElement?.closest(".visually-hidden")) texts.push(c as Text); else walk(c); } })(label);
-          for (const t of texts) { range.selectNodeContents(t); for (const r of range.getClientRects()) { if (r.width && !(r.right <= icon.left || r.left >= icon.right)) bad.push(`${card.dataset.activityName}: icon overlaps button text`); } }
+          // A collision needs overlap on both axes: with the icon inline after the
+          // wrapped label (doubled text), an earlier line can cross the icon's x
+          // range without touching it.
+          for (const t of texts) { range.selectNodeContents(t); for (const r of range.getClientRects()) { if (r.width && !(r.right <= icon.left || r.left >= icon.right) && !(r.bottom <= icon.top || r.top >= icon.bottom)) bad.push(`${card.dataset.activityName}: icon overlaps button text`); } }
         }
         return bad;
       });
