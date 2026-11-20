@@ -250,7 +250,7 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
    so the line never wraps mid-phrase ("55 / places left"). */
 @media(max-width:47.99rem){.fayre-volunteer__priority strong{display:block;margin:0 0 .1rem}}
 /* Nick (16 Nov 2026): the full-width CTA felt too wide. Cap the volunteering hero button to the same 22rem the other Fayre hero CTAs (and the Get involved role CTAs) use; min() keeps it full-width on phones and at 200% text. */
-.narnia-volunteering .narnia-landscape .button{max-width:100%!important}
+.narnia-volunteering .narnia-landscape .button{max-width:min(100%,230px)!important}
 .fayre-volunteer__count{display:inline;color:#edcb83;font-size:1.25rem;line-height:1.25;font-weight:800;font-variant-numeric:tabular-nums}
 .fayre-volunteer__count--zero{color:#9fb8a4}
 .fayre-volunteer__count-label{display:inline;min-width:0;max-width:100%;overflow-wrap:break-word;font-size:1rem;line-height:1.25;color:#f4ead1}
