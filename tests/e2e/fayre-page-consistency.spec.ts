@@ -3,7 +3,7 @@ import {test,expect} from '@playwright/test';
 // supporters page joined the shared Narnia hero family (Nick, 19 Nov 2026).
 const heroRoutes=['/events/christmas-fayre-2026/','/christmas-fayre-volunteering/','/christmas-fayre-art-competition/','/christmas-fayre-supporters/'];
 const navRoutes=heroRoutes;
-for(const width of [320,390,1024,1440]) for(const scale of [1,2]) for(const theme of ['day','night']) test(`Fayre shared frame ${width}/${scale}/${theme}`,async({page})=>{
+for(const width of [320,390,768,1024,1440]) for(const scale of [1,2]) for(const theme of ['day','night']) test(`Fayre shared frame ${width}/${scale}/${theme}`,async({page})=>{
  await page.setViewportSize({width,height:1000});
  const sizes:{width:number,height:number}[]=[];
  for(const route of heroRoutes){
