@@ -34,7 +34,7 @@ const desktopOrder: Record<string, number> = {
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="footer-brand-home" href={withBase("/")} aria-label="The Friends of Ashley home">
-          <img src={withBase(logo)} alt="" width="112" height="112">
+          <img class="reveal-on-load" src={withBase(logo)} alt="" width="112" height="112" loading="lazy" decoding="async">
           <h2>The Friends of Ashley</h2>
         </a>
         <p>The parent teacher association for Ashley C of E Primary School, Walton-on-Thames.</p>

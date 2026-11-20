@@ -4593,3 +4593,20 @@ main .newsletter-issue{padding-inline:max(4px,calc(8px - 0.5 * (1rem - 16px)))!i
    per the shared geometry. */
 main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action,.fayre-volunteer__email):has(svg),main .event-volunteer-link .button:has(svg){position:relative;padding-inline:min(max(56px,calc(1.05em + 1.8rem)),64px)!important}
 main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action,.fayre-volunteer__email):has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon),main .event-volunteer-link .button:has(svg) :is(.cta-icon,.external-link-icon,svg.cta-icon){position:absolute!important;inset:auto 14px auto auto!important;top:50%!important;translate:0 -50%!important;margin:0!important}
+
+/* Slow connections (approved 20 November 2026): images marked .reveal-on-load
+   stay invisible until their bytes arrive, then fade in, so visitors never see
+   an empty painted box (a tile's background sits on the img itself). The whole
+   rule is gated on the img-reveal class the inline head script adds, so with
+   scripting off every image renders normally, and an image that fails to load
+   is revealed by the error listener so its alt text still shows. */
+html.img-reveal img.reveal-on-load:not(.is-loaded){opacity:0}
+/* Painted containers around a reveal image (the sponsor well, member portrait
+   frame) stay unpainted while their image is pending too - otherwise they read
+   as an empty banner. The script marks the closest [data-reveal-box] when the
+   image inside it loads or fails. */
+html.img-reveal [data-reveal-box]:not(.is-loaded){background-color:transparent;border-color:transparent;box-shadow:none}
+@media(prefers-reduced-motion:no-preference){
+html.img-reveal img.reveal-on-load{transition:opacity .25s ease-in}
+html.img-reveal img.reveal-on-load.is-loaded{opacity:1}
+}
