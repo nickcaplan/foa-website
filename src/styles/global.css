@@ -4048,9 +4048,9 @@ body.menu-open .cookie-banner {
   align-items: start;
 }
 
+/* Nick (30 Oct 2026): all CTA pills in a stack are the same size. The role rows each live in their own container, so width:auto gave every pill its own length; 22rem fits the longest label ("Help at the Christmas Fayre") and max-width keeps enlarged text inside the column. */
 .involved-actions .involved-action {
-  width: auto;
-  max-width: 100%;
+  width: min(22rem, 100%);
 }
 
 @media (max-width: 47.99rem) {
@@ -4129,7 +4129,7 @@ body.menu-open .cookie-banner {
     height: var(--involved-heading-rule-size);
     background-image:
       linear-gradient(var(--green), var(--green)),
-      linear-gradient(var(--involved-skills-accent), var(--involved-skills-accent));
+      linear-gradient(var(--ink), var(--ink));
     background-size: calc((100% - var(--involved-column-gap)) / 2) 100%;
     background-position: left, right;
     background-repeat: no-repeat;
@@ -4141,7 +4141,7 @@ body.menu-open .cookie-banner {
     border-bottom-color: transparent;
   }
 
-  .involved-group:last-child {
+  .involved-group:nth-child(n + 3):last-child {
     grid-column: 1 / -1;
     grid-row: calc(var(--involved-paired-tracks) + 1);
     margin-top: var(--involved-section-gap);
@@ -4411,7 +4411,7 @@ main :is(a.button,button.button) :is(.cta-icon,.external-link-icon){position:abs
 main :is(a.button,button.button):has(:is(.cta-icon,.external-link-icon)){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
 a.button[href^="mailto:"]:has(.cta-icon){padding-inline:calc(1.3em + 1.8rem)!important}
 /* Feature-card buttons remain usable at enlarged text instead of shrinking to a word-width. */
-.involved-feature__actions{min-width:0}.involved-feature__actions .involved-action{width:100%;min-width:0}
+.involved-feature__actions{min-width:0;display:grid;grid-auto-rows:1fr}.involved-feature__actions .involved-action{width:100%;min-width:0}
 @media(max-width:47.99rem){.involved-feature__actions{display:grid;grid-template-columns:minmax(0,1fr)}}
 
 /* Keep words readable when root text is enlarged inside phone cards. */
@@ -4556,7 +4556,7 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)!important}
    adds full width in the 16px gutters. Component-scoped twins of this
    rule live in FayreSupporter.astro and EventRow.astro (scoped styles
    beat globals). */
-main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):not(.fundraising-card__cta .button):not(.fayre-supporters__button):has(svg){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
+main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):not(.uniform-action):not(.fundraising-card__cta .button):not(.fayre-supporters__button):has(svg){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;column-gap:0!important;
