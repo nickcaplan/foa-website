@@ -2,10 +2,10 @@ import {test,expect} from '@playwright/test';
 // The committee vacancy card must stay fully readable at enlarged text:
 // link visible, pill not overlapping, nothing clipped by the 4/5 box.
 // Co-Secretary vacancy always shows; the Co-Comms vacancy card is added from
-// 2026-11-28T00:00:00Z (and the departing Co-Comms member card hides then).
+// 2026-11-20T00:00:00Z (and the departing Co-Comms member card hides then).
 // Test both regimes so each card is actually exercised (invisible cards are
 // skipped by assertion).
-for(const flip of [{label:'pre-flip',time:'2026-11-27T12:00:00Z'},{label:'post-flip',time:'2026-11-29T12:00:00Z'}])
+for(const flip of [{label:'pre-flip',time:'2026-11-19T12:00:00Z'},{label:'post-flip',time:'2026-11-21T12:00:00Z'}])
 for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy card readable ${width} @${scale}x ${flip.label}`,async({page})=>{
   await page.setViewportSize({width,height:1000});
   {const t=new Date(flip.time).getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
@@ -59,7 +59,7 @@ for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy car
 // and text scale - a grown card next to a fixed one is visibly uneven.
 for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy cards share one layout mode ${width} @${scale}x`,async({page})=>{
   await page.setViewportSize({width,height:1000});
-  {const t=new Date('2026-11-29T12:00:00Z').getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
+  {const t=new Date('2026-11-21T12:00:00Z').getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
   await page.goto('/committee/');
   await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
   const boxes=page.locator('.member-vacancy');
@@ -75,7 +75,7 @@ for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy car
 // scale. Measured from rendered rects, relative to each card's top.
 for(const width of [320,390,768,1440])for(const scale of [1,2])test(`vacancy cards align pill, title and CTA ${width} @${scale}x`,async({page})=>{
   await page.setViewportSize({width,height:1000});
-  {const t=new Date('2026-11-29T12:00:00Z').getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
+  {const t=new Date('2026-11-21T12:00:00Z').getTime();await page.addInitScript(`{const R=Date;class F extends R{static now(){return ${t}}};window.Date=F}`);}
   await page.goto('/committee/');
   await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
   await page.waitForTimeout(400);
