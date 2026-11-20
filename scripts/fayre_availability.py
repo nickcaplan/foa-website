@@ -117,7 +117,59 @@ def carry_capacity(rows, sources, code):
             row['capacity'] = known[row['endsAt']]
     return rows
 
-def parse(html, anchor):
+def payload_quantities(page):
+    """Extract per-slot capacities from the provider's embedded page payload.
+
+    The public page embeds a Next.js data script whose decoded text holds one
+    JSON object {slug, sections:[{id, needs:[{end, quantity, filled, remaining,
+    full}]}]}. Returns {section_id: {end_iso: (quantity, filled,
+    remaining, full)}}. Names are never read, returned, stored or output. Returns {} when the payload is absent or
+    malformed, leaving callers with pill-only data, exactly as before.
+    """
+    text = ''
+    decoder = json.JSONDecoder()
+    for script in re.findall(r'<script[^>]*>(.*?)</script>', page, re.S):
+        for match in re.finditer(r'self\.__next_f\.push\(', script):
+            try:
+                chunk, _ = decoder.raw_decode(script[match.end():])
+            except ValueError:
+                return {}
+            if isinstance(chunk, list) and len(chunk) == 2 and isinstance(chunk[1], str):
+                text += chunk[1]
+    data = None
+    for marker in re.finditer(r'\{"slug":"[a-z0-9]+"', text):
+        try:
+            candidate, _ = decoder.raw_decode(text[marker.start():])
+        except ValueError:
+            continue
+        if candidate.get('slug') == URL.rstrip('/').split('/')[-1] and isinstance(candidate.get('sections'), list):
+            data = candidate
+            break
+    if data is None:
+        return {}
+    capacities = {}
+    for section in data['sections']:
+        if not isinstance(section, dict): return {}
+        if section.get('kind') != 'shift': continue
+        needs = {}
+        for need in section.get('needs') or []:
+            try:
+                quantity, filled, remaining = need['quantity'], need['filled'], need['remaining']
+                full = need['full']
+                if any(type(n) is not int for n in (quantity, filled, remaining)) or type(full) is not bool: return {}
+                end = datetime.fromisoformat(str(need['end']).replace('Z', '+00:00'))
+            except (KeyError, TypeError, ValueError):
+                return {}
+            if not 1 <= quantity <= 20 or filled < 0 or remaining < 0: return {}
+            if filled + remaining != quantity or full != (remaining == 0): return {}
+            key = end.isoformat()
+            if key in needs: return {}
+            needs[key] = (quantity, filled, remaining, full)
+        if needs:
+            capacities[str(section.get('id'))] = needs
+    return capacities
+
+def parse(html, anchor, payload=None):
     """Extract validated rows for one activity section, nothing personal."""
     parser = Tree(); parser.feed(html)
     sections = [el for el in parser.root.all() if el.tag == 'section' and el.attrs.get('id') == anchor]
@@ -130,6 +182,16 @@ def parse(html, anchor):
     if not items or any(el.tag != 'li' for el in items): raise ValueError('Malformed slot list')
     rows = [slot_rows(item) for item in items]
     if not rows: raise ValueError('No slots parsed')
+    if payload is not None:
+        if set(payload) != {row['endsAt'] for row in rows}: raise ValueError('Provider payload disagrees with pill list')
+        for row in rows:
+            quantity, filled, remaining, full = payload[row['endsAt']]
+            if row['capacity'] is None:
+                # Full pill: take the capacity the provider exposes for this slot.
+                if not full or remaining != 0: raise ValueError('Provider payload disagrees with pill')
+                row['capacity'] = quantity
+            elif full or remaining != row['open'] or quantity != row['capacity']:
+                raise ValueError('Provider payload disagrees with pill')
     return rows
 
 def fetch(now=None, previous=None, seed=None):
@@ -152,10 +214,11 @@ def fetch(now=None, previous=None, seed=None):
             html = payload.decode('utf-8')
     except Exception:
         html = None
+    capacities = payload_quantities(html) if html is not None else {}
     for code, name in SHEETS.items():
         try:
             if html is None: raise ValueError('Source unavailable')
-            rows = carry_capacity(parse(html, code), [seed, previous], code)
+            rows = carry_capacity(parse(html, code, capacities.get(code[2:])), [seed, previous], code)
             data['activities'][code] = {'name':name,'rows':rows,'checkedAt':now.isoformat()}
         except Exception:
             old = (previous or {}).get('activities', {}).get(code)
