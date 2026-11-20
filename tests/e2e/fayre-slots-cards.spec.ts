@@ -178,6 +178,7 @@ test(`slots line and card button have no single-word last line at ${width}px wit
   await page.waitForFunction(() => document.querySelectorAll(".fayre-volunteer__count").length > 0);
   const orphans = await page.evaluate(() =>
     [...document.querySelectorAll<HTMLElement>(".fayre-volunteer__availability, .fayre-volunteer__action")].flatMap((el) => {
+      // Count geometry must come from the visible stacked variant, not its hidden twin.
       // Collect every rendered word with its rect, walking text nodes in order (skip visually-hidden text).
       const texts: Text[] = [];
       (function walk(n: Node) { for (const c of n.childNodes) { if (c.nodeType === 3) texts.push(c as Text); else if (!(c as HTMLElement).classList?.contains("visually-hidden")) walk(c); } })(el);
@@ -194,7 +195,7 @@ test(`slots line and card button have no single-word last line at ${width}px wit
           words.push({ w: part, top: r.top, bottom: r.bottom, right: r.right });
         }
       }
-      if (words.length < 2) return [];
+      if (getComputedStyle(el).visibility === "hidden" || words.length < 2) return [];
       // Group words into rendered lines by vertical overlap (mixed font sizes share a baseline, not a top).
       const lines: { top: number; bottom: number; count: number }[] = [];
       for (const word of words) {
