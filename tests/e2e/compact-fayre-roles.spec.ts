@@ -11,6 +11,6 @@ for(const width of [320,390,1440])for(const scale of [1,2])test(`compact Fayre r
  await expect(section.locator('.xmas-points li')).toHaveCount(0);
  const order=await page.locator('.xmas-stage section[aria-labelledby]').evaluateAll(es=>es.map(e=>e.getAttribute('aria-labelledby')));
  await expect(page.locator('.xmas-contact__leads')).toBeVisible();
- expect(order).toEqual(['xmas-title','xmas-donations-title','xmas-art-title','xmas-areas-title','xmas-contact-title']);
+ expect(order).toEqual(['xmas-title','xmas-art-title','xmas-areas-title','xmas-contact-title']);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(0);
 });

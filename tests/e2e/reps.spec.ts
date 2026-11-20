@@ -81,7 +81,7 @@ test("Reps Hub actions align across desktop cards", async ({ page }) => {
   const tops = await page.locator(".message-actions").evaluateAll((rows) =>
     rows.map((row) => row.getBoundingClientRect().top),
   );
-  expect(tops).toHaveLength(5);
+  expect(tops).toHaveLength(4);
   for (const row of [tops.slice(0, 2), tops.slice(2, 4)]) {
     expect(Math.max(...row) - Math.min(...row)).toBeLessThan(1);
   }
@@ -114,11 +114,10 @@ test("all messages keep their visible website URLs when copied", async ({ page }
 test("expired messages disappear and the empty state becomes visible", async ({ page }) => {
   await page.clock.setSystemTime(new Date("2026-10-11T12:00:00Z"));
   await page.goto("/reps/");
-  await expect(page.locator(".message-card:visible")).toHaveCount(5);
+  await expect(page.locator(".message-card:visible")).toHaveCount(4);
   await page.clock.setSystemTime(new Date("2026-11-07T12:00:00Z"));
   await page.clock.fastForward(60000);
-  await expect(page.locator(".message-card:visible")).toHaveCount(3);
-  await expect(page.getByRole("heading", { name: "Christmas Fayre Donations Day", exact: true })).toBeVisible();
+  await expect(page.locator(".message-card:visible")).toHaveCount(2);
   await page.clock.setSystemTime(new Date("2026-11-21T12:00:00Z"));
   await page.clock.fastForward(60000);
   await expect(page.locator(".message-card:visible")).toHaveCount(2);
