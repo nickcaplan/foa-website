@@ -84,7 +84,8 @@ const date=homepage
 .narnia-landscape{container-type:inline-size}
 @container(max-width:20em){
 .narnia-landscape__copy{padding-inline:.5rem!important}
-.narnia-landscape .button:has(.cta-icon){padding-inline:.5rem}
+.narnia-landscape .button{box-sizing:border-box}
+.narnia-landscape .button.button.button:has(.cta-icon){padding-inline:.5rem!important;min-width:0!important}
 
 .narnia-landscape .button .cta-word{overflow-wrap:normal}
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__body:before{max-height:900px;mask-image:linear-gradient(transparent,#000 7rem,#000 70%,transparent)}
