@@ -41,6 +41,24 @@ test("the reveal rule never hides images without scripting and respects reduced 
   assert.doesNotMatch(outside, /reveal-on-load\{transition/, "no transition outside the motion guard");
 });
 
+test("painted logo containers stay unpainted until their image lands", async () => {
+  // Design review (20 Nov 2026): while the sponsor logo was pending, the dark
+  // .fayre-lead__well capsule read as an empty banner. Painted containers carry
+  // data-reveal-box; the reveal script marks them is-loaded with their image.
+  const cssName = (await readdir(new URL("_astro/", dist))).find((name) => /^BaseLayout\..*\.css$/.test(name));
+  const css = await read(`_astro/${cssName}`);
+  assert.match(css, /html\.img-reveal \[data-reveal-box\]:not\(\.is-loaded\)\{[^}]*?background-color:(?:transparent|#0000)\b/, "container gate is present and scripting-gated");
+  assert.match(css, /html\.img-reveal \[data-reveal-box\]:not\(\.is-loaded\)\{[^}]*?box-shadow:none/, "container gate drops the painted shadow too");
+
+  const supporters = await read("christmas-fayre-supporters/index.html");
+  assert.match(supporters, /<div class="fayre-lead__well" data-reveal-box>/, "sponsor well is gated");
+  const committee = await read("committee/index.html");
+  assert.match(committee, /<div class="member-photo" data-reveal-box>/, "member portrait frame is gated");
+
+  const script = supporters.match(/<script data-image-reveal>([\s\S]*?)<\/script>/)?.[1];
+  assert.match(script, /closest\("\[data-reveal-box\]"\)/, "the listener marks the painted container too");
+});
+
 test("supporter tiles and cards never paint as empty boxes", async () => {
   const html = await read("christmas-fayre-supporters/index.html");
   const hero = html.match(/narnia-landscape__supporters"[\s\S]*?<\/span>\s*<\/div>/)?.[0];

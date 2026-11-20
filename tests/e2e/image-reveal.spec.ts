@@ -51,6 +51,42 @@ test("without scripting every image renders normally", async ({ browser }) => {
   await context.close();
 });
 
+test("a stuck sponsor logo never leaves an empty painted capsule", async ({ page }) => {
+  let release = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/sponsors/martin-flashman.png", async (route) => {
+    await gate;
+    await route.continue();
+  });
+  await page.goto("/christmas-fayre-supporters/", { waitUntil: "domcontentloaded" });
+  const well = page.locator(".fayre-lead__well");
+  // The dark capsule is unpainted while its logo is pending.
+  await expect(well).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  release();
+  await expect(well).toHaveCSS("background-color", "rgb(16, 45, 56)");
+  await expect(well.locator("img")).toHaveCSS("opacity", "1");
+});
+
+test("a stuck committee portrait never leaves an empty painted frame", async ({ page }) => {
+  let release = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route(/\/committee\/[^/]+\.(jpg|jpeg|png|webp|avif)/, async (route) => {
+    await gate;
+    await route.continue();
+  });
+  await page.goto("/committee/", { waitUntil: "domcontentloaded" });
+  const frame = page.locator(".member-photo").first();
+  await frame.scrollIntoViewIfNeeded();
+  await expect(frame).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  release();
+  await expect(frame.locator("img")).toHaveClass(/is-loaded/);
+  await expect(frame).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+});
+
 test("loaded brand logos fade in on an ordinary page", async ({ page }) => {
   await page.goto("/committee/");
   const portrait = page.locator(".member-photo img").first();

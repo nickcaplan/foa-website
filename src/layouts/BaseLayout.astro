@@ -59,7 +59,11 @@ const fireworksImage = `url("${withBase("/events/fireworks-1600.jpg")}")`;
       for (const type of ["load", "error"]) {
         // document, not window: Chromium does not route element load capture to window.
         document.addEventListener(type, (event) => {
-          if (event.target instanceof HTMLImageElement) event.target.classList.add("is-loaded");
+          if (event.target instanceof HTMLImageElement) {
+            event.target.classList.add("is-loaded");
+            const box = event.target.closest("[data-reveal-box]");
+            if (box) box.classList.add("is-loaded");
+          }
         }, true);
       }
     </script>

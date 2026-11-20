@@ -4604,6 +4604,11 @@ main :is(a.button,.button):is(.narnia-landscape__action,.fayre-volunteer__action
    scripting off every image renders normally, and an image that fails to load
    is revealed by the error listener so its alt text still shows. */
 html.img-reveal img.reveal-on-load:not(.is-loaded){opacity:0}
+/* Painted containers around a reveal image (the sponsor well, member portrait
+   frame) stay unpainted while their image is pending too - otherwise they read
+   as an empty banner. The script marks the closest [data-reveal-box] when the
+   image inside it loads or fails. */
+html.img-reveal [data-reveal-box]:not(.is-loaded){background-color:transparent;border-color:transparent;box-shadow:none}
 @media(prefers-reduced-motion:no-preference){
 html.img-reveal img.reveal-on-load{transition:opacity .25s ease-in}
 html.img-reveal img.reveal-on-load.is-loaded{opacity:1}
