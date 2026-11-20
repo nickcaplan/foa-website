@@ -47,10 +47,11 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
   </section>
   <ul class="fayre-volunteer__grid" aria-label="Volunteer activities">
    {event.signupActivities.map((activity,index)=><li class:list={["fayre-volunteer__card",{"fayre-volunteer__card--full":availability[index]!.full}]} data-availability-code={activity.anchor} data-activity-name={activity.displayName??activity.name}>
-    <div class="fayre-volunteer__heading"><h3>{activity.displayName??activity.name}</h3><p class="fayre-volunteer__availability" aria-live="polite" data-state={availability[index]!.state}>{availability[index]!.state==="ended"?"Finished":availability[index]!.count===null?"":availability[index]!.count===0?<><strong class="fayre-volunteer__count fayre-volunteer__count--zero">Full</strong><span class="fayre-volunteer__count-label"> · 0 places left</span></>:<><strong class="fayre-volunteer__count">{availability[index]!.total?.capacity!=null?`${availability[index]!.count} / ${availability[index]!.total?.capacity}`:String(availability[index]!.count)}</strong><span class="fayre-volunteer__count-label">{" slots remaining"}</span></>}</p></div>
+    <div class="fayre-volunteer__heading"><h3>{activity.displayName??activity.name}</h3><p class="fayre-volunteer__availability" aria-live="polite" data-state={availability[index]!.state}>{availability[index]!.state==="ended"?"Finished":availability[index]!.count===null?<><span class="fayre-volunteer__slots fayre-volunteer__slots--count"></span><span class="fayre-volunteer__slots fayre-volunteer__slots--booked"></span></>:<><span class="fayre-volunteer__slots fayre-volunteer__slots--count"><strong class="fayre-volunteer__count">{availability[index]!.total?.capacity!=null?`${availability[index]!.count} / ${availability[index]!.total?.capacity}`:String(availability[index]!.count)}</strong><span class="fayre-volunteer__count-label">{" slots remaining"}</span></span><span class="fayre-volunteer__slots fayre-volunteer__slots--booked"><strong class="fayre-volunteer__count fayre-volunteer__count--zero">Full</strong><span class="fayre-volunteer__count-label"> · 0 places left</span></span></>}</p></div>
     <p>{activity.description}</p>
     <dl class="fayre-volunteer__schedule">{activity.schedule.map(shift=><div><dt>{shift.label}</dt><dd>{shift.when.split('-').map((time,index)=><>{index>0 && ' - '}<span>{time}</span></>)}</dd></div>)}</dl>
     <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+activity.anchor} target="_blank" rel="noopener noreferrer"><span class="cta-label">Choose a&nbsp;<span class="cta-tail">slot<span class="external-link-icon cta-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></span><span class="visually-hidden"> for {activity.displayName??activity.name} (opens JustSignup in a new tab)</span></span></a>
+    <span class="fayre-volunteer__booked">Fully booked</span>
    </li>)}
   </ul>
   <p class="fayre-volunteer__updated" data-availability-updated role="status" aria-live="polite">{updatedText}</p>
@@ -95,23 +96,36 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
    if(ended()){if(changed)output.textContent="Finished";}
    else if(count===null){if(changed)output.textContent="";allFresh=false;}
    else{
-    if(changed){
+    // The count and booked variants both occupy the line (stacked, taller wins),
+    // so a stall filling or reopening never changes the heading's height (CI
+    // caught the open text wrapping to two lines where the booked text is one).
+    let openSlots=output.querySelector<HTMLElement>(".fayre-volunteer__slots--count");
+    let bookedSlots=output.querySelector<HTMLElement>(".fayre-volunteer__slots--booked");
+    if(!openSlots||!bookedSlots){
+     openSlots=document.createElement("span");
+     openSlots.className="fayre-volunteer__slots fayre-volunteer__slots--count";
+     bookedSlots=document.createElement("span");
+     bookedSlots.className="fayre-volunteer__slots fayre-volunteer__slots--booked";
+     output.replaceChildren(openSlots,bookedSlots);
+    }
+    if(changed||!openSlots.firstChild){
      const number=document.createElement("strong");
-     if(count===0){
-      number.className="fayre-volunteer__count fayre-volunteer__count--zero";
-      number.textContent="Full";
-      const zeroLabel=document.createElement("span");
-      zeroLabel.className="fayre-volunteer__count-label";
-      zeroLabel.textContent=" · 0 places left";
-      output.replaceChildren(number,zeroLabel);
-     }else{
-      number.className="fayre-volunteer__count";
-      number.textContent=total?.capacity!=null?`${count} / ${total.capacity}`:String(count);
-      const label=document.createElement("span");
-      label.className="fayre-volunteer__count-label";
-      label.textContent=" slots\u00A0remaining";
-      output.replaceChildren(number,label);
-     }
+     number.className="fayre-volunteer__count";
+     number.textContent=total?.capacity!=null?`${count} / ${total.capacity}`:String(count);
+     const label=document.createElement("span");
+     label.className="fayre-volunteer__count-label";
+     label.textContent=" slots\u00A0remaining";
+     openSlots.replaceChildren(number,label);
+    }
+    if(changed&&count===0){
+     // Re-touch the now-visible booked variant so the live region announces it.
+     const number=document.createElement("strong");
+     number.className="fayre-volunteer__count fayre-volunteer__count--zero";
+     number.textContent="Full";
+     const zeroLabel=document.createElement("span");
+     zeroLabel.className="fayre-volunteer__count-label";
+     zeroLabel.textContent=" · 0 places left";
+     bookedSlots.replaceChildren(number,zeroLabel);
     }
     if(count>0)ranked.push({name:card.dataset.activityName!,count});
    }
@@ -174,25 +188,35 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 .fayre-volunteer :global(.narnia-landscape__date){margin-bottom:.5rem}
 @media(max-width:47.99rem){.fayre-volunteer :global(.narnia-landscape__art){position:absolute;inset:0;height:100%;aspect-ratio:auto;object-fit:cover}.fayre-volunteer :global(.narnia-landscape:before){display:block;background:linear-gradient(90deg,#10232ccc,#10232cdd 35%,#10232ccc)}.fayre-volunteer :global(.narnia-landscape h1){font-size:2rem!important}.fayre-volunteer :global(.narnia-landscape__copy){padding:1.25rem 1rem}}
 .fayre-volunteer__grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));column-gap:1.25rem;row-gap:0}
-.fayre-volunteer__card{position:relative;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem;padding:1.5rem;display:grid;grid-template-rows:subgrid;grid-row:span 4;min-width:0;margin-bottom:1.25rem}
+.fayre-volunteer__card{position:relative;background:#173844;border:1px solid #b99a5b88;border-radius:.65rem;padding:1.5rem;display:grid;grid-template-rows:subgrid;grid-template-columns:minmax(0,1fr);grid-row:span 4;min-width:0;margin-bottom:1.25rem}
 /* Under enlarged text, rem padding would squeeze the card content below the width of "slots remaining"; cap horizontal padding by viewport so the phrase always fits whole. */
 /* Same for the page gutter: 2rem of rem gutter leaves too little room at 200% text. */
 .site-width.fayre-volunteer{width:min(calc(100% - min(2rem,10vw)),var(--max-width))}
 @media(min-width:64rem){.site-width.fayre-volunteer{width:min(calc(100% - min(3rem,10vw)),var(--max-width))}}
 @media(max-width:47.99rem){.fayre-volunteer__card{padding-inline:min(1.5rem,5vw)}}
+/* At very narrow widths the global icon-lane padding (calc(1.05em + 16px), !important) leaves the content box narrower than the word "Choose" at 200% text, so the overflowing word reaches the absolutely-positioned icon. Shrink the lane and tuck the icon closer to the edge so wrapped text stays clear of it. */
+@media(max-width:23rem){.fayre-volunteer__grid .fayre-volunteer__action{padding-inline:1rem!important}.fayre-volunteer__grid .fayre-volunteer__action .cta-icon{right:8px!important}}
 /* A full activity stays visible but muted, with its signup button removed (nothing left to book); the empty subgrid row keeps card heights aligned. Muting is by surface and border only: whole-card opacity would drop the status and schedule text below contrast. */
 .fayre-volunteer__card--full{background:#10232c;border-color:#b99a5b3d}
-/* Chained class needed: the later .fayre-volunteer .fayre-volunteer__action{display:flex} rule has equal specificity and would otherwise win by source order. */
-.fayre-volunteer__card.fayre-volunteer__card--full .fayre-volunteer__action{display:none}
+/* A full activity swaps its signup button for a muted "Fully booked" note in the same subgrid row. Both elements always occupy the fourth row; the inactive one is visibility:hidden, so the row is the taller of the two in every state and a card gaining or losing the full state never moves the layout - even when enlarged text wraps the button label to two lines (Nick 20 Nov: the 52px phone shift; design 20 Nov: 42px at 375px/200%, clipping at 320px/200%). The note is its own class, not fayre-volunteer__action: other suites index that selector one-per-card. */
+.fayre-volunteer__grid .fayre-volunteer__action,.fayre-volunteer__grid .fayre-volunteer__booked{grid-row:4;grid-column:1}
+.fayre-volunteer__card.fayre-volunteer__card--full a.fayre-volunteer__action{visibility:hidden}
+.fayre-volunteer__card.fayre-volunteer__card--full .fayre-volunteer__booked{visibility:visible}
 .fayre-volunteer__card h3{font:500 min(1.6rem,13vw)/1.2 Georgia,serif;margin:0;color:#fff3d5;overflow-wrap:anywhere}
 .fayre-volunteer__heading{display:flex;flex-direction:column;gap:.35rem;margin:0 0 1rem}
 .fayre-volunteer__priority{display:block;padding:0;margin:1.1rem 0 .4rem;font-size:.95rem;line-height:1.5;color:#f4ead1}
 .fayre-volunteer__updated{font-size:.8rem;margin:0 0 1.25rem;color:#f3dfae}
 .fayre-volunteer__updated:empty{display:none}
-.fayre-volunteer__card .fayre-volunteer__availability{margin:0;font-size:.85rem;line-height:1.25;min-width:0;text-wrap:pretty}
+.fayre-volunteer__card .fayre-volunteer__availability{margin:0;font-size:.85rem;line-height:1.25;min-width:0;text-wrap:pretty;display:grid}
+/* The count and booked variants share one grid cell; visibility (not display) keeps the hidden one placed, so the line is the taller of the two in every state and a stall filling never moves the card. Global because availability updates create these spans at runtime, where Astro's scoped attribute is absent. */
+:global(.fayre-volunteer__slots){grid-area:1/1;min-width:0}
+:global(.fayre-volunteer__slots--booked){visibility:hidden}
+:global(.fayre-volunteer__card--full .fayre-volunteer__slots--count){visibility:hidden}
+:global(.fayre-volunteer__card--full .fayre-volunteer__slots--booked){visibility:visible}
 .fayre-volunteer__schedule{margin:0 0 1.5rem;border-top:1px solid #b99a5b55;font-size:.9rem;line-height:1.6}.fayre-volunteer__schedule>div{display:flex;justify-content:space-between;gap:.4rem 1rem;flex-wrap:wrap;padding-top:.5rem}.fayre-volunteer__schedule dt{color:#edcb83}.fayre-volunteer__schedule dd{margin:0;white-space:nowrap;color:#fff3d5}.fayre-volunteer__schedule dd span{white-space:nowrap}
 .fayre-volunteer__card p{font-size:1rem;line-height:1.7;margin:0 0 1.5rem;color:#f4ead1}
 .fayre-volunteer .fayre-volunteer__action{margin-top:auto;min-width:0;min-height:3.25rem;max-width:100%;white-space:normal;background:#742f3c;color:#fff5e2;border:1px solid #c9a65f;font-size:1rem;line-height:1.5;gap:.75rem;padding:.75rem 1rem;display:flex;flex-wrap:nowrap;justify-content:space-between;align-items:center;text-align:left}
+.fayre-volunteer .fayre-volunteer__booked{display:flex;visibility:hidden;min-height:3.25rem;max-width:100%;padding:.75rem 1rem;font-size:1rem;line-height:1.5;justify-content:center;align-items:center;text-align:center;margin:0;background:transparent;color:#9fb8a4;border:1px solid #b99a5b3d;border-radius:999px}
 .fayre-volunteer__action>span:first-child{min-width:0}.fayre-volunteer__action .external-link-icon{flex:0 0 auto;margin:0}
 /* Activity slot buttons share the standard CTA geometry: the external icon sits in its own lane, so the label centres across the whole button. */
 .fayre-volunteer__grid .fayre-volunteer__action{justify-content:center;text-align:center}
