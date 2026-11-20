@@ -717,7 +717,8 @@ test("card titles are bigger only in the desktop three-column row", async ({
 
 // Design re-review of 96024ee (19 Nov 2026, round 7): the page shared the
 // Fayre social card, whose alt text describes the Fayre date and venue.
-// Supporters now has its own card with accurate alt text.
+// Supporters now has its own card with accurate alt text. The v3 card
+// (20 Nov 2026) shows the seven sponsor logos and its alt names all seven.
 test("supporters has its own social card with accurate alt text", async ({
   page,
 }) => {
@@ -725,7 +726,7 @@ test("supporters has its own social card with accurate alt text", async ({
   const ogImage = page.locator('meta[property="og:image"]');
   await expect(ogImage).toHaveAttribute(
     "content",
-    /fayre-supporters-2026-v2\.jpg/,
+    /fayre-supporters-2026-v3\.jpg/,
   );
   const alt = await page
     .locator('meta[property="og:image:alt"]')
@@ -736,6 +737,7 @@ test("supporters has its own social card with accurate alt text", async ({
   expect(alt).toContain("Galeta");
   expect(alt).toContain("W3 Colour");
   expect(alt).toContain("Moore's Tree Company");
+  expect(alt).toContain("Giardina Family Butchers");
 });
 
 // Nick (19 Nov 2026, 18:38, design agent Direction A): small sponsor marks in
