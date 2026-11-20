@@ -246,3 +246,14 @@ test(`no mid-word breaks in card titles or buttons at ${width}px with 200% text`
   expect(split).toEqual([]);
 });
 }
+
+test("partial capacity never produces a misleading denominator and singular count reads correctly", async ({ page }) => {
+  const data = snapshot({ [anchors[0]]: 1 });
+  data.activities[anchors[0]].rows.push({ endsAt: "2026-12-05T15:00:00+00:00", open: 0, capacity: null as unknown as number });
+  await page.route("**/fayre-availability.json*", route => route.fulfill({ json: data }));
+  await page.goto("/christmas-fayre-volunteering/");
+  const line = page.locator(`[data-availability-code="${anchors[0]}"] .fayre-volunteer__slots--count`);
+  await expect(line).toHaveText(/1 slot\s+remaining/);
+  await expect(line).not.toContainText("/");
+  await page.screenshot({ path: "/downloads/foa-capacity-guard.png", fullPage: true });
+});

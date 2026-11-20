@@ -22,6 +22,14 @@ class ParserTests(unittest.TestCase):
             data=m.fetch(datetime(2026,12,1,9,0,tzinfo=timezone.utc),previous)
         row=data['activities'][ANCHOR]['rows'][0]
         self.assertEqual(row['open'],0);self.assertEqual(row['capacity'],6)
+    def test_capacity_fallback_per_row(self):
+        end='2026-12-05T14:30:00+00:00'
+        def source(cap):
+            return {'activities':{ANCHOR:{'rows':[{'endsAt':end,'open':0,'capacity':cap}]}}}
+        for seed,previous,live,expected in [(6,None,None,6),(6,4,None,4),(6,4,2,2),(None,None,None,None)]:
+            rows=[{'endsAt':end,'open':0,'capacity':live}]
+            self.assertEqual(m.carry_capacity(rows,[source(seed),source(previous)],ANCHOR)[0]['capacity'],expected)
+
     def test_multiple_slots(self):
         """Verify multiple slots."""
         rows=m.parse(page([slot('2 of 3 open','Sat, Dec 5 · 12:00 PM – 12:30 PM'),slot('8 of 8 open','Sat, Dec 5 · 12:30 PM – 1:00 PM')]),ANCHOR)
