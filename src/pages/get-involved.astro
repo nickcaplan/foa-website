@@ -119,10 +119,13 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
   }
   /* Keep phone card copy and CTA words whole under either root-font or
      per-element text enlargement. Widen the reading column, not shrink text. */
-  #involvement-options :is(p, h2, h3, .cta-label, .cta-tail) {
+  #involvement-options :is(.cta-label, .cta-tail) {
     overflow-wrap: normal !important;
     word-break: normal !important;
   }
+  /* An unusually wide word (for example with extra letter spacing) must
+     still stay in its column. Normal 200% words fit without this fallback. */
+  #involvement-options :is(p, h2, h3) { overflow-wrap: break-word; }
   @media (max-width: 23rem) {
     #involvement-options .involved-group { width: calc(100% - 24px); }
     #involvement-options a.involved-action:not([href^="mailto:"]):has(.cta-icon) {
