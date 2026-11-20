@@ -30,7 +30,7 @@ for(const route of routes)test(`CTA stack widths match on desktop ${route}`,asyn
     const byKey=new Map<string,{w:number;t:string}[]>();
     for(const b of document.querySelectorAll('main a.button, main button.button')){
       if(b.getBoundingClientRect().width===0)continue;
-      const key=b.parentElement?.className||'';
+      const key=[...(b.parentElement?.classList??[])].sort().join(' ');
       if(!key)continue;
       if(!byKey.has(key))byKey.set(key,[]);
       byKey.get(key)!.push({w:Math.round(b.getBoundingClientRect().width),t:b.textContent!.trim().replace(/\s+/g,' ').slice(0,30)});
