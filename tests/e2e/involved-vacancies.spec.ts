@@ -72,6 +72,32 @@ for (const width of [320, 390, 430, 768, 1440]) {
         expect(geometry.textRight).toBeLessThanOrEqual(geometry.iconLeft - 1);
         expect(geometry.iconRight).toBeLessThanOrEqual(geometry.pillRight);
       }
+      // All cards share these styles. Check every word, including the event
+      // helper CTA and compere copy, rather than only the vacancy summary.
+      const cardProblems = await page.locator('.involved-content').evaluate(root => {
+        const problems: string[] = [];
+        for (const el of root.querySelectorAll<HTMLElement>('p, h2, h3, .cta-label')) {
+          const bounds = el.getBoundingClientRect();
+          const icon = el.querySelector('svg')?.getBoundingClientRect();
+          const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          while (walker.nextNode()) {
+            const node = walker.currentNode;
+            for (const word of (node.textContent ?? '').matchAll(/[A-Za-z]+/g)) {
+              const range = document.createRange();
+              range.setStart(node, word.index!);
+              range.setEnd(node, word.index! + word[0].length);
+              const rects = [...range.getClientRects()];
+              if (new Set(rects.map(r => Math.round(r.top))).size > 1) problems.push(`split: ${word[0]}`);
+              for (const r of rects) {
+                if (r.left < bounds.left - 1 || r.right > bounds.right + 1) problems.push(`outside label/copy: ${word[0]}`);
+                if (icon && r.right > icon.left + 1 && r.left < icon.right - 1 && r.bottom > icon.top + 1 && r.top < icon.bottom - 1) problems.push(`icon collision: ${word[0]}`);
+              }
+            }
+          }
+        }
+        return problems;
+      });
+      expect(cardProblems).toEqual([]);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
     });
   }

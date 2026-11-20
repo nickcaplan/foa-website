@@ -64,7 +64,7 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
     </nav>
   </PageHero>
   <section class="content-section content-section--compact content-section--desktop-snug" aria-labelledby="volunteering-title">
-    <div class="site-width involved-content">
+    <div class="site-width involved-content" id="involvement-options">
       <article class="involved-feature">
         <div class="involved-feature__copy"><p class="eyebrow">Role vacancy</p><h2 id="volunteering-title">Could you be our <span class="co-secretary">Secretary?</span></h2><p>A light, termly role that one person can do or two can share: agendas, minutes and keeping our paperwork in order. Sarah Parish and Katy Furber, who previously held this role, are happy to have a quick chat&nbsp;first.</p></div>
         <div class="involved-feature__actions"><a class="button button--amber involved-action" href={enquiry("The FOA Secretary role")}><span class="cta-label">Get in <span class="cta-tail">touch<MailIcon /></span></span></a><a class="button involved-action involved-action--light" href={withBase("/committee/")}><span class="cta-label">Meet the <span class="cta-tail">committee<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></span></a></div>
@@ -116,6 +116,18 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
   }
   #current-role-vacancies a.button .cta-icon {
     position: static !important; translate: none !important;
+  }
+  /* Keep phone card copy and CTA words whole under either root-font or
+     per-element text enlargement. Widen the reading column, not shrink text. */
+  #involvement-options :is(p, h2, h3, .cta-label, .cta-tail) {
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+  @media (max-width: 23rem) {
+    #involvement-options .involved-group { width: calc(100% - 24px); }
+    #involvement-options a.involved-action:not([href^="mailto:"]):has(.cta-icon) {
+      padding-inline-start: 12px !important;
+    }
   }
   #volunteering-title, #co-comms-title { scroll-margin-top: 1rem; }
 </style>
