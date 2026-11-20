@@ -98,7 +98,10 @@ test("a full stall stays on the page as a muted card and reopens when a slot fre
   await expect(fullCard, "a stall with no slots left stays on the page as a muted card").toBeVisible();
   await expect(fullCard).toHaveClass(/fayre-volunteer__card--full/);
   await expect(fullCard.locator(".fayre-volunteer__availability"), "the availability line reads Full with 0 places left").toHaveText("Full · 0 places left");
-  await expect(fullCard.locator(".fayre-volunteer__action"), "a full stall has no signup button").toBeHidden();
+  await expect(fullCard.locator("a.fayre-volunteer__action"), "a full stall has no signup button").toBeHidden();
+  const fullNote = fullCard.locator(".fayre-volunteer__booked");
+  await expect(fullNote, "a full stall shows a Fully booked note in place of the button").toBeVisible();
+  await expect(fullNote).toHaveText("Fully booked");
   // Guard for the #175 design review: muting is by surface and border, never whole-card opacity, which would drop the status text below contrast.
   const mute = await fullCard.evaluate((card) => {
     const cs = getComputedStyle(card);
@@ -110,6 +113,12 @@ test("a full stall stays on the page as a muted card and reopens when a slot fre
     return { background: cs.backgroundColor, border: cs.borderTopColor };
   });
   expect(mute.background, "a muted card has a quieter surface than its siblings").not.toBe(openSurface.background);
+  // The full note reserves the action row, so gaining or losing the full state moves nothing (Nick 20 Nov: the 52px phone shift).
+  const geometry = async () => fullCard.evaluate((card) => {
+    const next = card.nextElementSibling;
+    return { h: card.getBoundingClientRect().height, nextTop: next ? next.getBoundingClientRect().top : null };
+  });
+  const fullGeometry = await geometry();
 
   // The 15-minute refresh re-reads the published file; reload to fetch the updated snapshot.
   await page.unroute("**/fayre-availability.json");
@@ -119,6 +128,11 @@ test("a full stall stays on the page as a muted card and reopens when a slot fre
   await expect(fullCard, "a stall with a freed slot returns to normal").toBeVisible();
   await expect(fullCard).not.toHaveClass(/fayre-volunteer__card--full/);
   await expect(fullCard.locator(".fayre-volunteer__availability")).toContainText("2 / 5 slots remaining");
+  await expect(fullCard.locator("a.fayre-volunteer__action"), "a reopened stall has its signup button back").toBeVisible();
+  await expect(fullCard.locator(".fayre-volunteer__booked"), "a reopened stall hides the Fully booked note").toBeHidden();
+  const reopenedGeometry = await geometry();
+  expect(Math.abs(reopenedGeometry.h - fullGeometry.h), "card height is identical full or open").toBeLessThanOrEqual(1);
+  expect(Math.abs((reopenedGeometry.nextTop ?? 0) - (fullGeometry.nextTop ?? 0)), "the cards below never move").toBeLessThanOrEqual(1);
 });
 
 for (const width of [320, 390, 768]) {

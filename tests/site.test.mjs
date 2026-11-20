@@ -527,6 +527,9 @@ test("Christmas volunteering lists the source activities and safe click-outs, wi
  }
  // Counts render at build from the published snapshot and refresh client-side; a full activity is designed to show "0 places left" (#175).
  assert.match(html,/data-availability-url="[^"]*\/fayre-availability\.json"/);
+ // Every card carries the Fully booked note that reserves the action row, so the full-state swap never shifts the layout.
+ assert.equal([...html.matchAll(/fayre-volunteer__booked/g)].length>=christmas.signupActivities.length,true,'each activity card needs its Fully booked note');
+ assert.equal([...html.matchAll(/>Fully&nbsp;booked</g)].length,christmas.signupActivities.length);
  assert.doesNotMatch(html, /<iframe|of \d+ open/);
  assert.ok(html.includes(`href="${basePath}${christmas.path}"`));
 });

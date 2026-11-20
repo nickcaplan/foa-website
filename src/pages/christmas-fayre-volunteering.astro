@@ -51,6 +51,7 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
     <p>{activity.description}</p>
     <dl class="fayre-volunteer__schedule">{activity.schedule.map(shift=><div><dt>{shift.label}</dt><dd>{shift.when.split('-').map((time,index)=><>{index>0 && ' - '}<span>{time}</span></>)}</dd></div>)}</dl>
     <a class="button fayre-volunteer__action" href={event.signupUrl+'#'+activity.anchor} target="_blank" rel="noopener noreferrer"><span class="cta-label">Choose a&nbsp;<span class="cta-tail">slot<span class="external-link-icon cta-icon" aria-hidden="true"><Fragment set:html={externalIcon}/></span></span><span class="visually-hidden"> for {activity.displayName??activity.name} (opens JustSignup in a new tab)</span></span></a>
+    <span class="fayre-volunteer__booked">Fully&nbsp;booked</span>
    </li>)}
   </ul>
   <p class="fayre-volunteer__updated" data-availability-updated role="status" aria-live="polite">{updatedText}</p>
@@ -182,8 +183,11 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 @media(max-width:47.99rem){.fayre-volunteer__card{padding-inline:min(1.5rem,5vw)}}
 /* A full activity stays visible but muted, with its signup button removed (nothing left to book); the empty subgrid row keeps card heights aligned. Muting is by surface and border only: whole-card opacity would drop the status and schedule text below contrast. */
 .fayre-volunteer__card--full{background:#10232c;border-color:#b99a5b3d}
+/* A full activity swaps its signup button for a same-geometry muted "Fully booked" note. The swap keeps the action row's height, so a card gaining or losing the full state never moves the layout (Nick 20 Nov: the 52px phone shift). Both elements pin to the fourth subgrid row; the inactive one is display:none, so only one ever occupies it. The note is its own class, not fayre-volunteer__action: other suites index that selector one-per-card. */
+.fayre-volunteer__grid .fayre-volunteer__action,.fayre-volunteer__grid .fayre-volunteer__booked{grid-row:4}
 /* Chained class needed: the later .fayre-volunteer .fayre-volunteer__action{display:flex} rule has equal specificity and would otherwise win by source order. */
-.fayre-volunteer__card.fayre-volunteer__card--full .fayre-volunteer__action{display:none}
+.fayre-volunteer__card.fayre-volunteer__card--full a.fayre-volunteer__action{display:none}
+.fayre-volunteer__card.fayre-volunteer__card--full .fayre-volunteer__booked{display:flex}
 .fayre-volunteer__card h3{font:500 min(1.6rem,13vw)/1.2 Georgia,serif;margin:0;color:#fff3d5;overflow-wrap:anywhere}
 .fayre-volunteer__heading{display:flex;flex-direction:column;gap:.35rem;margin:0 0 1rem}
 .fayre-volunteer__priority{display:block;padding:0;margin:1.1rem 0 .4rem;font-size:.95rem;line-height:1.5;color:#f4ead1}
@@ -193,6 +197,7 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 .fayre-volunteer__schedule{margin:0 0 1.5rem;border-top:1px solid #b99a5b55;font-size:.9rem;line-height:1.6}.fayre-volunteer__schedule>div{display:flex;justify-content:space-between;gap:.4rem 1rem;flex-wrap:wrap;padding-top:.5rem}.fayre-volunteer__schedule dt{color:#edcb83}.fayre-volunteer__schedule dd{margin:0;white-space:nowrap;color:#fff3d5}.fayre-volunteer__schedule dd span{white-space:nowrap}
 .fayre-volunteer__card p{font-size:1rem;line-height:1.7;margin:0 0 1.5rem;color:#f4ead1}
 .fayre-volunteer .fayre-volunteer__action{margin-top:auto;min-width:0;min-height:3.25rem;max-width:100%;white-space:normal;background:#742f3c;color:#fff5e2;border:1px solid #c9a65f;font-size:1rem;line-height:1.5;gap:.75rem;padding:.75rem 1rem;display:flex;flex-wrap:nowrap;justify-content:space-between;align-items:center;text-align:left}
+.fayre-volunteer .fayre-volunteer__booked{display:none;min-height:3.25rem;max-width:100%;padding:.75rem 1rem;font-size:1rem;line-height:1.5;justify-content:center;align-items:center;text-align:center;margin:0;background:transparent;color:#9fb8a4;border:1px solid #b99a5b3d;border-radius:999px}
 .fayre-volunteer__action>span:first-child{min-width:0}.fayre-volunteer__action .external-link-icon{flex:0 0 auto;margin:0}
 /* Activity slot buttons share the standard CTA geometry: the external icon sits in its own lane, so the label centres across the whole button. */
 .fayre-volunteer__grid .fayre-volunteer__action{justify-content:center;text-align:center}
