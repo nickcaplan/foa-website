@@ -257,6 +257,14 @@ test("patched amber and heading accents use the Night Mode ink", async ({ page }
   for (const number of await page.locator(".pillar-number").all()) await expect(number).toHaveCSS("color", "rgb(244, 211, 157)");
   await page.goto("/get-involved/");
   await freezeTransitions(page);
+  // No current role carries a vacancy badge (the badged roles were retired);
+  // seed one so the night-ink invariant keeps covering the badge styles.
+  await page.evaluate(() => {
+    const badge = document.createElement("span");
+    badge.className = "involved-badge";
+    badge.textContent = "Vacancy";
+    document.querySelector(".involved-text h3")?.append(badge);
+  });
   const badge = page.locator(".involved-badge").first();
   await expect(badge).toBeVisible();
   await expect(badge).toHaveCSS("color", "rgb(244, 211, 157)");

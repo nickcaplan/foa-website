@@ -173,6 +173,14 @@ for (const theme of ["day", "night"] as const) {
 
     test("Get involved vacancy badges never split mid-word", async ({ page }) => {
       await page.goto("/get-involved/");
+      // No current role carries a vacancy badge (the badged roles were retired);
+      // seed one so the no-split invariant keeps covering the badge styles.
+      await page.evaluate(() => {
+        const badge = document.createElement("span");
+        badge.className = "involved-badge";
+        badge.textContent = "Vacancy";
+        document.querySelector(".involved-text h3")?.append(badge);
+      });
       await useLargeText(page);
       const badges = page.locator(".involved-badge");
       expect(await badges.count()).toBeGreaterThan(0);
