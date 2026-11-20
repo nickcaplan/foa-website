@@ -2242,8 +2242,9 @@ body.menu-open .cookie-banner {
 }
 
 .cookie-banner-actions {
-  display: flex;
-  flex-wrap: wrap;
+  /* Equal columns side by side, one full-width column when stacked, so the pair never differs in width. */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
   gap: 0.6rem;
 }
 
@@ -3181,10 +3182,6 @@ body.menu-open .cookie-banner {
     border-bottom: 0;
     border-left: 0;
     border-radius: var(--radius-md) var(--radius-md) 0 0;
-  }
-
-  .cookie-banner-actions .button {
-    flex: 1 1 10rem;
   }
 }
 
