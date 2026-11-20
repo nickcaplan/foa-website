@@ -54,7 +54,7 @@ const fireworksImage = `url("${withBase("/events/fireworks-1600.jpg")}")`;
   <body class={bodyClass} style={`--fireworks-image: ${fireworksImage}`}>
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <Header logo={headerLogo} homepage={homepage} />
-    <main id="main-content"><slot /></main>
+    <main id="main-content" tabindex="-1"><slot /></main>
     <Footer logo={footerLogo} />
     <CookieBanner />
   </body>

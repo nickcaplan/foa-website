@@ -25,6 +25,22 @@ for (const route of routes) {
   });
 }
 
+test("the skip link moves focus to the main landmark", async ({ page }) => {
+  // Chromium scrolls to a fragment target but only moves focus when the target
+  // is focusable, so main carries tabindex="-1"; without it focus stays on body.
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  await expect(page.locator(".skip-link"), "the skip link is the first stop").toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#main-content"), "activating the skip link focuses main").toBeFocused();
+  await page.keyboard.press("Tab");
+  const next = await page.evaluate(() => {
+    const el = document.activeElement;
+    return { insideMain: !!el?.closest("#main-content"), text: (el?.textContent ?? "").trim() };
+  });
+  expect(next.insideMain, `the next Tab stops inside main, got "${next.text}"`).toBe(true);
+});
+
 test("expanded newsletters have no serious or critical accessibility violations", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.goto("/newsletter/");
