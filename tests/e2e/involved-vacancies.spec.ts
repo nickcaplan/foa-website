@@ -36,14 +36,19 @@ for (const width of [320, 390, 430]) {
 
 for (const width of [320, 390, 430, 768, 1440]) {
   for (const colorScheme of ['light', 'dark'] as const) {
-    test(`vacancy labels stay whole at 200% ${width} ${colorScheme}`, async ({ page }) => {
+    for (const method of ['root', 'per-element']) test(`vacancy labels stay whole at 200% ${width} ${colorScheme} ${method}`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ colorScheme });
       await page.goto('/get-involved/');
-      await page.evaluate(async () => {
-        document.documentElement.style.fontSize = '200%';
+      await page.evaluate(async (method) => {
+        if (method === 'root') document.documentElement.style.fontSize = '200%';
+        else {
+          const elements = [...document.querySelectorAll<HTMLElement>('body *')];
+          const sizes = elements.map(el => parseFloat(getComputedStyle(el).fontSize));
+          elements.forEach((el, i) => el.style.setProperty('font-size', `${sizes[i] * 2}px`, 'important'));
+        }
         await document.fonts.ready;
-      });
+      }, method);
       const labels = page.locator('.involved-vacancies .cta-label');
       expect(await labels.evaluateAll(elements => elements.flatMap(el => {
         const node = el.firstChild!;
@@ -56,6 +61,17 @@ for (const width of [320, 390, 430, 768, 1440]) {
           return new Set([...range.getClientRects()].map(r => Math.round(r.top))).size > 1;
         }).map(word => word[0]);
       }))).toEqual([]);
+      for (const label of await labels.all()) {
+        const geometry = await label.evaluate(el => {
+          const range = document.createRange(); range.selectNode(el.firstChild!);
+          const text = range.getBoundingClientRect();
+          const icon = el.querySelector('svg')!.getBoundingClientRect();
+          const pill = el.closest('a')!.getBoundingClientRect();
+          return { textRight: text.right, iconLeft: icon.left, iconRight: icon.right, pillRight: pill.right };
+        });
+        expect(geometry.textRight).toBeLessThanOrEqual(geometry.iconLeft - 1);
+        expect(geometry.iconRight).toBeLessThanOrEqual(geometry.pillRight);
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
     });
   }

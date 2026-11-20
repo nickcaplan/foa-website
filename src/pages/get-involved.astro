@@ -55,8 +55,8 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
 ---
 <BaseLayout title="Get Involved" description="Ways to volunteer, attend meetings and support The Friends of Ashley.">
   <PageHero wideTitle eyebrow="Everyone is welcome" title="A little time. A big difference." intro="Help on the day, lend a skill or support us behind the scenes. Meetings are informal and open to parents, carers and staff.">
-    <nav slot="summary" class="involved-vacancies" aria-label="Current role vacancies">
-      <p class="eyebrow">Two roles to fill</p>
+    <nav slot="summary" class="involved-vacancies" id="current-role-vacancies" aria-label="Current role vacancies">
+      <span class="involved-vacancies__label">Two roles to fill</span>
       <div>
         <a class="button button--amber" href="#volunteering-title"><span class="cta-label">Secretary<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></a>
         <a class="button button--amber" href="#co-comms-title"><span class="cta-label">Co-Comms<svg data-cta-arrow="forward" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span></a>
@@ -99,15 +99,23 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
 
 <style is:global>
   .involved-vacancies { margin-block: 1rem; }
-  .involved-vacancies .eyebrow { margin-block: 0 0.5rem; }
-  .involved-vacancies > div { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  /* Fixed icon lanes leave room for the complete role names at 200% text.
-     The shared rem-sized lanes otherwise consume most of a narrow pill. */
-  main .involved-vacancies a.button:has(svg) {
-    min-height: 44px;
-    padding-inline: 36px !important;
-    font-size: min(1rem, 24px);
+  .involved-vacancies__label {
+    display: block; margin-block: 0 0.5rem;
+    font-size: 0.82rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
   }
-  main .involved-vacancies a.button .cta-label { white-space: nowrap; }
+  .involved-vacancies > div { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  /* A real grid column reserves the arrow's actual enlarged width, rather
+     than an absolute icon lane that can overlap a separately enlarged label. */
+  #current-role-vacancies a.button:has(svg) {
+    min-height: 44px;
+    padding-inline: 12px !important;
+  }
+  #current-role-vacancies a.button .cta-label {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center; gap: 8px; width: 100% !important; flex: 1 1 auto !important; white-space: nowrap;
+  }
+  #current-role-vacancies a.button .cta-icon {
+    position: static !important; translate: none !important;
+  }
   #volunteering-title, #co-comms-title { scroll-margin-top: 1rem; }
 </style>
