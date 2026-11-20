@@ -77,10 +77,10 @@ test("both Fireworks pages keep their social image within chat size limits", asy
 test("Get Involved exposes the AGM volunteer teams and shared enquiry route", async () => {
   const html = await readFile(path.join(dist, "get-involved/index.html"), "utf8");
   const groupHeadings = [...html.matchAll(/<h2 id="group-[^"]+">([^<]+)<\/h2>/g)].map((match) => match[1]);
-  assert.deepEqual(groupHeadings, ["Help at an event", "Put your skills to use", "Support throughout the year"]);
+  assert.deepEqual(groupHeadings, ["Help at an event", "Support throughout the year"]);
   assert.ok(html.indexOf('id="volunteering-title"') < html.indexOf('id="group-green"'));
   assert.ok(html.indexOf('id="group-neutral"') < html.indexOf('id="closing-title"'));
-  for (const role of ["Pre-loved uniform sales", "Quartermasters", "Event comperes", "Eco Stall lead", "Fireworks shadowing", "Lead a community event"]) {
+  for (const role of ["Pre-loved uniform sales", "Quartermasters", "Event comperes", "Lead a community event"]) {
     assert.ok(html.includes(`<h3>${role}`), `Missing volunteer team: ${role}`);
   }
   assert.match(html, /Summer Fete and Big Picnic/);

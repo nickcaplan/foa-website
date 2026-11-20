@@ -14,8 +14,6 @@ const icons = {
   helpers: "M4 20V9l8-5 8 5v11M4 20h16M9 20v-6h6v6",
   tools: "M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.500-5.500a4 4 0 0 0 5-5L15 12l-3-3z",
   mic: "M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM6 11a6 6 0 0 0 12 0M12 17v4M9 21h6",
-  leaf: "M5 19C5 9 11 4 20 4c0 9-5 15-15 15zM5 19l8-8",
-  spark: "M12 3l1.800 5.200L19 10l-5.200 1.800L12 17l-1.800-5.200L5 10l5.200-1.800zM19 16l.8 2.200L22 19l-2.200.8L19 22l-.8-2.200L16 19l2.200-.8z",
   sun: "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400",
   shirt: "M8 4l-5 3 2 4 3-1v10h8V10l3 1 2-4-5-3a4 4 0 0 1-8 0z",
   chat: "M4 5h16v11H9l-5 4zM8 9h8M8 12h5",
@@ -40,14 +38,6 @@ const groups: {
       { name: "Event helpers", icon: "helpers", text: `Stalls, games and crafts at community events. ${christmas.data.lead} are leading this year's Christmas Fayre.`, actions: [{ label: "Help at the Christmas Fayre", href: withBase("/events/christmas-fayre-2026/") }] },
       { name: "Quartermasters", icon: "tools", text: "Look after The FOA's event equipment and help with set-up, from BBQs and marquees to fencing and sheds. New joiners are welcome.", actions: [{ label: "Get in touch", href: enquiry("Joining the Quartermasters") }] },
       { name: "Event comperes", icon: "mic", text: "Help with announcements and music at school events.", actions: [{ label: "Get in touch", href: enquiry("Becoming an event compere") }] },
-    ],
-  },
-  {
-    title: "Put your skills to use",
-    tone: "amber",
-    roles: [
-      { name: "Eco Stall lead", icon: "leaf", badge: "Vacancy", text: "Lead the stall selling the small amount of stock The FOA holds at events. The AGM identified this as a vacancy.", actions: [{ label: "Get in touch", href: enquiry("Eco Stall lead") }] },
-      { name: "Fireworks shadowing", icon: "spark", text: "Shadow Helen at Fireworks 2026 and learn how to lead the event in 2027, with no pressure.", actions: [{ label: "Get in touch", href: enquiry("Shadowing Helen at Fireworks 2026") }] },
       { name: "Lead a community event", icon: "sun", text: "The Summer Fete and Big Picnic need leaders, as individuals or small groups. Plans and dates are still to be confirmed.", actions: [{ label: "Get in touch", href: enquiry("Leading an event with The FOA") }] },
     ],
   },

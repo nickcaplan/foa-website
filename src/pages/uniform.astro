@@ -110,8 +110,15 @@ const normalDescription = "Find pre-loved uniform from The Friends of Ashley, pl
       flex-wrap: wrap;
     }
     .uniform-cta .uniform-action {
-      flex: 1 1 auto;
+      /* Equal-width pair: a content-based flex-basis let the two CTAs differ
+         (594 vs 590px), and the global mailto padding (1.3em lane reserve)
+         is wider than the external-link one (1.05em), so normalize both.
+         The [href] selector out-specifies the global !important lane rules. */
+      flex: 1 1 0;
       min-width: 0;
+    }
+    .uniform-cta a.uniform-action[href] {
+      padding-inline: calc(1.3em + 1.8rem) !important;
     }
   }
 
