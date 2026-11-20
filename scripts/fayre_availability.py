@@ -151,8 +151,9 @@ def payload_quantities(page):
     for section in data['sections']:
         if not isinstance(section, dict): return {}
         if section.get('kind') != 'shift': continue
+        if not isinstance(section.get('needs'), list): return {}
         needs = {}
-        for need in section.get('needs') or []:
+        for need in section['needs']:
             try:
                 quantity, filled, remaining = need['quantity'], need['filled'], need['remaining']
                 full = need['full']
@@ -166,7 +167,9 @@ def payload_quantities(page):
             if key in needs: return {}
             needs[key] = (quantity, filled, remaining, full)
         if needs:
-            capacities[str(section.get('id'))] = needs
+            section_id = section.get('id')
+            if not isinstance(section_id, str) or section_id in capacities: return {}
+            capacities[section_id] = needs
     return capacities
 
 def parse(html, anchor, payload=None):
