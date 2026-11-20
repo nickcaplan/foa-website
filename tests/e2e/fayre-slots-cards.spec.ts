@@ -133,6 +133,38 @@ test("a full stall stays on the page as a muted card and reopens when a slot fre
   const reopenedGeometry = await geometry();
   expect(Math.abs(reopenedGeometry.h - fullGeometry.h), "card height is identical full or open").toBeLessThanOrEqual(1);
   expect(Math.abs((reopenedGeometry.nextTop ?? 0) - (fullGeometry.nextTop ?? 0)), "the cards below never move").toBeLessThanOrEqual(1);
+
+  // Design 20 Nov: under enlarged text the open button wraps to two lines while the note stayed on one,
+  // so the full card still shrank (42px at 375px/200%; 96px plus label clipping at 320px/200%). Both
+  // states now occupy the action row at once, so the row is the taller of the two in every state.
+  const setRootText = (px: number) => page.evaluate((v) => { document.documentElement.style.fontSize = `${v}px`; }, px);
+  const routeSlots = (fullOpen: number) => page.route("**/fayre-availability.json", (route) =>
+    route.fulfill({ contentType: "application/json", body: JSON.stringify(snapshot({ [full]: fullOpen, [open]: 3 })) }));
+  for (const width of [375, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await setRootText(32);
+    const openGeometry = await geometry();
+    await page.unroute("**/fayre-availability.json");
+    await routeSlots(0);
+    await page.reload();
+    await setRootText(32);
+    await expect(fullCard).toHaveClass(/fayre-volunteer__card--full/);
+    const fullWide = await geometry();
+    expect(Math.abs(fullWide.h - openGeometry.h), `card height is identical open or full at ${width}px with 200% text`).toBeLessThanOrEqual(1);
+    expect(Math.abs((fullWide.nextTop ?? 0) - (openGeometry.nextTop ?? 0)), `the cards below never move at ${width}px with 200% text`).toBeLessThanOrEqual(1);
+    // The note reflows inside the card instead of clipping past its right edge.
+    const noteBox = await fullCard.locator(".fayre-volunteer__booked").evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      const c = el.closest("[data-availability-code]")!.getBoundingClientRect();
+      return { left: r.left, right: r.right, cardLeft: c.left, cardRight: c.right };
+    });
+    expect(noteBox.right, `the Fully booked note stays inside its card at ${width}px with 200% text`).toBeLessThanOrEqual(noteBox.cardRight + 1);
+    expect(noteBox.left).toBeGreaterThanOrEqual(noteBox.cardLeft - 1);
+    await page.unroute("**/fayre-availability.json");
+    await routeSlots(2);
+    await page.reload();
+    await expect(fullCard).not.toHaveClass(/fayre-volunteer__card--full/);
+  }
 });
 
 for (const width of [320, 390, 768]) {
