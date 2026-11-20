@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(const scale of [1,2])test(`Glitter Tree credit ${width} ${mode} ${scale}`,async({page})=>{test.setTimeout(90000);
  await page.setViewportSize({width,height:1000});
  await page.addInitScript(mode=>{localStorage.setItem('foa-theme',mode);localStorage.setItem('foa-cookie-preferences','essential')},mode);
- for(const path of ['/events/christmas-fayre-2026/','/christmas-fayre-volunteering/']){
+ for(const path of ['/events/christmas-fayre-2026/']){
   await page.goto(path);await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
   const credit=page.getByRole('complementary',{name:'The Glitter Tree support'});await credit.scrollIntoViewIfNeeded();
   await credit.locator('img').evaluate((img:HTMLImageElement)=>img.decode());
@@ -20,4 +20,13 @@ for(const width of [320,390,768,1440])for(const mode of ['day','night'])for(cons
   const bounds=await link.evaluate(n=>({width:n.clientWidth,scroll:n.scrollWidth}));expect(bounds.scroll).toBeLessThanOrEqual(bounds.width+1);
   if(width===390&&scale===1)expect((await new AxeBuilder({page}).include('.fayre-supporter').analyze()).violations).toEqual([]);
  }
+});
+
+// Removed from the volunteering page (Nick, 20 November 2026): the credit
+// belongs on the Fayre event page and the Supporters page only.
+test('Glitter Tree credit stays off the volunteering page',async({page})=>{
+ await page.goto('/christmas-fayre-volunteering/');
+ await expect(page.locator('.fayre-supporter')).toHaveCount(0);
+ await expect(page.getByRole('complementary',{name:'The Glitter Tree support'})).toHaveCount(0);
+ await expect(page.getByRole('link',{name:/Visit The Glitter Tree/})).toHaveCount(0);
 });
