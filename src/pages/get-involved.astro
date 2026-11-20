@@ -101,6 +101,13 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
   .involved-vacancies { margin-block: 1rem; }
   .involved-vacancies .eyebrow { margin-block: 0 0.5rem; }
   .involved-vacancies > div { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .involved-vacancies .button { min-height: 44px; }
+  /* Fixed icon lanes leave room for the complete role names at 200% text.
+     The shared rem-sized lanes otherwise consume most of a narrow pill. */
+  main .involved-vacancies a.button:has(svg) {
+    min-height: 44px;
+    padding-inline: 36px !important;
+    font-size: min(1rem, 24px);
+  }
+  main .involved-vacancies a.button .cta-label { white-space: nowrap; }
   #volunteering-title, #co-comms-title { scroll-margin-top: 1rem; }
 </style>

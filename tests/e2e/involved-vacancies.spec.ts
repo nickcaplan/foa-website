@@ -33,3 +33,30 @@ for (const width of [320, 390, 430]) {
     }
   }
 }
+
+for (const width of [320, 390, 430, 768, 1440]) {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    test(`vacancy labels stay whole at 200% ${width} ${colorScheme}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.emulateMedia({ colorScheme });
+      await page.goto('/get-involved/');
+      await page.evaluate(async () => {
+        document.documentElement.style.fontSize = '200%';
+        await document.fonts.ready;
+      });
+      const labels = page.locator('.involved-vacancies .cta-label');
+      expect(await labels.evaluateAll(elements => elements.flatMap(el => {
+        const node = el.firstChild!;
+        // Check each hyphen-separated part too, so Co-Comms cannot evade
+        // the assertion just because it contains a permitted hyphen.
+        return [...(node.textContent ?? '').matchAll(/[^-]+/g)].filter(word => {
+          const range = document.createRange();
+          range.setStart(node, word.index!);
+          range.setEnd(node, word.index! + word[0].length);
+          return new Set([...range.getClientRects()].map(r => Math.round(r.top))).size > 1;
+        }).map(word => word[0]);
+      }))).toEqual([]);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+    });
+  }
+}
