@@ -9,6 +9,9 @@ import test from "node:test";
 
 const dist = new URL("../dist/", import.meta.url);
 const read = (path) => readFile(new URL(path, dist), "utf8");
+// CI builds with a base path (e.g. /foa-website); local builds use /.
+const base = (process.env.BASE_PATH || "/").replace(/\/$/, "");
+const withBase = (path) => `${base}${path}`;
 
 test("every page carries the head image-reveal script, gated and error-safe", async () => {
   const pages = ["index.html", "christmas-fayre-supporters/index.html", "committee/index.html", "uniform/index.html"];
@@ -59,7 +62,7 @@ test("supporter tiles and cards never paint as empty boxes", async () => {
     "/sponsors/moores-tree-company.jpg",
     "/sponsors/ottershaw-christmas-tree-farm.png",
     "/sponsors/w3-colour.svg",
-  ].sort());
+  ].map(withBase).sort());
   for (const tag of cards) {
     assert.match(tag, /class="[^"]*reveal-on-load/, `lazy logo fades in: ${tag.slice(0, 80)}`);
     assert.match(tag, /decoding="async"/, "lazy logos decode off the main thread");
@@ -71,7 +74,7 @@ test("the hero artwork is preloaded on the Christmas hero pages", async () => {
     const html = await read(page);
     const preloads = [...html.matchAll(/<link\b[^>]*rel="preload"[^>]*as="image"[^>]*>/g)];
     assert.deepEqual(preloads.map((m) => m[0].match(/href="([^"]*)"/)?.[1]),
-      ["/brand/narnia-hero-landscape.avif"], `${page}: exactly one image preload, the hero artwork`);
+      [withBase("/brand/narnia-hero-landscape.avif")], `${page}: exactly one image preload, the hero artwork`);
   }
 });
 

@@ -86,7 +86,7 @@ test("homepage ships no poster photo and preloads only its hero artwork", async 
   const imagePreloads = [...html.matchAll(/<link\b[^>]*>/g)].map(([tag]) => tag)
     .filter((tag) => attribute(tag, "rel") === "preload" && attribute(tag, "as") === "image");
   assert.deepEqual(imagePreloads.map((tag) => attribute(tag, "href")),
-    ["/brand/narnia-hero-landscape.avif"], "only the hero artwork is preloaded");
+    [`${base}/brand/narnia-hero-landscape.avif`], "only the hero artwork is preloaded");
 });
 
 test("the term-by-term listing does not download event posters", async () => {
