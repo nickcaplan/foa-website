@@ -97,7 +97,8 @@ test("a full stall stays on the page as a muted card and reopens when a slot fre
   await expect(openCard).toBeVisible();
   await expect(fullCard, "a stall with no slots left stays on the page as a muted card").toBeVisible();
   await expect(fullCard).toHaveClass(/fayre-volunteer__card--full/);
-  await expect(fullCard.locator(".fayre-volunteer__availability"), "the availability line reads Full with 0 places left").toHaveText("Full · 0 places left");
+  // Both availability variants share one cell (taller wins, so the flip moves nothing); the visible one reads Full.
+  await expect(fullCard.locator(".fayre-volunteer__slots--booked"), "the availability line reads Full with 0 places left").toHaveText("Full · 0 places left");
   await expect(fullCard.locator("a.fayre-volunteer__action"), "a full stall has no signup button").toBeHidden();
   const fullNote = fullCard.locator(".fayre-volunteer__booked");
   await expect(fullNote, "a full stall shows a Fully booked note in place of the button").toBeVisible();
@@ -116,7 +117,8 @@ test("a full stall stays on the page as a muted card and reopens when a slot fre
   // The full note reserves the action row, so gaining or losing the full state moves nothing (Nick 20 Nov: the 52px phone shift).
   const geometry = async () => fullCard.evaluate((card) => {
     const next = card.nextElementSibling;
-    return { h: card.getBoundingClientRect().height, nextTop: next ? next.getBoundingClientRect().top : null };
+    return { h: card.getBoundingClientRect().height, nextTop: next ? next.getBoundingClientRect().top : null,
+      avail: card.querySelector(".fayre-volunteer__availability")!.getBoundingClientRect().height };
   });
   const fullGeometry = await geometry();
 
@@ -150,6 +152,7 @@ test("a full stall stays on the page as a muted card and reopens when a slot fre
     await setRootText(32);
     await expect(fullCard).toHaveClass(/fayre-volunteer__card--full/);
     const fullWide = await geometry();
+    expect(Math.abs(fullWide.avail - openGeometry.avail), `the availability line is the same height open or full at ${width}px with 200% text`).toBeLessThanOrEqual(1);
     expect(Math.abs(fullWide.h - openGeometry.h), `card height is identical open or full at ${width}px with 200% text`).toBeLessThanOrEqual(1);
     expect(Math.abs((fullWide.nextTop ?? 0) - (openGeometry.nextTop ?? 0)), `the cards below never move at ${width}px with 200% text`).toBeLessThanOrEqual(1);
     // The note reflows inside the card instead of clipping past its right edge.
