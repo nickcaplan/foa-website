@@ -87,7 +87,7 @@ for (const width of [320, 390, 640, 768, 820, 900, 1024, 1280, 1440]) {
   }
 }
 
-test("a full stall leaves the page and returns when a slot frees up on refresh", async ({ page }) => {
+test("a full stall stays on the page as a muted card and reopens when a slot frees up on refresh", async ({ page }) => {
   const [full, open] = anchors;
   await page.route("**/fayre-availability.json", (route) =>
     route.fulfill({ contentType: "application/json", body: JSON.stringify(snapshot({ [full]: 0, [open]: 3 })) }));
@@ -95,14 +95,29 @@ test("a full stall leaves the page and returns when a slot frees up on refresh",
   const fullCard = page.locator(`[data-availability-code="${full}"]`);
   const openCard = page.locator(`[data-availability-code="${open}"]`);
   await expect(openCard).toBeVisible();
-  await expect(fullCard, "a stall with no slots left stays on the page").toBeHidden();
+  await expect(fullCard, "a stall with no slots left stays on the page as a muted card").toBeVisible();
+  await expect(fullCard).toHaveClass(/fayre-volunteer__card--full/);
+  await expect(fullCard.locator(".fayre-volunteer__availability"), "the availability line reads Full with 0 places left").toHaveText("Full · 0 places left");
+  await expect(fullCard.locator(".fayre-volunteer__action"), "a full stall has no signup button").toBeHidden();
+  // Guard for the #175 design review: muting is by surface and border, never whole-card opacity, which would drop the status text below contrast.
+  const mute = await fullCard.evaluate((card) => {
+    const cs = getComputedStyle(card);
+    return { opacity: cs.opacity, background: cs.backgroundColor, border: cs.borderTopColor };
+  });
+  expect(mute.opacity, "a muted card keeps full opacity so its text stays readable").toBe("1");
+  const openSurface = await openCard.evaluate((card) => {
+    const cs = getComputedStyle(card);
+    return { background: cs.backgroundColor, border: cs.borderTopColor };
+  });
+  expect(mute.background, "a muted card has a quieter surface than its siblings").not.toBe(openSurface.background);
 
   // The 15-minute refresh re-reads the published file; reload to fetch the updated snapshot.
   await page.unroute("**/fayre-availability.json");
   await page.route("**/fayre-availability.json", (route) =>
     route.fulfill({ contentType: "application/json", body: JSON.stringify(snapshot({ [full]: 2, [open]: 3 })) }));
   await page.reload();
-  await expect(fullCard, "a stall with a freed slot does not return").toBeVisible();
+  await expect(fullCard, "a stall with a freed slot returns to normal").toBeVisible();
+  await expect(fullCard).not.toHaveClass(/fayre-volunteer__card--full/);
   await expect(fullCard.locator(".fayre-volunteer__availability")).toContainText("2 / 5 slots remaining");
 });
 

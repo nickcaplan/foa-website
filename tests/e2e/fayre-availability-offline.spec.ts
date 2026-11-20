@@ -55,8 +55,9 @@ test('successful availability fetch applies new data over the build snapshot',as
  await page.waitForTimeout(1500);
  const state=await page.evaluate(code=>{
   const card=document.querySelector<HTMLElement>(`[data-availability-code="${code}"]`);
-  return {hidden:card?.hidden,text:card?.querySelector('.fayre-volunteer__availability')?.textContent??''};
+  return {hidden:card?.hidden,full:card?.classList.contains('fayre-volunteer__card--full'),text:card?.querySelector('.fayre-volunteer__availability')?.textContent??''};
  },target!.code);
- expect(state.hidden).toBe(true);
- expect(state.text).toContain('0');
+ expect(state.hidden).toBe(false);
+ expect(state.full).toBe(true);
+ expect(state.text).toContain('0 places left');
 });
