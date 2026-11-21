@@ -1,5 +1,4 @@
 ---
-import FayreDonationsNotice from './FayreDonationsNotice.astro';
 import {withBase} from '../lib/urls';
 import {ordinalDateFormatter,formatEventTimeRange} from '../lib/dates';
 const {event,eventPage=false,homepage=false,volunteerPage=false,supportersPage=false,snowfall=false}=Astro.props;
@@ -48,7 +47,6 @@ const date=homepage
 {volunteerPage && <span class="sponsor-ribbon narnia-landscape__sponsor"><img class="reveal-on-load" src={withBase('/sponsors/martin-flashman.png')} alt="Martin Flashman and Co" width="1280" height="96" decoding="async" /></span>}
 
 </div>
-{homepage && <div class="narnia-donations"><FayreDonationsNotice details={true} /></div>}
 {(homepage || (eventPage && !volunteerPage)) && <div class="narnia-landscape__footer"><span class="sponsor-ribbon"><img class="reveal-on-load" src={withBase('/sponsors/martin-flashman.png')} alt="Martin Flashman and Co" width="1280" height="96" loading="lazy" decoding="async" /></span></div>}
 </div>
 </section>
@@ -68,7 +66,6 @@ const date=homepage
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__art{mask-image:linear-gradient(#000 65%,transparent 100%)}
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__art{aspect-ratio:21/9}
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__body{margin-top:0;padding-top:0}
-.narnia-landscape[data-homepage-christmas] .narnia-donations .fayre-donations-notice{padding:.6rem 0 .5rem}
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__copy{padding-top:.25rem;padding-bottom:.25rem}
 .narnia-landscape[data-homepage-christmas] h1{margin-bottom:.5rem}
 .narnia-landscape[data-homepage-christmas] .narnia-landscape__date{margin-bottom:.25rem}
@@ -106,15 +103,6 @@ const date=homepage
 .narnia-event .narnia-landscape__footer{background:#10232c88;padding:.75rem 1rem}
 </style>
 
-<style is:global>
-.narnia-donations{max-width:26rem;margin:0 auto;padding:0 1.25rem;color:#fff3d5}
-.narnia-donations .fayre-donations-notice{margin:0;padding:1rem 0 .65rem;border:0;border-radius:0;background:none;color:inherit;text-align:center;box-shadow:none}
-.narnia-donations .eyebrow,.narnia-donations a{color:#edcb83}
-.narnia-donations .eyebrow{font-size:.75rem;letter-spacing:.08em}
-.narnia-donations .fayre-donations-notice__date{font-size:1.4rem}
-.narnia-donations a{font-size:.9rem;text-underline-offset:.2em}
-@media(min-width:48rem){.narnia-landscape[data-homepage-christmas]:has(.narnia-donations) .narnia-landscape__copy{padding-bottom:1.5rem;min-height:29rem}}
-</style>
 
 <style is:global>
 /* Homepage option A: compact date and time; preserve all three actions. */

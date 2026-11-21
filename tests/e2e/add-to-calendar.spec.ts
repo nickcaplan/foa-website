@@ -40,15 +40,14 @@ test.describe("Add to calendar", () => {
   test("What's On offers the service choices for upcoming events and never for past events", async ({ page }) => {
     await page.clock.setFixedTime(new Date("2026-11-04T12:00:00Z"));
     await page.goto("/whats-on/");
-    // All eight upcoming events at this fixture date have calendar choices.
-    await expect(googleLink(page)).toHaveCount(8);
+    // All seven upcoming events at this fixture date have calendar choices.
+    await expect(googleLink(page)).toHaveCount(7);
     await expect(page.getByRole("link", { name: /Outlook/ })).toHaveCount(0);
     const downloads = fileLink(page);
-    await expect(downloads).toHaveCount(8);
+    await expect(downloads).toHaveCount(7);
     const hrefs = await downloads.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
     expect(hrefs).toEqual([
       "/calendar/uniform-november-2026.ics",
-      "/calendar/christmas-fayre-donations-day-2026.ics",
       "/calendar/christmas-fayre-art-deadline-2026.ics",
       "/calendar/uniform-december-2026.ics",
       "/calendar/christmas-fayre-2026.ics",
