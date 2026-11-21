@@ -120,7 +120,9 @@ test("every public page embeds one mobile home-linked logo beside its heading", 
     assert.equal(main.match(/class="mobile-page-logo page-logo-home"/g)?.length, 1, path.pathname);
     assert.match(main, /class="mobile-page-heading">[\s\S]*?class="mobile-page-logo page-logo-home"[\s\S]*?class="mobile-page-heading-copy">[\s\S]*?<h1/, path.pathname);
     if (html.includes('class="view-hero')) {
-      assert.match(main, /<section class="view-hero[\s\S]*?class="mobile-page-heading"[\s\S]*?<\/h1>\s*<\/div>\s*<\/div>\s*<p>/, path.pathname);
+      // A page may put a task summary before the introductory paragraph;
+      // keep requiring both the home-linked heading and the intro after it.
+      assert.match(main, /<section class="view-hero[\s\S]*?class="mobile-page-heading"[\s\S]*?<\/h1>\s*<\/div>\s*<\/div>\s*(?:<nav class="involved-vacancies"[\s\S]*?<\/nav>\s*)?<p>/, path.pathname);
     }
   }
 });

@@ -112,7 +112,7 @@ for (const width of [320, 390, 768, 1024, 1440]) {
 test("narrow enlarged descriptions wrap wide words within their own column", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/get-involved/");
-  await page.addStyleTag({ content: "html { font-size: 200% !important; } .involved-text p { letter-spacing: 0.15em; }" });
+  await page.addStyleTag({ content: "html { font-size: 200% !important; }" });
   await page.evaluate(() => document.fonts.ready);
   const description = page.locator(".involved-text p").filter({ hasText: "Help with announcements and music" });
   const wordWidth = await description.evaluate((element) => {
@@ -120,7 +120,15 @@ test("narrow enlarged descriptions wrap wide words within their own column", asy
     const context = canvas.getContext("2d")!;
     const style = getComputedStyle(element);
     context.font = `${style.fontSize} ${style.fontFamily}`;
-    return context.measureText("announcements").width + 12 * parseFloat(style.letterSpacing);
+    // Derive the stress condition from the actual font metrics. CI and local
+    // Chromium can load different font faces; fixed spacing may no longer
+    // make this word wider than the column after legitimate layout changes.
+    const word = "announcements";
+    const targetWidth = element.getBoundingClientRect().width + 32;
+    const spacing = Math.max(0.15 * parseFloat(style.fontSize),
+      (targetWidth - context.measureText(word).width) / (word.length - 1));
+    (element as HTMLElement).style.letterSpacing = `${spacing}px`;
+    return context.measureText(word).width + (word.length - 1) * parseFloat(getComputedStyle(element).letterSpacing);
   });
   const bounds = await description.boundingBox();
   expect(wordWidth, "The word would overflow without a wrapping fallback").toBeGreaterThan(bounds!.width);
