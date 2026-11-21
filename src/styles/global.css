@@ -2002,7 +2002,8 @@ svg.cta-icon {
 
 .footer-brand h2 {
   flex: 1 1 10rem;
-  min-width: 0;
+  /* Never narrower than the longest word: when it cannot sit beside the logo, the name wraps under it. */
+  min-width: min-content;
   margin: 0;
   color: var(--white);
   font-family: var(--font-display);
