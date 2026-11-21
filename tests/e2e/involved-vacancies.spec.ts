@@ -10,6 +10,7 @@ for (const width of [320, 390, 430]) {
         try {
           const page = await context.newPage();
           await page.goto('/get-involved/');
+          await expect(page.locator('.view-hero-copy > p')).toHaveText('Keep our paperwork in order as Secretary, or help share our news as Co-Comms. Read about each role below.');
           const roles = page.getByRole('navigation', { name: 'Current role vacancies' });
           await expect(roles.getByRole('link')).toHaveText(['Secretary', 'Co-Comms']);
           const banner = page.getByRole('complementary', { name: 'Analytics cookies' });
