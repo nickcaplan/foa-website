@@ -86,8 +86,8 @@ def slot_rows(item):
     if startAt >= endAt or endAt > END: raise ValueError('Unexpected slot boundary')
     pill = pills[0]
     if pill == 'Full · waitlist':
-        # The full pill carries no numbers; capacity stays unknown unless a
-        # previous snapshot saw this slot while places were still open.
+        # The full pill carries no numbers; capacity stays unknown unless the
+        # provider payload or an earlier snapshot supplies it (see parse/fetch).
         opened, capacity = 0, None
     else:
         opened, capacity = (int(n) for n in PILL.match(pill).groups())
@@ -95,19 +95,84 @@ def slot_rows(item):
         if capacity > 20: raise ValueError('Unexpected capacity')
     return {'endsAt': endAt.isoformat(), 'open': opened, 'capacity': capacity}
 
-def carry_capacity(rows, previous, code):
-    """Fill unknown full-slot capacities from the last published snapshot."""
-    old = (previous or {}).get('activities', {}).get(code) or {}
+def carry_capacity(rows, sources, code):
+    """Fill unknown full-slot capacities from earlier snapshots, oldest first.
+
+    A capacity is static context, not a count: carrying one forward never
+    changes open places, and a live provider pill always wins. Sources are
+    consulted in order, so the previous published snapshot overrides the
+    committed seed. The full pill carries no numbers, so without this carry a
+    slot that fills is lost from the public total - and one refresh that runs
+    with an unreadable previous snapshot would erase the history for good.
+    """
     known = {}
-    for row in old.get('rows') or []:
-        if isinstance(row, dict) and row.get('capacity') is not None:
-            known[row.get('endsAt')] = row['capacity']
+    for source in sources:
+        old = (source or {}).get('activities', {}).get(code) or {}
+        for row in old.get('rows') or []:
+            capacity = row.get('capacity') if isinstance(row, dict) else None
+            if type(capacity) is int and 1 <= capacity <= 20:
+                known[row.get('endsAt')] = capacity
     for row in rows:
         if row['capacity'] is None and known.get(row['endsAt']) is not None:
             row['capacity'] = known[row['endsAt']]
     return rows
 
-def parse(html, anchor):
+def payload_quantities(page):
+    """Extract per-slot capacities from the provider's embedded page payload.
+
+    The public page embeds a Next.js data script whose decoded text holds one
+    JSON object {slug, sections:[{id, needs:[{end, quantity, filled, remaining,
+    full}]}]}. Returns {section_id: {end_iso: (quantity, filled,
+    remaining, full)}}. Names are never read, returned, stored or output. Returns {} when the payload is absent or
+    malformed, leaving callers with pill-only data, exactly as before.
+    """
+    text = ''
+    decoder = json.JSONDecoder()
+    for script in re.findall(r'<script[^>]*>(.*?)</script>', page, re.S):
+        for match in re.finditer(r'self\.__next_f\.push\(', script):
+            try:
+                chunk, _ = decoder.raw_decode(script[match.end():])
+            except ValueError:
+                return {}
+            if isinstance(chunk, list) and len(chunk) == 2 and isinstance(chunk[1], str):
+                text += chunk[1]
+    data = None
+    for marker in re.finditer(r'\{"slug":"[a-z0-9]+"', text):
+        try:
+            candidate, _ = decoder.raw_decode(text[marker.start():])
+        except ValueError:
+            continue
+        if candidate.get('slug') == URL.rstrip('/').split('/')[-1] and isinstance(candidate.get('sections'), list):
+            data = candidate
+            break
+    if data is None:
+        return {}
+    capacities = {}
+    for section in data['sections']:
+        if not isinstance(section, dict): return {}
+        if section.get('kind') != 'shift': continue
+        if not isinstance(section.get('needs'), list): return {}
+        needs = {}
+        for need in section['needs']:
+            try:
+                quantity, filled, remaining = need['quantity'], need['filled'], need['remaining']
+                full = need['full']
+                if any(type(n) is not int for n in (quantity, filled, remaining)) or type(full) is not bool: return {}
+                end = datetime.fromisoformat(str(need['end']).replace('Z', '+00:00'))
+            except (KeyError, TypeError, ValueError):
+                return {}
+            if not 1 <= quantity <= 20 or filled < 0 or remaining < 0: return {}
+            if filled + remaining != quantity or full != (remaining == 0): return {}
+            key = end.isoformat()
+            if key in needs: return {}
+            needs[key] = (quantity, filled, remaining, full)
+        if needs:
+            section_id = section.get('id')
+            if not isinstance(section_id, str) or section_id in capacities: return {}
+            capacities[section_id] = needs
+    return capacities
+
+def parse(html, anchor, payload=None):
     """Extract validated rows for one activity section, nothing personal."""
     parser = Tree(); parser.feed(html)
     sections = [el for el in parser.root.all() if el.tag == 'section' and el.attrs.get('id') == anchor]
@@ -120,9 +185,19 @@ def parse(html, anchor):
     if not items or any(el.tag != 'li' for el in items): raise ValueError('Malformed slot list')
     rows = [slot_rows(item) for item in items]
     if not rows: raise ValueError('No slots parsed')
+    if payload is not None:
+        if set(payload) != {row['endsAt'] for row in rows}: raise ValueError('Provider payload disagrees with pill list')
+        for row in rows:
+            quantity, filled, remaining, full = payload[row['endsAt']]
+            if row['capacity'] is None:
+                # Full pill: take the capacity the provider exposes for this slot.
+                if not full or remaining != 0: raise ValueError('Provider payload disagrees with pill')
+                row['capacity'] = quantity
+            elif full or remaining != row['open'] or quantity != row['capacity']:
+                raise ValueError('Provider payload disagrees with pill')
     return rows
 
-def fetch(now=None, previous=None):
+def fetch(now=None, previous=None, seed=None):
     """Read the public page once, fail closed, and never start a post-cutoff request."""
     now = now or datetime.now(timezone.utc)
     data = {'schema':1,'checkedAt':now.isoformat(),'eventEndsAt':END.isoformat(),'activities':{}}
@@ -142,10 +217,11 @@ def fetch(now=None, previous=None):
             html = payload.decode('utf-8')
     except Exception:
         html = None
+    capacities = payload_quantities(html) if html is not None else {}
     for code, name in SHEETS.items():
         try:
             if html is None: raise ValueError('Source unavailable')
-            rows = carry_capacity(parse(html, code), previous, code)
+            rows = carry_capacity(parse(html, code, capacities.get(code[2:])), [seed, previous], code)
             data['activities'][code] = {'name':name,'rows':rows,'checkedAt':now.isoformat()}
         except Exception:
             old = (previous or {}).get('activities', {}).get(code)
@@ -239,5 +315,5 @@ if __name__=='__main__':
         with open(output) as f: seed = json.load(f)
     except (OSError, ValueError): pass
     previous = preserve('https://www.thefriendsofashley.org/fayre-availability.json', seed=seed)
-    data = previous if '--preserve' in sys.argv else fetch(previous=previous)
+    data = previous if '--preserve' in sys.argv else fetch(previous=previous, seed=seed)
     with open(output,'w') as f: json.dump(data,f,separators=(',',':'))

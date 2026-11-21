@@ -22,6 +22,14 @@ class ParserTests(unittest.TestCase):
             data=m.fetch(datetime(2026,12,1,9,0,tzinfo=timezone.utc),previous)
         row=data['activities'][ANCHOR]['rows'][0]
         self.assertEqual(row['open'],0);self.assertEqual(row['capacity'],6)
+    def test_capacity_fallback_per_row(self):
+        end='2026-12-05T14:30:00+00:00'
+        def source(cap):
+            return {'activities':{ANCHOR:{'rows':[{'endsAt':end,'open':0,'capacity':cap}]}}}
+        for seed,previous,live,expected in [(6,None,None,6),(6,4,None,4),(6,4,2,2),(None,None,None,None)]:
+            rows=[{'endsAt':end,'open':0,'capacity':live}]
+            self.assertEqual(m.carry_capacity(rows,[source(seed),source(previous)],ANCHOR)[0]['capacity'],expected)
+
     def test_multiple_slots(self):
         """Verify multiple slots."""
         rows=m.parse(page([slot('2 of 3 open','Sat, Dec 5 · 12:00 PM – 12:30 PM'),slot('8 of 8 open','Sat, Dec 5 · 12:30 PM – 1:00 PM')]),ANCHOR)
@@ -62,6 +70,39 @@ from urllib.error import HTTPError
 import io
 class Response(io.BytesIO):
     status=200
+def payload_script(needs=None, section_id=None):
+    section={'id':section_id or ANCHOR[2:],'kind':'shift','needs':needs if needs is not None else [{'end':'2026-12-05T14:30:00.000Z','quantity':6,'filled':6,'remaining':0,'full':True}]}
+    obj={'slug':m.URL.rstrip('/').split('/')[-1],'sections':[section,{'id':'loans','kind':'item','needs':[{'end':None}]}]}
+    text='1:'+json.dumps(obj,separators=(',',':'))
+    return '<script>self.__next_f.push('+json.dumps([1,text])+')</script>'
+
+class PayloadTests(unittest.TestCase):
+    def test_full_capacity_from_provider_no_personal_fields(self):
+        html=page([slot('Full · waitlist')])+payload_script()
+        quantities=m.payload_quantities(html)
+        self.assertEqual(m.parse(html,ANCHOR,quantities[ANCHOR[2:]])[0]['capacity'],6)
+        self.assertEqual(list(quantities),[ANCHOR[2:]])
+    def test_payload_crosschecks_open_and_full_pills(self):
+        for pill,counts in [('3 of 6 open',(6,3,3,False)),('Full · waitlist',(6,6,0,True))]:
+            html=page([slot(pill)])
+            good={'2026-12-05T14:30:00+00:00':counts}
+            self.assertEqual(m.parse(html,ANCHOR,good)[0]['capacity'],6)
+            bad={'2026-12-05T14:30:00+00:00':(5,4,1,False)}
+            with self.assertRaises(ValueError): m.parse(html,ANCHOR,bad)
+            with self.assertRaises(ValueError): m.parse(html,ANCHOR,{})
+    def test_malformed_payload_falls_back_to_pills(self):
+        self.assertEqual(m.payload_quantities(page()),{})
+        self.assertEqual(m.payload_quantities('<script>self.__next_f.push([invalid])</script>'),{})
+        for changes in [{'quantity':True},{'quantity':21},{'remaining':1},{'full':False},{'end':'bad'},{'filled':-1}]:
+            need={'end':'2026-12-05T14:30:00.000Z','quantity':6,'filled':6,'remaining':0,'full':True,**changes}
+            self.assertEqual(m.payload_quantities(payload_script([need])),{})
+    def test_fetch_provider_capacity_wins_over_seed_and_previous(self):
+        end='2026-12-05T14:30:00+00:00'
+        old={'activities':{ANCHOR:{'rows':[{'endsAt':end,'open':0,'capacity':3}]}}}
+        with patch.object(m,'urlopen',return_value=Response((page([slot('Full · waitlist')])+payload_script()).encode())):
+            data=m.fetch(datetime(2026,12,1,9,0,tzinfo=timezone.utc),old,old)
+        self.assertEqual(data['activities'][ANCHOR]['rows'][0]['capacity'],6)
+
 class FetchTests(unittest.TestCase):
     def test_one_request_covers_every_activity(self):
         """Verify one request covers every activity."""
