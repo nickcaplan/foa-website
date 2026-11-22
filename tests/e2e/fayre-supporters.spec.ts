@@ -188,6 +188,24 @@ test("Glitter Tree domain links to the Rewards page from the copy", async ({
 // in place, and an aria-live region (visually hidden, so nothing moves)
 // announces the detail; when the clipboard is unavailable the code is
 // selected and the region says how to copy it manually.
+// CTA order (Nick, 22 Nov 2026): the copy action leads; the visit link
+// follows, keeping the filled style of every other CTA on the page. The
+// copy button takes the ghost style.
+test("copy code leads as the ghost CTA, visit link follows filled", async ({
+  page,
+}) => {
+  await page.goto("/christmas-fayre-supporters/");
+  const actions = page.locator(".supporter-card__actions", {
+    has: page.locator("[data-copy-code]"),
+  });
+  const ctas = actions.locator(".fayre-supporters__button");
+  await expect(ctas).toHaveCount(2);
+  await expect(ctas.nth(0)).toHaveAttribute("data-copy-code", "THEFRIENDSOFASHLEY");
+  await expect(ctas.nth(0)).toHaveClass(/fayre-supporters__button--ghost/);
+  await expect(ctas.nth(1)).toHaveAttribute("href", "https://theglittertree.com/pages/rewards");
+  await expect(ctas.nth(1)).not.toHaveClass(/fayre-supporters__button--ghost/);
+});
+
 test("copy button copies the Rewards code and confirms", async ({
   page,
   context,
