@@ -2,6 +2,7 @@
 import MailIcon from "../components/MailIcon.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/PageHero.astro";
+import RoleVacanciesNav from "../components/RoleVacanciesNav.astro";
 import { withBase } from "../lib/urls";
 import { getEntry } from "astro:content";
 
@@ -55,13 +56,7 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
 ---
 <BaseLayout title="Get Involved" description="Ways to volunteer, attend meetings and support The Friends of Ashley.">
   <PageHero wideTitle eyebrow="Everyone is welcome" title="A little time. A big difference." intro="Keep our paperwork in order as Secretary, or help share our news as Co-Comms. Read about each role below.">
-    <nav slot="summary" class="involved-vacancies" id="current-role-vacancies" aria-label="Current role vacancies">
-      <span class="involved-vacancies__label">Two roles to fill</span>
-      <div>
-        <a class="button button--amber" href="#volunteering-title"><span class="cta-label">Secretary<svg data-cta-arrow="down" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"></path></svg></span></a>
-        <a class="button button--amber" href="#co-comms-title"><span class="cta-label">Co-Comms<svg data-cta-arrow="down" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"></path></svg></span></a>
-      </div>
-    </nav>
+    <RoleVacanciesNav slot="summary" targets={[{ label: "Secretary", href: "#volunteering-title" }, { label: "Co-Comms", href: "#co-comms-title" }]} />
   </PageHero>
   <section class="content-section content-section--compact content-section--desktop-snug" aria-labelledby="volunteering-title">
     <div class="site-width involved-content" id="involvement-options">
@@ -98,30 +93,6 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
 </BaseLayout>
 
 <style is:global>
-  .involved-vacancies { margin-block: 1rem; }
-  .involved-vacancies__label {
-    display: block; margin-block: 0 0.5rem;
-    font-size: 0.82rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
-  }
-  /* Nick (22 Nov 2026): desktop keeps the plain header; phones show the two
-     jump CTAs side by side. min-width:auto lets each pill keep its content
-     whole, so enlarged text wraps the pair to stacked instead of overflowing. */
-  .involved-vacancies > div { display: flex; flex-wrap: wrap; gap: 4px; }
-  .involved-vacancies a.button { flex: 1 1 0; }
-  @media (min-width: 48rem) { .involved-vacancies { display: none; } }
-  /* A real grid column reserves the arrow's actual enlarged width, rather
-     than an absolute icon lane that can overlap a separately enlarged label. */
-  #current-role-vacancies a.button:has(svg) {
-    min-height: 44px;
-    padding-inline: 5px !important;
-  }
-  #current-role-vacancies a.button .cta-label {
-    display: grid; grid-template-columns: minmax(min-content, 1fr) auto;
-    align-items: center; gap: 3px; width: 100% !important; flex: 1 1 auto !important; white-space: nowrap;
-  }
-  #current-role-vacancies a.button .cta-icon {
-    position: static !important; translate: none !important;
-  }
   /* Keep phone card copy and CTA words whole under either root-font or
      per-element text enlargement. Widen the reading column, not shrink text. */
   #involvement-options :is(.cta-label, .cta-tail) {
