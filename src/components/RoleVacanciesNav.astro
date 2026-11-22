@@ -25,7 +25,14 @@ const downArrow = "M12 5v14M5 12l7 7 7-7";
 </nav>
 
 <style is:global>
-  .involved-vacancies { margin-block: 1rem; }
+  /* Nick (22 Nov 2026): label and buttons sit inside one outlined box, the
+     label as its heading, so the count visibly covers both vacancy CTAs. */
+  .involved-vacancies {
+    margin-block: 1rem;
+    border: 2px solid var(--green);
+    border-radius: var(--radius-md);
+    padding: 0.7rem 0.75rem 0.75rem;
+  }
   .involved-vacancies__label {
     display: block; margin-block: 0 0.5rem;
     font-size: 0.82rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
