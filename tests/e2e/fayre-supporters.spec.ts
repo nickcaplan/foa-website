@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 // Guard for the Fayre Supporters page (Nick, 18 Nov 2026; design spec same day):
 // Martin Flashman and Co front and centre, then Ottershaw Christmas Tree Farm
@@ -136,9 +136,10 @@ for (const width of [320, 390])
     });
 
 // Copy button for the Rewards code (Nick, 22 Nov 2026): one button press
-// (click or keyboard) copies THEFRIENDSOFASHLEY and an aria-live status
-// confirms it; when the clipboard is unavailable the code is selected and
-// the status says how to copy it manually.
+// (click or keyboard) copies THEFRIENDSOFASHLEY, the button label confirms
+// in place, and an aria-live region (visually hidden, so nothing moves)
+// announces the detail; when the clipboard is unavailable the code is
+// selected and the region says how to copy it manually.
 test("copy button copies the Rewards code and confirms", async ({
   page,
   context,
@@ -150,12 +151,17 @@ test("copy button copies the Rewards code and confirms", async ({
   });
   await expect(button).toBeVisible();
   await button.press("Enter");
+  await expect(page.locator("[data-copy-label]")).toHaveText("Copied");
   await expect(page.locator("[data-copy-feedback]")).toHaveText(
-    "Copied THEFRIENDSOFASHLEY to the clipboard.",
+    "Code copied to the clipboard.",
   );
   await expect
     .poll(() => page.evaluate(() => navigator.clipboard.readText()))
     .toBe("THEFRIENDSOFASHLEY");
+  // The label reverts after the confirmation window.
+  await expect(page.locator("[data-copy-label]")).toHaveText(/Copy\s*code/, {
+    timeout: 8000,
+  });
 });
 
 test("copy failure selects the code and explains the manual route", async ({
@@ -173,10 +179,128 @@ test("copy failure selects the code and explains the manual route", async ({
     .click();
   const feedback = page.locator("[data-copy-feedback]");
   await expect(feedback).toContainText("Copy was not available");
-  await expect(feedback).toContainText("THEFRIENDSOFASHLEY");
+  await expect(feedback).toContainText("Ctrl+C");
+  await expect(page.locator("[data-copy-label]")).toHaveText(/Copy\s*failed/);
   expect(await page.evaluate(() => window.getSelection()?.toString())).toBe(
     "THEFRIENDSOFASHLEY",
   );
+});
+
+// Design review, 22 Nov 2026: the feedback states must also fit the card at
+// 320px with 200% text - the first version's messages embedded the code
+// token and clipped about 60px sideways (the flex item could not shrink
+// below the token). The messages now avoid the token and the line carries
+// min-width:0 with break-word as the last resort.
+for (const state of ["success", "failure"] as const)
+  test(`copy feedback ${state} fits the card at 320px, 200% text`, async ({
+    page,
+    context,
+  }) => {
+    if (state === "success")
+      await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    else
+      await page.addInitScript(() => {
+        Object.defineProperty(navigator, "clipboard", {
+          value: { writeText: () => Promise.reject(new Error("denied")) },
+          configurable: true,
+        });
+      });
+    await page.setViewportSize({ width: 320, height: 1000 });
+    await page.goto(route);
+    await page.addStyleTag({ content: "html{font-size:200%!important}" });
+    await page
+      .getByRole("button", { name: /copy code thefriendsofashley/i })
+      .click();
+    const feedback = page.locator("[data-copy-feedback]");
+    await expect(feedback).not.toBeEmpty();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth - innerWidth,
+      ),
+    ).toBeLessThanOrEqual(1);
+    const clipped = await page
+      .locator('section[aria-labelledby="supporter-glitter"]')
+      .evaluate((el) => {
+        const bad: string[] = [];
+        for (const node of Array.from(el.querySelectorAll("*"))) {
+          if ((node as HTMLElement).classList?.contains("visually-hidden"))
+            continue;
+          if (node.scrollWidth > node.clientWidth + 1)
+            bad.push(
+              `${node.tagName.toLowerCase()}.${(node as HTMLElement).className} ${node.scrollWidth}>${node.clientWidth}`,
+            );
+        }
+        return bad;
+      });
+    expect(clipped).toEqual([]);
+  });
+
+// Design review, 22 Nov 2026 (second blocker): the confirmation must have a
+// fixed footprint - a feedback line that grew from empty shifted the
+// neighbouring Ottershaw/Galeta CTAs 67.5px on success and 89.25px on
+// failure at 1280px, then back when it cleared. The button label flips in
+// place and the live region is visually hidden, so neither outcome may move
+// any card, CTA block or the button itself.
+const cardFootprint = (page: Page) =>
+  page.evaluate(() => {
+    // Document-relative: Playwright scrolls the button into view on click,
+    // which moves every viewport-relative rect without any layout change.
+    const y = window.scrollY;
+    const button = document.querySelector("[data-copy-code]");
+    return {
+      cards: [...document.querySelectorAll(".supporter-card")].map((card) => {
+        const c = card.getBoundingClientRect();
+        const a = card
+          .querySelector(".supporter-card__actions")!
+          .getBoundingClientRect();
+        return {
+          top: c.top + y,
+          height: c.height,
+          actionsTop: a.top + y,
+          actionsBottom: a.bottom + y,
+        };
+      }),
+      button: button
+        ? (() => {
+            const b = button.getBoundingClientRect();
+            return { top: b.top + y, height: b.height, width: b.width };
+          })()
+        : null,
+    };
+  });
+
+test("copy success does not move any card or CTA at 1280px", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(route, { waitUntil: "networkidle" });
+  const before = await cardFootprint(page);
+  await page
+    .getByRole("button", { name: /copy code thefriendsofashley/i })
+    .click();
+  await expect(page.locator("[data-copy-label]")).toHaveText("Copied");
+  expect(await cardFootprint(page)).toEqual(before);
+});
+
+test("copy failure does not move any card or CTA at 1280px", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: () => Promise.reject(new Error("denied")) },
+      configurable: true,
+    });
+  });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(route, { waitUntil: "networkidle" });
+  const before = await cardFootprint(page);
+  await page
+    .getByRole("button", { name: /copy code thefriendsofashley/i })
+    .click();
+  await expect(page.locator("[data-copy-label]")).toHaveText(/Copy\s*failed/);
+  expect(await cardFootprint(page)).toEqual(before);
 });
 
 // Family-hero guard (Nick, 19 Nov 2026): the supporters hero is the shared

@@ -161,12 +161,10 @@
        and wins the specificity tie. */
     .supporter-card .fayre-supporters__button--ghost{background:transparent;border:1px solid #c9a65f}
     .supporter-card .fayre-supporters__button--ghost:hover{background:rgba(201,166,95,.18)}
-    /* The copy feedback line shares the actions row: it takes its own flex
-       line when spoken and collapses entirely when empty, so the desktop
-       row keeps equal card heights and bottom-aligned CTAs. Cream, not the
-       global green, which is tuned for light cards. */
-    .supporter-card .copy-feedback{flex-basis:100%;margin-top:.75rem;color:#f4ead1}
-    .supporter-card .copy-feedback:empty{display:none}
+    /* No visible feedback line (design review, 22 Nov 2026): it grew the
+       card's actions block and shifted the row's bottom-aligned CTAs on
+       success and failure. The confirmation flips the button label in place
+       and the detail lives in a visually hidden live region. */
     @media(min-width:48rem){.fayre-lead__well{padding:2rem}}
     @media(max-width:47.99rem){
       /* Fixed 16px gutters and card padding on phones (the site rule for strips), so
