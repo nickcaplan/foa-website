@@ -135,6 +135,50 @@ for (const width of [320, 390])
       expect(clipped).toEqual([]);
     });
 
+// Copy button for the Rewards code (Nick, 22 Nov 2026): one button press
+// (click or keyboard) copies THEFRIENDSOFASHLEY and an aria-live status
+// confirms it; when the clipboard is unavailable the code is selected and
+// the status says how to copy it manually.
+test("copy button copies the Rewards code and confirms", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto(route);
+  const button = page.getByRole("button", {
+    name: /copy code thefriendsofashley to the clipboard/i,
+  });
+  await expect(button).toBeVisible();
+  await button.press("Enter");
+  await expect(page.locator("[data-copy-feedback]")).toHaveText(
+    "Copied THEFRIENDSOFASHLEY to the clipboard.",
+  );
+  await expect
+    .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+    .toBe("THEFRIENDSOFASHLEY");
+});
+
+test("copy failure selects the code and explains the manual route", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: () => Promise.reject(new Error("denied")) },
+      configurable: true,
+    });
+  });
+  await page.goto(route);
+  await page
+    .getByRole("button", { name: /copy code thefriendsofashley/i })
+    .click();
+  const feedback = page.locator("[data-copy-feedback]");
+  await expect(feedback).toContainText("Copy was not available");
+  await expect(feedback).toContainText("THEFRIENDSOFASHLEY");
+  expect(await page.evaluate(() => window.getSelection()?.toString())).toBe(
+    "THEFRIENDSOFASHLEY",
+  );
+});
+
 // Family-hero guard (Nick, 19 Nov 2026): the supporters hero is the shared
 // dark winter panel - gold keyline, snow edge, cream title - in BOTH themes,
 // replacing the pale view-hero panel (whose shared gold read 1.18:1 in day).
@@ -1061,13 +1105,15 @@ test("enlarged text stacks the partner cards full-width with full-width CTAs", a
 });
 
 // Design re-review of ca0e1d3 (19 Nov 2026): where the partner cards form a
-// row, their CTAs share one consistent size - the card's full internal width.
-// Fails on ca0e1d3 (hug-content widths 307/280/198).
+// row, their outbound CTAs share one consistent size - the card's full
+// internal width. Fails on ca0e1d3 (hug-content widths 307/280/198). The
+// selector counts the link CTAs only: the Glitter card also carries an
+// in-page copy-code button (Nick, 22 Nov 2026), which is not a partner CTA.
 test("partner CTAs share one width in the desktop row", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(route);
   const w = await page.evaluate(() =>
-    [...document.querySelectorAll(".supporter-card .fayre-supporters__button")].map(
+    [...document.querySelectorAll(".supporter-card a.fayre-supporters__button")].map(
       (b) => b.getBoundingClientRect().width,
     ),
   );
@@ -1088,7 +1134,7 @@ test("partner CTAs share one height across the whole three-column range", async 
   for (const width of [1152, 1200, 1300, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     const h = await page.evaluate(() =>
-      [...document.querySelectorAll(".supporter-card .fayre-supporters__button")].map(
+      [...document.querySelectorAll(".supporter-card a.fayre-supporters__button")].map(
         (b) => b.getBoundingClientRect().height,
       ),
     );
