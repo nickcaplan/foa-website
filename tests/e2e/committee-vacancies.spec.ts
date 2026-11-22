@@ -71,3 +71,25 @@ for (const method of ['root', 'per-element']) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
   });
 }
+
+// Like Get Involved, both vacancy cards and the jump nav must work without
+// JavaScript: no date gates remain, so nothing waits on a client script.
+for (const width of [320, 390]) {
+  test(`committee vacancies and jump nav work without JS at ${width}`, async ({ browser }) => {
+    const context = await browser.newContext({ viewport: { width, height: 844 }, javaScriptEnabled: false });
+    try {
+      const page = await context.newPage();
+      await page.goto('/committee/');
+      const roles = page.getByRole('navigation', { name: 'Current role vacancies' });
+      await expect(roles.getByRole('link')).toHaveText(['Secretary', 'Co-Comms']);
+      for (const id of ['#committee-secretary', '#committee-co-comms']) {
+        const card = page.locator(id);
+        await expect(card).toBeVisible();
+        await expect(card).not.toHaveAttribute('hidden');
+        await expect(card).not.toHaveAttribute('data-show-from');
+      }
+      await roles.getByRole('link', { name: 'Co-Comms', exact: true }).click();
+      await expect(page.locator('#committee-co-comms')).toBeInViewport();
+    } finally { await context.close(); }
+  });
+}
