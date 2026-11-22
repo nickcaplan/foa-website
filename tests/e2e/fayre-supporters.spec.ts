@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 // Guard for the Fayre Supporters page (Nick, 18 Nov 2026; design spec same day):
 // Martin Flashman and Co front and centre, then Ottershaw Christmas Tree Farm
@@ -63,7 +63,7 @@ test("each supporter links out to its own site, opening safely in a new tab", as
       "supporter-ottershaw",
       ["https://www.mauricemandry.com/"],
     ],
-    ["supporter-glitter", ["https://theglittertree.com/"]],
+    ["supporter-glitter", ["https://theglittertree.com/pages/rewards"]],
     ["supporter-galeta", ["https://galeta.co.uk/"]],
   ];
   for (const [labelledby, hrefs] of expected) {
@@ -92,6 +92,283 @@ test("every supporter logo renders with its alt text", async ({ page }) => {
       await logo.evaluate((img: HTMLImageElement) => img.naturalWidth),
     ).toBeGreaterThan(0);
   }
+});
+
+// The Glitter Tree Rewards code (Nick, 22 Nov 2026): parents get 10% off at
+// theglittertree.com with THEFRIENDSOFASHLEY and The Glitter Tree gives 10%
+// back to the FOA. Long tokens (the code, the domain) may split only when
+// they cannot fit a line of their own. The card hides overflow, so the
+// clipping check runs element by element - a document scrollWidth check
+// misses a word cut off inside the card (design review, 22 Nov 2026,
+// found the domain clipped at 320px/200%).
+for (const width of [320, 390])
+  for (const scale of [1, 2])
+    test(`Glitter Tree card carries the Rewards code at ${width}px, text scale ${scale}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto(route);
+      if (scale === 2)
+        await page.addStyleTag({ content: "html{font-size:200%!important}" });
+      const card = page.locator('section[aria-labelledby="supporter-glitter"]');
+      await expect(card).toContainText("THEFRIENDSOFASHLEY");
+      await expect(card).toContainText("10% off");
+      await expect(card).toContainText("10% back to the FOA");
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth - innerWidth,
+        ),
+      ).toBeLessThanOrEqual(1);
+      const clipped = await card.evaluate((el) => {
+        const bad: string[] = [];
+        for (const node of Array.from(el.querySelectorAll("*"))) {
+          // .visually-hidden is clipped to 1px on purpose for screen readers.
+          if ((node as HTMLElement).classList?.contains("visually-hidden"))
+            continue;
+          if (node.scrollWidth > node.clientWidth + 1)
+            bad.push(
+              `${node.tagName.toLowerCase()}.${(node as HTMLElement).className} ${node.scrollWidth}>${node.clientWidth}`,
+            );
+        }
+        return bad;
+      });
+      expect(clipped).toEqual([]);
+    });
+
+// The domain in the Rewards paragraph is a real link to the same Rewards
+// page as the Visit button (Nick, 22 Nov 2026: "theglittertree.com - make
+// this clickable"), opening safely in a new tab like the other external
+// links on the page, and it must stay whole enough to read: it may split
+// only when it cannot fit a line of its own.
+test("Glitter Tree domain links to the Rewards page from the copy", async ({
+  page,
+}) => {
+  await page.goto(route);
+  const card = page.locator('section[aria-labelledby="supporter-glitter"]');
+  const link = card.locator(
+    '.supporter-card__copy a.supporter-card__domain',
+  );
+  await expect(link).toHaveCount(1);
+  await expect(link).toHaveAttribute(
+    "href",
+    "https://theglittertree.com/pages/rewards",
+  );
+  await expect(link).toHaveAttribute("target", "_blank");
+  await expect(link).toHaveAttribute("rel", /noopener/);
+  await expect(link).toContainText("theglittertree.com");
+  // Screen-reader-only new-tab notice, matching the page's other external links.
+  await expect(link.locator(".visually-hidden")).toHaveText(
+    " (opens in a new tab)",
+  );
+  // It reads as a link on the dark card: underlined in the gold accent.
+  const style = await link.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return { decoration: s.textDecorationLine, weight: s.fontWeight };
+  });
+  expect(style.decoration).toContain("underline");
+  expect(Number(style.weight)).toBeGreaterThanOrEqual(700);
+  // The site's external-link arrow (Nick, 22 Nov 2026: "Links should always
+  // have an arrow with them"), decorative and hidden from screen readers.
+  // It sits inline bound to the final fragment (cta-tail), never in the
+  // button icon lane (position:absolute is reserved for .button CTAs).
+  const icon = link.locator(".external-link-icon");
+  await expect(icon).toHaveAttribute("aria-hidden", "true");
+  await expect(icon.locator("svg")).toBeVisible();
+  const iconPos = await icon.evaluate(
+    (el) => getComputedStyle(el).position,
+  );
+  expect(iconPos).not.toBe("absolute");
+  const tail = link.locator(".cta-tail");
+  await expect(tail).toHaveCSS("white-space", "nowrap");
+  await expect(tail).toContainText("com");
+});
+
+// Copy button for the Rewards code (Nick, 22 Nov 2026): one button press
+// (click or keyboard) copies THEFRIENDSOFASHLEY, the button label confirms
+// in place, and an aria-live region (visually hidden, so nothing moves)
+// announces the detail; when the clipboard is unavailable the code is
+// selected and the region says how to copy it manually.
+test("copy button copies the Rewards code and confirms", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto(route);
+  const button = page.getByRole("button", {
+    name: /copy code thefriendsofashley to the clipboard/i,
+  });
+  await expect(button).toBeVisible();
+  // Decorative copy icon (Nick, 22 Nov 2026): hidden from screen readers,
+  // and it must survive every label state.
+  const icon = button.locator(".cta-icon");
+  await expect(icon).toHaveAttribute("aria-hidden", "true");
+  await expect(icon.locator("svg")).toBeVisible();
+  await button.press("Enter");
+  // Assert the live region first: the confirmation reverts after 4s, and
+  // slower assertions ahead of it can push the read past that window on a
+  // cold server (the label and region are set in the same synchronous block).
+  await expect(page.locator("[data-copy-feedback]")).toHaveText(
+    "Code copied to the clipboard.",
+  );
+  await expect(page.locator("[data-copy-label]")).toContainText("Copied");
+  await expect(icon.locator("svg")).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+    .toBe("THEFRIENDSOFASHLEY");
+  // The label reverts after the confirmation window, icon intact.
+  await expect(page.locator("[data-copy-label]")).toContainText(/Copy\s*code/, {
+    timeout: 8000,
+  });
+  await expect(icon.locator("svg")).toBeVisible();
+});
+
+test("copy failure selects the code and explains the manual route", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: () => Promise.reject(new Error("denied")) },
+      configurable: true,
+    });
+  });
+  await page.goto(route);
+  await page
+    .getByRole("button", { name: /copy code thefriendsofashley/i })
+    .click();
+  const feedback = page.locator("[data-copy-feedback]");
+  await expect(feedback).toContainText("Copy was not available");
+  await expect(feedback).toContainText("Ctrl+C");
+  await expect(page.locator("[data-copy-label]")).toContainText("Failed");
+  expect(await page.evaluate(() => window.getSelection()?.toString())).toBe(
+    "THEFRIENDSOFASHLEY",
+  );
+});
+
+// Design review, 22 Nov 2026: the feedback states must also fit the card at
+// 320px with 200% text - the first version's messages embedded the code
+// token and clipped about 60px sideways (the flex item could not shrink
+// below the token). The messages now avoid the token and the line carries
+// min-width:0 with break-word as the last resort.
+for (const state of ["success", "failure"] as const)
+  test(`copy feedback ${state} fits the card at 320px, 200% text`, async ({
+    page,
+    context,
+  }) => {
+    if (state === "success")
+      await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    else
+      await page.addInitScript(() => {
+        Object.defineProperty(navigator, "clipboard", {
+          value: { writeText: () => Promise.reject(new Error("denied")) },
+          configurable: true,
+        });
+      });
+    await page.setViewportSize({ width: 320, height: 1000 });
+    await page.goto(route);
+    await page.addStyleTag({ content: "html{font-size:200%!important}" });
+    // The button must keep one line and one height in both states: the icon
+    // lane's padding reserve once squeezed "Copy failed" into a two-line
+    // wrap, growing the button (measured, 22 Nov 2026).
+    const copyButton = page.locator("[data-copy-code]");
+    const heightBefore = await copyButton.evaluate(
+      (b) => b.getBoundingClientRect().height,
+    );
+    await page
+      .getByRole("button", { name: /copy code thefriendsofashley/i })
+      .click();
+    const feedback = page.locator("[data-copy-feedback]");
+    await expect(feedback).not.toBeEmpty();
+    expect(
+      await copyButton.evaluate((b) => b.getBoundingClientRect().height),
+    ).toBe(heightBefore);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth - innerWidth,
+      ),
+    ).toBeLessThanOrEqual(1);
+    const clipped = await page
+      .locator('section[aria-labelledby="supporter-glitter"]')
+      .evaluate((el) => {
+        const bad: string[] = [];
+        for (const node of Array.from(el.querySelectorAll("*"))) {
+          if ((node as HTMLElement).classList?.contains("visually-hidden"))
+            continue;
+          if (node.scrollWidth > node.clientWidth + 1)
+            bad.push(
+              `${node.tagName.toLowerCase()}.${(node as HTMLElement).className} ${node.scrollWidth}>${node.clientWidth}`,
+            );
+        }
+        return bad;
+      });
+    expect(clipped).toEqual([]);
+  });
+
+// Design review, 22 Nov 2026 (second blocker): the confirmation must have a
+// fixed footprint - a feedback line that grew from empty shifted the
+// neighbouring Ottershaw/Galeta CTAs 67.5px on success and 89.25px on
+// failure at 1280px, then back when it cleared. The button label flips in
+// place and the live region is visually hidden, so neither outcome may move
+// any card, CTA block or the button itself.
+const cardFootprint = (page: Page) =>
+  page.evaluate(() => {
+    // Document-relative: Playwright scrolls the button into view on click,
+    // which moves every viewport-relative rect without any layout change.
+    const y = window.scrollY;
+    const button = document.querySelector("[data-copy-code]");
+    return {
+      cards: [...document.querySelectorAll(".supporter-card")].map((card) => {
+        const c = card.getBoundingClientRect();
+        const a = card
+          .querySelector(".supporter-card__actions")!
+          .getBoundingClientRect();
+        return {
+          top: c.top + y,
+          height: c.height,
+          actionsTop: a.top + y,
+          actionsBottom: a.bottom + y,
+        };
+      }),
+      button: button
+        ? (() => {
+            const b = button.getBoundingClientRect();
+            return { top: b.top + y, height: b.height, width: b.width };
+          })()
+        : null,
+    };
+  });
+
+test("copy success does not move any card or CTA at 1280px", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(route, { waitUntil: "networkidle" });
+  const before = await cardFootprint(page);
+  await page
+    .getByRole("button", { name: /copy code thefriendsofashley/i })
+    .click();
+  await expect(page.locator("[data-copy-label]")).toHaveText("Copied");
+  expect(await cardFootprint(page)).toEqual(before);
+});
+
+test("copy failure does not move any card or CTA at 1280px", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: () => Promise.reject(new Error("denied")) },
+      configurable: true,
+    });
+  });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(route, { waitUntil: "networkidle" });
+  const before = await cardFootprint(page);
+  await page
+    .getByRole("button", { name: /copy code thefriendsofashley/i })
+    .click();
+  await expect(page.locator("[data-copy-label]")).toContainText("Failed");
+  expect(await cardFootprint(page)).toEqual(before);
 });
 
 // Family-hero guard (Nick, 19 Nov 2026): the supporters hero is the shared
@@ -1020,13 +1297,15 @@ test("enlarged text stacks the partner cards full-width with full-width CTAs", a
 });
 
 // Design re-review of ca0e1d3 (19 Nov 2026): where the partner cards form a
-// row, their CTAs share one consistent size - the card's full internal width.
-// Fails on ca0e1d3 (hug-content widths 307/280/198).
+// row, their outbound CTAs share one consistent size - the card's full
+// internal width. Fails on ca0e1d3 (hug-content widths 307/280/198). The
+// selector counts the link CTAs only: the Glitter card also carries an
+// in-page copy-code button (Nick, 22 Nov 2026), which is not a partner CTA.
 test("partner CTAs share one width in the desktop row", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(route);
   const w = await page.evaluate(() =>
-    [...document.querySelectorAll(".supporter-card .fayre-supporters__button")].map(
+    [...document.querySelectorAll(".supporter-card a.fayre-supporters__button")].map(
       (b) => b.getBoundingClientRect().width,
     ),
   );
@@ -1047,7 +1326,7 @@ test("partner CTAs share one height across the whole three-column range", async 
   for (const width of [1152, 1200, 1300, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     const h = await page.evaluate(() =>
-      [...document.querySelectorAll(".supporter-card .fayre-supporters__button")].map(
+      [...document.querySelectorAll(".supporter-card a.fayre-supporters__button")].map(
         (b) => b.getBoundingClientRect().height,
       ),
     );
