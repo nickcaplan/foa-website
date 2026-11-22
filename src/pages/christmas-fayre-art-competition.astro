@@ -19,7 +19,7 @@ const flakes = Array.from({ length: SNOWFLAKE_COUNT }, (_, i) => ({
   delay: -((i * 3.3) % 18), y: (i * 29 + 7) % 95, alpha: .45 + ((i * 11) % 4) * .12,
 }));
 ---
-<BaseLayout socialTitle="Art Competition | Narnia theme | Ashley School" socialDescription="Show us your lions, witches and snow queens. Any medium welcome. Hand in your entry by Monday 30th November for the Ashley School Christmas Fayre Gallery." image="/social/art-competition-2026-v2.jpg" imageAlt="Art Competition, Narnia theme, deadline Monday 30th November, next to the Christmas Fayre woodland artwork framed on an easel." imageWidth={1200} imageHeight={630} title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering art-comp">
+<BaseLayout socialTitle="Art Competition | Narnia theme | Ashley School" socialDescription="Show us your lions, witches and snow queens. Any medium welcome. Hand in your entry by Monday 30th November for the Ashley School Christmas Fayre Gallery." image="/social/art-competition-2026-v2.jpg" imageAlt="Art Competition, Narnia theme, deadline Monday 30th November, next to the Christmas Fayre woodland artwork framed on an easel." imageWidth={1200} imageHeight={630} title="Christmas Fayre Art Competition" description="Show us your lions, witches and snow queens. Enter the Ashley School Christmas Fayre Art Competition, theme Narnia, in any medium." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering art-comp" preloadImage="/brand/narnia-hero-landscape.avif">
  <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
  <div class="site-width fayre-hero-shell">
   <section class="fayre-art-hero" aria-labelledby="fayre-art-title" data-hero-snow>
@@ -33,7 +33,7 @@ const flakes = Array.from({ length: SNOWFLAKE_COUNT }, (_, i) => ({
     <p class="fayre-art-hero__theme">Narnia Theme</p>
     <div class="fayre-art-picture" aria-hidden="true"><img src={withBase('/brand/narnia-hero-landscape.avif')} width="1280" height="720" alt="" loading="eager" fetchpriority="high" /></div>
     <p class="fayre-art-hero__deadline"><span>Deadline</span><strong>{deadlineText}</strong></p>
-    <span class="sponsor-ribbon fayre-art-hero__sponsor"><img src={withBase('/sponsors/martin-flashman.png')} alt="Martin Flashman and Co" width="1280" height="96" /></span>
+    <span class="sponsor-ribbon fayre-art-hero__sponsor"><img class="reveal-on-load" src={withBase('/sponsors/martin-flashman.png')} alt="Martin Flashman and Co" width="1280" height="96" decoding="async" /></span>
    </div>
   </section>
  </div>

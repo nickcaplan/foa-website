@@ -13,8 +13,9 @@ const entry = await getEntry("events", "christmas-fayre-2026");
 const event = entry?.data;
 if (!event?.path || !event.signupUrl) throw new Error("Christmas Fayre content is missing");
 const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>';
+const copyIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 ---
-<BaseLayout image="/social/fayre-supporters-2026-v3.jpg" imageAlt="Fayre Supporters: logos of our sponsors Martin Flashman and Co, Ottershaw Christmas Tree Farm, The Glitter Tree, Galeta, W3 Colour, Moore's Tree Company and Giardina Family Butchers, with the Narnia-inspired woodland artwork." imageWidth={1200} imageHeight={630} title="Fayre Supporters" description="Thank you to the local businesses supporting the Ashley School Christmas Fayre: Martin Flashman and Co, Ottershaw Christmas Tree Farm, The Glitter Tree, Galeta, W3 Colour, Moore's Tree Company and Giardina Family Butchers." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering">
+<BaseLayout image="/social/fayre-supporters-2026-v3.jpg" imageAlt="Fayre Supporters: logos of our sponsors Martin Flashman and Co, Ottershaw Christmas Tree Farm, The Glitter Tree, Galeta, W3 Colour, Moore's Tree Company and Giardina Family Butchers, with the Narnia-inspired woodland artwork." imageWidth={1200} imageHeight={630} title="Fayre Supporters" description="Thank you to the local businesses supporting the Ashley School Christmas Fayre: Martin Flashman and Co, Ottershaw Christmas Tree Farm, The Glitter Tree, Galeta, W3 Colour, Moore's Tree Company and Giardina Family Butchers." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering" preloadImage="/brand/narnia-hero-landscape.avif">
   <FayrePageStyles />
   <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
   <div class="site-width fayre-supporters-hero">
@@ -25,8 +26,8 @@ const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" hei
 
       <section class="fayre-lead" aria-labelledby="supporter-martin">
         <p class="fayre-lead__label">Christmas Fayre sponsor</p>
-        <div class="fayre-lead__well">
-          <img src={withBase("/sponsors/martin-flashman.png")} alt="Martin Flashman and Co" width="1280" height="96" loading="lazy" />
+        <div class="fayre-lead__well" data-reveal-box>
+          <img class="reveal-on-load" src={withBase("/sponsors/martin-flashman.png")} alt="Martin Flashman and Co" width="1280" height="96" loading="lazy" decoding="async" />
         </div>
         <h2 id="supporter-martin" class="fayre-lead__name visually-hidden">Martin Flashman and Co</h2>
         <p class="fayre-lead__thanks">Thank you for sponsoring our Christmas Fayre.</p>
@@ -38,7 +39,7 @@ const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" hei
         <section class="supporter-card" aria-labelledby="supporter-ottershaw">
           <div class="compact-body">
             <div class="supporter-card__logo">
-              <img src={withBase("/sponsors/ottershaw-christmas-tree-farm.png")} alt="Ottershaw Christmas Tree Farm" width="300" height="422" loading="lazy" />
+              <img class="reveal-on-load" src={withBase("/sponsors/ottershaw-christmas-tree-farm.png")} alt="Ottershaw Christmas Tree Farm" width="300" height="422" loading="lazy" decoding="async" />
             </div>
             <div class="supporter-card__copy">
               <h3 id="supporter-ottershaw">Ottershaw Christmas Tree Farm</h3>
@@ -52,21 +53,23 @@ const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" hei
         <section class="supporter-card" aria-labelledby="supporter-glitter">
           <div class="compact-body">
             <div class="supporter-card__logo supporter-card__logo--light">
-              <img src={withBase("/brand/glitter-tree.webp")} alt="The Glitter Tree" width="96" height="96" loading="lazy" />
+              <img class="reveal-on-load" src={withBase("/brand/glitter-tree.webp")} alt="The Glitter Tree" width="96" height="96" loading="lazy" decoding="async" />
             </div>
             <div class="supporter-card__copy">
               <h3 id="supporter-glitter">The Glitter Tree</h3>
-              <p>Thank you for supporting our Christmas Fayre. They will match our spend with a donation.</p>
+              <p>Buying Christmas gifts? Parents get 10% off at <a class="supporter-card__domain" href="https://theglittertree.com/pages/rewards" target="_blank" rel="noopener noreferrer">theglittertree.<span class="cta-tail">com<span class="external-link-icon" aria-hidden="true"><Fragment set:html={externalIcon} /></span></span><span class="visually-hidden"> (opens in a new tab)</span></a> with the code <strong class="supporter-card__code">THEFRIENDSOFASHLEY</strong>, and The Glitter Tree gives 10% back to the&nbsp;FOA.</p>
             </div>
           </div>
         <p class="supporter-card__actions">
-              <a class="button fayre-supporters__button" href="https://theglittertree.com/" target="_blank" rel="noopener noreferrer"><span class="cta-label">Visit The Glitter <span class="cta-tail">Tree<span class="external-link-icon cta-icon supporter-icon" aria-hidden="true"><Fragment set:html={externalIcon} /></span></span></span><span class="visually-hidden"> (opens in a new tab)</span></a>
+              <a class="button fayre-supporters__button" href="https://theglittertree.com/pages/rewards" target="_blank" rel="noopener noreferrer"><span class="cta-label">Visit The Glitter <span class="cta-tail">Tree<span class="external-link-icon cta-icon supporter-icon" aria-hidden="true"><Fragment set:html={externalIcon} /></span></span></span><span class="visually-hidden"> (opens in a new tab)</span></a>
+              <button class="button fayre-supporters__button fayre-supporters__button--ghost" type="button" data-copy-code="THEFRIENDSOFASHLEY"><span class="cta-label" data-copy-label>Copy&nbsp;code<span class="cta-icon supporter-icon" aria-hidden="true"><Fragment set:html={copyIcon} /></span></span><span class="visually-hidden"> THEFRIENDSOFASHLEY to the clipboard</span></button>
+              <span class="visually-hidden" role="status" aria-live="polite" data-copy-feedback></span>
             </p>
           </section>
         <section class="supporter-card" aria-labelledby="supporter-galeta">
           <div class="compact-body">
             <div class="supporter-card__logo supporter-card__logo--cream">
-              <img src={withBase("/sponsors/galeta.svg")} alt="Galeta" width="127" height="31" loading="lazy" />
+              <img class="reveal-on-load" src={withBase("/sponsors/galeta.svg")} alt="Galeta" width="127" height="31" loading="lazy" decoding="async" />
             </div>
             <div class="supporter-card__copy">
               <h3 id="supporter-galeta">Galeta</h3>
@@ -80,7 +83,7 @@ const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" hei
         <section class="supporter-card" aria-labelledby="supporter-w3colour">
           <div class="compact-body">
             <div class="supporter-card__logo supporter-card__logo--light">
-              <img src={withBase("/sponsors/w3-colour.svg")} alt="W3 Colour" width="248" height="148" loading="lazy" />
+              <img class="reveal-on-load" src={withBase("/sponsors/w3-colour.svg")} alt="W3 Colour" width="248" height="148" loading="lazy" decoding="async" />
             </div>
             <div class="supporter-card__copy">
               <h3 id="supporter-w3colour">W3 Colour</h3>
@@ -94,7 +97,7 @@ const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" hei
         <section class="supporter-card" aria-labelledby="supporter-moores">
           <div class="compact-body">
             <div class="supporter-card__logo supporter-card__logo--light">
-              <img src={withBase("/sponsors/moores-tree-company.jpg")} alt="Moore's Tree Company" width="569" height="218" loading="lazy" />
+              <img class="reveal-on-load" src={withBase("/sponsors/moores-tree-company.jpg")} alt="Moore's Tree Company" width="569" height="218" loading="lazy" decoding="async" />
             </div>
             <div class="supporter-card__copy">
               <h3 id="supporter-moores">Moore's Tree Company</h3>
@@ -108,7 +111,7 @@ const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" hei
         <section class="supporter-card supporter-card--monogram" aria-labelledby="supporter-giardina">
           <div class="compact-body">
             <div class="supporter-card__logo supporter-card__logo--monogram" aria-hidden="true">
-              <img src={withBase("/sponsors/giardina-monogram.svg")} alt="" width="64" height="64" loading="lazy" />
+              <img class="reveal-on-load" src={withBase("/sponsors/giardina-monogram.svg")} alt="" width="64" height="64" loading="lazy" decoding="async" />
             </div>
             <div class="supporter-card__copy">
               <h3 id="supporter-giardina">Giardina Family Butchers</h3>
@@ -122,4 +125,50 @@ const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" hei
       </div>
 
     </div>
+
+    <script>
+      // Nick, 22 Nov 2026: a copy button for the Glitter Tree Rewards code.
+      // Mirrors the reps page clipboard pattern, but the confirmation has a
+      // fixed footprint (design review, 22 Nov 2026: a visible feedback line
+      // grew the card and shifted the neighbouring CTAs): the button label
+      // flips to Copied / Copy failed in place while a visually hidden live
+      // region announces the detail. Failure also selects the code token so
+      // it can be copied by hand. The label swap rewrites only the text node
+      // so the decorative copy icon (aria-hidden) survives every state.
+      const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-code]");
+      const copyLabel = copyButton?.querySelector<HTMLElement>("[data-copy-label]");
+      const labelText = copyLabel?.firstChild;
+      const feedback = document.querySelector<HTMLElement>("[data-copy-feedback]");
+      const codeToken = document.querySelector<HTMLElement>(".supporter-card__code");
+      let resetTimer: number | undefined;
+      copyButton?.addEventListener("click", async () => {
+        if (!feedback || !labelText) return;
+        const text = copyButton.dataset.copyCode ?? "";
+        window.clearTimeout(resetTimer);
+        try {
+          if (!navigator.clipboard?.writeText) throw new Error("Copy was not available");
+          await navigator.clipboard.writeText(text);
+          labelText.nodeValue = "Copied";
+          feedback.textContent = "Code copied to the clipboard.";
+          resetTimer = window.setTimeout(() => {
+            labelText.nodeValue = "Copy\u00A0code";
+            feedback.textContent = "";
+          }, 4000);
+        } catch {
+          labelText.nodeValue = "Failed";
+          feedback.textContent = `Copy was not available. The code ${text} is selected - press Ctrl+C or long-press to copy.`;
+          if (codeToken) {
+            const range = document.createRange();
+            range.selectNodeContents(codeToken);
+            const selection = window.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+          }
+          resetTimer = window.setTimeout(() => {
+            labelText.nodeValue = "Copy\u00A0code";
+            feedback.textContent = "";
+          }, 6000);
+        }
+      });
+    </script>
 </BaseLayout>

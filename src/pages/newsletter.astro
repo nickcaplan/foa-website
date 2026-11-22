@@ -28,7 +28,7 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
   <section class="content-section content-section--compact content-section--desktop-snug newsletter-reader-container"><div class="site-width newsletter-page">
     <section class="newsletter-section newsletter-board newsletter-reading-board" aria-label="Newsletter reading board">
       <article class="newsletter-issue newsletter-sheet" id={`newsletter-issue-${latestIssue.id}`} tabindex="-1">
-        <div class="newsletter-letterhead"><img src={withBase("/brand/foa-logo.svg")} alt="" width="44" height="44"><span>The Friends of Ashley</span>{latest.published && <time class="newsletter-letterhead-date" datetime={latest.published.toISOString()}>{formatDateWithOrdinal(latest.published)}</time>}</div>
+        <div class="newsletter-letterhead"><img class="reveal-on-load" src={withBase("/brand/foa-logo.svg")} alt="" width="44" height="44" decoding="async"><span>The Friends of Ashley</span>{latest.published && <time class="newsletter-letterhead-date" datetime={latest.published.toISOString()}>{formatDateWithOrdinal(latest.published)}</time>}</div>
         <p class="newsletter-summary-label">{latest.title}</p>
         {latestPreview.map((section, index) => <NewsletterSection section={section} lead={index === 0} />)}
         {latestRest.length > 0 && <>
@@ -54,7 +54,7 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
         const rest = sections.slice(previewSectionCount);
         const bodyId = `newsletter-${id}-more`;
         return <article class="newsletter-summary newsletter-sheet" id={`newsletter-issue-${id}`} tabindex="-1">
-          <div class="newsletter-letterhead"><img src={withBase("/brand/foa-logo.svg")} alt="" width="44" height="44"><span>The Friends of Ashley</span>{data.published && <time class="newsletter-letterhead-date" datetime={data.published.toISOString()}>{formatDateWithOrdinal(data.published)}</time>}</div>
+          <div class="newsletter-letterhead"><img class="reveal-on-load" src={withBase("/brand/foa-logo.svg")} alt="" width="44" height="44" decoding="async"><span>The Friends of Ashley</span>{data.published && <time class="newsletter-letterhead-date" datetime={data.published.toISOString()}>{formatDateWithOrdinal(data.published)}</time>}</div>
           <p class="newsletter-summary-label">{data.title}</p>
           {preview.length > 0 ? preview.map((section, index) => <NewsletterSection section={section} lead={index === 0} />) : <p>{data.summary}</p>}
           {rest.length > 0 && <>

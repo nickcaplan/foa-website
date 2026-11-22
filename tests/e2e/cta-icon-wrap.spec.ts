@@ -104,6 +104,46 @@ test.describe("CTA trailing icons stay with the label", () => {
   });
 });
 
+// Design (20 Nov): at 390px with per-element doubled text the card "Choose a
+// slot" buttons put the external-link icon 0.53px from the last word - no
+// visible gap. The icon must always sit clear of the label text on its own
+// rendered line (the lane at 100%, an inline gap at 200%).
+for (const width of [320, 390]) {
+  test(`icon-to-text gap on volunteering CTAs at ${width}px with 200% per-element text`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/christmas-fayre-volunteering/");
+    await useLargeText(page);
+    await page.waitForFunction(() => document.querySelectorAll(".fayre-volunteer__count").length > 0);
+    const tight = await page.evaluate(() => {
+      const bad: string[] = [];
+      for (const btn of document.querySelectorAll<HTMLElement>(".narnia-landscape__action, .fayre-volunteer__grid .fayre-volunteer__action")) {
+        if (getComputedStyle(btn).visibility === "hidden") continue;
+        const icon = btn.querySelector(".cta-icon");
+        const label = btn.querySelector(".cta-label");
+        if (!icon || !label) continue;
+        const ir = icon.getBoundingClientRect();
+        const range = document.createRange();
+        const walker = document.createTreeWalker(label, NodeFilter.SHOW_TEXT);
+        let n: Node | null;
+        let sameLineRight = 0;
+        while ((n = walker.nextNode())) {
+          if (n.parentElement?.closest(".cta-icon,.visually-hidden") || !n.textContent?.trim()) continue;
+          range.selectNodeContents(n);
+          for (const r of range.getClientRects()) {
+            if (r.width < 0.5) continue;
+            if (r.top < ir.bottom && r.bottom > ir.top) sameLineRight = Math.max(sameLineRight, r.right);
+          }
+        }
+        if (!sameLineRight) continue;
+        const name = btn.closest("[data-activity-name]")?.getAttribute("data-activity-name") ?? btn.textContent!.trim().replace(/\s+/g, " ").slice(0, 30);
+        if (ir.left - sameLineRight < 4) bad.push(`${name}: icon-to-text gap ${(ir.left - sameLineRight).toFixed(2)}px`);
+      }
+      return bad;
+    });
+    expect(tight).toEqual([]);
+  });
+}
+
 test.describe("Wrapping stays inside the neighbouring content column", () => {
   for (const width of [320, 768, 1280, 1366, 1440]) {
     for (const night of [false, true]) {

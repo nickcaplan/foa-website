@@ -77,7 +77,10 @@ for (const width of [320, 390, 640, 768, 820, 900, 1024, 1280, 1440]) {
           const range = document.createRange();
           const texts: Text[] = [];
           (function walk(n: Node) { for (const c of n.childNodes) { if (c.nodeType === 3 && !c.parentElement?.closest(".visually-hidden")) texts.push(c as Text); else walk(c); } })(label);
-          for (const t of texts) { range.selectNodeContents(t); for (const r of range.getClientRects()) { if (r.width && !(r.right <= icon.left || r.left >= icon.right)) bad.push(`${card.dataset.activityName}: icon overlaps button text`); } }
+          // A collision needs overlap on both axes: with the icon inline after the
+          // wrapped label (doubled text), an earlier line can cross the icon's x
+          // range without touching it.
+          for (const t of texts) { range.selectNodeContents(t); for (const r of range.getClientRects()) { if (r.width && !(r.right <= icon.left || r.left >= icon.right) && !(r.bottom <= icon.top || r.top >= icon.bottom)) bad.push(`${card.dataset.activityName}: icon overlaps button text`); } }
         }
         return bad;
       });
@@ -178,6 +181,7 @@ test(`slots line and card button have no single-word last line at ${width}px wit
   await page.waitForFunction(() => document.querySelectorAll(".fayre-volunteer__count").length > 0);
   const orphans = await page.evaluate(() =>
     [...document.querySelectorAll<HTMLElement>(".fayre-volunteer__availability, .fayre-volunteer__action")].flatMap((el) => {
+      // Count geometry must come from the visible stacked variant, not its hidden twin.
       // Collect every rendered word with its rect, walking text nodes in order (skip visually-hidden text).
       const texts: Text[] = [];
       (function walk(n: Node) { for (const c of n.childNodes) { if (c.nodeType === 3) texts.push(c as Text); else if (!(c as HTMLElement).classList?.contains("visually-hidden")) walk(c); } })(el);
@@ -194,7 +198,7 @@ test(`slots line and card button have no single-word last line at ${width}px wit
           words.push({ w: part, top: r.top, bottom: r.bottom, right: r.right });
         }
       }
-      if (words.length < 2) return [];
+      if (getComputedStyle(el).visibility === "hidden" || words.length < 2) return [];
       // Group words into rendered lines by vertical overlap (mixed font sizes share a baseline, not a top).
       const lines: { top: number; bottom: number; count: number }[] = [];
       for (const word of words) {
@@ -246,3 +250,14 @@ test(`no mid-word breaks in card titles or buttons at ${width}px with 200% text`
   expect(split).toEqual([]);
 });
 }
+
+test("partial capacity never produces a misleading denominator and singular count reads correctly", async ({ page }) => {
+  const data = snapshot({ [anchors[0]]: 1 });
+  data.activities[anchors[0]].rows.push({ endsAt: "2026-12-05T15:00:00+00:00", open: 0, capacity: null as unknown as number });
+  await page.route("**/fayre-availability.json*", route => route.fulfill({ json: data }));
+  await page.goto("/christmas-fayre-volunteering/");
+  const line = page.locator(`[data-availability-code="${anchors[0]}"] .fayre-volunteer__slots--count`);
+  await expect(line).toHaveText(/1 slot\s+remaining/);
+  await expect(line).not.toContainText("/");
+  await page.screenshot({ path: "/downloads/foa-capacity-guard.png", fullPage: true });
+});

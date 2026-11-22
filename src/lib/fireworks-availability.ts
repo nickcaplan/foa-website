@@ -18,17 +18,19 @@ export function remaining(activity: Activity | undefined, now: number): number |
 export function totals(activity: Activity | undefined, now: number): { open: number; capacity: number | null } | null {
   const checked = Date.parse(activity?.checkedAt || "");
   if (!activity || activity.unavailable || !Number.isFinite(checked) || checked > now + 60000 || !activity.rows?.length) return null;
-  let open = 0, capacity = 0, known = false;
+  let open = 0, capacity = 0, complete = true, counted = 0;
   for (const row of activity.rows) {
     const end = Date.parse(row.endsAt);
     if (!Number.isFinite(end) || !Number.isInteger(row.open) || row.open < 0 || row.open > 20) return null;
     if (row.capacity !== undefined && row.capacity !== null && (!Number.isInteger(row.capacity) || row.capacity < row.open || row.capacity > 20)) return null;
     if (end > now) {
+      counted++;
       open += row.open;
-      if (Number.isInteger(row.capacity)) { capacity += row.capacity as number; known = true; }
+      if (Number.isInteger(row.capacity)) capacity += row.capacity as number;
+      else complete = false;
     }
   }
-  return { open, capacity: known ? capacity : null };
+  return { open, capacity: complete && counted > 0 ? capacity : null };
 }
 
 /** Rank validated totals descending; unknown totals follow known totals, ties stay stable. */

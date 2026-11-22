@@ -46,7 +46,7 @@ const isCurrent = (href: string) =>
     <div class="site-width header-inner">
        {isHomepage && <HomeIntroduction />}
        {!isHomepage && <a class="brand home-introduction" href={withBase("/")} aria-label="The Friends of Ashley home">
-         <img class:list={["brand-logo", { "brand-logo--festive": logo !== "/brand/foa-logo-ivory.svg", "brand-logo--fireworks": logo.includes("fireworks") }]} src={withBase(logo)} alt="" width="160" height="160">
+         <img class:list={["brand-logo", "reveal-on-load", { "brand-logo--festive": logo !== "/brand/foa-logo-ivory.svg", "brand-logo--fireworks": logo.includes("fireworks") }]} src={withBase(logo)} alt="" width="160" height="160" decoding="async">
          <p><strong>The Friends of Ashley</strong><span>Ashley C of E Primary School PTA</span></p>
       </a>}
       {import.meta.env.DEV && <DevMobilePreview />}
@@ -67,7 +67,7 @@ const isCurrent = (href: string) =>
   <div class="mobile-menu-panel">
     <div class="mobile-menu-head">
       <a class="mobile-menu-home" href={withBase("/")} aria-label="The Friends of Ashley home">
-        <img class:list={["mobile-menu-logo", { "brand-logo--festive": logo !== "/brand/foa-logo-ivory.svg", "brand-logo--fireworks": logo.includes("fireworks") }]} src={withBase(logo)} alt="" width="104" height="104">
+        <img class:list={["mobile-menu-logo", "reveal-on-load", { "brand-logo--festive": logo !== "/brand/foa-logo-ivory.svg", "brand-logo--fireworks": logo.includes("fireworks") }]} src={withBase(logo)} alt="" width="104" height="104" loading="lazy" decoding="async">
       </a>
       <div class="mobile-menu-controls">
         <span class="mobile-menu-theme"><ThemeToggle /></span>
