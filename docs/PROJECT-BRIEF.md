@@ -169,6 +169,10 @@ These are confirmed unless the project owner explicitly revises them. Edit entri
 - Deferred; no public route. If introduced, it is editorial and committee-managed: no unmoderated publishing, notices need publication and expiry dates, and the Committee owns review, expiry and takedowns.
 - Show an honest empty state rather than invented notices.
 
+### Get Involved vacancies
+
+- Secretary and Co-Comms are both named in the opening hero, before the general introduction, with links to the complete role descriptions below. At normal phone text size both role links must be visible on initial load, above the first-visit cookie notice. Current vacancies render without a JavaScript date gate. Enlarged text may extend the hero beyond the first screen; content must remain readable and reachable without clipping.
+
 ### Reps Hub
 
 - Prioritise existing reps' tasks: copy-and-paste guidance and shareable messages come first; "What class reps do" follows as reference information.
