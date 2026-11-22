@@ -235,9 +235,9 @@
 /* Nick (22 Nov 2026): the Martin Flashman wordmark needs delineation like
    the tiled partners. A white tile would swallow the mint mark, so it gets
    the panel's own idiom instead: a gold 1px outline (the buttons' #c9a65f),
-   6px radius, and a faint warm lift. content-box keeps the mark at its
-   sized width; the padding draws the frame clear of the strokes. */
-.fayre-supporters-hero .narnia-landscape__supporters-lead{display:block;width:152px;height:auto;box-sizing:content-box;padding:6px 10px;border:1px solid #c9a65f;border-radius:6px;background:#fff3d514}
+   6px radius, and a faint warm lift. border-box keeps the frame inside the
+   existing row allocation so the desktop marks stay on one line. */
+.fayre-supporters-hero .narnia-landscape__supporters-lead{display:block;width:152px;height:auto;box-sizing:border-box;padding:6px 10px;border:1px solid #c9a65f;border-radius:6px;background:#fff3d514}
 /* Six marks on the smallest phones: the partner group must stay on one line
    under Martin inside the 262px content column at 320px, so the base tier
    scales down (24x34, 34px tiles, 68x34 cream, 12px gaps) and steps back up

@@ -1100,9 +1100,9 @@ test("the hero sponsor row matches the six-mark sizes", async ({ page }) => {
     await page.goto(route);
     const m = await page.evaluate(() => {
       const row = document.querySelector(".narnia-landscape__supporters")!;
-      const lead = row
-        .querySelector(".narnia-landscape__supporters-lead")!
-        .getBoundingClientRect();
+      const leadElement = row.querySelector(".narnia-landscape__supporters-lead")!;
+      const lead = leadElement.getBoundingClientRect();
+      const leadStyle = getComputedStyle(leadElement);
       const imgs = [
         ...row.querySelectorAll(".narnia-landscape__supporters-partners img"),
       ].map((i) => i.getBoundingClientRect());
@@ -1113,7 +1113,14 @@ test("the hero sponsor row matches the six-mark sizes", async ({ page }) => {
           gaps.push(imgs[k + 1].left - imgs[k].right);
       }
       return {
-        lead: { w: lead.width, top: lead.top, bottom: lead.bottom },
+        lead: {
+          w: lead.width - parseFloat(leadStyle.paddingLeft) - parseFloat(leadStyle.paddingRight) - parseFloat(leadStyle.borderLeftWidth) - parseFloat(leadStyle.borderRightWidth),
+          outerWidth: lead.width,
+          borderWidth: leadStyle.borderTopWidth,
+          borderStyle: leadStyle.borderTopStyle,
+          borderColor: leadStyle.borderTopColor,
+          top: lead.top, bottom: lead.bottom,
+        },
         otter: [otter.width, otter.height],
         glitter: [glitter.width, glitter.height],
         galeta: [galeta.width, galeta.height],
@@ -1131,7 +1138,11 @@ test("the hero sponsor row matches the six-mark sizes", async ({ page }) => {
         ).backgroundColor,
       };
     });
-    expect(Math.abs(m.lead.w - t.lead), `${t.w}px lead width`).toBeLessThanOrEqual(1);
+    expect(Math.abs(m.lead.w - (t.lead - 22)), `${t.w}px wordmark content fits inside the frame`).toBeLessThanOrEqual(1);
+    expect(Math.abs(m.lead.outerWidth - t.lead), `${t.w}px framed lead keeps its existing row allocation`).toBeLessThanOrEqual(1);
+    expect(m.lead.borderWidth).toBe("1px");
+    expect(m.lead.borderStyle).toBe("solid");
+    expect(m.lead.borderColor).toBe("rgb(201, 166, 95)");
     expect(Math.abs(m.otter[0] - t.side[0]), `${t.w}px otter width`).toBeLessThanOrEqual(1);
     expect(Math.abs(m.otter[1] - t.side[1]), `${t.w}px otter height`).toBeLessThanOrEqual(1);
     for (const [name, g] of [["glitter", m.glitter], ["w3", m.w3], ["moores", m.moores]] as const) {
