@@ -159,6 +159,9 @@
        selector outranks main's !important pill rule (specificity, not order). */
     @media(min-width:48rem){
       main a.button.fayre-supporters__button[href]:has(.cta-icon){padding-inline-end:calc(1.05em + 1.8rem)!important}
+      /* The filled copy button is a <button>, so the [href] rule misses it:
+         this class-based selector carries the same icon lane for its label. */
+      main .button.fayre-supporters__button:not([href]):has(.cta-icon){padding-inline-end:calc(1.05em + 1.8rem)!important}
       /* The ghost copy button carries the same icon lane: the doubled class
          outranks the global main-button icon reserve (which lands after
          this sheet), keeping its label centred exactly like the link's. */
@@ -166,12 +169,12 @@
     }
     .fayre-supporters__button:hover{background:#954052}
     .fayre-supporters__button:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}
-    /* Ghost variant (the copy-code button, Nick 22 Nov 2026): the primary
-       maroon stays on the outbound link; the copy action keeps the same
-       gold ring and cream text on the card's own dark background. The
-       border needs the .supporter-card prefix to outrank global.css's
-       .button{border:1px solid transparent}, which lands after this sheet
-       and wins the specificity tie. */
+    /* Ghost variant (the outbound link, Nick 22 Nov 2026): the primary
+       maroon sits on the copy action, the one parents use on the page; the
+       visit link keeps the same gold ring and cream text on the card's own
+       dark background. The border needs the .supporter-card prefix to outrank
+       global.css's .button{border:1px solid transparent}, which lands after
+       this sheet and wins the specificity tie. */
     .supporter-card .fayre-supporters__button--ghost{background:transparent;border:1px solid #c9a65f}
     .supporter-card .fayre-supporters__button--ghost:hover{background:rgba(201,166,95,.18)}
     /* No visible feedback line (design review, 22 Nov 2026): it grew the
