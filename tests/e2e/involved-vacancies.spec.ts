@@ -103,3 +103,17 @@ for (const width of [320, 390, 430, 768, 1440]) {
     });
   }
 }
+
+// Nick's rule (20 Nov 2026, on this PR): arrow direction means destination.
+// Same-page jumps get a down arrow; right arrows mean leaving the page.
+test('vacancy jump links carry a down arrow, not a forward one', async ({ page }) => {
+  await page.goto('/get-involved/');
+  const roles = page.getByRole('navigation', { name: 'Current role vacancies' });
+  const links = await roles.getByRole('link').all();
+  expect(links.length).toBe(2);
+  for (const link of links) {
+    await expect(link).toHaveAttribute('href', /^#/);
+    await expect(link.locator('svg[data-cta-arrow="down"]')).toHaveCount(1);
+    await expect(link.locator('[data-cta-arrow="forward"]')).toHaveCount(0);
+  }
+});
