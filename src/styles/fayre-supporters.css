@@ -107,6 +107,11 @@
     @container pageband (max-width:60rem){.supporter-card h3{font-size:1.25rem}}
     .supporter-card h3:after{display:none}
     .supporter-card__copy>p:not(.supporter-card__actions){margin:.6rem 0 0;line-height:1.6;color:#f4ead1;text-wrap:balance}
+    /* The Rewards code is one long token: inline-block lets it wrap to its
+       own line whole, and break-word splits it only when it cannot fit a
+       line of its own (320px at 200% text), so it never scrolls sideways
+       and never sheds a fragment onto a line. */
+    .supporter-card__code{font-weight:700;font-size:.875em;overflow-wrap:break-word}
     .supporter-card__actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0 0}
     /* Compact single-column partner cards (Nick, 19 Nov 2026 21:00; design
        agent compact-card-spec): wherever the list is one column - below the

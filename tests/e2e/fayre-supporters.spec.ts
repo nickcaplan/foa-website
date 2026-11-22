@@ -94,6 +94,30 @@ test("every supporter logo renders with its alt text", async ({ page }) => {
   }
 });
 
+// The Glitter Tree Rewards code (Nick, 22 Nov 2026): parents get 10% off at
+// theglittertree.com with THEFRIENDSOFASHLEY and The Glitter Tree gives 10%
+// back to the FOA. The code is one long token: at 320px with 200% text it may
+// only split when it cannot fit a line of its own, and must never scroll
+// sideways.
+for (const scale of [1, 2])
+  test(`Glitter Tree card carries the Rewards code at 320px, text scale ${scale}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 1000 });
+    await page.goto(route);
+    if (scale === 2)
+      await page.addStyleTag({ content: "html{font-size:200%!important}" });
+    const card = page.locator('section[aria-labelledby="supporter-glitter"]');
+    await expect(card).toContainText("THEFRIENDSOFASHLEY");
+    await expect(card).toContainText("10% off");
+    await expect(card).toContainText("10% back to the FOA");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth - innerWidth,
+      ),
+    ).toBeLessThanOrEqual(1);
+  });
+
 // Family-hero guard (Nick, 19 Nov 2026): the supporters hero is the shared
 // dark winter panel - gold keyline, snow edge, cream title - in BOTH themes,
 // replacing the pale view-hero panel (whose shared gold read 1.18:1 in day).
