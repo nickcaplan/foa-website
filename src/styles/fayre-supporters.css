@@ -150,6 +150,10 @@
        selector outranks main's !important pill rule (specificity, not order). */
     @media(min-width:48rem){
       main a.button.fayre-supporters__button[href]:has(.cta-icon){padding-inline-end:calc(1.05em + 1.8rem)!important}
+      /* The ghost copy button carries the same icon lane: the doubled class
+         outranks the global main-button icon reserve (which lands after
+         this sheet), keeping its label centred exactly like the link's. */
+      main .button.fayre-supporters__button.fayre-supporters__button--ghost:has(.cta-icon){padding-inline-end:calc(1.05em + 1.8rem)!important}
     }
     .fayre-supporters__button:hover{background:#954052}
     .fayre-supporters__button:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}

@@ -150,18 +150,28 @@ test("copy button copies the Rewards code and confirms", async ({
     name: /copy code thefriendsofashley to the clipboard/i,
   });
   await expect(button).toBeVisible();
+  // Decorative copy icon (Nick, 22 Nov 2026): hidden from screen readers,
+  // and it must survive every label state.
+  const icon = button.locator(".cta-icon");
+  await expect(icon).toHaveAttribute("aria-hidden", "true");
+  await expect(icon.locator("svg")).toBeVisible();
   await button.press("Enter");
-  await expect(page.locator("[data-copy-label]")).toHaveText("Copied");
+  // Assert the live region first: the confirmation reverts after 4s, and
+  // slower assertions ahead of it can push the read past that window on a
+  // cold server (the label and region are set in the same synchronous block).
   await expect(page.locator("[data-copy-feedback]")).toHaveText(
     "Code copied to the clipboard.",
   );
+  await expect(page.locator("[data-copy-label]")).toContainText("Copied");
+  await expect(icon.locator("svg")).toBeVisible();
   await expect
     .poll(() => page.evaluate(() => navigator.clipboard.readText()))
     .toBe("THEFRIENDSOFASHLEY");
-  // The label reverts after the confirmation window.
-  await expect(page.locator("[data-copy-label]")).toHaveText(/Copy\s*code/, {
+  // The label reverts after the confirmation window, icon intact.
+  await expect(page.locator("[data-copy-label]")).toContainText(/Copy\s*code/, {
     timeout: 8000,
   });
+  await expect(icon.locator("svg")).toBeVisible();
 });
 
 test("copy failure selects the code and explains the manual route", async ({
@@ -180,7 +190,7 @@ test("copy failure selects the code and explains the manual route", async ({
   const feedback = page.locator("[data-copy-feedback]");
   await expect(feedback).toContainText("Copy was not available");
   await expect(feedback).toContainText("Ctrl+C");
-  await expect(page.locator("[data-copy-label]")).toHaveText(/Copy\s*failed/);
+  await expect(page.locator("[data-copy-label]")).toContainText("Failed");
   expect(await page.evaluate(() => window.getSelection()?.toString())).toBe(
     "THEFRIENDSOFASHLEY",
   );
@@ -208,11 +218,21 @@ for (const state of ["success", "failure"] as const)
     await page.setViewportSize({ width: 320, height: 1000 });
     await page.goto(route);
     await page.addStyleTag({ content: "html{font-size:200%!important}" });
+    // The button must keep one line and one height in both states: the icon
+    // lane's padding reserve once squeezed "Copy failed" into a two-line
+    // wrap, growing the button (measured, 22 Nov 2026).
+    const copyButton = page.locator("[data-copy-code]");
+    const heightBefore = await copyButton.evaluate(
+      (b) => b.getBoundingClientRect().height,
+    );
     await page
       .getByRole("button", { name: /copy code thefriendsofashley/i })
       .click();
     const feedback = page.locator("[data-copy-feedback]");
     await expect(feedback).not.toBeEmpty();
+    expect(
+      await copyButton.evaluate((b) => b.getBoundingClientRect().height),
+    ).toBe(heightBefore);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth - innerWidth,
@@ -299,7 +319,7 @@ test("copy failure does not move any card or CTA at 1280px", async ({
   await page
     .getByRole("button", { name: /copy code thefriendsofashley/i })
     .click();
-  await expect(page.locator("[data-copy-label]")).toHaveText(/Copy\s*failed/);
+  await expect(page.locator("[data-copy-label]")).toContainText("Failed");
   expect(await cardFootprint(page)).toEqual(before);
 });
 

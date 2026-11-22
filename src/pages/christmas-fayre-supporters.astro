@@ -13,6 +13,7 @@ const entry = await getEntry("events", "christmas-fayre-2026");
 const event = entry?.data;
 if (!event?.path || !event.signupUrl) throw new Error("Christmas Fayre content is missing");
 const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>';
+const copyIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 ---
 <BaseLayout image="/social/fayre-supporters-2026-v3.jpg" imageAlt="Fayre Supporters: logos of our sponsors Martin Flashman and Co, Ottershaw Christmas Tree Farm, The Glitter Tree, Galeta, W3 Colour, Moore's Tree Company and Giardina Family Butchers, with the Narnia-inspired woodland artwork." imageWidth={1200} imageHeight={630} title="Fayre Supporters" description="Thank you to the local businesses supporting the Ashley School Christmas Fayre: Martin Flashman and Co, Ottershaw Christmas Tree Farm, The Glitter Tree, Galeta, W3 Colour, Moore's Tree Company and Giardina Family Butchers." headerLogo="/brand/foa-logo-christmas-ivory.svg" footerLogo="/brand/foa-logo-christmas-ivory.svg" bodyClass="xmas-theme narnia-volunteering" preloadImage="/brand/narnia-hero-landscape.avif">
   <FayrePageStyles />
@@ -62,7 +63,7 @@ const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" hei
           </div>
         <p class="supporter-card__actions">
               <a class="button fayre-supporters__button" href="https://theglittertree.com/pages/rewards" target="_blank" rel="noopener noreferrer"><span class="cta-label">Visit The Glitter <span class="cta-tail">Tree<span class="external-link-icon cta-icon supporter-icon" aria-hidden="true"><Fragment set:html={externalIcon} /></span></span></span><span class="visually-hidden"> (opens in a new tab)</span></a>
-              <button class="button fayre-supporters__button fayre-supporters__button--ghost" type="button" data-copy-code="THEFRIENDSOFASHLEY"><span class="cta-label" data-copy-label>Copy&nbsp;code</span><span class="visually-hidden"> THEFRIENDSOFASHLEY to the clipboard</span></button>
+              <button class="button fayre-supporters__button fayre-supporters__button--ghost" type="button" data-copy-code="THEFRIENDSOFASHLEY"><span class="cta-label" data-copy-label>Copy&nbsp;code<span class="cta-icon supporter-icon" aria-hidden="true"><Fragment set:html={copyIcon} /></span></span><span class="visually-hidden"> THEFRIENDSOFASHLEY to the clipboard</span></button>
               <span class="visually-hidden" role="status" aria-live="polite" data-copy-feedback></span>
             </p>
           </section>
@@ -133,27 +134,29 @@ const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" hei
       // grew the card and shifted the neighbouring CTAs): the button label
       // flips to Copied / Copy failed in place while a visually hidden live
       // region announces the detail. Failure also selects the code token so
-      // it can be copied by hand.
+      // it can be copied by hand. The label swap rewrites only the text node
+      // so the decorative copy icon (aria-hidden) survives every state.
       const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-code]");
       const copyLabel = copyButton?.querySelector<HTMLElement>("[data-copy-label]");
+      const labelText = copyLabel?.firstChild;
       const feedback = document.querySelector<HTMLElement>("[data-copy-feedback]");
       const codeToken = document.querySelector<HTMLElement>(".supporter-card__code");
       let resetTimer: number | undefined;
       copyButton?.addEventListener("click", async () => {
-        if (!feedback || !copyLabel) return;
+        if (!feedback || !labelText) return;
         const text = copyButton.dataset.copyCode ?? "";
         window.clearTimeout(resetTimer);
         try {
           if (!navigator.clipboard?.writeText) throw new Error("Copy was not available");
           await navigator.clipboard.writeText(text);
-          copyLabel.textContent = "Copied";
+          labelText.nodeValue = "Copied";
           feedback.textContent = "Code copied to the clipboard.";
           resetTimer = window.setTimeout(() => {
-            copyLabel.textContent = "Copy\u00A0code";
+            labelText.nodeValue = "Copy\u00A0code";
             feedback.textContent = "";
           }, 4000);
         } catch {
-          copyLabel.textContent = "Copy\u00A0failed";
+          labelText.nodeValue = "Failed";
           feedback.textContent = `Copy was not available. The code ${text} is selected - press Ctrl+C or long-press to copy.`;
           if (codeToken) {
             const range = document.createRange();
@@ -163,7 +166,7 @@ const externalIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" hei
             selection?.addRange(range);
           }
           resetTimer = window.setTimeout(() => {
-            copyLabel.textContent = "Copy\u00A0code";
+            labelText.nodeValue = "Copy\u00A0code";
             feedback.textContent = "";
           }, 6000);
         }
