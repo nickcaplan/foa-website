@@ -116,6 +116,15 @@
        2026, found the domain clipped at 320px/200%). */
     .supporter-card__code{font-weight:700;font-size:.875em;overflow-wrap:break-word}
     .supporter-card__domain{overflow-wrap:break-word}
+    /* The domain is also the in-copy link to the Rewards page (Nick, 22 Nov
+       2026: "theglittertree.com - make this clickable and look nice in the
+       copy"). The site's text-link pattern (bold, underlined, offset) in the
+       card's gold accent so it reads as a link on the dark panel; focus keeps
+       the global gold :focus-visible outline. The two-class selector keeps it
+       ahead of global.css's bare a{color:inherit}, which loads after this
+       sheet. */
+    .xmas-theme .supporter-card a.supporter-card__domain{color:#edcb83;font-weight:700;text-decoration:underline;text-underline-offset:.2em}
+    .xmas-theme .supporter-card a.supporter-card__domain:hover{color:#fff3d5}
     .supporter-card__actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0 0}
     /* Compact single-column partner cards (Nick, 19 Nov 2026 21:00; design
        agent compact-card-spec): wherever the list is one column - below the

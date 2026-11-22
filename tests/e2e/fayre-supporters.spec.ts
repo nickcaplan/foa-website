@@ -135,6 +135,40 @@ for (const width of [320, 390])
       expect(clipped).toEqual([]);
     });
 
+// The domain in the Rewards paragraph is a real link to the same Rewards
+// page as the Visit button (Nick, 22 Nov 2026: "theglittertree.com - make
+// this clickable"), opening safely in a new tab like the other external
+// links on the page, and it must stay whole enough to read: it may split
+// only when it cannot fit a line of its own.
+test("Glitter Tree domain links to the Rewards page from the copy", async ({
+  page,
+}) => {
+  await page.goto(route);
+  const card = page.locator('section[aria-labelledby="supporter-glitter"]');
+  const link = card.locator(
+    '.supporter-card__copy a.supporter-card__domain',
+  );
+  await expect(link).toHaveCount(1);
+  await expect(link).toHaveAttribute(
+    "href",
+    "https://theglittertree.com/pages/rewards",
+  );
+  await expect(link).toHaveAttribute("target", "_blank");
+  await expect(link).toHaveAttribute("rel", /noopener/);
+  await expect(link).toContainText("theglittertree.com");
+  // Screen-reader-only new-tab notice, matching the page's other external links.
+  await expect(link.locator(".visually-hidden")).toHaveText(
+    " (opens in a new tab)",
+  );
+  // It reads as a link on the dark card: underlined in the gold accent.
+  const style = await link.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return { decoration: s.textDecorationLine, weight: s.fontWeight };
+  });
+  expect(style.decoration).toContain("underline");
+  expect(Number(style.weight)).toBeGreaterThanOrEqual(700);
+});
+
 // Copy button for the Rewards code (Nick, 22 Nov 2026): one button press
 // (click or keyboard) copies THEFRIENDSOFASHLEY, the button label confirms
 // in place, and an aria-live region (visually hidden, so nothing moves)
