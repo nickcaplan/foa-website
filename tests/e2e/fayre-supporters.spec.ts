@@ -167,6 +167,20 @@ test("Glitter Tree domain links to the Rewards page from the copy", async ({
   });
   expect(style.decoration).toContain("underline");
   expect(Number(style.weight)).toBeGreaterThanOrEqual(700);
+  // The site's external-link arrow (Nick, 22 Nov 2026: "Links should always
+  // have an arrow with them"), decorative and hidden from screen readers.
+  // It sits inline bound to the final fragment (cta-tail), never in the
+  // button icon lane (position:absolute is reserved for .button CTAs).
+  const icon = link.locator(".external-link-icon");
+  await expect(icon).toHaveAttribute("aria-hidden", "true");
+  await expect(icon.locator("svg")).toBeVisible();
+  const iconPos = await icon.evaluate(
+    (el) => getComputedStyle(el).position,
+  );
+  expect(iconPos).not.toBe("absolute");
+  const tail = link.locator(".cta-tail");
+  await expect(tail).toHaveCSS("white-space", "nowrap");
+  await expect(tail).toContainText("com");
 });
 
 // Copy button for the Rewards code (Nick, 22 Nov 2026): one button press
