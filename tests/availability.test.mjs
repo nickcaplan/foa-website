@@ -11,8 +11,8 @@ test('excludes ended at exact boundary, retains ongoing and upcoming places',()=
 test('unavailable and invalid data are not zero',()=>{for(const a of [undefined,{}, {...activity,unavailable:true},{...activity,checkedAt:'2026-11-05T18:00:00Z'},{...activity,rows:[{endsAt:'bad',open:4}]}]) assert.equal(remaining(a,now),null);});
 test('fresh fully filled and ended shifts yield genuine zero',()=>assert.equal(remaining({...activity,rows:[{endsAt:'2026-11-05T18:00:00Z',open:0}]},now),0));
 
-test('totals sum open places and known capacities over ongoing and upcoming shifts',()=>{
- assert.deepEqual(totals({checkedAt:'2026-11-05T16:30:00Z',rows:[{endsAt:'2026-11-05T17:30:00Z',open:3,capacity:6},{endsAt:'2026-11-05T18:00:00Z',open:2,capacity:null}]},now),{open:5,capacity:6});
+test('totals suppress incomplete capacities over ongoing and upcoming shifts',()=>{
+ assert.deepEqual(totals({checkedAt:'2026-11-05T16:30:00Z',rows:[{endsAt:'2026-11-05T17:30:00Z',open:3,capacity:6},{endsAt:'2026-11-05T18:00:00Z',open:2,capacity:null}]},now),{open:5,capacity:null});
  assert.deepEqual(totals({checkedAt:'2026-11-05T16:30:00Z',rows:[{endsAt:'2026-11-05T17:30:00Z',open:0,capacity:null}]},now),{open:0,capacity:null});
  for(const a of [undefined,{...activity,unavailable:true},{checkedAt:'2026-11-05T16:30:00Z',rows:[{endsAt:'2026-11-05T17:30:00Z',open:3,capacity:2}]},{checkedAt:'2026-11-05T16:30:00Z',rows:[{endsAt:'2026-11-05T17:30:00Z',open:3,capacity:21}]},{checkedAt:'2026-11-05T16:30:00Z',rows:[{endsAt:'2026-11-05T17:30:00Z',open:3,capacity:2.5}]}]) assert.equal(totals(a,now),null);
 });
@@ -49,3 +49,8 @@ test('future response cannot poison valid history or prevent recovery',()=>{
  assert.deepEqual(retainValid(previous,future,now).activities.QCAFK,activity);
  assert.deepEqual(retainValid(previous,{schema:1,activities:{QCAFK:{...activity,checkedAt:'2026-11-05T16:45:00Z'}}},now).activities.QCAFK.checkedAt,'2026-11-05T16:45:00Z');
 });
+
+ test('complete capacities sum while unknown ended rows do not hide the denominator',()=>{
+ assert.deepEqual(totals({...activity,rows:[{endsAt:'2026-11-05T16:59:59Z',open:0,capacity:null},{endsAt:'2026-11-05T18:00:00Z',open:1,capacity:3},{endsAt:'2026-11-05T18:30:00Z',open:0,capacity:3}]},now),{open:1,capacity:6});
+ assert.deepEqual(totals({...activity,rows:[{endsAt:'2026-11-05T18:00:00Z',open:1,capacity:3},{endsAt:'2026-11-05T18:30:00Z',open:0,capacity:null}]},now),{open:1,capacity:null});
+ });
