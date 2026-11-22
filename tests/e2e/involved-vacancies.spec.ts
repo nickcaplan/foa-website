@@ -62,7 +62,9 @@ for (const width of [320, 390, 430, 768, 1440]) {
           return new Set([...range.getClientRects()].map(r => Math.round(r.top))).size > 1;
         }).map(word => word[0]);
       }))).toEqual([]);
-      for (const label of await labels.all()) {
+      // The jump nav is hidden at 48rem and up (Nick, 22 Nov 2026), so its
+      // label geometry only applies when it is rendered.
+      if (await labels.first().isVisible()) for (const label of await labels.all()) {
         const geometry = await label.evaluate(el => {
           const range = document.createRange(); range.selectNode(el.firstChild!);
           const text = range.getBoundingClientRect();
@@ -107,6 +109,7 @@ for (const width of [320, 390, 430, 768, 1440]) {
 // Nick's rule (20 Nov 2026, on this PR): arrow direction means destination.
 // Same-page jumps get a down arrow; right arrows mean leaving the page.
 test('vacancy jump links carry a down arrow, not a forward one', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/get-involved/');
   const roles = page.getByRole('navigation', { name: 'Current role vacancies' });
   const links = await roles.getByRole('link').all();
@@ -117,3 +120,28 @@ test('vacancy jump links carry a down arrow, not a forward one', async ({ page }
     await expect(link.locator('[data-cta-arrow="forward"]')).toHaveCount(0);
   }
 });
+
+// Nick (22 Nov 2026): phones show the two CTAs side by side on one row.
+for (const width of [320, 390, 430]) {
+  test(`vacancy CTAs sit side by side at ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/get-involved/');
+    const links = await page.getByRole('navigation', { name: 'Current role vacancies' }).getByRole('link').all();
+    expect(links.length).toBe(2);
+    const boxes = await Promise.all(links.map(l => l.boundingBox()));
+    const [a, b] = boxes.map(box => box!);
+    expect(Math.abs(a.y - b.y), 'same row').toBeLessThanOrEqual(1);
+    expect(a.x + a.width, 'left pill ends before right begins').toBeLessThanOrEqual(b.x + 1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+  });
+}
+
+// Nick (22 Nov 2026): desktop keeps the plain header, without the jump nav.
+for (const width of [768, 1440]) {
+  test(`vacancy jump nav hidden at ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/get-involved/');
+    await expect(page.getByRole('navigation', { name: 'Current role vacancies' })).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+  });
+}

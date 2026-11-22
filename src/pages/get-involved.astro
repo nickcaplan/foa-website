@@ -103,16 +103,21 @@ const pairedGroupTracks = 1 + Math.max(...groups.slice(0, 2).map((group) => grou
     display: block; margin-block: 0 0.5rem;
     font-size: 0.82rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
   }
-  .involved-vacancies > div { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  /* Nick (22 Nov 2026): desktop keeps the plain header; phones show the two
+     jump CTAs side by side. min-width:auto lets each pill keep its content
+     whole, so enlarged text wraps the pair to stacked instead of overflowing. */
+  .involved-vacancies > div { display: flex; flex-wrap: wrap; gap: 4px; }
+  .involved-vacancies a.button { flex: 1 1 0; }
+  @media (min-width: 48rem) { .involved-vacancies { display: none; } }
   /* A real grid column reserves the arrow's actual enlarged width, rather
      than an absolute icon lane that can overlap a separately enlarged label. */
   #current-role-vacancies a.button:has(svg) {
     min-height: 44px;
-    padding-inline: 12px !important;
+    padding-inline: 5px !important;
   }
   #current-role-vacancies a.button .cta-label {
-    display: grid; grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center; gap: 8px; width: 100% !important; flex: 1 1 auto !important; white-space: nowrap;
+    display: grid; grid-template-columns: minmax(min-content, 1fr) auto;
+    align-items: center; gap: 3px; width: 100% !important; flex: 1 1 auto !important; white-space: nowrap;
   }
   #current-role-vacancies a.button .cta-icon {
     position: static !important; translate: none !important;
