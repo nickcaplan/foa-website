@@ -3,6 +3,13 @@ const route='/christmas-fayre-volunteering/';
 const code='s-6b8rcxcfrk1lv003tvbq';
 for(const count of [0,1,11]) test(`Tokens hero uses its own ${count} places, never the largest activity`,async({page})=>{
  await page.clock.install({time:new Date('2026-11-23T19:00:00Z')});
+ // Isolate the mocked response from the deployment's newer retained seed.
+ // Production deliberately rejects older data, so never inherit that seed here.
+ await page.route('**/christmas-fayre-volunteering/',async r=>{
+  const response=await r.fetch();
+  const body=(await response.text()).replace(/data-availability-snapshot="[^"]*"/,'data-availability-snapshot="{}"');
+  await r.fulfill({response,body});
+ });
  const activities=Object.fromEntries([code,'s-58jrhbakre1cok8d8g46'].map((key,i)=>[key,{name:i?'Fun Zone':'Tokens + Maps',checkedAt:'2026-11-23T19:00:00Z',rows:[{endsAt:'2026-12-05T15:30:00Z',open:i?20:count}]}]));
  await page.route('**/fayre-availability.json',r=>r.fulfill({json:{schema:1,activities}}));
  await page.goto(route);
