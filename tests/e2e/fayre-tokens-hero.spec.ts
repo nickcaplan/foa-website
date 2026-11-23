@@ -35,7 +35,7 @@ test('no JavaScript hero uses the same validated Tokens count as its card',async
  if(await numbers.count()){
   const count=(await numbers.first().textContent())!.split('/')[0].trim();
   await expect(page.locator('[data-most-help] strong')).toHaveText('Most help needed');
-  await expect(page.locator('[data-most-help] span')).toContainText(count);
+  await expect(page.locator('[data-help-content] > span')).toContainText(count);
  }else await expect(page.locator('[data-help-content]')).toHaveText('Check JustSignup for Tokens places.');
  await context.close();
 });
