@@ -15,7 +15,7 @@ for(const count of [0,1,11]) test(`Tokens hero uses its own ${count} places, nev
  await page.goto(route);
  const summary=page.locator('[data-most-help]');
  await expect(summary.locator('strong')).toHaveText('Most help needed');
- await expect(summary.locator('span')).toHaveText(`Tokens - ${count} ${count===1?'place':'places'} left`);
+ await expect(summary.locator('[data-help-content] > span')).toHaveText(`Tokens - ${count} ${count===1?'place':'places'} left`);
  await expect(summary).not.toContainText('Fun Zone');
 });
 test('missing Tokens data without a usable seed shows a check fallback',async({page})=>{
@@ -26,7 +26,7 @@ test('missing Tokens data without a usable seed shows a check fallback',async({p
  });
  await page.route('**/fayre-availability.json',r=>r.fulfill({json:{schema:1,activities:{}}}));
  await page.goto(route);
- await expect(page.locator('[data-most-help]')).toHaveText('Check JustSignup for Tokens places.');
+ await expect(page.locator('[data-help-content]')).toHaveText('Check JustSignup for Tokens places.');
 });
 test('no JavaScript hero uses the same validated Tokens count as its card',async({browser})=>{
  const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();await page.goto(route);
@@ -35,11 +35,11 @@ test('no JavaScript hero uses the same validated Tokens count as its card',async
  if(await numbers.count()){
   const count=(await numbers.first().textContent())!.split('/')[0].trim();
   await expect(page.locator('[data-most-help] strong')).toHaveText('Most help needed');
-  await expect(page.locator('[data-most-help] span')).toContainText(count);
- }else await expect(page.locator('[data-most-help]')).toHaveText('Check JustSignup for Tokens places.');
+  await expect(page.locator('[data-help-content] > span')).toContainText(count);
+ }else await expect(page.locator('[data-help-content]')).toHaveText('Check JustSignup for Tokens places.');
  await context.close();
 });
 test('ended event retains the finished message',async({page})=>{
  await page.clock.install({time:new Date('2026-12-05T16:00:00Z')});await page.goto(route);
- await expect(page.locator('[data-most-help]')).toHaveText('Volunteering has finished. Thank you to everyone who helped.');
+ await expect(page.locator('[data-help-content]')).toHaveText('Volunteering has finished. Thank you to everyone who helped.');
 });

@@ -37,7 +37,7 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
  <HomepageMobileIdentity label="The Friends of Ashley" logo="/brand/foa-logo-christmas-ivory.svg" />
  <div class="site-width fayre-volunteer">
   <NarniaHero event={event} eventPage={true} volunteerPage={true} snowfall={true}>
-   <p slot="priority" class="fayre-volunteer__priority" data-most-help data-tokens-code={tokensCode} role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")} data-availability-snapshot={JSON.stringify(snapshot)}>{heroSummary===null?<><strong>Most help needed</strong><span>{`Tokens - ${tokensCount} ${tokensCount===1?"place":"places"} left`}</span></>:heroSummary}</p>
+   <p slot="priority" class="fayre-volunteer__priority" data-most-help data-tokens-code={tokensCode} role="status" aria-live="polite" aria-atomic="true" data-availability-url={withBase("/fayre-availability.json")} data-availability-snapshot={JSON.stringify(snapshot)}><span data-help-content>{heroSummary===null?<><strong>Most help needed</strong><span>{`Tokens - ${tokensCount} ${tokensCount===1?"place":"places"} left`}</span></>:heroSummary}</span><span data-help-reserve aria-hidden="true"><b>Most help needed</b><i>Tokens - 160 places left</i></span></p>
   </NarniaHero>
   <FayreNavigation current="volunteer" />
   <section class="fayre-volunteer__intro" aria-label="Choose your volunteer activity">
@@ -131,11 +131,11 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
    const text=ended()||oldest===null?"":`Last updated ${new Intl.DateTimeFormat("en-GB",{timeZone:"UTC",hour:"2-digit",minute:"2-digit"}).format(oldest)} GMT${now-oldest>90*60000?" - showing last known numbers; refresh delayed.":"."}`;
    if(updated.textContent!==text)updated.textContent=text;
   }
-  const summary=document.querySelector<HTMLElement>("[data-most-help]");
+  const summary=document.querySelector<HTMLElement>("[data-help-content]");
   if(!summary)return;
   if(ended()){const text="Volunteering has finished. Thank you to everyone who helped.";if(summary.textContent!==text)summary.textContent=text;}
   else{
-   const code=summary.dataset.tokensCode;
+   const code=summary.closest<HTMLElement>("[data-tokens-code]")?.dataset.tokensCode;
    const count=remaining(snapshot.schema===1&&code?snapshot.activities?.[code]:undefined,now);
    if(count===null){const text="Check JustSignup for Tokens places.";if(summary.textContent!==text)summary.textContent=text;}
    else{
@@ -200,7 +200,7 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 .fayre-volunteer__card.fayre-volunteer__card--full .fayre-volunteer__booked{visibility:visible}
 .fayre-volunteer__card h3{font:500 min(1.6rem,13vw)/1.2 Georgia,serif;margin:0;color:#fff3d5;overflow-wrap:anywhere}
 .fayre-volunteer__heading{display:flex;flex-direction:column;gap:.35rem;margin:0 0 1rem}
-.fayre-volunteer__priority{display:block;padding:0;margin:1.1rem 0 .4rem;font-size:.95rem;line-height:1.5;color:#f4ead1}
+.fayre-volunteer__priority{display:grid;padding:0;margin:1.1rem 0 .4rem;font-size:.95rem;line-height:1.5;color:#f4ead1}
 .fayre-volunteer__updated{font-size:.8rem;margin:0 0 1.25rem;color:#f3dfae}
 .fayre-volunteer__updated:empty{display:none}
 .fayre-volunteer__card .fayre-volunteer__availability{margin:0;font-size:.85rem;line-height:1.25;min-width:0;text-wrap:pretty;display:grid}
@@ -240,11 +240,19 @@ const updatedText=buildEnded()||oldest===null?"":`Last updated ${new Intl.DateTi
 </style>
 <style is:global>
 /* Availability counts are created client-side, so they carry no scoped-style attribute. */
-.fayre-volunteer__priority strong{display:inline;color:#edcb83;font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;margin-right:.55em}
-.fayre-volunteer__priority span{display:inline;color:#f4ead1;font-size:.95rem;line-height:1.5;font-weight:600;margin:0}
+.fayre-volunteer__priority strong,.fayre-volunteer__priority [data-help-reserve] b{display:inline;color:#edcb83;font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;margin-right:.55em}
+.fayre-volunteer__priority span,.fayre-volunteer__priority [data-help-reserve] i{display:inline;color:#f4ead1;font-size:.95rem;line-height:1.5;font-weight:600;margin:0}
+/* Reserve the fallback's natural wrapping without exposing duplicate text.
+   All layers share a grid cell; the active content keeps its original look.
+   160 reserves the validated upper bound (eight Tokens shifts, max 20 open
+   per shift). This hidden sizing copy is never announced or used as data. */
+.fayre-volunteer__priority::before{content:"Check JustSignup for Tokens places.";visibility:hidden;grid-area:1/1;font:inherit}
+.fayre-volunteer__priority > [data-help-content]{grid-area:1/1;display:block;font:inherit;color:inherit;margin:0;min-width:0}
+.fayre-volunteer__priority > [data-help-reserve]{grid-area:1/1;visibility:hidden;display:block;font:inherit;color:inherit;min-width:0}
+.fayre-volunteer__priority [data-help-reserve] i{font-style:normal}
 /* On narrow screens (and at enlarged text) stack the label above the value
    so the line never wraps mid-phrase ("55 / places left"). */
-@media(max-width:47.99rem){.fayre-volunteer__priority strong{display:block;margin:0 0 .1rem}}
+@media(max-width:47.99rem){.fayre-volunteer__priority strong,.fayre-volunteer__priority [data-help-reserve] b{display:block;margin:0 0 .1rem}}
 /* Nick (16 Nov 2026): the full-width CTA felt too wide. Cap the volunteering hero button to the same 22rem the other Fayre hero CTAs (and the Get involved role CTAs) use; min() keeps it full-width on phones and at 200% text. */
 .narnia-volunteering .narnia-landscape .button{max-width:min(100%,230px)!important}
 .fayre-volunteer__count{display:inline;color:#edcb83;font-size:1.25rem;line-height:1.25;font-weight:800;font-variant-numeric:tabular-nums}
