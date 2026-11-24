@@ -430,3 +430,16 @@ test.describe("Newsletter reading room", () => {
     }
   }
 });
+
+test.describe("Next newsletter preview", () => {
+  test("is absent by default and shows only with ?next", async ({ page }) => {
+    await page.goto("/newsletter/");
+    await expect(page.locator("#newsletter-next-issue")).toHaveCount(0);
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+    await page.goto("/newsletter/?next");
+    await expect(page.locator("#newsletter-next-issue")).toBeVisible();
+    await expect(page.locator("#newsletter-next-issue").getByRole("heading", { name: "Christmas Fayre Art Competition: entries in by Monday 30th November" })).toBeVisible();
+    await expect(page.locator("#newsletter-next-issue .newsletter-sign-off")).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
+  });
+});
