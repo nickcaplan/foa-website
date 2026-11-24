@@ -16,7 +16,7 @@ const latestNewsletter = (await getCollection("newsletters"))
 const appeal = (await getCollection("fundraising")).find(({ id }) => id === "current-appeal")?.data;
 if (!appeal) throw new Error("Homepage fundraising content is missing");
 ---
-   <BaseLayout socialTitle="The Friends of Ashley | Ashley School PTA" socialDescription="School events, volunteering and fundraising for the Ashley C of E Primary School community in Walton-on-Thames." image="/social/home-2026-v3.jpg" imageAlt="Ashley School PTA: school events, community and fundraising, with the Friends of Ashley logo." imageWidth={1200} imageHeight={630} title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview} homepage={christmasPreview}>
+   <BaseLayout socialTitle="The Friends of Ashley | Ashley School PTA" socialDescription="School events, volunteering and fundraising for the Ashley C of E Primary School community in Walton-on-Thames." image="/social/home-2026-v3.jpg" imageAlt="Ashley School PTA: school events, community and fundraising, with the Friends of Ashley logo." imageWidth={1200} imageHeight={630} title="The Friends of Ashley" description="The Friends of Ashley, the PTA for Ashley C of E Primary School in Walton-on-Thames." bodyClass="homepage" noindex={christmasPreview} homepage={christmasPreview} preloadImage="/brand/narnia-hero-landscape.avif">
 
   <HomepageMobileIdentity logo="/brand/foa-logo-christmas-ivory.svg" />
   <section class="hero">
@@ -48,12 +48,12 @@ if (!appeal) throw new Error("Homepage fundraising content is missing");
   window.addEventListener("pageshow", update);
 </script>
 
-<style is:inline>@media(min-width:64rem){.homepage .hero-links{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:none;width:100%;border-top:0}.homepage .hero-links .quick-row{border-top:1px solid var(--line)}}</style>
+<style is:global>@media(min-width:64rem){.homepage .hero-links{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:none;width:100%;border-top:0}.homepage .hero-links .quick-row{border-top:1px solid var(--line)}}</style>
 
-<style is:inline>
+<style is:global>
 @media(min-width:64rem) and (max-width:79.99rem){.homepage .menu-toggle{top:calc(1rem + (var(--introduction-logo-size) - var(--menu-toggle-size))/2)}}
 </style>
 
-<style is:inline>
+<style is:global>
 @media(min-width:64rem){.homepage .narnia-landscape{max-width:none}}
 </style>

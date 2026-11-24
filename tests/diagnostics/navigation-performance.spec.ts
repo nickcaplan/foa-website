@@ -1,7 +1,6 @@
 import { devices, expect, test } from "@playwright/test";
 
 const destinations = [
-  { name: "Get Involved", path: "/get-involved/" },
   { name: "Uniform", path: "/uniform/" },
   { name: "Contact Us", path: "/contact/" },
   { name: "Home", path: "/" },

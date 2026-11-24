@@ -65,22 +65,28 @@ for (const { route, eagerImageKiB } of routes) {
     t.diagnostic(JSON.stringify({ route, htmlBytes: Buffer.byteLength(html), scriptGzipBytes: scriptGzip,
       stylesheetGzipBytes: styleGzip, eagerImageBytes: eagerImages, images }));
     assert.ok(scriptGzip <= 4 * kib, `${route}: referenced/inline JS gzip estimate ${scriptGzip} exceeds 4 KiB`);
-    assert.ok(styleGzip <= 18.25 * kib, `${route}: stylesheet gzip estimate ${styleGzip} exceeds 18.25 KiB`);
+    // Raised 17 November 2026 from 18.25 KiB for the layout-shift fix: fayre hero CSS
+    // moved from body-inlined styles (the #182 cold-load shift) into the shared
+    // head-linked FayrePageStyles bundle, adding ~1.4 KiB gzip on fayre routes.
+    assert.ok(styleGzip <= 20.75 * kib, `${route}: stylesheet gzip estimate ${styleGzip} exceeds 20.75 KiB`);
     assert.ok(eagerImages <= eagerImageKiB * kib, `${route}: eager image bytes ${eagerImages} exceed ${eagerImageKiB} KiB`);
   });
 }
 
-test("homepage ships no poster photo or image preload", async () => {
+test("homepage ships no poster photo and preloads only its hero artwork", async () => {
   // Nick's call: the hero poster photo is removed, so the homepage must not
-  // fetch it eagerly or preload it. The per-route eager-image budget above
-  // keeps the remaining images honest.
+  // fetch it eagerly or preload it. Since 20 November 2026 the one permitted
+  // preload is the Christmas hero artwork itself (slow-connection change:
+  // start the LCP image during head parsing instead of at body parse). The
+  // per-route eager-image budget above keeps the remaining images honest.
   const html = await readFile(path.join(dist, "index.html"), "utf8");
   const fireworksImage = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) => tag)
     .find((tag) => attribute(tag, "src")?.includes("/events/fireworks-"));
   assert.equal(fireworksImage, undefined, "no fireworks photo on the homepage");
-  const imagePreload = [...html.matchAll(/<link\b[^>]*>/g)].map(([tag]) => tag)
-    .find((tag) => attribute(tag, "rel") === "preload" && attribute(tag, "as") === "image");
-  assert.equal(imagePreload, undefined, "no image preload on the homepage");
+  const imagePreloads = [...html.matchAll(/<link\b[^>]*>/g)].map(([tag]) => tag)
+    .filter((tag) => attribute(tag, "rel") === "preload" && attribute(tag, "as") === "image");
+  assert.deepEqual(imagePreloads.map((tag) => attribute(tag, "href")),
+    [`${base}/brand/narnia-hero-landscape.avif`], "only the hero artwork is preloaded");
 });
 
 test("the term-by-term listing does not download event posters", async () => {

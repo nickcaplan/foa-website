@@ -1,0 +1,294 @@
+/* Christmas Fayre supporters page. Page-scoped: imported only by the supporters route, so it head-inlines there instead of taxing the shared Fayre chunk every Fayre route downloads. */
+/* Christmas Fayre supporters page */
+/* Nick (19 Nov 2026, 16:42): 2.5rem bottom padding so the last supporter card
+   keeps the same gap above the footer's gold line as the sibling Fayre pages
+   (Fayre, Volunteering, Art Competition all hold 2.5rem there). */
+.fayre-supporters{padding-top:.5rem;padding-bottom:2.5rem}
+    /* Lead feature: the sponsor gets the space, not louder type. */
+    /* Nick (19 Nov 2026, 16:38): the whole lead block is a card like the supporter
+       cards, visibly differentiated as the lead sponsor: same panel and radius,
+       but a solid brighter gold keyline (#c9a65f, the button keyline) instead of
+       the supporters' faint one. The old border-bottom rule is superseded - the
+       card edge is now the boundary above "With thanks to". */
+    .fayre-lead{background:#173844;border:1px solid #c9a65f;border-radius:.65rem;margin:1.5rem 0 0;padding:1.5rem}
+    .fayre-lead__label{text-transform:uppercase;font:700 .72rem/1.5 var(--font-body);letter-spacing:.12em;color:#edcb83;margin:0 0 1rem}
+    .fayre-lead__well{background:#102d38;border-radius:.65rem;padding:1rem;max-width:46rem}
+    .fayre-lead__well img{display:block;width:100%;height:auto;object-fit:contain}
+    .fayre-lead__name{font:500 1.5rem/1.3 Georgia,serif;color:#fff3d5;margin:1.25rem 0 0;text-align:left;padding:0}
+    .fayre-lead__name:after{display:none}
+    .fayre-lead__thanks{margin:.6rem 0 0;line-height:1.6;color:#f4ead1;max-width:42rem}
+    .fayre-lead__actions{margin:1rem 0 0}
+    /* Nick (19 Nov 2026, second pass): the gold rule under the Martin lead sat
+       on top of this heading - the margin was set on the bare class (0,1,0),
+       which loses to the shared .xmas-theme h1,h2 margin:0 (0,1,1). The theme
+       class on the selector (0,2,0) makes the gap actually apply. The heading
+       otherwise keeps the shared family look (centred, gold flourish). */
+    .xmas-theme .fayre-supporters__thanks-heading{margin:3rem 0 0}
+        /* Nick (19 Nov 2026, 18:52, design agent 4-card spec): one full-width
+       partner card per row below 1152px; three equal columns from 1152px up
+       (72rem, evaluated at the initial 16px root like every media query).
+       Rows size to their own content - no equal-height across rows. */
+    .fayre-supporters{container-type:inline-size;container-name:pageband}
+    .fayre-supporters__row{display:grid;grid-template-columns:minmax(0,1fr);gap:1.25rem;margin:1.25rem 0 0}
+    /* Design verdict (19 Nov 2026, 74aaacd review): the three-column switch
+       waits until every CTA label fits on one line - the farm label (the
+       longest) wraps below a ~305px card, i.e. under ~1130px viewport - so
+       row-mate CTAs always share one height. 72rem = 1152px at the initial
+       16px root, with slack above the measured wrap point. */
+    @media(min-width:72rem){.fayre-supporters__row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    /* Design re-review (19 Nov 2026, ca0e1d3): cards must respond to available
+       copy width, not viewport alone. At enlarged text three columns leave the
+       CTA labels too little room (labels split mid-word), so the row drops to
+       one full-width card per row: 40rem doubles with the root font, catching
+       every enlarged-text case while leaving normal-text desktop at three
+       columns. */
+    @container pageband (max-width:60rem){.fayre-supporters__row{grid-template-columns:minmax(0,1fr)}}
+    /* Nick (19 Nov 2026): logo sits in the card's top-right, bigger, with the
+       copy directly below it spanning the full width - the heading shares the
+       top row with the logo, so the copy moves up a full row. */
+    /* The logo track is a definite cap, not auto: an auto track sizes to the
+       image's intrinsic width, which at 200% text crushed the heading to a 6px
+       column and pushed the logo through the card padding (design review,
+       19 Nov 2026). min(38%,8rem) caps it so the heading always keeps its
+       column, and the 8rem leg sizes the track to the logo itself at desktop,
+       killing the wide empty band between copy and logo (design re-review of
+       96024ee, round 7). The card is a container so the layout responds to the
+       card's own width; rem thresholds in the container queries scale with the
+       root font size (verified), so enlarged text triggers them too.
+       Nick (19 Nov 2026, second pass): the logo spans the heading and copy rows
+       so the copy moves up beside it - a logo-only top row left a dead band
+       under the heading - and padding/gaps are tightened.
+       Row template auto/1fr/auto pins the CTA row to the card bottom, so the
+       paired cards' buttons line up across the row (design round 7). */
+    /* Grid rows: logo/heading band, copy (1fr), CTA. The card itself cannot be
+       restyled by its own container queries (a container query only reaches
+       descendants), so the item placements below flip between the beside-logo
+       and stacked layouts while the 3-row template stays put. */
+    .supporter-card{container-type:inline-size;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,min(38%,8rem));grid-template-rows:auto 1fr auto;gap:.5rem 1rem;align-items:start;margin:0;padding:1.25rem;background:#173844;border:1px solid #b99a5b55;border-radius:.65rem;color:#fff3d5;min-width:0}
+    .supporter-card__logo{grid-column:2;grid-row:1/3;display:flex;align-items:flex-start;justify-content:flex-end;height:auto}
+    .supporter-card__logo img{max-width:100%;max-height:7rem;width:auto;height:auto;object-fit:contain;border-radius:.5rem}
+    .supporter-card__logo--light img{background:#fff;padding:.4rem}
+    /* Galeta's dark-ink wordmark on a warm cream tile (#FFF6EB), width-capped
+       so the wide mark does not fill the stacked card the way a tall logo
+       fills its column. */
+    .supporter-card__logo--cream{align-items:center}
+    .supporter-card__logo--cream img{background:#fff6eb;padding:.4rem .6rem;max-width:12rem}
+    .supporter-card__copy{display:block;grid-column:1;grid-row:1/3;min-width:0}
+    .supporter-card__actions{grid-column:1/-1;grid-row:3;align-self:end}
+    @media(min-width:48rem){.supporter-card__logo img{max-height:8rem}}
+    /* Design re-review (19 Nov 2026, rounds 6-7): when the copy column would
+       drop under ~240px (narrow viewports, tablet pairs, enlarged text) the
+       logo keeps row 1 (still top-right beside the heading) and copy and CTA
+       take the full card width once past it. The logo box is a fixed 7rem so
+       the paired cards' copy starts level. The compact beside-logo layout
+       stays on wider cards. */
+    /* Nick (19 Nov 2026, 22:24, on #213): the desktop three-column row keeps
+       the same compact structure as mobile - logo top right beside the
+       title, title top left, copy and CTA below. The former stacked logo
+       band and its alignment floors are gone; equal card heights and
+       bottom-aligned CTAs come from the row grid. */
+    /* Nick (19 Nov 2026, on the design PASS review): no Instagram glyph - an
+       ornate G in a square box, favicon-like, in Giardina's own colours. The
+       monogram SVG (assets/sponsors/giardina-monogram.svg) bakes in the navy
+       box and cream Cinzel Decorative G sampled from their fascia lettering
+       (Google Maps storefront photo, 129 Cottimore Lane); Cinzel Decorative
+       is OFL (Natanael Gama) and matches the fascia's Roman capitals. Same
+       slot footprint as the other tiles, aria-hidden and non-interactive;
+       the hero stays logo marks only (no Giardina mark). */
+    .supporter-card__logo--monogram img{box-sizing:border-box}
+
+    .supporter-card h3{font:500 1.25rem/1.35 Georgia,serif;margin:0;text-align:left;padding:0;color:#fff3d5}
+    /* Nick (19 Nov 2026, after the compact cards shipped): bigger card titles
+       on desktop. Only the side-by-side three-column row - the compact
+       single-column layout keeps its spec'd 1.25rem (reverted by the pageband
+       rule, which follows the row collapse at enlarged text). These rules sit
+       after the base h3 style so they win the tie on source order. */
+    @media(min-width:72rem){.supporter-card h3{font-size:1.5rem}}
+    @container pageband (max-width:60rem){.supporter-card h3{font-size:1.25rem}}
+    .supporter-card h3:after{display:none}
+    .supporter-card__copy>p:not(.supporter-card__actions){margin:.6rem 0 0;line-height:1.6;color:#f4ead1;text-wrap:balance}
+    /* The Rewards code is one long token: at .875em it fits the desktop
+       card column whole, and break-word splits it only when it cannot fit a
+       line of its own (200% text on phones), so it never scrolls sideways
+       and never sheds a fragment at 100%. The domain in the same paragraph
+       wraps by the same last-resort rule - the card hides overflow, so an
+       unsplittable word is clipped, not scrolled (design review, 22 Nov
+       2026, found the domain clipped at 320px/200%). */
+    .supporter-card__code{font-weight:700;font-size:.875em;overflow-wrap:break-word}
+    .supporter-card__domain{overflow-wrap:break-word}
+    /* The domain is also the in-copy link to the Rewards page (Nick, 22 Nov
+       2026: "theglittertree.com - make this clickable and look nice in the
+       copy"). The site's text-link pattern (bold, underlined, offset) in the
+       card's gold accent so it reads as a link on the dark panel; focus keeps
+       the global gold :focus-visible outline. The two-class selector keeps it
+       ahead of global.css's bare a{color:inherit}, which loads after this
+       sheet. */
+    .xmas-theme .supporter-card a.supporter-card__domain{color:#edcb83;font-weight:700;text-decoration:underline;text-underline-offset:.2em}
+    .xmas-theme .supporter-card a.supporter-card__domain:hover{color:#fff3d5}
+    .supporter-card__actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0 0}
+    /* Compact single-column partner cards (Nick, 19 Nov 2026 21:00; design
+       agent compact-card-spec): wherever the list is one column - below the
+       1152px row switch, or at any viewport when enlarged text collapses the
+       pageband - the logo floats top right, title and copy flow around it,
+       and the CTA sits full width below. Cards size to their content: no
+       logo-row, heading or card-height floors. Fixed px paddings and logo
+       caps deliberately do not double at enlarged text. The .compact-body
+       wrapper adds no visual box in the three-column row. */
+    .compact-body{display:contents}
+    @media(max-width:1151px){.supporter-card{display:block;padding:20px}.compact-body{display:flow-root}.supporter-card__copy{display:contents}.supporter-card__logo{float:right;display:flex;width:72px;height:auto!important;margin:0 0 8px 16px;justify-content:flex-end}.supporter-card__logo img{max-width:100%!important;max-height:80px!important;box-sizing:border-box}.supporter-card__logo--cream{width:88px}.supporter-card h3{min-height:0!important}.supporter-card__copy>p:not(.supporter-card__actions){text-wrap:pretty;margin-top:8px}.supporter-card__actions{margin-top:16px!important}}
+    @container pageband (max-width:60rem){.supporter-card{display:block;padding:20px}.compact-body{display:flow-root}.supporter-card__copy{display:contents}.supporter-card__logo{float:right;display:flex;width:72px;height:auto!important;margin:0 0 8px 16px;justify-content:flex-end}.supporter-card__logo img{max-width:100%!important;max-height:80px!important;box-sizing:border-box}.supporter-card__logo--cream{width:88px}.supporter-card h3{min-height:0!important}.supporter-card__copy>p:not(.supporter-card__actions){text-wrap:pretty;margin-top:8px}.supporter-card__actions{margin-top:16px!important}}
+    @media(max-width:767px){.supporter-card{padding:12px}}
+    @media(min-width:768px){@container pageband (max-width:60rem){.supporter-card__logo{width:80px}.supporter-card__logo--cream{width:104px}.supporter-card__logo img{max-height:88px!important}}}
+
+    /* Design re-review (19 Nov 2026, ca0e1d3): the partner CTAs take one
+       consistent size - the card's full internal width - so row-mates always
+       match; the label wraps whole words inside (the cta-tail span keeps the
+       last word with the icon). */
+    .supporter-card .fayre-supporters__button{width:100%}
+    /* Label font tapers at enlarged text (16px at 100%, 28px at 200%) so the longest
+       words stay whole beside the icon lane, the #171 pattern. */
+    .fayre-supporters__button{display:inline-flex;align-items:center;justify-content:center;width:max-content;max-width:100%;min-height:3.5rem;border:1px solid #c9a65f;border-radius:1.75rem;background:#742f3c;color:#fff5e2;text-decoration:none;font-size:min(1rem,calc(12px + .5rem));font-weight:700;overflow-wrap:break-word;box-sizing:border-box;text-align:center} /* whole-word wrapping only - no mid-word splits (design verdict 19 Nov 2026) */
+    .fayre-supporters__button .cta-label{display:block;width:100%;min-width:0;text-align:center}
+    /* Hug-width buttons (>=48rem): the site's pill rule reserves exactly the
+       icon's lane (icon + .9rem offset) as inline padding, which touches the
+       label when the button hugs its label. Use the site's event-CTA reserve
+       formula (icon + .9rem offset + .9rem gap) so the label and icon get a
+       real rem gap. The icon stays pinned in the right-edge lane: the site
+       pins every main .button icon there (cta-icon-lane.spec, Nick 15 Nov),
+       so the gap comes from padding, not from unpinning the icon. The [href]
+       selector outranks main's !important pill rule (specificity, not order). */
+    @media(min-width:48rem){
+      main a.button.fayre-supporters__button[href]:has(.cta-icon){padding-inline-end:calc(1.05em + 1.8rem)!important}
+      /* The ghost copy button carries the same icon lane: the doubled class
+         outranks the global main-button icon reserve (which lands after
+         this sheet), keeping its label centred exactly like the link's. */
+      main .button.fayre-supporters__button.fayre-supporters__button--ghost:has(.cta-icon){padding-inline-end:calc(1.05em + 1.8rem)!important}
+    }
+    .fayre-supporters__button:hover{background:#954052}
+    .fayre-supporters__button:focus-visible{outline:3px solid #fff3d5;outline-offset:4px}
+    /* Ghost variant (the copy-code button, Nick 22 Nov 2026): the primary
+       maroon stays on the outbound link; the copy action keeps the same
+       gold ring and cream text on the card's own dark background. The
+       border needs the .supporter-card prefix to outrank global.css's
+       .button{border:1px solid transparent}, which lands after this sheet
+       and wins the specificity tie. */
+    .supporter-card .fayre-supporters__button--ghost{background:transparent;border:1px solid #c9a65f}
+    .supporter-card .fayre-supporters__button--ghost:hover{background:rgba(201,166,95,.18)}
+    /* No visible feedback line (design review, 22 Nov 2026): it grew the
+       card's actions block and shifted the row's bottom-aligned CTAs on
+       success and failure. The confirmation flips the button label in place
+       and the detail lives in a visually hidden live region. */
+    @media(min-width:48rem){.fayre-lead__well{padding:2rem}}
+    @media(max-width:47.99rem){
+      /* Fixed 16px gutters and card padding on phones (the site rule for strips), so
+         enlarged text does not balloon rem spacing and squeeze CTA labels. */
+      .fayre-supporters.site-width{width:calc(100% - 32px)}
+      .supporter-card{padding:12px}
+      .fayre-lead{padding:12px}
+      .fayre-lead__well{padding:12px}
+    }
+@media(min-width:48rem){
+  /* One axis for the lead feature on wider screens: well, name, copy and CTA
+     all centred in the full-width surface. */
+  .fayre-lead{text-align:center}
+  .fayre-lead__well{margin-inline:auto}
+  .fayre-lead__name{text-align:center}
+  .fayre-lead__thanks{margin-inline:auto}
+}
+
+/* Design review (19 Nov 2026): the shared hero base caps its title by viewport
+   (min(3rem,10vw) on phones, a 4.5vw clamp leg on desktop), so it cannot grow
+   with root text - at 200% it stays 32/39/64.8px. Each Fayre sibling carries a
+   page-scoped rem override; this is the supporters one. The calc leg keeps
+   100% text pixel-identical to the base rule and adds the root growth at 200%;
+   the 20cqi leg keeps "Supporters" whole inside the hero frame at the
+   narrowest containers (the panel is the inline-size container). */
+.xmas-theme .fayre-supporters-hero .narnia-landscape h1{font-size:clamp(2rem,calc(4.5vw + 1rem - 16px),4.5rem)!important}
+@media(max-width:47.99rem){
+  .xmas-theme .fayre-supporters-hero .narnia-landscape h1{font-size:min(3rem,calc(10vw + 1rem - 16px),20cqi)!important}
+}
+/* Nick (19 Nov 2026): the supporters hero should match the other Fayre heroes'
+   size. The shared frame floor (23.5rem) leaves it ~40-65px shorter than its
+   content-richer siblings at wide desktop; raise the floor to level it with
+   the volunteering hero (measured 436px at 1440). Only >=75rem: at 1024 the
+   four heroes already sit inside the 10% parity band on the shared floor. */
+@media(min-width:75rem){
+  /* Fixed px, not rem: the floor compensates for a viewport-width gap, so it
+     must not grow with root text - at 200% the heroes are content-driven and
+     a doubling floor put Supporters 11% over its siblings (design re-review
+     of ca0e1d3). 436px = the volunteering hero's measured 1440px height. */
+  body.xmas-theme.narnia-volunteering .fayre-supporters-hero .narnia-landscape{min-height:436px}
+}
+
+/* Nick (19 Nov 2026, 18:38, design agent Direction A; revised 4-mark spec
+   18:52): small sponsor marks centred directly below the hero subtitle, in
+   sponsor order: Martin, Ottershaw, Glitter, Galeta. A non-interactive
+   duplicate group (aria-hidden, empty alts - names and links stay in the body
+   cards). Sizes in CSS px per viewport tier, same in day and night. The three
+   partner marks share one indivisible flex group: on phones the group wraps
+   under Martin as a unit (8px between the two lines), never one orphan and
+   never Galeta alone. 12px below the subtitle at normal text, 16px at
+   enlarged text (the rem leg), and always at least 32px clear of the hero
+   bottom edge (the snow bank peaks at 30px). The hero grows content-driven;
+   type and siblings are untouched. */
+.fayre-supporters-hero .narnia-landscape__supporters{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:12px;row-gap:8px;margin:clamp(12px,.75rem,16px) auto 0}
+/* Nick (22 Nov 2026): the Martin Flashman wordmark needs delineation like
+   the tiled partners. A white tile would swallow the mint mark, so it gets
+   the panel's own idiom instead: a gold 1px outline (the buttons' #c9a65f),
+   6px radius, and a faint warm lift. border-box keeps the frame inside the
+   existing row allocation so the desktop marks stay on one line. */
+.fayre-supporters-hero .narnia-landscape__supporters-lead{display:block;width:152px;height:auto;box-sizing:border-box;padding:6px 10px;border:1px solid #c9a65f;border-radius:6px;background:#fff3d514}
+/* Six marks on the smallest phones: the partner group must stay on one line
+   under Martin inside the 262px content column at 320px, so the base tier
+   scales down (24x34, 34px tiles, 68x34 cream, 12px gaps) and steps back up
+   at 390px. Keeps the supporters hero inside the 10% sibling-height band. */
+.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:12px;row-gap:8px;max-width:min(100%,30rem)}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:24px;height:34px;object-fit:contain}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:34px;height:34px}
+/* Galeta's own dark-ink wordmark (from the Home link on galeta.co.uk) sits on
+   a warm cream tile (#FFF6EB, their fresh-dough) with Glitter's 4px radius -
+   near-black ink would vanish on the dark hero. Phone tile 68x34, logo 48
+   wide: 7px horizontal inset, vertical inset centres the 127:31 mark. */
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{background:#fff6eb;border-radius:4px;padding:10px 7px;box-sizing:border-box;width:68px;height:34px}
+@media(min-width:390px){
+  .fayre-supporters-hero .narnia-landscape__supporters{column-gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{column-gap:20px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:28px;height:40px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:40px;height:40px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:80px;height:40px;padding:12px 8px}
+  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:176px}
+}
+@media(min-width:768px){
+  .fayre-supporters-hero .narnia-landscape__supporters{column-gap:24px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{column-gap:24px;row-gap:10px;max-width:none}
+  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:200px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:34px;height:48px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:48px;height:48px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:88px;height:48px;padding:15px 8px}
+}
+@media(min-width:1440px){
+  .fayre-supporters-hero .narnia-landscape__supporters-lead{width:224px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:96px;height:48px;padding:14px 8px}
+}
+/* Design agent final-review fix (19 Nov 2026, #213): at 200% text on phones
+   the px-fixed marks wrapped 4+1, orphaning Moore's on a third hero line.
+   rem thresholds in container queries scale with the root font, so
+   (max-width:13rem) matches only enlarged text at phone widths; the cap then
+   wraps the group an intentional 3+2 (Ottershaw/Glitter/Galeta, then
+   W3/Moore's), never one orphan, with Martin kept separate above. */
+.fayre-supporters-hero .narnia-landscape__copy{container-type:inline-size;container-name:herocopy}
+@container herocopy (max-width:13rem){
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{max-width:160px}
+}
+@media(min-width:390px){
+  @container herocopy (max-width:13rem){
+    .fayre-supporters-hero .narnia-landscape__supporters-partners{max-width:198px}
+  }
+}
+/* Nick (19 Nov 2026, 18:52, design agent 4-mark spec): the supporters hero
+   opts out of the shared +48px snow-bank clearance (christmas.css, via
+   [data-supporters-hero]) - the sponsor mark row consumes that slack and
+   keeps its own 32px to the hero bottom edge (the bank peaks at 30px), so
+   the phone hero grows ~28-30px and stays inside Nick's 10% sibling band
+   instead of stacking the full row on top of the clearance. */
+body.xmas-theme.narnia-volunteering .fayre-supporters-hero .narnia-landscape__copy{padding-bottom:32px}

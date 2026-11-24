@@ -34,20 +34,71 @@ body.xmas-theme::before {
     linear-gradient(#0c2f20 0%, #08241a 55%, #061c14 100%);
 }
 
-/* Snowfall: a viewport-height layer that stays in view while scrolling */
+/* Event hero only. Its body grows with copy; decoration cannot reach the page sides. */
+.narnia-landscape[data-hero-snow] .narnia-landscape__body { position: relative; isolation: isolate; }
+/* Bank clearance: 48px at normal text (the approved design), tapering to the shared
+   0.75rem footer padding once text is enlarged, so the snow adds no hero height at
+   200% text. 72px - 1.5rem = 48px at 16px root, 24px (= 0.75rem) at 32px root. */
+.narnia-landscape[data-hero-snow] .narnia-landscape__footer { padding-bottom: max(0.75rem, calc(72px - 1.5rem)); }
+/* Volunteering hero has no sponsor footer, so its copy carries the same +48px bank
+   clearance as the event hero's footer, at every width (fayre-page-consistency locks
+   the three hero heights within 10%). Defaults: 2rem at >=48rem, 1.5rem below
+   (fayre-pages.css); each max() tapers back to its default at 200% text so the snow
+   adds no hero height there: 112px - 2rem = 80px (32px + 48px) and 96px - 1.5rem =
+   72px (24px + 48px) at a 16px root, both equal to the default at a 32px root. */
+body.narnia-volunteering .narnia-landscape[data-hero-snow]:not([data-supporters-hero]) .narnia-landscape__copy { padding-bottom: max(2rem, calc(112px - 2rem)); }
+@media (max-width: 47.99rem) {
+  body.narnia-volunteering .narnia-landscape[data-hero-snow]:not([data-supporters-hero]) .narnia-landscape__copy { padding-bottom: max(1.5rem, calc(96px - 1.5rem)); }
+}
+/* Art hero: same bank clearance as the event page, on the hero itself. At >=48rem the
+   hero is content-driven, so clearance is 46px (94px - 3rem) to keep the three hero
+   heights within Nick's 10% parity band at 1440; below 48rem the clearance is 48px
+   (96px - 3rem) and the min-height grows with it, since 23.5rem would otherwise
+   absorb the padding and leave the art hero 48px shorter than the others. Both taper
+   to zero at a 32px root: no added hero height at 200% text. */
+body.art-comp .fayre-art-hero[data-hero-snow] { padding-bottom: max(0px, calc(94px - 3rem)); }
+@media (max-width: 47.99rem) {
+  body.art-comp .fayre-art-hero[data-hero-snow] { padding-bottom: max(0px, calc(96px - 3rem)); min-height: calc(23.5rem + max(0px, calc(96px - 3rem))); }
+  /* Event and volunteering heroes get the same floor. Their content-driven height
+     otherwise drifts with the platform's font metrics (376-424px across Linux
+     runners vs local builds) and can land more than 10% from the art hero's fixed
+     424px floor (fayre-page-consistency band). Content taller than the floor still
+     grows it; the added 48px tapers to zero at a 32px root like the others. */
+  /* [data-hero-snow] doubled: fayre-pages.css sets min-height:23.5rem at the same
+     (0,3,1) specificity and loads after this sheet, so a plain selector loses. */
+  body:is(.narnia-event,.narnia-volunteering) .narnia-landscape[data-hero-snow][data-hero-snow] { min-height: calc(23.5rem + max(0px, calc(96px - 3rem))); }
+}
+/* Snow renders behind the hero copy on these two pages: their flake lanes can reach
+   the copy/buttons/framed picture (unlike the event hero, whose gutters stay clear).
+   Copy backgrounds are transparent, so flakes and bank stay visible through it. */
+.narnia-volunteering .narnia-landscape__copy,
+.art-comp .fayre-art-hero__copy { position: relative; z-index: 2; }
 .xmas-snow {
-  position: sticky;
+  position: absolute;
   z-index: 1;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
-  margin-bottom: -100vh;
-  margin-bottom: -100svh;
+  inset: 0;
   overflow: hidden;
   pointer-events: none;
-  /* Width of the empty margin either side of the page content */
-  --gutter: calc((100% - min(100% - 2rem, 62rem)) / 2);
+  /* container-type so flakes can fall with translateY(100cqh) on the compositor, no per-frame layout. */
+  container-type: size;
+  /* 42rem matches .narnia-landscape__copy max-width so flakes fall beside the hero copy, not over it. */
+  --gutter: max(.5rem, calc((100% - min(100% - 2rem, 42rem)) / 2));
 }
+.xmas-snow__bank {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* 30px at normal text, shrinking as text enlarges so it never needs extra footer
+     clearance: 48px - 1.125rem = 30px at 16px root, 12px at 32px root (still >=12px
+     clear of the sponsor logo), gone entirely past ~267% text. */
+  height: max(0px, calc(48px - 1.125rem));
+  background: linear-gradient(#fffef9, #dbe9ec);
+  clip-path: polygon(0 20%, 3% 8%, 7% 16%, 11% 0, 16% 15%, 20% 8%, 25% 30%, 31% 27%, 38% 60%, 45% 73%, 51% 80%, 57% 68%, 63% 71%, 69% 47%, 76% 53%, 81% 28%, 87% 35%, 93% 8%, 97% 17%, 100% 2%, 100% 100%, 0 100%);
+  transform-origin: center bottom;
+  animation: xmas-settle 45s ease-out both;
+}
+@keyframes xmas-settle { from { transform: scaleY(.08); } to { transform: scaleY(1); } }
 
 .xmas-snow i {
   --flake: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%221.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath transform=%22rotate%280 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3Cpath transform=%22rotate%2860 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3Cpath transform=%22rotate%28120 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3Cpath transform=%22rotate%28180 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3Cpath transform=%22rotate%28240 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3Cpath transform=%22rotate%28300 12 12%29%22 d=%22M12 12V1.5M9.4 7.6L12 5l2.6 2.6%22/%3E%3C/svg%3E");
@@ -61,7 +112,7 @@ body.xmas-theme::before {
   height: var(--w);
   opacity: var(--alpha);
   animation: xmas-fall var(--dur) linear var(--delay) infinite;
-  will-change: transform;
+
 }
 
 .xmas-snow i::before {
@@ -84,11 +135,13 @@ body.xmas-theme::before {
 
 @keyframes xmas-fall {
   from {
-    transform: translate3d(0, 0, 0);
+    top: -20px;
+    transform: translateY(0);
   }
 
   to {
-    transform: translate3d(0, 110vh, 0);
+    top: -20px;
+    transform: translateY(calc(100cqh + 8px));
   }
 }
 
@@ -596,7 +649,7 @@ body.xmas-theme::before {
 }
 
 /* On phones the trees would sit on their own row under the button, so hide them to keep the box compact */
-@media (max-width: 39.99rem) {
+@media (max-width: 47.99rem) {
   .xmas-contact {
     padding-bottom: clamp(1.2rem, 5vw, 1.8rem);
   }
@@ -606,14 +659,14 @@ body.xmas-theme::before {
   }
 }
 
-@media (min-width: 40rem) {
+@media (min-width: 48rem) {
   .xmas-contact {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 1.6rem;
   }
 
   .xmas-trees {
-    width: 11rem;
+    width: min(11rem, 28vw);
     margin-right: 0;
   }
 
@@ -671,4 +724,8 @@ body.xmas-theme::before {
 /* Volunteering actions keep a full pill curve as labels wrap or grow. */
 .narnia-volunteering .fayre-volunteer .button {
   border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xmas-snow__bank { animation: none; transform: none; }
 }

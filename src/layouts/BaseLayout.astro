@@ -50,11 +50,28 @@ const fireworksImage = `url("${withBase("/events/fireworks-1600.jpg")}")`;
     {preloadImage && <link rel="preload" as="image" href={withBase(preloadImage)} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high">}
     <title>{pageTitle}</title>
     <ThemeInit />
+    <script is:inline data-image-reveal>
+      // Slow connections: reveal .reveal-on-load images once loaded (or failed),
+      // so tiles and logos never sit as empty painted boxes. Registered in the
+      // head with capture because load/error do not bubble; body images cannot
+      // have completed before this runs.
+      document.documentElement.classList.add("img-reveal");
+      for (const type of ["load", "error"]) {
+        // document, not window: Chromium does not route element load capture to window.
+        document.addEventListener(type, (event) => {
+          if (event.target instanceof HTMLImageElement) {
+            event.target.classList.add("is-loaded");
+            const box = event.target.closest("[data-reveal-box]");
+            if (box) box.classList.add("is-loaded");
+          }
+        }, true);
+      }
+    </script>
   </head>
   <body class={bodyClass} style={`--fireworks-image: ${fireworksImage}`}>
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <Header logo={headerLogo} homepage={homepage} />
-    <main id="main-content"><slot /></main>
+    <main id="main-content" tabindex="-1"><slot /></main>
     <Footer logo={footerLogo} />
     <CookieBanner />
   </body>

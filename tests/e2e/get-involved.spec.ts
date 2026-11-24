@@ -73,16 +73,14 @@ for (const width of [320, 390, 768, 1024, 1440]) {
         const paired = width >= 1024 && !enlargedText;
         const groups = page.locator(".involved-group");
         await expect(groups.locator(":scope > h2")).toHaveText([
-          "Help at an event", "Put your skills to use", "Support throughout the year",
+          "Help at an event", "Support throughout the year",
         ]);
         // Wait for the container-query layout, not just for fonts or stylesheet insertion.
         await expect(groups.first()).toHaveCSS("display", paired ? "grid" : "block");
         const layout = await opportunityLayout(page);
-        const [first, second, yearRound] = layout.groups;
+        const [first, second] = layout.groups;
         expect(first.top - layout.feature.bottom, "Gap below the vacancy appeal").toBeGreaterThanOrEqual(31);
-        expect(yearRound.top - Math.max(first.bottom, second.bottom), "Gap above year-round support").toBeGreaterThanOrEqual(31);
-        expect(layout.closing.top - yearRound.bottom, "Gap before the closing appeal").toBeGreaterThanOrEqual(31);
-        expect(yearRound.left).toBeCloseTo(first.left, 0);
+        expect(layout.closing.top - Math.max(first.bottom, second.bottom), "Gap before the closing appeal").toBeGreaterThanOrEqual(31);
         expect(layout.pageWidth, JSON.stringify(layout, null, 2)).toBeLessThanOrEqual(layout.viewportWidth);
         expect(layout.overflow).toEqual([]);
 
@@ -97,12 +95,10 @@ for (const width of [320, 390, 768, 1024, 1440]) {
         }
         if (paired) {
           expectPairedRows(layout);
-          expect(yearRound.right).toBeCloseTo(second.right, 0);
         } else {
           expect(second.top).toBeGreaterThanOrEqual(first.bottom);
           expect(second.left).toBeCloseTo(first.left, 0);
           expect(second.width).toBeCloseTo(first.width, 0);
-          expect(yearRound.width).toBeCloseTo(first.width, 0);
         }
         if (enlargedText || width <= 768) {
           expect(layout.featureActions.top).toBeGreaterThanOrEqual(layout.featureCopy.bottom);
@@ -116,7 +112,7 @@ for (const width of [320, 390, 768, 1024, 1440]) {
 test("narrow enlarged descriptions wrap wide words within their own column", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/get-involved/");
-  await page.addStyleTag({ content: "html { font-size: 200% !important; } .involved-text p { letter-spacing: 0.15em; }" });
+  await page.addStyleTag({ content: "html { font-size: 200% !important; }" });
   await page.evaluate(() => document.fonts.ready);
   const description = page.locator(".involved-text p").filter({ hasText: "Help with announcements and music" });
   const wordWidth = await description.evaluate((element) => {
@@ -124,7 +120,15 @@ test("narrow enlarged descriptions wrap wide words within their own column", asy
     const context = canvas.getContext("2d")!;
     const style = getComputedStyle(element);
     context.font = `${style.fontSize} ${style.fontFamily}`;
-    return context.measureText("announcements").width + 12 * parseFloat(style.letterSpacing);
+    // Derive the stress condition from the actual font metrics. CI and local
+    // Chromium can load different font faces; fixed spacing may no longer
+    // make this word wider than the column after legitimate layout changes.
+    const word = "announcements";
+    const targetWidth = element.getBoundingClientRect().width + 32;
+    const spacing = Math.max(0.15 * parseFloat(style.fontSize),
+      (targetWidth - context.measureText(word).width) / (word.length - 1));
+    (element as HTMLElement).style.letterSpacing = `${spacing}px`;
+    return context.measureText(word).width + (word.length - 1) * parseFloat(getComputedStyle(element).letterSpacing);
   });
   const bounds = await description.boundingBox();
   expect(wordWidth, "The word would overflow without a wrapping fallback").toBeGreaterThan(bounds!.width);
@@ -175,7 +179,7 @@ for (const width of [1280, 1366]) {
           };
           const foregrounds = await headings.evaluateAll((elements) => [
             getComputedStyle(elements[0]).getPropertyValue("--green").trim(),
-            getComputedStyle(elements[1]).getPropertyValue("--involved-skills-accent").trim(),
+            getComputedStyle(elements[1]).getPropertyValue("--ink").trim(),
           ]);
           const image = await page.screenshot({ clip, animations: "disabled" });
           // Decode only this eight-pixel strip in the browser. No golden image,

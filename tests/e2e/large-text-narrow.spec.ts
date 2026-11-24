@@ -22,6 +22,18 @@ const overflowing = (page: Page) =>
     const range = document.createRange();
     for (const element of document.querySelectorAll<HTMLElement>("body *")) {
       if (element.closest(".visually-hidden, [aria-hidden='true'], [class*='fw-torch'], [class*='sparkle']")) continue;
+      // The Fayre navigation row scrolls sideways inside its own box at 200% text (approved design, see PR #170). Its
+      // links stay reachable by scrolling and keyboard focus, so they are not "running off the screen".
+      // Scoped to that one component so a new unintended scroller elsewhere still fails this check.
+      if (element.closest(".fayre-navigation__pages")) continue;
+      // #171/#179: the fundraising sources table and total banner keep whole
+      // words at enlarged text; when doubled text outgrows the phone they
+      // scroll sideways inside their own boxes (PR #170 pattern). Only their
+      // CONTENTS are skipped here - the boxes themselves stay bounds-checked
+      // below, and the scroller test asserts they are keyboard-focusable with
+      // an accessible name.
+      const scroller = element.closest(".fundraising-sources-frame, .fundraising-last-total");
+      if (scroller && scroller !== element) continue;
       if (getComputedStyle(element).position === "fixed") continue;
       const box = element.getBoundingClientRect();
       if (box.width > 0 && box.right > limit) found.push(`${element.tagName.toLowerCase()}.${element.className} ends at ${Math.round(box.right)}px`);
@@ -53,6 +65,31 @@ for (const theme of ["day", "night"] as const) {
         expect(await overflowing(page)).toEqual([]);
       });
     }
+
+    test("fundraising scroll boxes stay on screen and are keyboard reachable", async ({ page }) => {
+      await page.goto("/fundraising/");
+      await useLargeText(page);
+      const boxes = await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>(".fundraising-sources-frame, .fundraising-last-total")].map((el) => {
+          const box = el.getBoundingClientRect();
+          return {
+            cls: el.className,
+            left: box.left,
+            right: box.right,
+            tabindex: el.getAttribute("tabindex"),
+            name: el.getAttribute("aria-label") ?? el.getAttribute("aria-labelledby") ?? "",
+            scrolls: el.scrollWidth > el.clientWidth + 1,
+          };
+        }),
+      );
+      expect(boxes.length).toBe(2);
+      for (const box of boxes) {
+        expect(box.left, `${box.cls} starts on screen`).toBeGreaterThanOrEqual(0);
+        expect(box.right, `${box.cls} ends on screen`).toBeLessThanOrEqual(320.5);
+        expect(box.tabindex, `${box.cls} is keyboard focusable`).toBe("0");
+        expect(box.name.length, `${box.cls} has an accessible name`).toBeGreaterThan(0);
+      }
+    });
 
     test("footer links stay on screen and the columns stack when they cannot sit side by side", async ({ page }) => {
       await page.goto("/");
@@ -136,6 +173,14 @@ for (const theme of ["day", "night"] as const) {
 
     test("Get involved vacancy badges never split mid-word", async ({ page }) => {
       await page.goto("/get-involved/");
+      // No current role carries a vacancy badge (the badged roles were retired);
+      // seed one so the no-split invariant keeps covering the badge styles.
+      await page.evaluate(() => {
+        const badge = document.createElement("span");
+        badge.className = "involved-badge";
+        badge.textContent = "Vacancy";
+        document.querySelector(".involved-text h3")?.append(badge);
+      });
       await useLargeText(page);
       const badges = page.locator(".involved-badge");
       expect(await badges.count()).toBeGreaterThan(0);

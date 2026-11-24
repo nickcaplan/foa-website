@@ -1,0 +1,69 @@
+---
+// Shared vacancy jump nav for page heroes. Nick (20 + 22 Nov 2026): same-page
+// jumps get down arrows (right arrows mean leaving the page); desktop keeps
+// the plain header; phones show the CTAs side by side.
+interface Target {
+  label: string;
+  href: string;
+}
+interface Props {
+  targets: Target[];
+}
+const { targets } = Astro.props;
+const downArrow = "M12 5v14M5 12l7 7 7-7";
+---
+
+<nav class="involved-vacancies" id="role-vacancies-nav" aria-label="Current role vacancies">
+  <span class="involved-vacancies__label">Two roles to fill</span>
+  <div>
+    {targets.map((target) => (
+      <a class="button button--amber" href={target.href}>
+        <span class="cta-label">{target.label}<svg data-cta-arrow="down" class="cta-icon" aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d={downArrow}></path></svg></span>
+      </a>
+    ))}
+  </div>
+</nav>
+
+<style is:global>
+  /* Nick (22 Nov 2026): label and buttons sit inside one outlined box, the
+     label as its heading, so the count visibly covers both vacancy CTAs.
+     Box styling follows the design pass (22 Nov 2026): 1px outline, 16px
+     radius, 12px padding, and the group extends 8px into the hero side
+     padding so the pills keep their reading width at 320px. */
+  .involved-vacancies {
+    margin-block: 1rem;
+    margin-inline: -8px;
+    border: 1px solid var(--green);
+    border-radius: 16px;
+    padding: 12px;
+  }
+  .involved-vacancies__label {
+    display: block; margin-block: 0 10px;
+    font-size: 0.82rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  /* Phones show the two jump CTAs side by side; desktop (48rem up) keeps the
+     plain header. min-width:auto lets each pill keep its content whole, so
+     enlarged text wraps the pair to stacked instead of overflowing. */
+  .involved-vacancies > div { display: flex; flex-wrap: wrap; gap: 8px; }
+  #role-vacancies-nav a.button { flex: 1 1 0; }
+  /* The pills run a notch smaller (0.95rem) so the pair still fits side by
+     side at 320px inside the box, and labels plus arrows stay inside the
+     pills at 200% text (design pass + independent review, 22 Nov 2026). */
+  #role-vacancies-nav a.button { font-size: 0.95rem; }
+  @media (min-width: 48rem) { .involved-vacancies { display: none; } }
+  /* A real grid column reserves the arrow's actual enlarged width, rather
+     than an absolute icon lane that can overlap a separately enlarged label.
+     The arrow is font-relative (1em) so it tracks the label size. */
+  #role-vacancies-nav a.button:has(svg) {
+    min-height: 44px;
+    padding-inline: 4px !important;
+  }
+  #role-vacancies-nav a.button .cta-label {
+    display: grid; grid-template-columns: minmax(min-content, 1fr) auto;
+    align-items: center; gap: 4px; width: 100% !important; flex: 1 1 auto !important; white-space: nowrap;
+  }
+  #role-vacancies-nav a.button .cta-icon {
+    position: static !important; translate: none !important;
+    width: 1em !important; height: 1em !important;
+  }
+</style>

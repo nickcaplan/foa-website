@@ -1,0 +1,110 @@
+/* A shared frame for the three Fayre pages. Minimums grow with text; never lock content height. */
+body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape,
+.art-comp .fayre-art-hero {
+  width:100%; max-width:none; min-height:23.5rem; margin:0 auto 1rem;
+  border:1px solid #b99a5b; border-radius:10px; overflow:hidden;
+  position:relative; isolation:isolate; background:#102d38; color:#fff3d5;
+  display:flex; flex-direction:column; justify-content:center;
+}
+body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape__body {flex:1; display:flex; flex-direction:column; justify-content:center;}
+body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape__copy {flex:1; width:100%; min-height:0; padding:2rem 1.5rem;}
+.art-comp .fayre-art-hero__art {position:absolute; inset:0; z-index:-2; width:100%; height:100%; object-fit:cover;}
+.art-comp .fayre-art-hero::before {content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#10232c55,#10232ce6 35%,#10232cdd 65%,#10232c55);}
+.art-comp .fayre-art-hero__copy {width:100%;max-width:42rem;margin:auto;text-align:center;padding:2rem 1.5rem;}
+.art-comp .fayre-art-hero__eyebrow {font-size:.8rem;letter-spacing:.1em;line-height:1.5;text-transform:uppercase;color:#edcb83;margin:0 0 1rem;}
+.art-comp .fayre-art-hero h1 {font:500 2.5rem/1.12 Georgia,serif;color:#edcb83;margin:0 0 1.25rem;letter-spacing:-.025em;overflow-wrap:normal;word-break:normal;}
+.art-comp .fayre-art-hero__theme {font-size:1rem;line-height:1.5;color:#fff3d5;margin:0 0 1.5rem;}
+.art-comp .fayre-art-hero__deadline {display:grid;gap:.4rem;line-height:1.5;margin:0;color:#fff3d5;}
+.art-comp .fayre-art-hero__deadline span {font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:#edcb83;}
+.art-comp .fayre-art-hero__deadline strong {font:500 1.4rem/1.3 Georgia,serif;}
+/* Sponsor logo in flow like the volunteering hero: its box keeps its height at every
+   text size, so hero height and the snow taper guards behave as before. The two-class
+   selector scopes it clear of the global .sponsor-ribbon card styles. */
+.art-comp .fayre-art-hero__sponsor {display:block;width:min(85%,220px);margin:.5rem auto 0;padding:0;background:none;transform:translateY(max(0px,calc(30px - .9375rem)));}
+.art-comp .fayre-art-hero__sponsor img {display:block;width:100%;height:auto;margin:0;}
+@media(max-width:47.99rem){
+  body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape,
+  .art-comp .fayre-art-hero {min-height:23.5rem;}
+  body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape__copy,
+  .art-comp .fayre-art-hero__copy {padding:1.5rem .75rem;}
+  /* Root-relative sizes permit real enlargement, while whole words stay intact. */
+  .narnia-event .narnia-landscape h1 {font-size:1.65rem!important;}
+  .narnia-event .narnia-landscape h1 em {display:block;}
+  .art-comp .fayre-art-hero h1 {font-size:1.65rem;}
+}
+
+/* Match the header's outer gutters, which scale with the root font size.
+   The event page sizes its own .xmas-stage .site-width; do not override it here. */
+.xmas-theme .site-width.fayre-hero-shell,
+body.narnia-volunteering .site-width.fayre-volunteer,
+body.narnia-volunteering .site-width.fayre-supporters-hero {width:min(calc(100% - 2rem),var(--max-width));}
+.art-comp .fayre-art-hero h1 {text-transform:none;}
+@media(min-width:64rem){
+ .xmas-theme .site-width.fayre-hero-shell,
+ body.narnia-volunteering .site-width.fayre-volunteer,
+ body.narnia-volunteering .site-width.fayre-supporters-hero {width:min(calc(100% - 3rem),var(--max-width));}
+}
+@media(max-width:767px){
+ .narnia-event .narnia-landscape .narnia-landscape__copy,
+ .art-comp .fayre-art-hero__copy {padding-inline:12px;}
+ .art-comp .fayre-art-hero h1 {font-size:1.5rem;}
+ body.narnia-event .xmas-stage .xmas-hero .narnia-landscape h1 {font-size:1.65rem!important;}
+}
+
+/* Same hero-to-nav gap on all three Fayre pages: the event wrapper's bottom padding would add ~41px at desktop. */
+body.narnia-event .xmas-stage .xmas-hero {padding-bottom:0;}
+
+/* Keep the first volunteer activity close: reclaim space between nav and activity list. */
+.narnia-volunteering .fayre-volunteer .fayre-volunteer__intro {margin:.65rem auto;}
+@media(min-width:768px){
+ body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape,
+ .art-comp .fayre-art-hero {min-height:24.5rem;}
+}
+
+/* Art retains its distinctive framed illustration inside the common outer frame. */
+.art-comp .fayre-art-hero {background:#102d38;}
+.art-comp .fayre-art-hero::before {display:none;}
+.art-comp .fayre-art-hero__copy {max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:2rem;align-content:center;align-items:center;padding:1.5rem 2rem;}
+.art-comp .fayre-art-hero__eyebrow,.art-comp .fayre-art-hero h1,.art-comp .fayre-art-hero__theme,.art-comp .fayre-art-hero__deadline {grid-column:1;}
+/* Nick (18 Nov 2026): on desktop the logo belongs under the copy in the left
+   column - centred across the full hero looked floaty next to the easel. The
+   <768px layout is a flex column, so grid-column is ignored there and the phone
+   placement (bottom centre) is unchanged. */
+.art-comp .fayre-art-hero__sponsor {grid-column:1;justify-self:center;}
+.art-comp .fayre-art-picture {grid-column:2;grid-row:1/5;position:relative;padding:10px;background:#f3e6c8;border:3px solid #8a5a2b;box-shadow:inset 0 0 0 3px #c9a65f,inset 0 0 0 6px #5d3d1e,0 10px 20px #0007;border-radius:2px;margin-bottom:24px;}
+@media(min-width:1024px){
+ /* Nick (18 Nov 2026): bigger picture and frame on desktop. The split only leans
+    0.95/1.05 and the gap tightens 2rem -> 1.5rem: the left text column drives the
+    hero height, and a wider swing would wrap it taller and break the 10% hero
+    parity band. This keeps the text column wide enough that nothing re-wraps, so
+    hero height and parity are unchanged while the framed picture grows ~6%. */
+ .art-comp .fayre-art-hero__copy {grid-template-columns:minmax(0,0.92fr) minmax(0,1.08fr);}
+ .art-comp .fayre-art-picture {margin-bottom:0;}
+}
+.art-comp .fayre-art-picture img {display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;}
+.art-comp .fayre-art-picture::before,.art-comp .fayre-art-picture::after {content:'';position:absolute;top:100%;width:8px;height:28px;background:linear-gradient(#6b4a2f,#4a2f1c);transform-origin:top center;border-radius:0 0 2px 2px;}
+.art-comp .fayre-art-picture::before {left:16%;transform:rotate(9deg);}
+.art-comp .fayre-art-picture::after {right:16%;transform:rotate(-9deg);}
+@media(max-width:767px){
+ .art-comp .fayre-art-hero__copy {display:flex;flex-direction:column;padding:12px;gap:0;}
+ .art-comp .fayre-art-hero__eyebrow {font-size:.78rem;letter-spacing:.06em;margin-bottom:.45rem;}
+ /* Taper: 29.6px at a 16px root (pixel-equal to plain 1.85rem), 50px at a 32px
+    root, so "Competition" still fits the 320px hero at 200% text. */
+ .art-comp .fayre-art-hero h1 {font-size:min(1.85rem,calc(9.2px + 1.275rem));margin-bottom:.35rem;}
+ .art-comp .fayre-art-hero__theme {font-size:1rem;margin-bottom:.8rem;}
+ /* Nick (17 Nov 2026): the frame and copy had spare room on phones - frame
+    240px to 320px, copy sizes up toward the desktop scale. */
+ .art-comp .fayre-art-picture {width:min(100%,320px);padding:8px;margin:0 auto 20px;}
+ .art-comp .fayre-art-picture::before,.art-comp .fayre-art-picture::after {height:18px;width:6px;}
+ .art-comp .fayre-art-hero__deadline {gap:.15rem;}
+ .art-comp .fayre-art-hero__deadline span {font-size:.72rem;}
+ .art-comp .fayre-art-hero__deadline strong {font-size:1.25rem;}
+}
+/* The logo's home is under the left-column copy, so no vertical shift is needed at
+   >=768px; the <768px rule above keeps the phone placement near the hero bottom. */
+@media(min-width:768px){
+ .art-comp .fayre-art-hero__copy{padding-block:1.25rem;}
+ /* Keep the single-word title inside its column when the root font size grows. */
+ .art-comp .fayre-art-hero{container-type:inline-size;}
+ .art-comp .fayre-art-hero h1{font-size:clamp(1.5rem,7cqi,2.5rem);}
+}

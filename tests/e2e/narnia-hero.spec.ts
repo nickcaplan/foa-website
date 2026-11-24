@@ -78,31 +78,27 @@ for (const [width, height] of [[390, 844], [412, 915]]) {
   });
 }
 
+// Phone centres the stack; desktop left-aligns the copy column beside the framed picture.
 for (const width of [360, 390, 412, 1280, 1366, 1440]) {
-  test(`art competition theme text and equal hairlines are centred at ${width}px`, async ({page}) => {
+  test(`art competition theme and title align at ${width}px`, async ({page}) => {
     await page.setViewportSize({width, height:900});
     await page.goto('/christmas-fayre-art-competition/');
     await page.evaluate(() => document.fonts.ready);
-    const layout = await page.locator('.art-comp-banner').evaluate(panel => {
-      const theme = panel.querySelector('.view-hero-copy > p')!;
+    const layout = await page.locator('.fayre-art-hero').evaluate(panel => {
+      const theme = panel.querySelector('.fayre-art-hero__theme')!;
       const title = panel.querySelector('h1')!;
-      const textCentre = (node: Element) => {
-        const range = document.createRange();
-        range.selectNodeContents(node);
-        const r = range.getBoundingClientRect();
-        return r.x + r.width / 2;
-      };
-      const r = panel.getBoundingClientRect();
+      const t = theme.getBoundingClientRect(); const h = title.getBoundingClientRect(); const r = panel.getBoundingClientRect();
       return {
-        themeCentre: textCentre(theme), titleCentre: textCentre(title), panelCentre: r.x + r.width / 2,
-        before: parseFloat(getComputedStyle(theme, '::before').width),
-        after: parseFloat(getComputedStyle(theme, '::after').width),
+        themeCentre: t.x + t.width / 2, titleCentre: h.x + h.width / 2, panelCentre: r.x + r.width / 2,
+        themeLeft: t.x, titleLeft: h.x,
       };
     });
-    expect(Math.abs(layout.themeCentre - layout.titleCentre)).toBeLessThan(1);
-    expect(Math.abs(layout.themeCentre - layout.panelCentre)).toBeLessThan(1);
-    expect(Math.abs(layout.before - layout.after)).toBeLessThan(1);
-    expect(layout.before).toBeGreaterThan(0);
+    if (width < 768) {
+      expect(Math.abs(layout.themeCentre - layout.titleCentre)).toBeLessThan(1);
+      expect(Math.abs(layout.themeCentre - layout.panelCentre)).toBeLessThan(1);
+    } else {
+      expect(Math.abs(layout.themeLeft - layout.titleLeft)).toBeLessThan(1);
+    }
   });
 }
 
@@ -113,7 +109,7 @@ for (const route of ['/christmas-fayre-art-competition/', '/events/christmas-fay
       await page.goto(route);
       const gap = await page.evaluate(() => {
         const header = document.querySelector('.site-header')!.getBoundingClientRect();
-        const hero = document.querySelector('.art-comp-banner, .narnia-landscape')!.getBoundingClientRect();
+        const hero = document.querySelector('.art-comp-banner, .fayre-art-hero, .narnia-landscape')!.getBoundingClientRect();
         return hero.top - header.bottom;
       });
       expect(gap).toBeCloseTo(24, 0);

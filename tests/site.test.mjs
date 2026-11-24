@@ -77,10 +77,10 @@ test("both Fireworks pages keep their social image within chat size limits", asy
 test("Get Involved exposes the AGM volunteer teams and shared enquiry route", async () => {
   const html = await readFile(path.join(dist, "get-involved/index.html"), "utf8");
   const groupHeadings = [...html.matchAll(/<h2 id="group-[^"]+">([^<]+)<\/h2>/g)].map((match) => match[1]);
-  assert.deepEqual(groupHeadings, ["Help at an event", "Put your skills to use", "Support throughout the year"]);
+  assert.deepEqual(groupHeadings, ["Help at an event", "Support throughout the year"]);
   assert.ok(html.indexOf('id="volunteering-title"') < html.indexOf('id="group-green"'));
   assert.ok(html.indexOf('id="group-neutral"') < html.indexOf('id="closing-title"'));
-  for (const role of ["Pre-loved uniform sales", "Quartermasters", "Event comperes", "Eco Stall lead", "Fireworks shadowing", "Lead a community event"]) {
+  for (const role of ["Pre-loved uniform sales", "Quartermasters", "Event comperes", "Lead a community event"]) {
     assert.ok(html.includes(`<h3>${role}`), `Missing volunteer team: ${role}`);
   }
   assert.match(html, /Summer Fete and Big Picnic/);
@@ -153,7 +153,8 @@ test("navigation exposes the menu on Home and both menus on interior pages", asy
       const destinations = [...nav.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
       const expected = ["/", "/newsletter/", "/whats-on/", "/fundraising/", "/get-involved/", "/uniform/"];
       if (label === "Mobile navigation") {
-        expected.splice(3, 0, "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/");
+        expected.splice(3, 0, "/events/christmas-fayre-2026/", "/christmas-fayre-volunteering/", "/christmas-fayre-art-competition/", "/christmas-fayre-supporters/");
+        expected.splice(expected.indexOf("/get-involved/"), 1);
         expected.push("/contact/");
       }
       assert.deepEqual(destinations, expected.map((destination) => `${basePath}${destination}`));
@@ -411,7 +412,7 @@ test("the Christmas Fayre page uses a JustSignup click-out and keeps the Fayre i
   for (const link of links) {
     assert.equal(link, `mailto:${christmas.contactEmail}?subject=Helping%20at%20the%20Christmas%20Fayre`);
   }
-  assert.equal([...html.matchAll(/>Email the Fayre <span class="cta-word"[^>]*>tea<span class="cta-tail"[^>]*>m<span/g)].length, 1);
+  assert.equal([...html.matchAll(/>Email the <span class="cta-tail"[^>]*>Fayre&nbsp;team<span/g)].length, 1);
 });
 
 test("the Christmas Fayre page omits the redundant Good to know panel", async () => {
@@ -437,7 +438,9 @@ test("the Christmas Fayre page shows the date, place and lead from the event rec
   assert.ok(!html.includes('class="add-calendar"'), 'Calendar choices are hidden on Fayre details');
   assert.ok(html.includes('/sponsors/martin-flashman.png'), 'Landscape sponsor logo is used');
   assert.match(html, /<div class="xmas-snow" aria-hidden="true"[^>]*>/);
-  assert.equal([...html.matchAll(/<i style="--side:/g)].length, 28);
+  assert.equal([...html.matchAll(/<i style="--side:/g)].length, 20);
+  assert.ok(html.indexOf('class="xmas-snow"') > html.indexOf('data-hero-snow'), 'Snow is inside the opt-in hero');
+  assert.match(html, /class="xmas-snow__bank"/);
   assert.match(html, /martin-flashman\.png" alt="Martin Flashman and Co"/);
   assert.ok(html.includes(`href="${basePath}${christmas.volunteeringPath}"`));
   assert.doesNotMatch(html, /<iframe|Design preview only|Compare sign-up/);
@@ -516,14 +519,18 @@ test("Christmas volunteering lists the source activities and safe click-outs, wi
  const html=await readFile(path.join(dist,"christmas-fayre-volunteering/index.html"),"utf8");
  assert.equal([...html.matchAll(/class="fayre-volunteer__card"/g)].length,christmas.signupActivities.length);
  for(const activity of christmas.signupActivities){
-  assert.ok(html.includes(escapeHtml(activity.name)));
+  const shown=activity.displayName??activity.name;
+  assert.ok(html.includes(escapeHtml(shown)));
   assert.ok(html.includes(`href="${christmas.signupUrl}#${activity.anchor}" target="_blank" rel="noopener noreferrer"`));
   assert.ok(html.includes(`data-availability-code="${activity.anchor}"`));
-  assert.ok(html.includes(`data-activity-name="${escapeHtml(activity.name)}"`));
+  assert.ok(html.includes(`data-activity-name="${escapeHtml(shown)}"`));
  }
- // Counts load client-side from the published snapshot; no count is ever baked into static HTML.
+ // Counts render at build from the published snapshot and refresh client-side; a full activity is designed to show "0 places left" (#175).
  assert.match(html,/data-availability-url="[^"]*\/fayre-availability\.json"/);
- assert.doesNotMatch(html, /<iframe|\d+ places? left|of \d+ open/);
+ // Every card carries the Fully booked note that reserves the action row, so the full-state swap never shifts the layout.
+ assert.equal([...html.matchAll(/fayre-volunteer__booked/g)].length>=christmas.signupActivities.length,true,'each activity card needs its Fully booked note');
+ assert.equal([...html.matchAll(/>Fully booked</g)].length,christmas.signupActivities.length);
+ assert.doesNotMatch(html, /<iframe|of \d+ open/);
  assert.ok(html.includes(`href="${basePath}${christmas.path}"`));
 });
 

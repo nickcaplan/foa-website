@@ -28,7 +28,8 @@ test('click-out matches Fireworks volunteering safety and loads no third-party b
 });
 test('snow stays outside the reading area and honours reduced motion',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});await page.goto(route);
- await expect(page.locator('.xmas-snow')).toHaveAttribute('aria-hidden','true');
+ await expect(page.locator('.narnia-landscape[data-hero-snow] .xmas-snow')).toHaveAttribute('aria-hidden','true');
+ expect(await page.locator('.xmas-snow__bank').evaluate(el=>getComputedStyle(el).animationName)).toBe('none');
  expect(await page.locator('.xmas-snow i').evaluateAll(els=>els.filter(e=>getComputedStyle(e).animationName!=='none').length)).toBe(0);
 });
 test.describe('without JavaScript',()=>{test.use({javaScriptEnabled:false});test('sign-up link and contact remain available',async({page})=>{
@@ -38,20 +39,113 @@ test.describe('without JavaScript',()=>{test.use({javaScriptEnabled:false});test
 test('What’s On Fayre item keeps details and links to volunteering',async({page})=>{await page.goto('/whats-on/');const row=page.locator('[data-event-title="Christmas Fayre"][data-past="false"]');await expect(row.getByRole('link',{name:'Christmas Fayre',exact:true})).toHaveAttribute('href',route);await expect(row.getByRole('link',{name:'Volunteer',exact:true})).toHaveAttribute('href','/christmas-fayre-volunteering/');await expect(row.locator('a a')).toHaveCount(0);});
 
 for (const width of [320, 390]) {
-  test(`Glitter Tree, Volunteer and Art Competition CTAs share one width at ${width}px`, async ({ page }) => {
+  test(`Volunteer and Art Competition CTAs share one width at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(route);
     const widths = await page.evaluate(() => {
       const widths_of = (selector: string) => [...document.querySelectorAll(selector)].map((e) => e.getBoundingClientRect().width);
       return {
-        supporter: widths_of('.fayre-supporter a.button'),
         volunteer: widths_of('.xmas-stalls-cta .button'),
         art: widths_of('.xmas-art-cta .button'),
       };
     });
     for (const [name, list] of Object.entries(widths)) expect(list.length, `${name} CTA present`).toBeGreaterThan(0);
-    const all = [...widths.supporter, ...widths.volunteer, ...widths.art];
-    expect(Math.max(...all) - Math.min(...all), 'all three CTAs span the same width').toBeLessThanOrEqual(1);
+    const all = [...widths.volunteer, ...widths.art];
+    expect(Math.max(...all) - Math.min(...all), 'both CTAs span the same width').toBeLessThanOrEqual(1);
     expect(Math.min(...all), 'CTAs reach the standard 16px gutter').toBeGreaterThanOrEqual(width - 33);
   });
+}
+
+const snowSponsorRoutes:{url:string,hero:string,widths:number[]}[]=[
+ {url:route,hero:'.narnia-landscape',widths:[320,390,1024]},
+ {url:'/christmas-fayre-volunteering/',hero:'.narnia-landscape',widths:[320,390,1024]},
+ // Art included since its logo was lowered to the shared family position (Nick, 18 Nov
+ // 2026): 1000 guards the band where the old constant shift let clearance fall to 4px.
+ {url:'/christmas-fayre-art-competition/',hero:'.fayre-art-hero',widths:[320,390,768,1000,1024]},
+];
+for(const {url:snowSponsorRoute,hero:heroSel,widths} of snowSponsorRoutes) for(const width of widths) for(const scale of [1,2]) test(`hero snow stays clear of sponsor at ${width}/${scale} on ${snowSponsorRoute}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(snowSponsorRoute);
+ await page.evaluate(scale=>document.documentElement.style.fontSize=`${16*scale}px`,scale);
+ // Measure only the settled layout: the enlarged root must have applied and the
+ // bank's geometry must be unchanged across two frames (no fixed waits).
+ await page.waitForFunction(async scale=>{
+  if(getComputedStyle(document.documentElement).fontSize!==`${16*scale}px`)return false;
+  const bank=document.querySelector('.xmas-snow__bank');if(!bank)return false;
+  const a=bank.getBoundingClientRect().top;
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  return a===bank.getBoundingClientRect().top;
+ },scale);
+ const geometry=await page.evaluate(heroSel=>{
+  const box=(s:string)=>document.querySelector(s)!.getBoundingClientRect();
+  const hero=box(heroSel),snow=box('.xmas-snow'),bank=box('.xmas-snow__bank'),logo=box('.sponsor-ribbon img');
+  return {contained:snow.top>=hero.top&&snow.bottom<=hero.bottom,gap:bank.top-logo.bottom};
+ },heroSel);
+ expect(geometry.contained).toBe(true);expect(geometry.gap).toBeGreaterThanOrEqual(12);
+});
+
+for(const width of [320,390]) test(`snow adds no hero height at 200% text @${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1000});await page.goto(route);
+ const normalPad=await page.evaluate(()=>parseFloat(getComputedStyle(document.querySelector('.narnia-landscape__footer')!).paddingBottom));
+ // 200% browser text: stripping the whole snow feature (attribute-gated styles +
+ // snow layer) must leave the hero height untouched, and the bank clearance must
+ // have tapered back to the shared 0.75rem footer padding (24px at a 32px root).
+ await page.evaluate(()=>document.documentElement.style.fontSize='32px');
+ await page.waitForTimeout(100);
+ const r=await page.evaluate(()=>{
+  const hero=document.querySelector('.narnia-landscape')!;
+  const withSnow=hero.getBoundingClientRect().height;
+  const padBottom=parseFloat(getComputedStyle(hero.querySelector('.narnia-landscape__footer')!).paddingBottom);
+  hero.removeAttribute('data-hero-snow');
+  hero.querySelector('.xmas-snow')!.remove();
+  return {withSnow,withoutSnow:hero.getBoundingClientRect().height,padBottom};
+ });
+ expect(normalPad,'100% text keeps the 48px bank clearance').toBe(48);
+ expect(r.padBottom,'200% text falls back to the shared 0.75rem footer padding').toBe(24);
+ expect(r.withoutSnow,'stripping the snow feature at 200% text changes the hero height by nothing').toBe(r.withSnow);
+});
+
+// Snow on the volunteering and art heroes: same hero-confined behaviour as the event page.
+const snowRoutes:[string,string][]=[['/christmas-fayre-volunteering/','.narnia-landscape'],['/christmas-fayre-art-competition/','.fayre-art-hero']];
+for(const [snowRoute,heroSel] of snowRoutes){
+ test(`hero snow present and confined on ${snowRoute}`,async({page})=>{
+  await page.setViewportSize({width:390,height:1000});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(snowRoute);
+  await expect(page.locator(`${heroSel}[data-hero-snow] .xmas-snow`)).toHaveAttribute('aria-hidden','true');
+  expect(await page.locator(`${heroSel} .xmas-snow i`).count()).toBeGreaterThan(0);
+  const geometry=await page.evaluate(([h])=>{
+   const box=(s:string)=>document.querySelector(s)!.getBoundingClientRect();
+   const hero=box(h),snow=box(`${h} .xmas-snow`),bank=box(`${h} .xmas-snow__bank`);
+   return {contained:snow.top>=hero.top&&snow.bottom<=hero.bottom,bankBottom:Math.abs(bank.bottom-hero.bottom)};
+  },[heroSel]);
+  expect(geometry.contained).toBe(true);expect(geometry.bankBottom).toBeLessThanOrEqual(1);
+ });
+ for(const width of [320,390]) test(`snow adds no hero height at 200% text @${width} on ${snowRoute}`,async({page})=>{
+  await page.setViewportSize({width,height:1000});await page.goto(snowRoute);
+  // 200% browser text: stripping the whole snow feature (attribute-gated styles +
+  // snow layer) must leave the hero height untouched.
+  await page.evaluate(()=>document.documentElement.style.fontSize='32px');
+  await page.waitForTimeout(100);
+  const r=await page.evaluate(([h])=>{
+   const hero=document.querySelector(h)!;
+   const withSnow=hero.getBoundingClientRect().height;
+   hero.removeAttribute('data-hero-snow');
+   hero.querySelector('.xmas-snow')!.remove();
+   return {withSnow,withoutSnow:hero.getBoundingClientRect().height};
+  },[heroSel]);
+  expect(r.withoutSnow,'stripping the snow feature at 200% text changes the hero height by nothing').toBe(r.withSnow);
+ });
+}
+
+// Snow must render behind hero content: flake lanes on these pages can reach the
+// copy, CTA or framed picture (QA animation sampling found intersections).
+for(const [snowRoute2,heroSel2,copySel] of [['/christmas-fayre-volunteering/','.narnia-landscape','.narnia-landscape__copy'],['/christmas-fayre-art-competition/','.fayre-art-hero','.fayre-art-hero__copy']] as [string,string,string][]){
+ test(`snow layer stacks behind hero content on ${snowRoute2}`,async({page})=>{
+  await page.setViewportSize({width:390,height:1000});await page.goto(snowRoute2);
+  const r=await page.evaluate(([h,c])=>{
+   const copy=getComputedStyle(document.querySelector(h+' '+c)!);
+   const snow=getComputedStyle(document.querySelector(h+' .xmas-snow')!);
+   return {pos:copy.position,z:parseFloat(copy.zIndex),snowZ:parseFloat(snow.zIndex)};
+  },[heroSel2,copySel]);
+  expect(r.pos,'copy creates a stacking context').not.toBe('static');
+  expect(r.z,'copy paints above the snow layer').toBeGreaterThan(r.snowZ);
+ });
 }

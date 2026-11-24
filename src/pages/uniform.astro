@@ -15,7 +15,7 @@ const normalDescription = "Find pre-loved uniform from The Friends of Ashley, pl
 <BaseLayout title="Pre-loved Uniform" image={expired ? "/brand/foa-logo-og.png" : "/social/uniform-christmas-jumpers-2026-v1.jpg"} imageAlt={expired ? "The Friends of Ashley logo." : "The Friends of Ashley logo beside a green, red and ivory Fair Isle Christmas jumper."} imageWidth={expired ? undefined : 1200} imageHeight={expired ? undefined : 630} description={expired ? normalDescription : "Find the next pre-loved uniform sale from The Friends of Ashley, including Christmas jumpers on Friday 4th December, plus uniform prices and contact details."}>
   <PageHero eyebrow="Pre-loved uniform" title="Buy or donate uniform." intro="Good uniform, passed on to another Ashley family.">
   </PageHero>
-  <section class="content-section content-section--compact content-section--snug uniform-details"><div class="site-width split-layout split-layout--snug uniform-details-grid"><div class="christmas-sale" data-expires-at={expiresAt} hidden={expired}><div class="christmas-sale-top"><div class="christmas-sale-heading"><p class="eyebrow">Next sale</p><h2 class="editorial-heading">Friday 4th December</h2></div><img class="christmas-knit" src={withBase("/brand/christmas-jumper-fair-isle.svg")} width="500" height="470" alt="" aria-hidden="true" /></div><p class="section-copy">Christmas jumpers will be on sale alongside pre-loved uniform at the final sale of term.</p><p class="section-copy christmas-donations"><strong>Christmas jumpers wanted:</strong> in good condition, age 5 and up.</p><div class="sale-time">
+  <section class="content-section content-section--compact content-section--snug uniform-details"><div class="site-width split-layout split-layout--snug uniform-details-grid"><div class="christmas-sale" data-expires-at={expiresAt} hidden={expired}><div class="christmas-sale-top"><div class="christmas-sale-heading"><p class="eyebrow">Next sale</p><h2 class="editorial-heading">Friday 4th December</h2></div><img class="christmas-knit reveal-on-load" src={withBase("/brand/christmas-jumper-fair-isle.svg")} width="500" height="470" alt="" aria-hidden="true" decoding="async" /></div><p class="section-copy">Christmas jumpers will be on sale alongside pre-loved uniform at the final sale of term.</p><p class="section-copy christmas-donations"><strong>Christmas jumpers wanted:</strong> in good condition, age 5 and up.</p><div class="sale-time">
     <svg class="sale-time-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
     <div><h3 class="sale-time-title">Sales start at <strong>15:25</strong></h3><p>In the school playground, weather permitting.</p></div>
   </div></div><div class="uniform-everyday" data-show-from={expiresAt} hidden={!expired}><p class="eyebrow">Pre-loved uniform</p><h2 class="editorial-heading">Uniform between sales</h2><p class="section-copy">Use the email or reservation form below to ask about uniform. We will share the next sale date when it is confirmed.</p></div><article class="info-card"><h2>Uniform prices and donations</h2><ul class="price-list"><li><span>New-logo items and coats</span><strong class="price-tag">£3 each</strong></li><li><span>All other items</span><strong class="price-tag">£1 each</strong></li></ul><p class="price-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg>Card payments only</p><p class="donation-note">If you have any uniform which you would like to donate, please drop it in the green bins by the School Office - no torn items please!</p></article></div><div class="site-width uniform-cta"><a class="button button--primary button--large uniform-action" href="mailto:foapreloveduniform@gmail.com?subject=I%20would%20like%20to%20buy%20some...&amp;body=Please%20include%20sizes%20and%20quantities%20of%20each%20item%21"><span class="cta-label">Email the Preloved <span class="cta-word">tea<span class="cta-tail">m<svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></span></span></span></a>
@@ -110,8 +110,15 @@ const normalDescription = "Find pre-loved uniform from The Friends of Ashley, pl
       flex-wrap: wrap;
     }
     .uniform-cta .uniform-action {
-      flex: 1 1 auto;
+      /* Equal-width pair: a content-based flex-basis let the two CTAs differ
+         (594 vs 590px), and the global mailto padding (1.3em lane reserve)
+         is wider than the external-link one (1.05em), so normalize both.
+         The [href] selector out-specifies the global !important lane rules. */
+      flex: 1 1 0;
       min-width: 0;
+    }
+    .uniform-cta a.uniform-action[href] {
+      padding-inline: calc(1.3em + 1.8rem) !important;
     }
   }
 
