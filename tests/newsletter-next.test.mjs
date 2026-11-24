@@ -26,3 +26,7 @@ test('next newsletter shows a forward arrow on same-site links only; other newsl
  const rest=html.slice(html.indexOf('</template>'));
  assert.ok(!rest.includes('data-cta-arrow="forward"'),'only the next sheet gets same-site arrows');
 });
+test('next newsletter states the sale prices: coats and new-logo £3, jumpers £2, everything else £1',async()=>{
+ const copy=JSON.stringify(JSON.parse(await readFile('src/content/newsletter-next.json','utf8')));
+ assert.ok(copy.includes('Coats and new-logo items £3, Christmas jumpers £2, everything else £1, card only.'));
+});
