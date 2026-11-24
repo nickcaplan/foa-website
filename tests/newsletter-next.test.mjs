@@ -11,3 +11,9 @@ test('next newsletter is built hidden, kept out of the archive, homepage and sit
  const home=await readFile('dist/index.html','utf8');assert.ok(!home.includes('Christmas Fayre News'));
  const archive=html.slice(html.indexOf('Previous newsletters'));assert.ok(!archive.includes('Christmas Fayre News'));
 });
+test('next newsletter never shows a web address as link text',async()=>{
+ const next=JSON.parse(await readFile('src/content/newsletter-next.json','utf8'));
+ const texts=[...JSON.stringify(next).matchAll(/\[([^\]]+)\]\(/g)].map(m=>m[1]);
+ assert.ok(texts.length>10);
+ for(const t of texts.filter(x=>!x.includes("@")))assert.ok(!/www\.|https?:|\.org|\.com|\.co\.uk|\//i.test(t),t);
+});
