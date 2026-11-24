@@ -506,4 +506,24 @@ test.describe("Next newsletter Glitter Tree code", () => {
       expect(luminance(ink)).toBeLessThan(0.05);
     });
   }
+
+  test("Copy code keeps its width and height through Copied and reset at 200% text on a narrow phone", async ({ page, context, browserName }) => {
+    test.skip(browserName !== "chromium", "clipboard permissions are Chromium-only here");
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto("/newsletter/?next");
+    await page.addStyleTag({ content: "html { font-size: 32px !important; }" });
+    const button = page.locator("#newsletter-next-issue [data-newsletter-copy-code]");
+    await expect(button).toBeVisible();
+    const size = async () => button.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return [Math.round(box.width), Math.round(box.height)];
+    });
+    const resting = await size();
+    await button.click();
+    await expect(button).toContainText("Copied");
+    expect(await size()).toEqual(resting);
+    await expect(button).toContainText("Copy code", { timeout: 6000 });
+    expect(await size()).toEqual(resting);
+  });
 });

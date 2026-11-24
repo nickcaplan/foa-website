@@ -112,9 +112,12 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
     if (!button || !labelText || !feedback) return;
     const text = button.dataset.newsletterCopyCode ?? "";
     window.clearTimeout(copyReset);
-    // Hold the button at its resting width so Copied and Failed never resize it.
-    button.style.minWidth = `${button.getBoundingClientRect().width}px`;
-    const reset = () => { labelText.nodeValue = "Copy\u00A0code"; feedback.textContent = ""; button.style.minWidth = ""; };
+    // Hold the button at its resting size so Copied and Failed never resize it,
+    // even when enlarged text wraps "Copy code" onto two lines.
+    const resting = button.getBoundingClientRect();
+    button.style.minWidth = `${resting.width}px`;
+    button.style.minHeight = `${resting.height}px`;
+    const reset = () => { labelText.nodeValue = "Copy\u00A0code"; feedback.textContent = ""; button.style.minWidth = ""; button.style.minHeight = ""; };
     try {
       if (!navigator.clipboard?.writeText) throw new Error("Copy was not available");
       await navigator.clipboard.writeText(text);
