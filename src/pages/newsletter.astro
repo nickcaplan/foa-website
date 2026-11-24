@@ -101,6 +101,32 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
 <script>
   // The next newsletter sits in an inert template unless the address ends in ?next. The
   // page is kept out of search results while it is showing.
+  // Copy button for the Glitter Tree code on the next newsletter. The sheet
+  // is added after load, so one delegated listener handles the click. The
+  // label flips in place (no layout shift) and a hidden live region announces it.
+  let copyReset: number | undefined;
+  document.addEventListener("click", async (event) => {
+    const button = (event.target as Element | null)?.closest<HTMLButtonElement>("[data-newsletter-copy-code]");
+    const labelText = button?.querySelector<HTMLElement>("[data-copy-label]")?.firstChild;
+    const feedback = button?.parentElement?.querySelector<HTMLElement>("[data-copy-feedback]");
+    if (!button || !labelText || !feedback) return;
+    const text = button.dataset.newsletterCopyCode ?? "";
+    window.clearTimeout(copyReset);
+    // Hold the button at its resting width so Copied and Failed never resize it.
+    button.style.minWidth = `${button.getBoundingClientRect().width}px`;
+    const reset = () => { labelText.nodeValue = "Copy\u00A0code"; feedback.textContent = ""; button.style.minWidth = ""; };
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Copy was not available");
+      await navigator.clipboard.writeText(text);
+      labelText.nodeValue = "Copied";
+      feedback.textContent = "Code copied to the clipboard.";
+      copyReset = window.setTimeout(reset, 4000);
+    } catch {
+      labelText.nodeValue = "Failed";
+      feedback.textContent = `Copy was not available. The code is ${text}.`;
+      copyReset = window.setTimeout(reset, 6000);
+    }
+  });
   const nextPreview = document.querySelector<HTMLTemplateElement>("template[data-newsletter-next]");
   if (nextPreview && new URLSearchParams(location.search).has("next")) {
     nextPreview.after(nextPreview.content.cloneNode(true));

@@ -3,16 +3,18 @@ import { renderInline } from "../lib/inline";
 import { withBase } from "../lib/urls";
 
 interface Props {
-  section: { title?: string; heading?: boolean; paragraphs?: string[]; list?: string[]; closing?: string[] };
+  section: { title?: string; heading?: boolean; paragraphs?: string[]; list?: string[]; closing?: string[]; copyCode?: string };
   lead?: boolean;
   internalArrows?: boolean;
 }
 const { section, lead = false, internalArrows = false } = Astro.props;
+const copyIcon = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 const inline = (value: string) => renderInline(value, withBase, { internalArrows });
 ---
 <section class:list={["newsletter-summary-section", { "newsletter-summary-section--heading": section.heading }]}>
   {section.title && <h3>{section.title}</h3>}
   {(section.paragraphs ?? []).map((paragraph, index) => <p class:list={{ "newsletter-intro": lead && index === 0 }} set:html={inline(paragraph)} />)}
   {section.list && <ul class="newsletter-list">{section.list.map((item) => <li set:html={inline(item)} />)}</ul>}
+  {section.copyCode && <p class="newsletter-copy-code"><button class="button button--secondary" type="button" data-newsletter-copy-code={section.copyCode}><span class="cta-label" data-copy-label>Copy&nbsp;code<span class="cta-icon" aria-hidden="true"><Fragment set:html={copyIcon} /></span></span><span class="visually-hidden"> {section.copyCode} to the clipboard</span></button><span class="visually-hidden" role="status" aria-live="polite" data-copy-feedback></span></p>}
   {section.closing?.map((line) => <p set:html={inline(line)} />)}
 </section>

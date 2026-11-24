@@ -460,3 +460,27 @@ test.describe("Next newsletter greeting", () => {
     }
   });
 });
+
+test.describe("Next newsletter Glitter Tree code", () => {
+  test("Copy code puts THEFRIENDSOFASHLEY on the clipboard and confirms in place", async ({ page, context, browserName }) => {
+    test.skip(browserName !== "chromium", "clipboard permissions are Chromium-only here");
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("/newsletter/");
+    await expect(page.locator("[data-newsletter-copy-code]")).toHaveCount(0);
+    await page.goto("/newsletter/?next");
+    const button = page.locator("#newsletter-next-issue [data-newsletter-copy-code]");
+    await expect(button).toBeVisible();
+    await expect(button).toContainText("Copy code");
+    const before = await button.boundingBox();
+    await button.click();
+    await expect(button).toContainText("Copied");
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("THEFRIENDSOFASHLEY");
+    // Move the pointer away so a hover effect does not change the measured box.
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(400);
+    const after = await button.boundingBox();
+    expect(Math.abs((after?.width ?? 0) - (before?.width ?? 1))).toBeLessThan(0.5);
+    expect(Math.abs((after?.height ?? 0) - (before?.height ?? 1))).toBeLessThan(0.5);
+    await expect(page.locator("#newsletter-next-issue [data-copy-feedback]")).toHaveText("Code copied to the clipboard.");
+  });
+});
