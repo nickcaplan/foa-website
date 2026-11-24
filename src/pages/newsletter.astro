@@ -31,7 +31,7 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
     <article class="newsletter-issue newsletter-sheet" id="newsletter-next-issue" tabindex="-1">
       <div class="newsletter-letterhead"><img class="reveal-on-load" src={withBase("/brand/foa-logo.svg")} alt="" width="44" height="44" decoding="async"><span>The Friends of Ashley</span><time class="newsletter-letterhead-date" datetime={nextDate.toISOString()}>{formatDateWithOrdinal(nextDate)}</time></div>
       <p class="newsletter-summary-label">{nextIssue.title}</p>
-      {nextIssue.sections.map((section, index) => <NewsletterSection section={section} lead={index === 0} />)}
+      {nextIssue.sections.map((section, index) => <NewsletterSection section={section} lead={index === 0} internalArrows />)}
       <NewsletterSignOff />
     </article>
   </section></div></section></template>

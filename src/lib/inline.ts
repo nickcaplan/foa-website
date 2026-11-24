@@ -3,14 +3,22 @@ import { MAIL_ICON_SVG } from "./icons.ts";
 const escapeHtml = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-export const renderInline = (value: string, internalHref: (path: string) => string = (path) => path) =>
+const FORWARD_ARROW = '<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></span>';
+
+export const renderInline = (value: string, internalHref: (path: string) => string = (path) => path, options: { internalArrows?: boolean } = {}) =>
   escapeHtml(value)
     .replace(/\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^)\s]+)\)/g, (_match, text: string, href: string) => {
       if (href.startsWith("http")) {
         try {
           const url = new URL(href);
           if (url.origin === "https://www.thefriendsofashley.org" && !url.username && !url.password) {
-            return `<a class="text-link" href="${internalHref(`${url.pathname}${url.search}${url.hash}`)}">${text}</a>`;
+            const href = internalHref(`${url.pathname}${url.search}${url.hash}`);
+            if (options.internalArrows && !text.includes("*")) {
+              // Same-site links get a forward arrow that stays with the final word.
+              const split = text.lastIndexOf(" ") + 1;
+              return `<a class="text-link" href="${href}">${text.slice(0, split)}<span class="cta-tail">${text.slice(split)}${FORWARD_ARROW}</span></a>`;
+            }
+            return `<a class="text-link" href="${href}">${text}</a>`;
           }
         } catch {
           // Keep malformed URLs as external links rather than failing the newsletter render.

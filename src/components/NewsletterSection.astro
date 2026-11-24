@@ -5,9 +5,10 @@ import { withBase } from "../lib/urls";
 interface Props {
   section: { title?: string; heading?: boolean; paragraphs?: string[]; list?: string[]; closing?: string[] };
   lead?: boolean;
+  internalArrows?: boolean;
 }
-const { section, lead = false } = Astro.props;
-const inline = (value: string) => renderInline(value, withBase);
+const { section, lead = false, internalArrows = false } = Astro.props;
+const inline = (value: string) => renderInline(value, withBase, { internalArrows });
 ---
 <section class:list={["newsletter-summary-section", { "newsletter-summary-section--heading": section.heading }]}>
   {section.title && <h3>{section.title}</h3>}
