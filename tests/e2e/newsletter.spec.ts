@@ -443,3 +443,20 @@ test.describe("Next newsletter preview", () => {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
   });
 });
+
+test.describe("Next newsletter greeting", () => {
+  test("Dear Parents is the same size as the body text", async ({ page }) => {
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/newsletter/?next");
+      const sheet = page.locator("#newsletter-next-issue");
+      const greeting = sheet.getByRole("heading", { name: "Dear Parents, Carers and Teachers," });
+      const body = sheet.locator(".newsletter-summary-section").first().locator("p").first();
+      const read = (locator: typeof greeting) => locator.evaluate((el) => { const s = getComputedStyle(el); return [s.fontSize, s.fontFamily, s.fontWeight]; });
+      expect(await read(greeting)).toEqual(await read(body));
+      // Other section headings stay larger.
+      const other = sheet.getByRole("heading", { name: "Christmas Fayre: Saturday 5th December, 12pm - 3pm" });
+      expect(await other.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThan(parseFloat((await read(body))[0]));
+    }
+  });
+});
