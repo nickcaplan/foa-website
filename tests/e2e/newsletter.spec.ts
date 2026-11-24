@@ -430,3 +430,100 @@ test.describe("Newsletter reading room", () => {
     }
   }
 });
+
+test.describe("Next newsletter preview", () => {
+  test("is absent by default and shows only with ?next", async ({ page }) => {
+    await page.goto("/newsletter/");
+    await expect(page.locator("#newsletter-next-issue")).toHaveCount(0);
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+    await page.goto("/newsletter/?next");
+    await expect(page.locator("#newsletter-next-issue")).toBeVisible();
+    await expect(page.locator("#newsletter-next-issue").getByRole("heading", { name: "Christmas Fayre Art Competition: entries in by Monday 30th November" })).toBeVisible();
+    await expect(page.locator("#newsletter-next-issue .newsletter-sign-off")).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
+  });
+});
+
+test.describe("Next newsletter greeting", () => {
+  test("Dear Parents is the same size as the body text", async ({ page }) => {
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/newsletter/?next");
+      const sheet = page.locator("#newsletter-next-issue");
+      const greeting = sheet.getByRole("heading", { name: "Dear Parents, Carers and Teachers," });
+      const body = sheet.locator(".newsletter-summary-section").first().locator("p").first();
+      const read = (locator: typeof greeting) => locator.evaluate((el) => { const s = getComputedStyle(el); return [s.fontSize, s.fontFamily, s.fontWeight]; });
+      expect(await read(greeting)).toEqual(await read(body));
+      // Other section headings stay larger.
+      const other = sheet.getByRole("heading", { name: "Christmas Fayre: Saturday 5th December, 12pm - 3pm" });
+      expect(await other.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThan(parseFloat((await read(body))[0]));
+    }
+  });
+});
+
+test.describe("Next newsletter Glitter Tree code", () => {
+  test("Copy code puts THEFRIENDSOFASHLEY on the clipboard and confirms in place", async ({ page, context, browserName }) => {
+    test.skip(browserName !== "chromium", "clipboard permissions are Chromium-only here");
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("/newsletter/");
+    await expect(page.locator("[data-newsletter-copy-code]")).toHaveCount(0);
+    await page.goto("/newsletter/?next");
+    const button = page.locator("#newsletter-next-issue [data-newsletter-copy-code]");
+    await expect(button).toBeVisible();
+    await expect(button).toContainText("Copy code");
+    const before = await button.boundingBox();
+    await button.click();
+    await expect(button).toContainText("Copied");
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("THEFRIENDSOFASHLEY");
+    // Move the pointer away so a hover effect does not change the measured box.
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(400);
+    const after = await button.boundingBox();
+    expect(Math.abs((after?.width ?? 0) - (before?.width ?? 1))).toBeLessThan(0.5);
+    expect(Math.abs((after?.height ?? 0) - (before?.height ?? 1))).toBeLessThan(0.5);
+    await expect(page.locator("#newsletter-next-issue [data-copy-feedback]")).toHaveText("Code copied to the clipboard.");
+  });
+
+  for (const scheme of ["light", "dark"] as const) {
+    test(`Copy code keeps dark ink on a light fill in ${scheme} colour scheme`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme: scheme });
+      await page.goto("/newsletter/?next");
+      const button = page.locator("#newsletter-next-issue [data-newsletter-copy-code]");
+      await expect(button).toBeVisible();
+      const [ink, fill] = await button.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return [style.color, style.backgroundColor];
+      });
+      const channels = (value: string) => (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+      const luminance = (value: string) => {
+        const [r, g, b] = channels(value).map((v) => {
+          const c = v / 255;
+          return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      expect(luminance(fill)).toBeGreaterThan(0.8);
+      expect(luminance(ink)).toBeLessThan(0.05);
+    });
+  }
+
+  test("Copy code keeps its width and height through Copied and reset at 200% text on a narrow phone", async ({ page, context, browserName }) => {
+    test.skip(browserName !== "chromium", "clipboard permissions are Chromium-only here");
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto("/newsletter/?next");
+    await page.addStyleTag({ content: "html { font-size: 32px !important; }" });
+    const button = page.locator("#newsletter-next-issue [data-newsletter-copy-code]");
+    await expect(button).toBeVisible();
+    const size = async () => button.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return [Math.round(box.width), Math.round(box.height)];
+    });
+    const resting = await size();
+    await button.click();
+    await expect(button).toContainText("Copied");
+    expect(await size()).toEqual(resting);
+    await expect(button).toContainText("Copy code", { timeout: 6000 });
+    expect(await size()).toEqual(resting);
+  });
+});

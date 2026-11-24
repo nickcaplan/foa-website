@@ -7,6 +7,7 @@ import NewsletterSection from "../components/NewsletterSection.astro";
 import NewsletterPeek from "../components/NewsletterPeek.astro";
 import NewsletterSignOff from "../components/NewsletterSignOff.astro";
 import { getCollection } from "astro:content";
+import nextIssue from "../content/newsletter-next.json";
 const newsletters = (await getCollection("newsletters"))
   .sort((a, b) => (b.data.published?.getTime() ?? 0) - (a.data.published?.getTime() ?? 0));
 const latestIssue = newsletters.find(({ data }) => data.latest);
@@ -21,10 +22,19 @@ const previous = newsletters.filter(({ id }) => id !== latestIssue.id);
 const formatDateWithOrdinal = ordinalDateFormatter({ weekday: "long", timeZone: "UTC" });
 if (!latest.published) throw new Error("Latest newsletter publication date is missing");
 const socialTitle = `${formatDateWithOrdinal(latest.published)} Newsletter | The Friends of Ashley`;
+const nextDate = new Date(nextIssue.scheduled);
 const issueName = latest.title.replace(/\s+News$/, "").trim();
 ---
 <BaseLayout title="Newsletter" description="The latest news from The Friends of Ashley and previous newsletters." socialTitle={socialTitle} socialDescription={latest.summary}>
   <PageHero eyebrow="The FOA updates" title={`${issueName} Newsletter`} intro="The latest news from the FOA." />
+  <template data-newsletter-next><section class="content-section content-section--compact newsletter-next"><div class="site-width newsletter-page"><section class="newsletter-section newsletter-board" aria-label="Next newsletter preview">
+    <article class="newsletter-issue newsletter-sheet" id="newsletter-next-issue" tabindex="-1">
+      <div class="newsletter-letterhead"><img class="reveal-on-load" src={withBase("/brand/foa-logo.svg")} alt="" width="44" height="44" decoding="async"><span>The Friends of Ashley</span><time class="newsletter-letterhead-date" datetime={nextDate.toISOString()}>{formatDateWithOrdinal(nextDate)}</time></div>
+      <p class="newsletter-summary-label">{nextIssue.title}</p>
+      {nextIssue.sections.map((section, index) => <NewsletterSection section={section} lead={index === 0} internalArrows />)}
+      <NewsletterSignOff />
+    </article>
+  </section></div></section></template>
   <section class="content-section content-section--compact content-section--desktop-snug newsletter-reader-container"><div class="site-width newsletter-page">
     <section class="newsletter-section newsletter-board newsletter-reading-board" aria-label="Newsletter reading board">
       <article class="newsletter-issue newsletter-sheet" id={`newsletter-issue-${latestIssue.id}`} tabindex="-1">
@@ -89,6 +99,45 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
 
 
 <script>
+  // The next newsletter sits in an inert template unless the address ends in ?next. The
+  // page is kept out of search results while it is showing.
+  // Copy button for the Glitter Tree code on the next newsletter. The sheet
+  // is added after load, so one delegated listener handles the click. The
+  // label flips in place (no layout shift) and a hidden live region announces it.
+  let copyReset: number | undefined;
+  document.addEventListener("click", async (event) => {
+    const button = (event.target as Element | null)?.closest<HTMLButtonElement>("[data-newsletter-copy-code]");
+    const labelText = button?.querySelector<HTMLElement>("[data-copy-label]")?.firstChild;
+    const feedback = button?.parentElement?.querySelector<HTMLElement>("[data-copy-feedback]");
+    if (!button || !labelText || !feedback) return;
+    const text = button.dataset.newsletterCopyCode ?? "";
+    window.clearTimeout(copyReset);
+    // Hold the button at its resting size so Copied and Failed never resize it,
+    // even when enlarged text wraps "Copy code" onto two lines.
+    const resting = button.getBoundingClientRect();
+    button.style.minWidth = `${resting.width}px`;
+    button.style.minHeight = `${resting.height}px`;
+    const reset = () => { labelText.nodeValue = "Copy\u00A0code"; feedback.textContent = ""; button.style.minWidth = ""; button.style.minHeight = ""; };
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Copy was not available");
+      await navigator.clipboard.writeText(text);
+      labelText.nodeValue = "Copied";
+      feedback.textContent = "Code copied to the clipboard.";
+      copyReset = window.setTimeout(reset, 4000);
+    } catch {
+      labelText.nodeValue = "Failed";
+      feedback.textContent = `Copy was not available. The code is ${text}.`;
+      copyReset = window.setTimeout(reset, 6000);
+    }
+  });
+  const nextPreview = document.querySelector<HTMLTemplateElement>("template[data-newsletter-next]");
+  if (nextPreview && new URLSearchParams(location.search).has("next")) {
+    nextPreview.after(nextPreview.content.cloneNode(true));
+    const robots = document.createElement("meta");
+    robots.name = "robots";
+    robots.content = "noindex";
+    document.head.append(robots);
+  }
   const layout = document.querySelector<HTMLElement>(".newsletter-reader-container")!;
   const reader = layout.querySelector<HTMLElement>(".newsletter-page")!;
   const board = reader.querySelector<HTMLElement>(".newsletter-reading-board")!;

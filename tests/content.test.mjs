@@ -108,7 +108,9 @@ test("the newsletter page presents the latest issue first and archives the rest"
 
 test("newsletter letterheads show just the publication date without an email label", async () => {
   const newsletters = await loadCollection("newsletters");
-  const html = await readFile(path.join(dist, "newsletter", "index.html"), "utf8");
+  const fullHtml = await readFile(path.join(dist, "newsletter", "index.html"), "utf8");
+  // The inert next-issue preview has its own letterhead; only published issues are counted here.
+  const html = fullHtml.replace(/<template data-newsletter-next>[\s\S]*?<\/template>/, "");
   const dates = [...html.matchAll(/<time class="newsletter-letterhead-date" datetime="([^"]+)">([^<]+)<\/time>/g)];
   assert.equal(dates.length, newsletters.length);
   const formatter = ordinalDateFormatter({ weekday: "long", timeZone: "UTC" });

@@ -1613,6 +1613,30 @@ svg.cta-icon {
   font-size: 1.25rem;
 }
 
+/* The newsletter paper stays cream in night mode, so its copy-code button
+   keeps dark ink on a light fill instead of taking the night surface colour
+   (dark green with dark text, Nick 24 Nov 2026). */
+:root .newsletter-sheet .newsletter-copy-code .button--secondary[data-newsletter-copy-code] {
+  border-color: rgba(25, 49, 39, 0.4);
+  color: #193127;
+  background: rgba(255, 253, 248, 0.7);
+}
+
+:root .newsletter-sheet .newsletter-copy-code .button--secondary[data-newsletter-copy-code]:hover {
+  border-color: #193127;
+  color: #193127;
+  background: #fffdf8;
+  box-shadow: 0 6px 14px rgba(25, 49, 39, 0.18);
+}
+
+:root .newsletter-sheet .newsletter-copy-code .button--secondary[data-newsletter-copy-code]:active {
+  border-color: #193127;
+  color: #193127;
+  background: #e8dfc4;
+  box-shadow: none;
+  transform: translateY(1px);
+}
+
 :has(> .newsletter-sheet) {
   isolation: isolate;
 }
@@ -1795,6 +1819,13 @@ svg.cta-icon {
 
 .newsletter-letterhead + .newsletter-summary-section h3 {
   margin-top: 0;
+}
+
+/* The next newsletter's opening greeting reads as body text (Nick, 24 Nov 2026). */
+#newsletter-next-issue .newsletter-summary-section:first-of-type h3 {
+  margin: 1.6rem 0 0;
+  color: var(--ink);
+  font: inherit;
 }
 
 .newsletter-sheet .newsletter-summary-section + .newsletter-summary-section {
