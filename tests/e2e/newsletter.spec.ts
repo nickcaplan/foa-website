@@ -483,4 +483,27 @@ test.describe("Next newsletter Glitter Tree code", () => {
     expect(Math.abs((after?.height ?? 0) - (before?.height ?? 1))).toBeLessThan(0.5);
     await expect(page.locator("#newsletter-next-issue [data-copy-feedback]")).toHaveText("Code copied to the clipboard.");
   });
+
+  for (const scheme of ["light", "dark"] as const) {
+    test(`Copy code keeps dark ink on a light fill in ${scheme} colour scheme`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme: scheme });
+      await page.goto("/newsletter/?next");
+      const button = page.locator("#newsletter-next-issue [data-newsletter-copy-code]");
+      await expect(button).toBeVisible();
+      const [ink, fill] = await button.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return [style.color, style.backgroundColor];
+      });
+      const channels = (value: string) => (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+      const luminance = (value: string) => {
+        const [r, g, b] = channels(value).map((v) => {
+          const c = v / 255;
+          return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      expect(luminance(fill)).toBeGreaterThan(0.8);
+      expect(luminance(ink)).toBeLessThan(0.05);
+    });
+  }
 });
