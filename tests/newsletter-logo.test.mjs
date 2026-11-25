@@ -15,7 +15,12 @@ test("the newsletter uses the standard site logo on desktop, mobile and in the m
     assert.ok(region);
     assert.match(region, /src="[^"]*\/brand\/foa-logo-ivory\.svg"/);
   }
-  assert.match(html, /property="og:image" content="[^"]*\/brand\/foa-logo-og\.png"/);
+  // Nick, 25 Nov 2026: the envelope logo returns for the Newsletter link preview only.
+  assert.match(html, /property="og:image" content="[^"]*\/brand\/foa-logo-newsletter-envelope-og\.png"/);
+  assert.match(html, /name="twitter:image" content="[^"]*\/brand\/foa-logo-newsletter-envelope-og\.png"/);
+  assert.match(html, /property="og:image:width" content="1200"/);
+  assert.match(html, /property="og:image:height" content="630"/);
+  assert.doesNotMatch(html, /<img[^>]+foa-logo-newsletter-envelope-og/);
   assert.match(html.match(/<footer\b[\s\S]*?<\/footer>/)?.[0] ?? "", /src="[^"]*\/brand\/foa-logo-ivory\.svg"/);
   const letterheads = html.match(/class="newsletter-letterhead"[^>]*>[\s\S]*?<\/div>/g);
   assert.ok(letterheads?.length);
@@ -42,4 +47,11 @@ test("the compact envelope fits within the circle's width without seams entering
   for (const [x, y] of [[Number(seams[1]), Number(seams[2])], [Number(seams[3]), Number(seams[4])]]) {
     assert.ok(Math.hypot(x - 275, y - 219) > 190, "The seam stops outside the round logo");
   }
+});
+
+test("the newsletter link preview card is a 1200 by 630 PNG of the envelope logo", async () => {
+  const image = await readFile(new URL("../dist/brand/foa-logo-newsletter-envelope-og.png", import.meta.url));
+  assert.equal(image.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+  assert.equal(image.readUInt32BE(16), 1200);
+  assert.equal(image.readUInt32BE(20), 630);
 });

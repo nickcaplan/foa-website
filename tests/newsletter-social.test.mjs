@@ -15,5 +15,5 @@ test('newsletter social metadata follows the configured latest issue',async()=>{
  const site=(process.env.SITE_URL||'https://www.thefriendsofashley.org').replace(/\/$/,'');
  const base=(process.env.BASE_PATH||'/').replace(/\/$/,'');
  assert.ok(html.includes(`<link rel="canonical" href="${site}${base}/newsletter/"`));
- assert.ok(html.includes(`<meta property="og:image" content="${site}${base}/brand/foa-logo-og.png"`));
+ assert.ok(html.includes(`<meta property="og:image" content="${site}${base}/brand/foa-logo-newsletter-envelope-og.png"`));
 });
