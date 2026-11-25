@@ -69,7 +69,7 @@ test("the homepage retains desktop branding and uses the shared inline mobile lo
     const main = visibleHtml.match(/<main\b[\s\S]*?<\/main>/)?.[0];
   assert.ok(main);
   assert.match(main, /class="homepage-mobile-identity"/);
-  assert.match(main, /<h1[^>]*>Christmas <em>Fayre<\/em><\/h1>/);
+  assert.match(main, /<h1[^>]*>Christmas <span class="hero-title-line">Fayre<\/span><\/h1>/);
   assert.doesNotMatch(main, /mobile-home-introduction|class="home-introduction"|Ashley C of E Primary School PTA/);
   assert.doesNotMatch(main, /Parent-led\. Child-focused\. All welcome\.|class="eyebrow">Parent-led/);
 });
