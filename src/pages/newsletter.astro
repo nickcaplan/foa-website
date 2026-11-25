@@ -25,7 +25,7 @@ const socialTitle = `${formatDateWithOrdinal(latest.published)} Newsletter | The
 const nextDate = new Date(nextIssue.scheduled);
 const issueName = latest.title.replace(/\s+News$/, "").trim();
 ---
-<BaseLayout title="Newsletter" description="The latest news from The Friends of Ashley and previous newsletters." socialTitle={socialTitle} socialDescription={latest.summary}>
+<BaseLayout title="Newsletter" description="The latest news from The Friends of Ashley and previous newsletters." socialTitle={socialTitle} socialDescription={latest.summary} image="/brand/foa-logo-newsletter-envelope-og.png" imageAlt="The Friends of Ashley logo resting on an open envelope with a heart." imageWidth={1200} imageHeight={630}>
   <PageHero eyebrow="The FOA updates" title={`${issueName} Newsletter`} intro="The latest news from the FOA." />
   <template data-newsletter-next><section class="content-section content-section--compact newsletter-next"><div class="site-width newsletter-page"><section class="newsletter-section newsletter-board" aria-label="Next newsletter preview">
     <article class="newsletter-issue newsletter-sheet" id="newsletter-next-issue" tabindex="-1">
