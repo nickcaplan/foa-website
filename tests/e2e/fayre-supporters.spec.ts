@@ -865,10 +865,6 @@ test("the Giardina card carries an ornate G monogram tile", async ({
   expect(Math.abs(t.copyGap - 9.6), "normal copy gap").toBeLessThanOrEqual(2);
   // Giardina now sits alone on the third row (Kinderzimmer, 25 Nov 2026).
   expect(t.mateH.length, "no row-mates on the last row").toBe(0);
-  for (const h of t.mateH)
-    expect(Math.abs(t.cardH - h), "equal outer card height").toBeLessThanOrEqual(2);
-  for (const b of t.mateCtaBottom)
-    expect(Math.abs(t.ctaBottom - b), "CTA bottom-aligned").toBeLessThanOrEqual(2);
 });
 
 // Nick (19 Nov 2026, 18:52, design agent 4-card spec): below 1100px each
@@ -1343,8 +1339,8 @@ test("partner CTAs share one width in the desktop row", async ({ page }) => {
     ),
   );
   expect(w.length).toBe(7);
-  // Two rows of three equal columns: every CTA spans its card's full
-  // internal width, so all six share one width.
+  // Three columns (3+3+1): every CTA spans its card's full internal
+  // width, so all seven share one width.
   for (let i = 1; i < 7; i++)
     expect(Math.abs(w[0] - w[i]), `card 0/${i} CTA width`).toBeLessThanOrEqual(2);
 });
