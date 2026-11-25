@@ -22,3 +22,8 @@ test("Sale date shares the jumper row rather than leaving a label-only row",asyn
  const html=await readFile("dist/uniform/index.html","utf8");
  assert.match(html, /class="christmas-sale-top"[^>]*>[\s\S]*class="christmas-sale-heading"[^>]*>[\s\S]*Next sale[\s\S]*Friday 4th December[\s\S]*class="christmas-knit[^"]*"/);
 });
+test('Christmas jumpers are priced at £2 on the uniform page, event summary and Reps Hub',async()=>{
+const page=await readFile('dist/uniform/index.html','utf8');assert.ok(page.includes('Christmas jumpers will be on sale for £2 each'));assert.match(page,/Christmas jumpers<\/span><strong class="price-tag"[^>]*>£2 each/);
+const ics=await readFile('dist/calendar/uniform-december-2026.ics','utf8');assert.ok(ics.includes('Christmas jumpers £2'));
+const reps=await readFile('dist/reps/index.html','utf8');assert.ok(reps.includes('Christmas jumpers £2'));
+});

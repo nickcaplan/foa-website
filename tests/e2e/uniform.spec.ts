@@ -67,7 +67,7 @@ for (const width of [320, 390, 554, 768, 1023, 1024, 1200, 1440]) {
       }
       expect(Math.abs(heights[0] - heights[1])).toBeLessThan(1);
 
-      const prices = await page.locator(".price-list li").evaluateAll((rows) => rows.map((row) => {
+      const prices = await page.locator(".price-list li").evaluateAll((rows) => rows.filter((row) => !(row as HTMLElement).hidden).map((row) => {
         const label = row.querySelector("span")!.getBoundingClientRect();
         const price = row.querySelector("strong")!.getBoundingClientRect();
         const bounds = row.getBoundingClientRect();
@@ -78,10 +78,11 @@ for (const width of [320, 390, 554, 768, 1023, 1024, 1200, 1440]) {
           labelRight: label.right,
         };
       }));
-      expect(prices).toHaveLength(2);
-      expect(prices[0].stacked).toBe(prices[1].stacked);
-      expect(Math.abs(prices[0].priceRight - prices[1].priceRight)).toBeLessThan(1);
+      // Coats, jumpers (until the December sale ends) and everything else.
+      expect(prices.length).toBeGreaterThanOrEqual(2);
       for (const price of prices) {
+        expect(price.stacked).toBe(prices[0].stacked);
+        expect(Math.abs(price.priceRight - prices[0].priceRight)).toBeLessThan(1);
         expect(price.priceRight).toBeLessThanOrEqual(price.rowRight + 1);
         expect(price.labelRight).toBeLessThanOrEqual(price.rowRight + 1);
       }
