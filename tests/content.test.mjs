@@ -166,7 +166,7 @@ test("newsletter expansion offers an inert faded peek and a clear primary action
   }
   const buttons = [...html.matchAll(/<button class="button button--primary newsletter-read-more"[^>]*>([\s\S]*?)<\/button>/g)];
   assert.equal(buttons.length, expandableCount);
-  assert.ok(buttons.every(([, content]) => content.includes("Read the full newsletter")));
+  assert.ok(buttons.every(([, content]) => content.replace(/<[^>]+>/g, "").includes("Read the full newsletter")));
   const latestPeek = html.slice(html.indexOf('class="newsletter-peek"'), html.indexOf('id="newsletter-latest-more"'));
   assert.ok(latestPeek.includes("Pre-loved Uniform"));
   assert.ok(latestPeek.includes("wherever you are"), "the fade continues into the following section rather than leaving blank space");

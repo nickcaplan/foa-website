@@ -535,3 +535,45 @@ test.describe("Latest newsletter Glitter Tree code", () => {
     expect(await size()).toEqual(resting);
   });
 });
+
+test.describe("Read the full newsletter button stays put", () => {
+  for (const [width, enlarged] of [[320, false], [390, true], [1024, false], [1440, false]] as const) {
+    test(`keeps its size and left edge when it flips to Show less at ${width}px${enlarged ? ", 200% text" : ""}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/newsletter/");
+      if (enlarged) await page.addStyleTag({ content: "html { font-size: 32px !important; }" });
+      const button = page.locator(".newsletter-reading-board .newsletter-read-more").first();
+      const box = () => button.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return [rect.left, rect.width, rect.height].map((value) => Math.round(value * 2) / 2);
+      });
+      const closed = await box();
+      await button.click();
+      await expect(button).toHaveAttribute("aria-expanded", "true");
+      await page.waitForTimeout(600);
+      expect(await box()).toEqual(closed);
+      await expect(button).toContainText("Show less");
+      const strandedGap = await button.evaluate((element) => {
+        const label = element.querySelector<HTMLElement>("[data-label-open]")!;
+        const icon = label.querySelector<HTMLElement>(".cta-icon")!;
+        const range = document.createRange();
+        range.selectNodeContents(label.firstChild!);
+        const word = range.getBoundingClientRect();
+        return Math.abs(icon.getBoundingClientRect().top - word.top);
+      });
+      expect(strandedGap, "the arrow stays on the same line as the label").toBeLessThan(16);
+      await button.click();
+      await expect(button).toHaveAttribute("aria-expanded", "false");
+      await page.waitForTimeout(600);
+      expect(await box()).toEqual(closed);
+    });
+  }
+
+  test("only the current label is read out", async ({ page }) => {
+    await page.goto("/newsletter/");
+    await expect(page.getByRole("button", { name: "Read the full newsletter" }).first()).toBeVisible();
+    await page.locator(".newsletter-reading-board .newsletter-read-more").first().click();
+    await expect(page.getByRole("button", { name: "Show less" }).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: /Read the full newsletter.*Show less|Show less.*Read the full newsletter/ })).toHaveCount(0);
+  });
+});
