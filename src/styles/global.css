@@ -1899,8 +1899,27 @@ svg.cta-icon {
   font-family: var(--font-body);
 }
 
-.newsletter-read-more [data-label] {
+/* Both labels share one grid cell, so the button keeps the same size and position
+   when it flips between Read the full newsletter and Show less. The inactive label is
+   hidden but still takes up its space. */
+.newsletter-read-more__labels {
+  display: inline-grid;
   min-width: 0;
+}
+
+.newsletter-read-more__labels > span {
+  grid-area: 1 / 1;
+}
+
+.newsletter-read-more[aria-expanded="false"] [data-label-open],
+.newsletter-read-more[aria-expanded="true"] [data-label-closed] {
+  visibility: hidden;
+}
+
+.newsletter-read-more [data-icon] {
+  display: inline-block;
+  min-width: 1ch;
+  text-align: center;
 }
 
 .newsletter-more[hidden] {

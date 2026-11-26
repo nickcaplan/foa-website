@@ -49,7 +49,7 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
           </div>
           <div class="newsletter-expansion-actions">
             <button class="button button--primary newsletter-read-more" type="button" aria-expanded="false" aria-controls={latestBodyId}>
-              <span data-label>Read the full newsletter</span> <span aria-hidden="true" data-icon>&darr;</span>
+              <span class="newsletter-read-more__labels"><span data-label-closed>Read the full newsletter</span><span data-label-open>Show less</span></span> <span aria-hidden="true" data-icon>&darr;</span>
             </button>
           </div>
         </>}
@@ -75,7 +75,7 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
             </div>
             <div class="newsletter-expansion-actions">
               <button class="button button--primary newsletter-read-more" type="button" aria-expanded="false" aria-controls={bodyId}>
-                <span data-label>Read the full newsletter</span> <span aria-hidden="true" data-icon>&darr;</span>
+                <span class="newsletter-read-more__labels"><span data-label-closed>Read the full newsletter</span><span data-label-open>Show less</span></span> <span aria-hidden="true" data-icon>&darr;</span>
               </button>
             </div>
           </>}
@@ -233,7 +233,6 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
       const expand = button.getAttribute("aria-expanded") !== "true";
       const anchorTop = button.getBoundingClientRect().top;
       button.setAttribute("aria-expanded", String(expand));
-      button.querySelector("[data-label]")!.textContent = expand ? "Show less" : "Read the full newsletter";
       button.querySelector("[data-icon]")!.innerHTML = expand ? "&uarr;" : "&darr;";
 
       animation?.cancel();
