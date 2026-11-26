@@ -14,6 +14,8 @@ for (const width of [320, 390, 1440]) {
         for (const cta of document.querySelectorAll<HTMLElement>("a.button, button.button")) {
           const box = cta.getBoundingClientRect();
           if (box.width === 0) continue; // whole CTA hidden (e.g. closed menu) - nothing to lane
+          // A fully booked volunteer card hides its action (visibility:hidden) and shows a note instead.
+          if (window.getComputedStyle(cta).visibility === "hidden") continue;
           const icons = [...cta.querySelectorAll<HTMLElement>(".cta-icon, .external-link-icon")];
           if (icons.length === 0) continue;
           const name = cta.textContent?.trim().replace(/\s+/g, " ").slice(0, 40);
