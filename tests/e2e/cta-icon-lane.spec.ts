@@ -22,6 +22,8 @@ for (const width of [320, 390, 1440]) {
           for (const icon of icons) {
             const ib = icon.getBoundingClientRect();
             const style = window.getComputedStyle(icon);
+            // The read-more button keeps both labels in one cell; the inactive label (and its icon) is visibility:hidden by design.
+            if (style.visibility === "hidden" && icon.closest("[data-label-open], [data-label-closed]")) continue;
             if (ib.width === 0 || style.visibility === "hidden" || style.display === "none") {
               found.push(`${name}: trailing icon is not rendered (display/visibility/size), so the lane cannot be checked`);
               continue;
