@@ -1,32 +1,33 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';
-test('next newsletter is built hidden, kept out of the archive, homepage and sitemap',async()=>{
- const next=JSON.parse(await readFile('src/content/newsletter-next.json','utf8'));
- assert.equal(next.scheduled,'2026-11-27');
- const copy=JSON.stringify(next);
- for(const required of ['Walton Heathside','THEFRIENDSOFASHLEY','Art Competition','Summer Fete'])assert.ok(copy.includes(required),required);
- for(const excluded of ['Hi Jennie','jratcliff@','foacommsteam','Bcc'])assert.ok(!copy.includes(excluded),excluded);
+const load=async()=>JSON.parse(await readFile('src/content/newsletters/christmas-fayre-2026.json','utf8'));
+test('27 November newsletter is the latest issue and the 13 November issue moves to the archive',async()=>{
+ const issue=await load();
+ assert.equal(issue.published,'2026-11-27');assert.equal(issue.latest,true);
+ const copy=JSON.stringify(issue);
+ for(const required of ['Walton Heathside','THEFRIENDSOFASHLEY','Art Competition','Summer Fete','age 5 and up'])assert.ok(copy.includes(required),required);
+ for(const excluded of ['Hi Jennie','jratcliff@','foacommsteam','Bcc','XXX','£XXXX'])assert.ok(!copy.includes(excluded),excluded);
+ const nov=JSON.parse(await readFile('src/content/newsletters/november-2026.json','utf8'));assert.equal(nov.latest,false);
  const html=await readFile('dist/newsletter/index.html','utf8');
- assert.match(html,/<template data-newsletter-next>/);
- assert.ok(!html.includes('<meta name="robots"'),'noindex is only added when the preview shows');
- const home=await readFile('dist/index.html','utf8');assert.ok(!home.includes('Christmas Fayre News'));
- const archive=html.slice(html.indexOf('Previous newsletters'));assert.ok(!archive.includes('Christmas Fayre News'));
+ assert.ok(!html.includes('<template data-newsletter-next>'));
+ assert.ok(html.includes('Friday 27th November'));
+ const archive=html.slice(html.indexOf('Previous newsletters'),html.indexOf('<aside class="newsletter-issue-index"'));
+ assert.ok(archive.includes('November News'));assert.ok(!archive.includes('Christmas Fayre News'));
 });
-test('next newsletter never shows a web address as link text',async()=>{
- const next=JSON.parse(await readFile('src/content/newsletter-next.json','utf8'));
- const texts=[...JSON.stringify(next).matchAll(/\[([^\]]+)\]\(/g)].map(m=>m[1]);
+test('27 November newsletter never shows a web address as link text',async()=>{
+ const texts=[...JSON.stringify(await load()).matchAll(/\[([^\]]+)\]\(/g)].map(m=>m[1]);
  assert.ok(texts.length>10);
  for(const t of texts.filter(x=>!x.includes("@")))assert.ok(!/www\.|https?:|\.org|\.com|\.co\.uk|\//i.test(t),t);
 });
-test('next newsletter shows a forward arrow on same-site links only; other newsletters are unchanged',async()=>{
+test('latest newsletter shows a forward arrow on same-site links only; archived issues are unchanged',async()=>{
  const html=await readFile('dist/newsletter/index.html','utf8');
- const tpl=html.slice(html.indexOf('<template data-newsletter-next>'),html.indexOf('</template>'));
- const internal=[...tpl.matchAll(/<a class="text-link" href="\/[^"]*">(.*?)<\/a>/g)];
+ const split=html.indexOf('Previous newsletters');
+ const latest=html.slice(0,split),rest=html.slice(split);
+ const internal=[...latest.matchAll(/<a class="text-link" href="\/[^"]*">(.*?)<\/a>/g)];
  assert.ok(internal.length>=6,'expected the six same-site links');
  for(const [,inner] of internal)assert.ok(/<span class="cta-tail">[^<]+<span class="cta-icon" aria-hidden="true"><svg data-cta-arrow="forward"/.test(inner),inner);
- const rest=html.slice(html.indexOf('</template>'));
- assert.ok(!rest.includes('data-cta-arrow="forward"'),'only the next sheet gets same-site arrows');
+ assert.ok(!rest.includes('data-cta-arrow="forward"'),'only the latest sheet gets same-site arrows');
 });
-test('next newsletter states the sale prices: coats and new-logo £3, jumpers £2, everything else £1',async()=>{
- const copy=JSON.stringify(JSON.parse(await readFile('src/content/newsletter-next.json','utf8')));
+test('27 November newsletter states the sale prices: coats and new-logo £3, jumpers £2, everything else £1',async()=>{
+ const copy=JSON.stringify(await load());
  assert.ok(copy.includes('Coats and new-logo items £3, Christmas jumpers £2, everything else £1, card only.'));
 });
