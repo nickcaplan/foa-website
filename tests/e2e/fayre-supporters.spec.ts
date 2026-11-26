@@ -36,6 +36,7 @@ test("Martin Flashman and Co leads the page, before Ottershaw and The Glitter Tr
     .allTextContents();
   expect(headings).toEqual([
     "Martin Flashman and Co",
+    "Kinderzimmer",
     "Ottershaw Christmas Tree Farm",
     "The Glitter Tree",
     "Galeta",
@@ -738,8 +739,8 @@ test("desktop partner rows keep the compact structure with aligned CTAs", async 
       };
     }),
   );
-  expect(m.length).toBe(6);
-  for (const [rowIdx, row] of [m.slice(0, 3), m.slice(3, 6)].entries()) {
+  expect(m.length).toBe(7);
+  for (const [rowIdx, row] of [m.slice(0, 3), m.slice(3, 6), m.slice(6, 7)].entries()) {
     for (const [i, c] of row.entries()) {
       const label = `1440px row ${rowIdx} card ${i}`;
       expect(Math.abs(c.titleTop), `${label}: title at the top padding`).toBeLessThanOrEqual(2);
@@ -763,8 +764,8 @@ test("desktop partner rows keep the compact structure with aligned CTAs", async 
       return { top: c.top, widthRatio: c.width / row.width };
     });
   });
-  expect(rows.length).toBe(6);
-  for (let i = 0; i < 6; i++) {
+  expect(rows.length).toBe(7);
+  for (let i = 0; i < 7; i++) {
     expect(rows[i].widthRatio, `768px card ${i}: full-width row`).toBeGreaterThan(0.98);
     if (i > 0)
       expect(rows[i].top, `768px card ${i}: own row`).toBeGreaterThan(rows[i - 1].top + 5);
@@ -862,11 +863,8 @@ test("the Giardina card carries an ornate G monogram tile", async ({
   expect(t.titleSize, "card keeps the desktop title size").toBe("24px");
   expect(Math.abs(t.h3TopVsPad), "heading at the top padding").toBeLessThanOrEqual(2);
   expect(Math.abs(t.copyGap - 9.6), "normal copy gap").toBeLessThanOrEqual(2);
-  expect(t.mateH.length, "two row-mates").toBe(2);
-  for (const h of t.mateH)
-    expect(Math.abs(t.cardH - h), "equal outer card height").toBeLessThanOrEqual(2);
-  for (const b of t.mateCtaBottom)
-    expect(Math.abs(t.ctaBottom - b), "CTA bottom-aligned").toBeLessThanOrEqual(2);
+  // Giardina now sits alone on the third row (Kinderzimmer, 25 Nov 2026).
+  expect(t.mateH.length, "no row-mates on the last row").toBe(0);
 });
 
 // Nick (19 Nov 2026, 18:52, design agent 4-card spec): below 1100px each
@@ -976,8 +974,8 @@ test("the three-column switch sits exactly at 1152px", async ({ page }) => {
       return new Set(tops).size;
     });
   };
-  expect(await cols(1151), "1151px: single column").toBe(6);
-  expect(await cols(1152), "1152px: two rows of three columns").toBe(2);
+  expect(await cols(1151), "1151px: single column").toBe(7);
+  expect(await cols(1152), "1152px: three rows, three columns across").toBe(3);
 });
 
 // Nick (19 Nov 2026, after #210 shipped): bigger card titles on desktop. The
@@ -996,18 +994,18 @@ test("card titles are bigger only in the desktop three-column row", async ({
       ),
     );
   await page.setViewportSize({ width: 1440, height: 900 });
-  expect(await sizes(), "1440px desktop row").toEqual(Array(6).fill(24));
+  expect(await sizes(), "1440px desktop row").toEqual(Array(7).fill(24));
   await page.setViewportSize({ width: 1152, height: 900 });
-  expect(await sizes(), "1152px switch: already the desktop row").toEqual(Array(6).fill(24));
+  expect(await sizes(), "1152px switch: already the desktop row").toEqual(Array(7).fill(24));
   await page.setViewportSize({ width: 1151, height: 900 });
-  expect(await sizes(), "1151px single column").toEqual(Array(6).fill(20));
+  expect(await sizes(), "1151px single column").toEqual(Array(7).fill(20));
   await page.setViewportSize({ width: 390, height: 900 });
-  expect(await sizes(), "390px phone").toEqual(Array(6).fill(20));
+  expect(await sizes(), "390px phone").toEqual(Array(7).fill(20));
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.evaluate(
     () => (document.documentElement.style.fontSize = "32px"),
   );
-  expect(await sizes(), "1440px at 200% text stays compact-spec").toEqual(Array(6).fill(40));
+  expect(await sizes(), "1440px at 200% text stays compact-spec").toEqual(Array(7).fill(40));
 });
 
 // Design re-review of 96024ee (19 Nov 2026, round 7): the page shared the
@@ -1049,14 +1047,15 @@ test("the hero shows the sponsor mark row below the subtitle, non-interactive", 
   await expect(row).toHaveCount(1);
   await expect(row).toHaveAttribute("aria-hidden", "true");
   const imgs = row.locator("img");
-  await expect(imgs).toHaveCount(6);
+  await expect(imgs).toHaveCount(7);
   for (const img of await imgs.all()) await expect(img).toHaveAttribute("alt", "");
   await expect(imgs.nth(0)).toHaveAttribute("src", /martin-flashman\.png/);
-  await expect(imgs.nth(1)).toHaveAttribute("src", /ottershaw/);
-  await expect(imgs.nth(2)).toHaveAttribute("src", /glitter-tree/);
-  await expect(imgs.nth(3)).toHaveAttribute("src", /galeta\.svg/);
-  await expect(imgs.nth(4)).toHaveAttribute("src", /w3-colour\.svg/);
-  await expect(imgs.nth(5)).toHaveAttribute("src", /moores-tree-company\.jpg/);
+  await expect(imgs.nth(1)).toHaveAttribute("src", /kinderzimmer-mark\.svg/);
+  await expect(imgs.nth(2)).toHaveAttribute("src", /ottershaw/);
+  await expect(imgs.nth(3)).toHaveAttribute("src", /glitter-tree/);
+  await expect(imgs.nth(4)).toHaveAttribute("src", /galeta\.svg/);
+  await expect(imgs.nth(5)).toHaveAttribute("src", /w3-colour\.svg/);
+  await expect(imgs.nth(6)).toHaveAttribute("src", /moores-tree-company\.jpg/);
   // No text mark for Giardina anywhere in the hero.
   await expect(row.locator(".narnia-landscape__supporters-word")).toHaveCount(0);
   // Nothing in the row is a link or otherwise interactive.
@@ -1068,12 +1067,12 @@ test("the hero shows the sponsor mark row below the subtitle, non-interactive", 
     return intro.nextElementSibling === row;
   });
   expect(order).toBe(true);
-  // The five partner marks share one wrapper.
+  // The six partner marks share one wrapper.
   const shared = await page.evaluate(() => {
     const partners = document.querySelector(
       ".narnia-landscape__supporters-partners",
     )!;
-    return partners.querySelectorAll("img").length === 5;
+    return partners.querySelectorAll("img").length === 6;
   });
   expect(shared).toBe(true);
 });
@@ -1090,10 +1089,10 @@ test("the hero shows the sponsor mark row below the subtitle, non-interactive", 
 // mark (Nick, 22:32: logo marks only). Fails on any size drift.
 test("the hero sponsor row matches the six-mark sizes", async ({ page }) => {
   const tiers = [
-    { w: 320, lead: 152, side: [24, 34], tile: 34, galeta: [68, 34], gap: 12, lines: 2 },
-    { w: 390, lead: 176, side: [28, 40], tile: 40, galeta: [80, 40], gap: 20, lines: 2 },
-    { w: 768, lead: 200, side: [34, 48], tile: 48, galeta: [88, 48], gap: 24, lines: 1 },
-    { w: 1440, lead: 224, side: [34, 48], tile: 48, galeta: [96, 48], gap: 24, lines: 1 },
+    { w: 320, lead: 152, side: [22, 32], tile: 32, galeta: [62, 32], gap: 8, lines: 2 },
+    { w: 390, lead: 176, side: [27, 38], tile: 38, galeta: [76, 38], gap: 10, lines: 2 },
+    { w: 768, lead: 200, side: [34, 48], tile: 48, galeta: [88, 48], gap: 12, lines: 1 },
+    { w: 1440, lead: 224, side: [34, 48], tile: 48, galeta: [96, 48], gap: 12, lines: 1 },
   ];
   for (const t of tiers) {
     await page.setViewportSize({ width: t.w, height: 900 });
@@ -1106,7 +1105,7 @@ test("the hero sponsor row matches the six-mark sizes", async ({ page }) => {
       const imgs = [
         ...row.querySelectorAll(".narnia-landscape__supporters-partners img"),
       ].map((i) => i.getBoundingClientRect());
-      const [otter, glitter, galeta, w3, moores] = imgs;
+      const [kinder, otter, glitter, galeta, w3, moores] = imgs;
       const gaps = [];
       for (let k = 0; k + 1 < imgs.length; k++) {
         if (Math.abs(imgs[k].top - imgs[k + 1].top) < 2)
@@ -1121,15 +1120,16 @@ test("the hero sponsor row matches the six-mark sizes", async ({ page }) => {
           borderColor: leadStyle.borderTopColor,
           top: lead.top, bottom: lead.bottom,
         },
+        kinder: [kinder.width, kinder.height],
         otter: [otter.width, otter.height],
         glitter: [glitter.width, glitter.height],
         galeta: [galeta.width, galeta.height],
         w3: [w3.width, w3.height],
         moores: [moores.width, moores.height],
-        partnerTop: otter.top,
+        partnerTop: kinder.top,
         partnerTops: imgs.map((r) => r.top),
         gaps,
-        lineGap: otter.top - lead.bottom,
+        lineGap: kinder.top - lead.bottom,
         tileBgs: [
           ...row.querySelectorAll(".narnia-landscape__supporters-tile"),
         ].map((i) => getComputedStyle(i).backgroundColor),
@@ -1145,7 +1145,7 @@ test("the hero sponsor row matches the six-mark sizes", async ({ page }) => {
     expect(m.lead.borderColor).toBe("rgb(201, 166, 95)");
     expect(Math.abs(m.otter[0] - t.side[0]), `${t.w}px otter width`).toBeLessThanOrEqual(1);
     expect(Math.abs(m.otter[1] - t.side[1]), `${t.w}px otter height`).toBeLessThanOrEqual(1);
-    for (const [name, g] of [["glitter", m.glitter], ["w3", m.w3], ["moores", m.moores]] as const) {
+    for (const [name, g] of [["kinderzimmer", m.kinder], ["glitter", m.glitter], ["w3", m.w3], ["moores", m.moores]] as const) {
       expect(Math.abs(g[0] - t.tile), `${t.w}px ${name} tile width`).toBeLessThanOrEqual(1);
       expect(Math.abs(g[1] - t.tile), `${t.w}px ${name} tile height`).toBeLessThanOrEqual(1);
     }
@@ -1158,7 +1158,7 @@ test("the hero sponsor row matches the six-mark sizes", async ({ page }) => {
       expect(m.partnerTop, `${t.w}px: partner group wraps under Martin`).toBeGreaterThan(m.lead.bottom + 5);
       expect(Math.abs(m.lineGap - 8), `${t.w}px: 8px between the two lines`).toBeLessThanOrEqual(2);
     } else {
-      expect(m.gaps.length, `${t.w}px: partners share one line`).toBe(4);
+      expect(m.gaps.length, `${t.w}px: partners share one line`).toBe(5);
       for (const g of m.gaps)
         expect(Math.abs(g - t.gap), `${t.w}px partner gap`).toBeLessThanOrEqual(1);
       const leadMid = (m.lead.top + m.lead.bottom) / 2;
@@ -1258,15 +1258,15 @@ test("the hero marks never overflow and stay inside the hero", async ({
         expect(m.partnerTop, `${label}: partner group drops under Martin`).toBeGreaterThan(m.leadBottom + 5);
         expect(Math.abs(m.lineGap - 8), `${label}: 8px between the lines`).toBeLessThanOrEqual(2);
         // Design agent final review (19 Nov 2026): enlarged text wraps the
-        // group an intentional 3+2 - Ottershaw/Glitter/Galeta, then
-        // W3/Moore's - never a 4+1 orphan line.
+        // group an intentional 3+3 (Kinderzimmer, 25 Nov 2026) - Kinderzimmer/Ottershaw/Glitter,
+        // then Galeta/W3/Moore's - never a 4+1 orphan line.
         const lines = new Map<number, number>();
         for (const p of m.parts) {
           const key = [...lines.keys()].find((k) => Math.abs(k - p.top) < 2);
           lines.set(key ?? p.top, (lines.get(key ?? p.top) ?? 0) + 1);
         }
         const counts = [...lines.entries()].sort((a, b) => a[0] - b[0]).map(([, n]) => n);
-        expect(counts, `${label}: intentional 3+2 wrap, no orphan`).toEqual([3, 2]);
+        expect(counts, `${label}: intentional 3+3 wrap, no orphan`).toEqual([3, 3]);
       }
     }
   }
@@ -1309,8 +1309,8 @@ test("enlarged text stacks the partner cards full-width with full-width CTAs", a
       };
     });
   });
-  expect(m.length).toBe(6);
-  for (let i = 0; i < 6; i++) {
+  expect(m.length).toBe(7);
+  for (let i = 0; i < 7; i++) {
     expect(m[i].widthRatio, `${m[i].name}: full-width row`).toBeGreaterThan(0.98);
     if (i > 0)
       expect(m[i].top, `${m[i].name}: own row`).toBeGreaterThan(m[i - 1].top + 5);
@@ -1338,10 +1338,10 @@ test("partner CTAs share one width in the desktop row", async ({ page }) => {
       (b) => b.getBoundingClientRect().width,
     ),
   );
-  expect(w.length).toBe(6);
-  // Two rows of three equal columns: every CTA spans its card's full
-  // internal width, so all six share one width.
-  for (let i = 1; i < 6; i++)
+  expect(w.length).toBe(7);
+  // Three columns (3+3+1): every CTA spans its card's full internal
+  // width, so all seven share one width.
+  for (let i = 1; i < 7; i++)
     expect(Math.abs(w[0] - w[i]), `card 0/${i} CTA width`).toBeLessThanOrEqual(2);
 });
 
@@ -1359,7 +1359,7 @@ test("partner CTAs share one height across the whole three-column range", async 
         (b) => b.getBoundingClientRect().height,
       ),
     );
-    expect(h.length, `CTA count at ${width}`).toBe(6);
+    expect(h.length, `CTA count at ${width}`).toBe(7);
     // Row-mates share one CTA height; rows are independent of each other.
     for (const row of [h.slice(0, 3), h.slice(3, 6)]) {
       expect(Math.abs(row[0] - row[1]), `CTA heights at ${width}`).toBeLessThanOrEqual(1);
@@ -1373,5 +1373,5 @@ test("partner CTAs share one height across the whole three-column range", async 
       (c) => Math.round(c.getBoundingClientRect().top),
     ),
   );
-  expect(new Set(tops).size, "partner cards stack below 1152px").toBe(6);
+  expect(new Set(tops).size, "partner cards stack below 1152px").toBe(7);
 });

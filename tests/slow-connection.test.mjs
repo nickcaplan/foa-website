@@ -64,18 +64,19 @@ test("supporter tiles and cards never paint as empty boxes", async () => {
   const hero = html.match(/narnia-landscape__supporters"[\s\S]*?<\/span>\s*<\/div>/)?.[0];
   assert.ok(hero, "hero supporters strip found");
   const heroImgs = [...hero.matchAll(/<img\b[^>]*>/g)].map((m) => m[0]);
-  assert.equal(heroImgs.length, 6, "six hero logos");
+  assert.equal(heroImgs.length, 7, "seven hero logos (Martin Flashman plus six partners)");
   for (const tag of heroImgs) {
     assert.match(tag, /class="[^"]*reveal-on-load/, `hero logo fades in: ${tag.slice(0, 80)}`);
   }
   const cards = [...html.matchAll(/<img\b[^>]*loading="lazy"[^>]*>/g)].map((m) => m[0]);
-  // Lead well, six card logos, the site footer logo and the lazy mobile menu logo.
+  // Lead well, seven card logos, the site footer logo and the lazy mobile menu logo.
   assert.deepEqual(cards.map((tag) => tag.match(/src="([^"]*)"/)?.[1]).sort(), [
     "/brand/foa-logo-christmas-ivory.svg",
     "/brand/foa-logo-christmas-ivory.svg",
     "/brand/glitter-tree.webp",
     "/sponsors/galeta.svg",
     "/sponsors/giardina-monogram.svg",
+    "/sponsors/kinderzimmer-mark.svg",
     "/sponsors/martin-flashman.png",
     "/sponsors/moores-tree-company.jpg",
     "/sponsors/ottershaw-christmas-tree-farm.png",

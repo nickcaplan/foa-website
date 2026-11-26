@@ -68,6 +68,9 @@
     .supporter-card__logo{grid-column:2;grid-row:1/3;display:flex;align-items:flex-start;justify-content:flex-end;height:auto}
     .supporter-card__logo img{max-width:100%;max-height:7rem;width:auto;height:auto;object-fit:contain;border-radius:.5rem}
     .supporter-card__logo--light img{background:#fff;padding:.4rem}
+    /* Ottershaw's mark is white line art on transparent: it sits on the same dark
+       well the Martin lead uses (#102d38), in the same tile box as the light tiles. */
+    .supporter-card__logo--dark img{background:#102d38;padding:.4rem;box-sizing:border-box;border:1px solid #b99a5b55}
     /* Galeta's dark-ink wordmark on a warm cream tile (#FFF6EB), width-capped
        so the wide mark does not fill the stacked card the way a tall logo
        fills its column. */
@@ -240,27 +243,29 @@
 .fayre-supporters-hero .narnia-landscape__supporters-lead{display:block;width:152px;height:auto;box-sizing:border-box;padding:6px 10px;border:1px solid #c9a65f;border-radius:6px;background:#fff3d514}
 /* Six marks on the smallest phones: the partner group must stay on one line
    under Martin inside the 262px content column at 320px, so the base tier
-   scales down (24x34, 34px tiles, 68x34 cream, 12px gaps) and steps back up
-   at 390px. Keeps the supporters hero inside the 10% sibling-height band. */
-.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:12px;row-gap:8px;max-width:min(100%,30rem)}
-.fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:24px;height:34px;object-fit:contain}
-.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:34px;height:34px}
+   scales down (22x32, 32px tiles, 62x32 cream, 8px gaps) and steps back up
+   at 390px (27x38, 38px tiles, 76x38 cream, 10px gaps). Keeps the supporters hero inside the 10% sibling-height band. */
+.fayre-supporters-hero .narnia-landscape__supporters-partners{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:8px;row-gap:8px;max-width:min(100%,30rem)}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img{display:block;width:22px;height:32px;object-fit:contain}
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{background:#fff;border-radius:4px;padding:3px;box-sizing:border-box;width:32px;height:32px}
 /* Galeta's own dark-ink wordmark (from the Home link on galeta.co.uk) sits on
    a warm cream tile (#FFF6EB, their fresh-dough) with Glitter's 4px radius -
-   near-black ink would vanish on the dark hero. Phone tile 68x34, logo 48
-   wide: 7px horizontal inset, vertical inset centres the 127:31 mark. */
-.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{background:#fff6eb;border-radius:4px;padding:10px 7px;box-sizing:border-box;width:68px;height:34px}
+   near-black ink would vanish on the dark hero. Phone tile 62x32, logo 48
+   wide: 6px horizontal inset, vertical inset centres the 127:31 mark. */
+.fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{background:#fff6eb;border-radius:4px;padding:9px 6px;box-sizing:border-box;width:62px;height:32px}
 @media(min-width:390px){
   .fayre-supporters-hero .narnia-landscape__supporters{column-gap:20px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners{column-gap:20px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:28px;height:40px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:40px;height:40px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:80px;height:40px;padding:12px 8px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{column-gap:10px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:27px;height:38px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:38px;height:38px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-cream{width:76px;height:38px;padding:11px 8px}
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:176px}
 }
 @media(min-width:768px){
-  .fayre-supporters-hero .narnia-landscape__supporters{column-gap:24px}
-  .fayre-supporters-hero .narnia-landscape__supporters-partners{column-gap:24px;row-gap:10px;max-width:none}
+  /* 12px gaps (24px before Kinderzimmer joined, 25 Nov 2026) keep Martin and
+     all six partners on one line in the 42rem copy column. */
+  .fayre-supporters-hero .narnia-landscape__supporters{column-gap:12px}
+  .fayre-supporters-hero .narnia-landscape__supporters-partners{column-gap:12px;row-gap:10px;max-width:none}
   .fayre-supporters-hero .narnia-landscape__supporters-lead{width:200px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img{width:34px;height:48px}
   .fayre-supporters-hero .narnia-landscape__supporters-partners img.narnia-landscape__supporters-tile{width:48px;height:48px}
@@ -274,17 +279,21 @@
    the px-fixed marks wrapped 4+1, orphaning Moore's on a third hero line.
    rem thresholds in container queries scale with the root font, so
    (max-width:13rem) matches only enlarged text at phone widths; the cap then
-   wraps the group an intentional 3+2 (Ottershaw/Glitter/Galeta, then
-   W3/Moore's), never one orphan, with Martin kept separate above. */
+   wraps the group an intentional 3+3 (Kinderzimmer/Ottershaw/Glitter, then
+   Galeta/W3/Moore's; was 3+2 before Kinderzimmer joined), never one orphan, with Martin kept separate above. */
 .fayre-supporters-hero .narnia-landscape__copy{container-type:inline-size;container-name:herocopy}
 @container herocopy (max-width:13rem){
   .fayre-supporters-hero .narnia-landscape__supporters-partners{max-width:160px}
 }
 @media(min-width:390px){
   @container herocopy (max-width:13rem){
-    .fayre-supporters-hero .narnia-landscape__supporters-partners{max-width:198px}
+    .fayre-supporters-hero .narnia-landscape__supporters-partners{max-width:202px}
   }
 }
+/* Kinderzimmer (25 Nov 2026) made it six partner marks. On phones the marks
+   are a touch smaller (32px tiles at 320, 38px from 390, 8-10px gaps) so all
+   six still share one line under Martin and the hero stays inside the 10%
+   band of its siblings. */
 /* Nick (19 Nov 2026, 18:52, design agent 4-mark spec): the supporters hero
    opts out of the shared +48px snow-bank clearance (christmas.css, via
    [data-supporters-hero]) - the sponsor mark row consumes that slack and

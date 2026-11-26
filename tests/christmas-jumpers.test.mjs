@@ -27,3 +27,9 @@ const page=await readFile('dist/uniform/index.html','utf8');assert.ok(page.inclu
 const ics=await readFile('dist/calendar/uniform-december-2026.ics','utf8');assert.ok(ics.includes('Christmas jumpers £2'));
 const reps=await readFile('dist/reps/index.html','utf8');assert.ok(reps.includes('Christmas jumpers £2'));
 });
+test('Supporters page: Kinderzimmer card says Sponsoring our Craft Zone and Ottershaw sits on a dark tile',async()=>{
+const html=await readFile('dist/christmas-fayre-supporters/index.html','utf8');
+assert.ok(html.includes('Sponsoring our Craft Zone. Day nursery and preschool in Walton-on-Thames.'));
+assert.ok(!html.includes('Sponsor of the Craft Zone'));
+assert.match(html,/supporter-card__logo--dark[^>]*>\s*<img[^>]*ottershaw-christmas-tree-farm\.png/);
+});
