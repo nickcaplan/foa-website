@@ -39,7 +39,7 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
           </div>
           <div class="newsletter-expansion-actions">
             <button class="button button--primary newsletter-read-more" type="button" aria-expanded="false" aria-controls={latestBodyId}>
-              <span class="newsletter-read-more__labels"><span data-label-closed>Read the full newsletter</span><span data-label-open>Show less</span></span> <span aria-hidden="true" data-icon>&darr;</span>
+              <span class="newsletter-read-more__labels"><span class="cta-label" data-label-closed>Read the full <span class="cta-tail">newsletter<span class="cta-icon" aria-hidden="true">&darr;</span></span></span><span class="cta-label" data-label-open>Show <span class="cta-tail">less<span class="cta-icon" aria-hidden="true">&uarr;</span></span></span></span>
             </button>
           </div>
         </>}
@@ -65,7 +65,7 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
             </div>
             <div class="newsletter-expansion-actions">
               <button class="button button--primary newsletter-read-more" type="button" aria-expanded="false" aria-controls={bodyId}>
-                <span class="newsletter-read-more__labels"><span data-label-closed>Read the full newsletter</span><span data-label-open>Show less</span></span> <span aria-hidden="true" data-icon>&darr;</span>
+                <span class="newsletter-read-more__labels"><span class="cta-label" data-label-closed>Read the full <span class="cta-tail">newsletter<span class="cta-icon" aria-hidden="true">&darr;</span></span></span><span class="cta-label" data-label-open>Show <span class="cta-tail">less<span class="cta-icon" aria-hidden="true">&uarr;</span></span></span></span>
               </button>
             </div>
           </>}
@@ -212,7 +212,6 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
       const expand = button.getAttribute("aria-expanded") !== "true";
       const anchorTop = button.getBoundingClientRect().top;
       button.setAttribute("aria-expanded", String(expand));
-      button.querySelector("[data-icon]")!.innerHTML = expand ? "&uarr;" : "&darr;";
 
       animation?.cancel();
       if (expand) {

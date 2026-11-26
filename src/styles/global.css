@@ -1909,6 +1909,7 @@ svg.cta-icon {
 
 .newsletter-read-more__labels > span {
   grid-area: 1 / 1;
+  align-self: center;
 }
 
 .newsletter-read-more[aria-expanded="false"] [data-label-open],
@@ -1916,11 +1917,6 @@ svg.cta-icon {
   visibility: hidden;
 }
 
-.newsletter-read-more [data-icon] {
-  display: inline-block;
-  min-width: 1ch;
-  text-align: center;
-}
 
 .newsletter-more[hidden] {
   display: none;
