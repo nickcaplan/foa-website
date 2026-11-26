@@ -1899,9 +1899,24 @@ svg.cta-icon {
   font-family: var(--font-body);
 }
 
-.newsletter-read-more [data-label] {
+/* Both labels share one grid cell, so the button keeps the same size and position
+   when it flips between Read the full newsletter and Show less. The inactive label is
+   hidden but still takes up its space. */
+.newsletter-read-more__labels {
+  display: inline-grid;
   min-width: 0;
 }
+
+.newsletter-read-more__labels > span {
+  grid-area: 1 / 1;
+  align-self: center;
+}
+
+.newsletter-read-more[aria-expanded="false"] [data-label-open],
+.newsletter-read-more[aria-expanded="true"] [data-label-closed] {
+  visibility: hidden;
+}
+
 
 .newsletter-more[hidden] {
   display: none;
@@ -4585,7 +4600,7 @@ main .xmas-actions .button{font-size:min(1.05rem,7.5vw)!important}
    adds full width in the 16px gutters. Component-scoped twins of this
    rule live in FayreSupporter.astro and EventRow.astro (scoped styles
    beat globals). */
-main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):not(.uniform-action):not(.fundraising-card__cta .button):not(.fayre-supporters__button):has(svg){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
+main :is(a.button,button.button):not(.button-icon):not([href^="mailto:"]):not(.fayre-volunteer__email):not(.involved-action):not(.narnia-landscape__action):not(.fayre-volunteer__action):not(.event-volunteer-link .button):not(.fayre-supporter .button):not(.xmas-stalls-cta__button):not(.xmas-art-cta__button):not(.uniform-action):not(.fundraising-card__cta .button):not(.fayre-supporters__button):not(.newsletter-read-more):has(svg){padding-inline:calc(1.05em + max(0.9rem, 1.8rem - 1.8 * (1rem - 16px)))!important}
 main :is(a.button,.button,.event-list-cta--button):not(.button-icon):not(.fayre-volunteer__email):not(.involved-action):has(svg){
   max-width:100%;box-sizing:border-box;
   justify-content:center!important;text-align:center;column-gap:0!important;
@@ -4641,4 +4656,11 @@ html.img-reveal [data-reveal-box]:not(.is-loaded){background-color:transparent;b
 @media(prefers-reduced-motion:no-preference){
 html.img-reveal img.reveal-on-load{transition:opacity .25s ease-in}
 html.img-reveal img.reveal-on-load.is-loaded{opacity:1}
+}
+
+/* Newsletter read-more button: the icon lane stays on the right, but the left
+   padding shrinks as text is enlarged so "Read the full" keeps one line at
+   200% text instead of stranding "full". Normal text keeps the symmetric lane. */
+main button.button.newsletter-read-more.newsletter-read-more.newsletter-read-more:has(svg) {
+  padding-inline-start: max(0.5rem, calc(1.05em + 1.8rem - 6 * (1rem - 16px))) !important;
 }
