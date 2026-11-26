@@ -553,6 +553,15 @@ test.describe("Read the full newsletter button stays put", () => {
       await page.waitForTimeout(600);
       expect(await box()).toEqual(closed);
       await expect(button).toContainText("Show less");
+      const strandedGap = await button.evaluate((element) => {
+        const label = element.querySelector<HTMLElement>("[data-label-open]")!;
+        const icon = label.querySelector<HTMLElement>(".cta-icon")!;
+        const range = document.createRange();
+        range.selectNodeContents(label.firstChild!);
+        const word = range.getBoundingClientRect();
+        return Math.abs(icon.getBoundingClientRect().top - word.top);
+      });
+      expect(strandedGap, "the arrow stays on the same line as the label").toBeLessThan(16);
       await button.click();
       await expect(button).toHaveAttribute("aria-expanded", "false");
       await page.waitForTimeout(600);
