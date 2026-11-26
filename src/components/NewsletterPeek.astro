@@ -2,10 +2,11 @@
 import NewsletterSection from "./NewsletterSection.astro";
 
 interface Props {
-  sections: { title?: string; heading?: boolean; paragraphs?: string[]; list?: string[]; closing?: string[] }[];
+  sections: { title?: string; heading?: boolean; paragraphs?: string[]; list?: string[]; closing?: string[]; copyCode?: string }[];
+  internalArrows?: boolean;
 }
-const { sections } = Astro.props;
+const { sections, internalArrows = false } = Astro.props;
 ---
 <div class="newsletter-peek" data-newsletter-peek aria-hidden="true" inert>
-  {sections.map((section) => <NewsletterSection section={section} />)}
+  {sections.map((section) => <NewsletterSection section={{ ...section, copyCode: undefined }} internalArrows={internalArrows} />)}
 </div>

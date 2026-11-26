@@ -7,7 +7,7 @@ test.describe("Newsletter expansion", () => {
   });
 
   test("the latest newsletter preview shows the opening sections", async ({ page }) => {
-    await expect(page.locator(".newsletter-issue").getByRole("heading", { name: "Fireworks on the Field", exact: true })).toBeVisible();
+    await expect(page.locator(".newsletter-issue").getByRole("heading", { name: "A big thank you to our wonderful Fayre sponsors and supporters", exact: true })).toBeVisible();
     await expect(page.locator(".newsletter-issue").getByRole("heading", { name: "Christmas Fayre: Saturday 5th December, 12pm - 3pm", exact: true })).toBeVisible();
   });
 
@@ -159,7 +159,7 @@ test.describe("Newsletter expansion", () => {
   }
 
   for (const [name, bodyId, hiddenText] of [
-    ["latest", "newsletter-latest-more", "Pre-loved Uniform: Friday 4th December - Christmas Jumpers Needed!"],
+    ["latest", "newsletter-latest-more", "Christmas gifts with The Glitter Tree: 10% off, 10% back to Ashley"],
     ["previous issue", "newsletter-autumn-term-2026-more", "Committee & Volunteer Shout-Outs: Could you be our Co-Secretary?"],
     ["archive", "newsletter-back-to-school-2026-more", "AGM: Come Along & Have Your Say!"],
   ]) {
@@ -431,25 +431,32 @@ test.describe("Newsletter reading room", () => {
   }
 });
 
-test.describe("Next newsletter preview", () => {
-  test("is absent by default and shows only with ?next", async ({ page }) => {
+const expandLatest = async (page: import("@playwright/test").Page) => {
+  const trigger = page.locator('[aria-controls="newsletter-latest-more"]');
+  await trigger.click();
+  await expect(page.locator("#newsletter-latest-more")).toBeVisible();
+};
+
+test.describe("27 November newsletter is the latest issue", () => {
+  test("shows on the default page, expands in full and is not hidden from search", async ({ page }) => {
     await page.goto("/newsletter/");
-    await expect(page.locator("#newsletter-next-issue")).toHaveCount(0);
+    const sheet = page.locator("#newsletter-issue-christmas-fayre-2026");
+    await expect(sheet).toBeVisible();
+    await expect(sheet.locator(".newsletter-summary-label")).toHaveText("Christmas Fayre News");
+    await expandLatest(page);
+    await expect(sheet.getByRole("heading", { name: "Christmas Fayre Art Competition: entries in by Monday 30th November" })).toBeVisible();
+    await expect(sheet.locator(".newsletter-sign-off")).toBeVisible();
     await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
-    await page.goto("/newsletter/?next");
-    await expect(page.locator("#newsletter-next-issue")).toBeVisible();
-    await expect(page.locator("#newsletter-next-issue").getByRole("heading", { name: "Christmas Fayre Art Competition: entries in by Monday 30th November" })).toBeVisible();
-    await expect(page.locator("#newsletter-next-issue .newsletter-sign-off")).toBeVisible();
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
+    await expect(page.locator("#newsletter-issue-november-2026")).toHaveCount(1);
   });
 });
 
-test.describe("Next newsletter greeting", () => {
+test.describe("Latest newsletter greeting", () => {
   test("Dear Parents is the same size as the body text", async ({ page }) => {
     for (const width of [390, 1440]) {
       await page.setViewportSize({ width, height: 900 });
-      await page.goto("/newsletter/?next");
-      const sheet = page.locator("#newsletter-next-issue");
+      await page.goto("/newsletter/");
+      const sheet = page.locator("#newsletter-issue-christmas-fayre-2026");
       const greeting = sheet.getByRole("heading", { name: "Dear Parents, Carers and Teachers," });
       const body = sheet.locator(".newsletter-summary-section").first().locator("p").first();
       const read = (locator: typeof greeting) => locator.evaluate((el) => { const s = getComputedStyle(el); return [s.fontSize, s.fontFamily, s.fontWeight]; });
@@ -461,14 +468,13 @@ test.describe("Next newsletter greeting", () => {
   });
 });
 
-test.describe("Next newsletter Glitter Tree code", () => {
+test.describe("Latest newsletter Glitter Tree code", () => {
   test("Copy code puts THEFRIENDSOFASHLEY on the clipboard and confirms in place", async ({ page, context, browserName }) => {
     test.skip(browserName !== "chromium", "clipboard permissions are Chromium-only here");
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await page.goto("/newsletter/");
-    await expect(page.locator("[data-newsletter-copy-code]")).toHaveCount(0);
-    await page.goto("/newsletter/?next");
-    const button = page.locator("#newsletter-next-issue [data-newsletter-copy-code]");
+    await expandLatest(page);
+    const button = page.locator("#newsletter-issue-christmas-fayre-2026 [data-newsletter-copy-code]");
     await expect(button).toBeVisible();
     await expect(button).toContainText("Copy code");
     const before = await button.boundingBox();
@@ -481,14 +487,15 @@ test.describe("Next newsletter Glitter Tree code", () => {
     const after = await button.boundingBox();
     expect(Math.abs((after?.width ?? 0) - (before?.width ?? 1))).toBeLessThan(0.5);
     expect(Math.abs((after?.height ?? 0) - (before?.height ?? 1))).toBeLessThan(0.5);
-    await expect(page.locator("#newsletter-next-issue [data-copy-feedback]")).toHaveText("Code copied to the clipboard.");
+    await expect(page.locator("#newsletter-issue-christmas-fayre-2026 [data-copy-feedback]")).toHaveText("Code copied to the clipboard.");
   });
 
   for (const scheme of ["light", "dark"] as const) {
     test(`Copy code keeps dark ink on a light fill in ${scheme} colour scheme`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: scheme });
-      await page.goto("/newsletter/?next");
-      const button = page.locator("#newsletter-next-issue [data-newsletter-copy-code]");
+      await page.goto("/newsletter/");
+      await expandLatest(page);
+      const button = page.locator("#newsletter-issue-christmas-fayre-2026 [data-newsletter-copy-code]");
       await expect(button).toBeVisible();
       const [ink, fill] = await button.evaluate((element) => {
         const style = getComputedStyle(element);
@@ -511,9 +518,10 @@ test.describe("Next newsletter Glitter Tree code", () => {
     test.skip(browserName !== "chromium", "clipboard permissions are Chromium-only here");
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await page.setViewportSize({ width: 320, height: 800 });
-    await page.goto("/newsletter/?next");
+    await page.goto("/newsletter/");
+    await expandLatest(page);
     await page.addStyleTag({ content: "html { font-size: 32px !important; }" });
-    const button = page.locator("#newsletter-next-issue [data-newsletter-copy-code]");
+    const button = page.locator("#newsletter-issue-christmas-fayre-2026 [data-newsletter-copy-code]");
     await expect(button).toBeVisible();
     const size = async () => button.evaluate((element) => {
       const box = element.getBoundingClientRect();
