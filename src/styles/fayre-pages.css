@@ -29,7 +29,7 @@ body:is(.narnia-event,.narnia-volunteering):not(.art-comp) .narnia-landscape__co
   .art-comp .fayre-art-hero__copy {padding:1.5rem .75rem;}
   /* Root-relative sizes permit real enlargement, while whole words stay intact. */
   .narnia-event .narnia-landscape h1 {font-size:1.65rem!important;}
-  .narnia-event .narnia-landscape h1 em {display:block;}
+  .narnia-event .narnia-landscape h1 .hero-title-line {display:block;}
   .art-comp .fayre-art-hero h1 {font-size:1.65rem;}
 }
 

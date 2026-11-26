@@ -344,7 +344,7 @@ test("hero panel keeps visible focus outlines and heading accent in both modes",
         await expect(link).toHaveCSS("outline-style", "solid");
         await expect(link).toHaveCSS("outline-width", "3px");
       }
-      await expect(page.locator(".narnia-landscape h1 em")).toHaveCSS("color", "rgb(237, 203, 131)");
+      await expect(page.locator(".narnia-landscape h1 .hero-title-line")).toHaveCSS("color", "rgb(255, 243, 213)");
       toggle = await openThemeToggle(page);
       await toggle.click();
       await expect(toggle).toHaveAttribute("aria-pressed", "false");

@@ -267,7 +267,7 @@ test("the footer and mobile menu share social links without adding them to prima
 test("the homepage features the chosen Christmas Fayre design without reviving the old introduction", async () => {
   const homepage = await readFile(path.join(dist, "index.html"), "utf8");
   assert.match(homepage, /<section class="narnia-landscape"[^>]*data-homepage-christmas/);
-  assert.match(homepage, /<h1[^>]*>Christmas <em>Fayre<\/em><\/h1>/);
+  assert.match(homepage, /<h1[^>]*>Christmas <span class="hero-title-line">Fayre<\/span><\/h1>/);
   const fayre = JSON.parse(await readFile("src/content/events/christmas-fayre-2026.json", "utf8"));
   assert.ok(homepage.includes(new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/London" }).format(new Date(fayre.start)).replace(",", "")));
   assert.ok(homepage.includes(fayre.location));
