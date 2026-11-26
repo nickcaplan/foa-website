@@ -516,8 +516,9 @@ test("Fireworks recruitment copy invites every year group on the event page and 
 
 
 test("Christmas volunteering lists the source activities and safe click-outs, with counts rendered client-side", async () => {
+ // The live availability snapshot can mark any activity fully booked, which adds the --full modifier; every activity still gets one card.
  const html=await readFile(path.join(dist,"christmas-fayre-volunteering/index.html"),"utf8");
- assert.equal([...html.matchAll(/class="fayre-volunteer__card"/g)].length,christmas.signupActivities.length);
+ assert.equal([...html.matchAll(/class="fayre-volunteer__card(?: fayre-volunteer__card--full)?"/g)].length,christmas.signupActivities.length);
  for(const activity of christmas.signupActivities){
   const shown=activity.displayName??activity.name;
   assert.ok(html.includes(escapeHtml(shown)));
