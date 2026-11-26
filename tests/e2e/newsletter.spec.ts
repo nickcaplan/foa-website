@@ -258,7 +258,7 @@ test.describe("Newsletter reading room", () => {
     await links.nth(1).focus();
     await page.setViewportSize({ width: 390, height: 900 });
     await expect(page.locator(".newsletter-issue-index")).toBeHidden();
-    await expect(page.locator(".newsletter-archive article")).toHaveCount(3);
+    await expect(page.locator(".newsletter-archive article")).toHaveCount(4);
     const previous = page.locator(".newsletter-archive article").first();
     await expect(previous).toBeFocused();
     await expect(page.locator(`#${id}`)).toBeVisible();
