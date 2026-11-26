@@ -7,7 +7,6 @@ import NewsletterSection from "../components/NewsletterSection.astro";
 import NewsletterPeek from "../components/NewsletterPeek.astro";
 import NewsletterSignOff from "../components/NewsletterSignOff.astro";
 import { getCollection } from "astro:content";
-import nextIssue from "../content/newsletter-next.json";
 const newsletters = (await getCollection("newsletters"))
   .sort((a, b) => (b.data.published?.getTime() ?? 0) - (a.data.published?.getTime() ?? 0));
 const latestIssue = newsletters.find(({ data }) => data.latest);
@@ -22,29 +21,20 @@ const previous = newsletters.filter(({ id }) => id !== latestIssue.id);
 const formatDateWithOrdinal = ordinalDateFormatter({ weekday: "long", timeZone: "UTC" });
 if (!latest.published) throw new Error("Latest newsletter publication date is missing");
 const socialTitle = `${formatDateWithOrdinal(latest.published)} Newsletter | The Friends of Ashley`;
-const nextDate = new Date(nextIssue.scheduled);
 const issueName = latest.title.replace(/\s+News$/, "").trim();
 ---
 <BaseLayout title="Newsletter" description="The latest news from The Friends of Ashley and previous newsletters." socialTitle={socialTitle} socialDescription={latest.summary} image="/brand/foa-logo-newsletter-envelope-og.png" imageAlt="The Friends of Ashley logo resting on an open envelope with a heart." imageWidth={1200} imageHeight={630}>
   <PageHero eyebrow="The FOA updates" title={`${issueName} Newsletter`} intro="The latest news from the FOA." />
-  <template data-newsletter-next><section class="content-section content-section--compact newsletter-next"><div class="site-width newsletter-page"><section class="newsletter-section newsletter-board" aria-label="Next newsletter preview">
-    <article class="newsletter-issue newsletter-sheet" id="newsletter-next-issue" tabindex="-1">
-      <div class="newsletter-letterhead"><img class="reveal-on-load" src={withBase("/brand/foa-logo.svg")} alt="" width="44" height="44" decoding="async"><span>The Friends of Ashley</span><time class="newsletter-letterhead-date" datetime={nextDate.toISOString()}>{formatDateWithOrdinal(nextDate)}</time></div>
-      <p class="newsletter-summary-label">{nextIssue.title}</p>
-      {nextIssue.sections.map((section, index) => <NewsletterSection section={section} lead={index === 0} internalArrows />)}
-      <NewsletterSignOff />
-    </article>
-  </section></div></section></template>
   <section class="content-section content-section--compact content-section--desktop-snug newsletter-reader-container"><div class="site-width newsletter-page">
     <section class="newsletter-section newsletter-board newsletter-reading-board" aria-label="Newsletter reading board">
       <article class="newsletter-issue newsletter-sheet" id={`newsletter-issue-${latestIssue.id}`} tabindex="-1">
         <div class="newsletter-letterhead"><img class="reveal-on-load" src={withBase("/brand/foa-logo.svg")} alt="" width="44" height="44" decoding="async"><span>The Friends of Ashley</span>{latest.published && <time class="newsletter-letterhead-date" datetime={latest.published.toISOString()}>{formatDateWithOrdinal(latest.published)}</time>}</div>
         <p class="newsletter-summary-label">{latest.title}</p>
-        {latestPreview.map((section, index) => <NewsletterSection section={section} lead={index === 0} />)}
+        {latestPreview.map((section, index) => <NewsletterSection section={section} lead={index === 0} internalArrows />)}
         {latestRest.length > 0 && <>
-          <NewsletterPeek sections={latestRest} />
+          <NewsletterPeek sections={latestRest} internalArrows />
           <div class="newsletter-more" id={latestBodyId} hidden>
-            {latestRest.map((section) => <NewsletterSection section={section} />)}
+            {latestRest.map((section) => <NewsletterSection section={section} internalArrows />)}
             <NewsletterSignOff />
           </div>
           <div class="newsletter-expansion-actions">
@@ -99,10 +89,7 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
 
 
 <script>
-  // The next newsletter sits in an inert template unless the address ends in ?next. The
-  // page is kept out of search results while it is showing.
-  // Copy button for the Glitter Tree code on the next newsletter. The sheet
-  // is added after load, so one delegated listener handles the click. The
+  // Copy button for the Glitter Tree code in the latest newsletter. One delegated listener handles the click. The
   // label flips in place (no layout shift) and a hidden live region announces it.
   let copyReset: number | undefined;
   document.addEventListener("click", async (event) => {
@@ -130,14 +117,6 @@ const issueName = latest.title.replace(/\s+News$/, "").trim();
       copyReset = window.setTimeout(reset, 6000);
     }
   });
-  const nextPreview = document.querySelector<HTMLTemplateElement>("template[data-newsletter-next]");
-  if (nextPreview && new URLSearchParams(location.search).has("next")) {
-    nextPreview.after(nextPreview.content.cloneNode(true));
-    const robots = document.createElement("meta");
-    robots.name = "robots";
-    robots.content = "noindex";
-    document.head.append(robots);
-  }
   const layout = document.querySelector<HTMLElement>(".newsletter-reader-container")!;
   const reader = layout.querySelector<HTMLElement>(".newsletter-page")!;
   const board = reader.querySelector<HTMLElement>(".newsletter-reading-board")!;

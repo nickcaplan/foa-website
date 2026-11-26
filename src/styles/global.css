@@ -1821,8 +1821,8 @@ svg.cta-icon {
   margin-top: 0;
 }
 
-/* The next newsletter's opening greeting reads as body text (Nick, 24 Nov 2026). */
-#newsletter-next-issue .newsletter-summary-section:first-of-type h3 {
+/* The 27 November newsletter's opening greeting reads as body text (Nick, 24 Nov 2026). */
+#newsletter-issue-christmas-fayre-2026 .newsletter-summary-section:first-of-type h3 {
   margin: 1.6rem 0 0;
   color: var(--ink);
   font: inherit;

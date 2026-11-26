@@ -1,6 +1,6 @@
 {
   "title": "Christmas Fayre News",
-  "scheduled": "2026-11-27",
+  "published": "2026-11-27",
   "summary": "Christmas Fayre spotlight: running order, sponsors and supporters, a Glitter Tree code, the Art Competition and where we still need helpers.",
   "sections": [
     {
@@ -57,7 +57,7 @@
     {
       "title": "Pre-loved Uniform and Christmas Jumpers: Friday 4th December, 3:25pm",
       "paragraphs": [
-        "Our last sale of the term, in the school playground (subject to weather). Christmas jumpers will be on sale, and we are collecting jumpers in good condition to sell. Coats and new-logo items £3, Christmas jumpers £2, everything else £1, card only. [Pre-loved uniform page](https://www.thefriendsofashley.org/uniform/)"
+        "Our last sale of the term, in the school playground (subject to weather). Christmas jumpers will be on sale, and we are collecting jumpers in good condition (age 5 and up) to sell. Coats and new-logo items £3, Christmas jumpers £2, everything else £1, card only. [Pre-loved uniform page](https://www.thefriendsofashley.org/uniform/)"
       ]
     },
     {
@@ -76,5 +76,6 @@
         "**The FOA Team**"
       ]
     }
-  ]
+  ],
+  "latest": true
 }
