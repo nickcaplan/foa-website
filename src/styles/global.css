@@ -3305,9 +3305,14 @@ body.menu-open .cookie-banner {
     grid-row: 1;
   }
 
+  .not-found-copy .mobile-page-heading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .not-found-copy .mobile-page-heading h1 {
     max-width: none;
     font-size: clamp(1.5rem, 15cqi, 2.65rem);
+    text-wrap: balance;
   }
 
   .not-found-page .empty-state .crying-logo {
