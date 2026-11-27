@@ -59,7 +59,7 @@ const eventJsonLd = {
         <ol class="schedule">
           {timeline.map((item) => (
             <li>
-              <time datetime={item.time.toISOString()}>{clock.format(item.time)}{"end" in item && item.end ? ` - ${clock.format(item.end)}` : ""}</time>
+              <time datetime={item.time.toISOString()}>{clock.format(item.time)}{"end" in item && item.end ? `\u00a0- ${clock.format(item.end)}` : ""}</time>
               <span><strong>{item.label}</strong>{item.detail && <p>{item.detail}</p>}</span>
             </li>
           ))}
@@ -124,13 +124,17 @@ const eventJsonLd = {
 <style is:global>
 /* "On the day" timeline: the Fireworks schedule markup in the Fayre theme. */
 .narnia-event .xmas-timeline .schedule{margin:.8rem 0 2rem;padding:0;list-style:none;max-width:40rem}
-.narnia-event .xmas-timeline .schedule li{display:grid;grid-template-columns:10rem minmax(0,1fr);align-items:baseline;gap:.25rem 1.2rem;padding:.9rem 0;border-top:1px solid var(--xm-gold-dim)}
-.narnia-event .xmas-timeline .schedule li:last-child{border-bottom:1px solid var(--xm-gold-dim)}
-.narnia-event .xmas-timeline .schedule time{color:var(--xm-gold-light);font-family:var(--font-display);font-size:1.3rem;font-weight:600;line-height:1.2;white-space:nowrap;font-variant-numeric:tabular-nums}
+.narnia-event .xmas-timeline .schedule li{--tl-x:calc(10rem + .9rem);position:relative;display:grid;grid-template-columns:10rem minmax(0,1fr);align-items:baseline;gap:.25rem 1.8rem;padding:0 0 1.6rem;border:0}
+.narnia-event .xmas-timeline .schedule li:last-child{padding-bottom:0;border:0}
+.narnia-event .xmas-timeline .schedule li::before{content:"";position:absolute;left:calc(var(--tl-x) - 1px);top:calc(.78rem + 7px);bottom:calc(7px - .78rem);width:2px;background:var(--xm-gold-dim)}
+.narnia-event .xmas-timeline .schedule li:last-child::before{display:none}
+.narnia-event .xmas-timeline .schedule li::after{content:"";position:absolute;left:calc(var(--tl-x) - 7px);top:calc(.78rem - 7px);width:14px;height:14px;box-sizing:border-box;border:2px solid var(--xm-gold);border-radius:50%}
+.narnia-event .xmas-timeline .schedule li:first-child::after,.narnia-event .xmas-timeline .schedule li:last-child::after{background:var(--xm-gold)}
+.narnia-event .xmas-timeline .schedule time{text-align:right;color:var(--xm-gold-light);font-family:var(--font-display);font-size:1.3rem;font-weight:600;line-height:1.2;white-space:nowrap;font-variant-numeric:tabular-nums}
 .narnia-event .xmas-timeline .schedule strong{display:block;color:var(--xm-cream);font-size:1.05rem;line-height:1.35}
 .narnia-event .xmas-timeline .schedule p{margin:.15rem 0 0;color:var(--xm-cream);opacity:.85;line-height:1.5}
-/* Stack the time above the label when the row cannot hold both side by side. */
-@container(max-width:30em){.narnia-event .xmas-timeline .schedule li{grid-template-columns:minmax(0,1fr)}}
+/* Narrow rows: the line moves to the left edge and the time sits above the label. */
+@container(max-width:30em){.narnia-event .xmas-timeline .schedule li{--tl-x:7px;grid-template-columns:minmax(0,1fr);padding-left:28px}.narnia-event .xmas-timeline .schedule time{text-align:left;white-space:normal}}
 </style>
 </BaseLayout>
 

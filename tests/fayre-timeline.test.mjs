@@ -7,7 +7,7 @@ test("the Fayre page lists the six day-of timings from the newsletter, in order"
   const section = html.match(/<section[^>]*aria-labelledby="xmas-timeline-title"[\s\S]*?<\/section>/)?.[0];
   assert.ok(section, "timeline section is on the page");
   assert.match(section, /<h2 id="xmas-timeline-title"[^>]*>On the day<\/h2>/);
-  const rows = [...section.matchAll(/<li[^>]*>\s*<time datetime="([^"]+)"[^>]*>([^<]+)<\/time>\s*<span><strong>([^<]+)<\/strong>/g)].map((m) => [m[1], m[2], m[3]]);
+  const rows = [...section.matchAll(/<li[^>]*>\s*<time datetime="([^"]+)"[^>]*>([^<]+)<\/time>\s*<span><strong>([^<]+)<\/strong>/g)].map((m) => [m[1], m[2].replace(/\u00a0/g, " "), m[3]]);
   assert.deepEqual(rows, [
     ["2026-12-05T12:00:00.000Z", "12:00", "Fayre opens"],
     ["2026-12-05T13:00:00.000Z", "13:00", "Art Competition winners announced"],
