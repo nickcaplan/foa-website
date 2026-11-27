@@ -130,11 +130,12 @@ const eventJsonLd = {
 .narnia-event .xmas-timeline .schedule li:last-child::before{display:none}
 .narnia-event .xmas-timeline .schedule li::after{content:"";position:absolute;left:calc(var(--tl-x) - 7px);top:calc(.78rem - 7px);width:14px;height:14px;box-sizing:border-box;border:2px solid var(--xm-gold);border-radius:50%}
 .narnia-event .xmas-timeline .schedule li:first-child::after,.narnia-event .xmas-timeline .schedule li:last-child::after{background:var(--xm-gold)}
-.narnia-event .xmas-timeline .schedule time{text-align:right;color:var(--xm-gold-light);font-family:var(--font-display);font-size:1.3rem;font-weight:600;line-height:1.2;white-space:nowrap;font-variant-numeric:tabular-nums}
+.narnia-event .xmas-timeline .schedule time{text-align:right;padding-right:.45rem;color:var(--xm-gold-light);font-family:var(--font-display);font-size:1.3rem;font-weight:600;line-height:1.2;white-space:nowrap;font-variant-numeric:tabular-nums}
+.narnia-event .xmas-timeline .schedule li>span{padding-left:.45rem}
 .narnia-event .xmas-timeline .schedule strong{display:block;color:var(--xm-cream);font-size:1.05rem;line-height:1.35}
 .narnia-event .xmas-timeline .schedule p{margin:.15rem 0 0;color:var(--xm-cream);opacity:.85;line-height:1.5}
 /* Narrow rows: the line moves to the left edge and the time sits above the label. */
-@container(max-width:30em){.narnia-event .xmas-timeline .schedule li{--tl-x:7px;grid-template-columns:minmax(0,1fr);padding-left:28px}.narnia-event .xmas-timeline .schedule time{text-align:left;white-space:normal}}
+@container(max-width:30em){.narnia-event .xmas-timeline .schedule li{--tl-x:7px;grid-template-columns:minmax(0,1fr);padding-left:22px}.narnia-event .xmas-timeline .schedule time{text-align:left;white-space:normal;padding-right:0}.narnia-event .xmas-timeline .schedule li>span{padding-left:0}.narnia-event .xmas-timeline .schedule strong{font-size:1rem}}
 </style>
 </BaseLayout>
 

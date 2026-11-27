@@ -22,6 +22,9 @@ for (const width of [320, 390, 1440]) for (const scale of [1, 2]) for (const the
     expect(marks.every((m) => m[0] === "14px")).toBe(true);
     expect(marks.slice(0, 5).every((m) => m[1] !== "none")).toBe(true);
     expect(marks[5][1]).toBe("none");
+    // No label word overflows its column.
+    const over = await rows.locator("span").evaluateAll((es) => es.filter((e) => e.scrollWidth > e.clientWidth + 1).length);
+    expect(over).toBe(0);
     // No time clips.
     const clipped = await rows.locator("time").evaluateAll((es) => es.filter((e) => e.scrollWidth > e.clientWidth + 1).length);
     expect(clipped).toBe(0);
