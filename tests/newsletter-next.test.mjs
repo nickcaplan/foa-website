@@ -4,8 +4,8 @@ test('27 November newsletter is the latest issue and the 13 November issue moves
  const issue=await load();
  assert.equal(issue.published,'2026-11-27');assert.equal(issue.latest,true);
  const copy=JSON.stringify(issue);
- for(const required of ['Walton Heathside','THEFRIENDSOFASHLEY','Art Competition','Summer Fete','age 5 and up'])assert.ok(copy.includes(required),required);
- for(const excluded of ['Hi Jennie','jratcliff@','foacommsteam','Bcc','XXX','£XXXX'])assert.ok(!copy.includes(excluded),excluded);
+ for(const required of ['THEFRIENDSOFASHLEY','Art Competition','Summer Fete','age 5 and up'])assert.ok(copy.includes(required),required);
+ for(const excluded of ['Hi Jennie','jratcliff@','foacommsteam','Bcc','XXX','£XXXX','Heathside','12:45 to 12:50'])assert.ok(!copy.includes(excluded),excluded);
  const nov=JSON.parse(await readFile('src/content/newsletters/november-2026.json','utf8'));assert.equal(nov.latest,false);
  const html=await readFile('dist/newsletter/index.html','utf8');
  assert.ok(!html.includes('<template data-newsletter-next>'));
