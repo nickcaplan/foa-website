@@ -22,6 +22,28 @@
     "Bar",
     "Café"
   ],
+  "schedule": [
+    {
+      "time": "2026-12-05T13:00:00+00:00",
+      "label": "Art Competition winners announced",
+      "detail": "With Steph Cotela, who is organising the competition."
+    },
+    {
+      "time": "2026-12-05T13:15:00+00:00",
+      "label": "Christmas tree auction",
+      "detail": "Trees from Ottershaw Christmas Tree Farm."
+    },
+    {
+      "time": "2026-12-05T13:30:00+00:00",
+      "end": "2026-12-05T13:45:00+00:00",
+      "label": "Mini Dance Performers"
+    },
+    {
+      "time": "2026-12-05T14:00:00+00:00",
+      "end": "2026-12-05T14:15:00+00:00",
+      "label": "Ashley School Choir performance"
+    }
+  ],
   "signupUrl": "https://justsignup.io/s/uhyd1u3wq4",
   "contactEmail": "ashleyschoolchristmasfair2026@gmail.com",
   "helpAreas": [
