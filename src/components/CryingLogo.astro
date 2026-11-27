@@ -5,8 +5,14 @@ import logoSvg from "../../assets/brand/foa-logo-ivory.svg?raw";
 const body = logoSvg.replace(/^\s*<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
 // Keep the ring, hexagons, curved title and top icon; the PTA label and the two
 // lower icons give way to the face (eyes in the lower hexagons, mouth beneath).
+// The optimised logo has four paths: hexagons, curved title, PTA label, icons.
+// Drop the PTA label, and clip the icons path to the top hexagon so only the
+// handshake stays (the two lower icons sit below y 250).
 const paths = [...body.matchAll(/<path[^>]*\/>/g)].map((m) => m[0]);
-const artwork = [4, 6, 7].reduce((svg, i) => svg.replace(paths[i], ""), body);
+const [, , ptaLabel, icons] = paths;
+const artwork = body
+  .replace(ptaLabel, "")
+  .replace(icons, `<g clip-path="url(#crying-logo-top-icon)">${icons}</g>`);
 
 const eyes = [
   { cx: 160.5, cy: 312, flip: 1 },
@@ -22,6 +28,7 @@ const tears = [
 ---
 <svg class="crying-logo" viewBox="0 0 457 506" role="img" aria-label="The Friends of Ashley logo, crying">
   <defs>
+    <clipPath id="crying-logo-top-icon"><rect x="0" y="0" width="457" height="240" /></clipPath>
     <path id="crying-logo-tear" d="M0 -16 C 9 -3 11 3 11 7 A 11 11 0 0 1 -11 7 C -11 3 -9 -3 0 -16 Z" />
   </defs>
 

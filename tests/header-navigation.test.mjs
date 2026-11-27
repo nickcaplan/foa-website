@@ -92,6 +92,14 @@ test("every public page embeds one mobile home-linked logo beside its heading", 
   const root = new URL("../dist/", import.meta.url);
   for (const path of await discoverPages(root)) {
     if (path.href === new URL("playground.html", root).href) continue;
+    if (path.href === new URL("404.html", root).href) {
+      // The 404 page shows the large crying logo instead, so the small heading logo is left out.
+      const notFound = (await readFile(path, "utf8")).match(/<main\b[\s\S]*?<\/main>/)?.[0];
+      assert.ok(notFound, path.pathname);
+      assert.doesNotMatch(notFound, /class="mobile-page-logo page-logo-home"/, path.pathname);
+      assert.equal(notFound.match(/<h1\b/g)?.length, 1, path.pathname);
+      continue;
+    }
     const html = await readFile(path, "utf8");
     if (/http-equiv="refresh"/.test(html)) continue;
     const visibleHtml = html.replace(/<div class="hero-event"[^>]*\shidden(?:="[^"]*")?>[\s\S]*?(?=<div class="hero-event"|<div class="quick-list)/g, "");
