@@ -2,14 +2,16 @@
 
 Small Playwright scripts for production checks. Read-only: they load pages and read the DOM, nothing is submitted or purchased.
 
-## Setup (manual, not a repo dependency)
+## Setup
+Inside this repo Playwright is already installed (dev dependency), so run the scripts from the repo root with `node qa/<script>.mjs`. Outside the repo only, install it by hand and copy the .mjs files in:
     mkdir /tmp/qa && cd /tmp/qa && npm init -y && npm i playwright
-    # uses system Chrome via channel: 'chrome'; copy the .mjs files in
+
+The three scripts launch system Chrome (`channel: 'chrome'`), so Chrome must be installed. aud.mjs and live-timeline.mjs write a screenshot to an output directory: pass one as the last argument, or a temp directory is created and printed.
 
 ## Scripts
-- td.mjs: theme and text-size probe. `node td.mjs <name> <baseUrl> [commaPaths]`
-- live-timeline.mjs: checks the live timeline rows and order on production.
-- aud.mjs: Sam music page, clicks Play and checks the soundbar elapsed time advances.
+- td.mjs: theme and text-size probe. `node qa/td.mjs <name> <baseUrl> [commaPaths]`
+- live-timeline.mjs: one-off check for the Christmas Fayre "On the day" timeline (`.xmas-timeline`, PR 248) on production: rows, order, markers, overflow. Not a general probe. `node qa/live-timeline.mjs [outDir]`
+- aud.mjs: Sam music page, clicks Play and checks the soundbar elapsed time advances. `node qa/aud.mjs [outDir]`
 
 ## Notes
 - FOA theme key: localStorage `foa-theme` = day | night.

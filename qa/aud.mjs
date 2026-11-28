@@ -1,4 +1,8 @@
 import { chromium } from 'playwright';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+const outDir=process.argv[2]||mkdtempSync(join(tmpdir(),'qa-aud-'));
 const b=await chromium.launch({channel:'chrome',args:['--autoplay-policy=no-user-gesture-required']});
 const p=await (await b.newContext({viewport:{width:390,height:900}})).newPage();
 await p.goto('https://www.samanthafernando.com/listen/',{waitUntil:'load'});await p.waitForTimeout(2500);
@@ -10,5 +14,6 @@ console.log('before',JSON.stringify(await state()));
 const play=p.locator('button[onclick*="Playback"]:visible, button[aria-label^="Play"]:visible').first();
 if(await play.count()){await play.click();}else{const t=p.locator('button:visible:has-text("Play")').first();if(await t.count())await t.click();}
 await p.waitForTimeout(4000);console.log('t+4',JSON.stringify(await state()));await p.waitForTimeout(4000);console.log('t+8',JSON.stringify(await state()));
-await p.screenshot({path:'/downloads/sam-audio.png'});
+await p.screenshot({path:join(outDir,'sam-audio.png')});
 await b.close();
+console.log('screenshot in',outDir);

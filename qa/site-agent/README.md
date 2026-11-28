@@ -1,6 +1,6 @@
 # Site agent helpers
 
-Small helpers used when preparing and checking pull requests. They read pages and files only. Playwright comes from the repo's existing dev dependency, nothing to install.
+Small helpers used when preparing and checking pull requests. They read pages and files only. Run them from the repo root, where Playwright is already installed as a dev dependency; the manual install in ../README.md is only for use outside the repo.
 
 - `shot.mjs`: screenshot one element for PR before/after images. `node qa/site-agent/shot.mjs <baseUrl> <path> <selector> <out.png> [width] [day|night] [textScale]`. Serve a built `dist/` first, for example `cd dist && python3 -m http.server 4399`.
 - `measure.mjs`: reports sideways overflow and clipped text for one element at the given width, theme and text scale. `node qa/site-agent/measure.mjs <baseUrl> <path> <selector> [width] [day|night] [textScale]`.
