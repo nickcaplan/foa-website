@@ -10,6 +10,7 @@ The repo rules in `AGENTS.md` (the "Production QA agents" section and the review
 - `slopstrap.md`: the 17-item visual and copy checklist.
 - `foa.md`, `sam.md`, `compass.md`, `wbn.md`: per-site coverage and expected outcomes.
 - `known-items.md`: accepted tells and decisions the agent must not re-file.
+- `method.md`: how to build the checks from scratch (environment, setting states, measuring, sources of facts).
 
 ## Sites
 | Site | Repo | Production |
