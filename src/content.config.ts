@@ -32,6 +32,7 @@ const events = defineCollection({
     info: z.object({ label: z.string(), text: z.string() }).optional(),
     schedule: z.array(z.object({
       time: z.coerce.date(),
+      end: z.coerce.date().optional(),
       label: z.string(),
       detail: z.string().optional(),
       burst: z.enum(["small", "finale"]).optional(),
